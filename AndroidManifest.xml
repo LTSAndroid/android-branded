@@ -8,13 +8,16 @@
         android:minSdkVersion="14"
         android:targetSdkVersion="17" />
 
+<!-- All the activities that this application will use MUST be specified in the Manifest -->    
+    
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+        
         <activity
-            android:name="com.pixelmags.android.branded.BrandedMain"
+            android:name="com.pixelmags.android.publishing.BrandedMain"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,6 +25,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    </application>
+        
+        <activity
+            android:name="com.pixelmags.android.viewer.ViewerMain"
+             />
+	    
+	    </application>
 
 </manifest>
