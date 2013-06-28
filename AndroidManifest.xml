@@ -29,6 +29,11 @@
         <activity
             android:name="com.pixelmags.android.viewer.ViewerMain"
              />
+        
+        
+        <activity
+            android:name="com.pixelmags.android.publishing.LoginActivity"
+             />
 	    
 	    </application>
 
