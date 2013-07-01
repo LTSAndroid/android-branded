@@ -25,8 +25,19 @@
             </intent-filter>
         </activity>
         
+<<<<<<< HEAD
         <activity android:name="com.pixelmags.android.viewer.ViewerMain" />
         
+=======
+        <activity
+            android:name="com.pixelmags.android.viewer.ViewerMain"
+             />
+        
+        
+        <activity
+            android:name="com.pixelmags.android.publishing.LoginActivity"
+             />
+>>>>>>> 233fb6a389ee29d7df5283df9ad0849fc0277030
 	    
 	    </application>
 
