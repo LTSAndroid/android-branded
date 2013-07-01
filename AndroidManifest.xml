@@ -8,7 +8,10 @@
         android:minSdkVersion="14"
         android:targetSdkVersion="17" />
 
-<!-- All the activities that this application will use MUST be specified in the Manifest -->    
+    <!-- The app permission set : must be specified here -->
+    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+    
+	<!-- All the activities that this application will use MUST be specified in the Manifest -->    
     
     <application
         android:allowBackup="true"
@@ -25,19 +28,9 @@
             </intent-filter>
         </activity>
         
-<<<<<<< HEAD
-        <activity android:name="com.pixelmags.android.viewer.ViewerMain" />
-        
-=======
-        <activity
-            android:name="com.pixelmags.android.viewer.ViewerMain"
-             />
-        
-        
-        <activity
-            android:name="com.pixelmags.android.publishing.LoginActivity"
-             />
->>>>>>> 233fb6a389ee29d7df5283df9ad0849fc0277030
+        <activity android:name="com.pixelmags.android.viewer.ViewerMain" /> 
+        <activity android:name="com.pixelmags.android.publishing.LoginActivity" />
+
 	    
 	    </application>
 
