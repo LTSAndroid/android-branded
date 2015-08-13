@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">PixelMags App</string>
+
+    <string name="menu_title_1">Account</string>
+    <string name="menu_title_2">All Issues</string>
+    <string name="menu_title_3">About</string>
+
+    <string name="fragment_title_register">Register Title</string>
+
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_example">Example action</string>
+
+    <string name="action_settings">Settings</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="login_fragment">Login fragment</string>
+    <string name="register_fragment">Register fragment</string>
+</resources>

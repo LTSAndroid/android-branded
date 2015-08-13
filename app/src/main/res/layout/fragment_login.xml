@@ -1,0 +1,21 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="fill_parent"
+    android:id="@+id/fragment_login"
+    android:background="#EDEDED"
+    tools:context="com.pixelmags.android.pixelmagsapp.LoginFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+        android:text="@string/login_fragment"
+        android:id="@+id/loginText" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Register"
+        android:id="@+id/goToRegisterButton"
+        android:layout_gravity="center"
+        android:nestedScrollingEnabled="false" />
+
+</FrameLayout>
