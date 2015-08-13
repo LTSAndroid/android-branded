@@ -1,21 +1,36 @@
 <resources>
+
+    <!-- App Name -->
     <string name="app_name">PixelMags App</string>
 
-    <string name="menu_title_1">Account</string>
-    <string name="menu_title_2">All Issues</string>
-    <string name="menu_title_3">About</string>
+    <!-- Navigation Menu Items -->
+    <string name="menu_title_account">Account</string>
+    <string name="menu_title_login">Log in</string>
+    <string name="menu_title_register">Register</string>
+    <string name="menu_title_subscriptions">Subscriptions</string>
+    <string name="menu_title_allissues">All Issues</string>
+    <string name="menu_title_specialissues">Special Issues</string>
+    <string name="menu_title_contactsupport">Contact Support</string>
+    <string name="menu_title_about">About</string>
 
-    <string name="fragment_title_register">Register Title</string>
+    <!-- Action menu title-->
+    <string name="action_menu_title">More</string>
+
+    <!-- Activities/Fragment Titles -->
+    <string name="fragment_title_register">Register</string>
 
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="action_example">Example action</string>
+
 
     <string name="action_settings">Settings</string>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="login_fragment">Login fragment</string>
     <string name="register_fragment">Register fragment</string>
+    <string name="title_activity_launch">LaunchActivity</string>
+
+    <string name="hello_world">Hello world!</string>
 </resources>

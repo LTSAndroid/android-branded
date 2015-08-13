@@ -14,7 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
-import com.example.testapp.androidstudioapp01.R;
+import com.example.testapp.pixelmagsapp.R;
+import com.pixelmags.android.pixelmagsapp.ui.LoginFragment;
+import com.pixelmags.android.pixelmagsapp.ui.NavigationDrawerFragment;
+import com.pixelmags.android.pixelmagsapp.ui.RegisterFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, LoginFragment.OnFragmentInteractionListener , RegisterFragment.OnFragmentInteractionListener{
@@ -55,26 +58,42 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+
+
+    // set the title based on the menu item
     public void onSectionAttached(int number) {
 
         switch (number) {
             case 1:
-                mTitle = getString(R.string.menu_title_1);
+                mTitle = getString(R.string.menu_title_account);
                 break;
             case 2:
-                mTitle = getString(R.string.menu_title_2);
+                mTitle = getString(R.string.menu_title_login);
                 break;
             case 3:
-                mTitle = getString(R.string.menu_title_3);
+                mTitle = getString(R.string.menu_title_register);
                 break;
             case 4:
-                mTitle = getString(R.string.fragment_title_register);
+                mTitle = getString(R.string.menu_title_subscriptions);
+                break;
+            case 5:
+                mTitle = getString(R.string.menu_title_allissues);
+                break;
+            case 6:
+                mTitle = getString(R.string.menu_title_specialissues);
+                break;
+            case 7:
+                mTitle = getString(R.string.menu_title_contactsupport);
+                break;
+            case 8:
+                mTitle = getString(R.string.menu_title_about);
                 break;
             default:
                 mTitle = getString(R.string.app_name);
                 break;
         }
     }
+
 
     public void restoreActionBar() {
         ActionBar actionBar = getSupportActionBar();

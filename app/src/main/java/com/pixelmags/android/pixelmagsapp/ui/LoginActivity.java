@@ -1,4 +1,4 @@
-package com.pixelmags.android.pixelmagsapp;
+package com.pixelmags.android.pixelmagsapp.ui;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -25,7 +25,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.example.testapp.androidstudioapp01.R;
+import com.example.testapp.pixelmagsapp.R;
 
 import java.util.ArrayList;
 import java.util.List;

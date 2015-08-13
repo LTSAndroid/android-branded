@@ -1,4 +1,4 @@
-package com.pixelmags.android.pixelmagsapp;
+package com.pixelmags.android.pixelmagsapp.ui;
 
 import android.content.Intent;
 import android.support.v4.app.FragmentManager;
@@ -25,7 +25,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.testapp.androidstudioapp01.R;
+import com.example.testapp.pixelmagsapp.R;
+import com.pixelmags.android.pixelmagsapp.LaunchActivity;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -114,9 +115,14 @@ public class NavigationDrawerFragment extends Fragment {
                 android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1,
                 new String[]{
-                        getString(R.string.menu_title_1),
-                        getString(R.string.menu_title_2),
-                        getString(R.string.menu_title_3),
+                        getString(R.string.menu_title_account),
+                        getString(R.string.menu_title_login),
+                        getString(R.string.menu_title_register),
+                        getString(R.string.menu_title_subscriptions),
+                        getString(R.string.menu_title_allissues),
+                        getString(R.string.menu_title_specialissues),
+                        getString(R.string.menu_title_contactsupport),
+                        getString(R.string.menu_title_about)
                 }));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
@@ -215,6 +221,8 @@ public class NavigationDrawerFragment extends Fragment {
 
         switch (position){
             case 0:
+                Intent launch = new Intent(getActivity().getBaseContext(), LaunchActivity.class);
+                startActivity(launch);
                 break;
             case 1:
                 Intent a = new Intent(getActivity().getBaseContext(), LoginActivity.class);

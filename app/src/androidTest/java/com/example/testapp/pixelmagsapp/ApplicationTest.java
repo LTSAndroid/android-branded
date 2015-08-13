@@ -1,4 +1,4 @@
-package com.example.testapp.androidstudioapp01;
+package com.example.testapp.pixelmagsapp;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

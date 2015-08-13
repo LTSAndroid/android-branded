@@ -1,27 +1,29 @@
-package com.pixelmags.android.pixelmagsapp;
+package com.pixelmags.android.pixelmagsapp.ui;
+
 
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.testapp.androidstudioapp01.R;
+import com.example.testapp.pixelmagsapp.R;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link RegisterFragment.OnFragmentInteractionListener} interface
+ * {@link LoginFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link RegisterFragment#newInstance} factory method to
+ * Use the {@link LoginFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class RegisterFragment extends Fragment {
+public class LoginFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -39,11 +41,11 @@ public class RegisterFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment RegisterFragment.
+     * @return A new instance of fragment LoginFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static RegisterFragment newInstance(String param1, String param2) {
-        RegisterFragment fragment = new RegisterFragment();
+    public static LoginFragment newInstance(String param1, String param2) {
+        LoginFragment fragment = new LoginFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -51,9 +53,10 @@ public class RegisterFragment extends Fragment {
         return fragment;
     }
 
-    public RegisterFragment() {
+    public LoginFragment() {
         // Required empty public constructor
     }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,11 +67,51 @@ public class RegisterFragment extends Fragment {
         }
     }
 
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_register, container, false);
+
+        View rootView = inflater.inflate(R.layout.fragment_login, container, false);
+
+        // Demonstration of a collection-browsing activity.
+        rootView.findViewById(R.id.goToRegisterButton)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        navigateToRegisterButton();
+                    }
+                });
+
+        // ##22 Set title bar based on fragment
+      //  ((MainActivity) getActivity()) .setActionBarTitle("Login title");
+
+
+        return rootView;
+    }
+
+
+    private void navigateToRegisterButton() {
+
+       // Intent a = new Intent(getActivity().getBaseContext(), LoginActivity.class);
+       //  startActivity(a);
+
+
+        Fragment fragment = new RegisterFragment();
+        Bundle args = new Bundle();
+        args.putInt("Register Key", 4);
+        fragment.setArguments(args);
+
+        FragmentManager fragmentManager = getFragmentManager();
+       // FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        fragmentManager.beginTransaction()
+                .replace(((ViewGroup)(getView().getParent())).getId(), fragment)
+                .addToBackStack(null)
+                .commit();
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -100,7 +143,7 @@ public class RegisterFragment extends Fragment {
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p/>
+     * <p>
      * See the Android Training lesson <a href=
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
@@ -111,14 +154,16 @@ public class RegisterFragment extends Fragment {
     }
 
 
+    /* ##22 Any Mod's positioned here */
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getActionBar().setTitle("Register");
+        getActionBar().setTitle("Log in");
     }
 
     // retrieve the action bar
     private ActionBar getActionBar() {
         return ((AppCompatActivity) getActivity()).getSupportActionBar();
     }
+
 }
