@@ -25,7 +25,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.example.testapp.pixelmagsapp.R;
+import com.pixelmags.android.pixelmagsapp.R;
 
 import java.util.ArrayList;
 import java.util.List;

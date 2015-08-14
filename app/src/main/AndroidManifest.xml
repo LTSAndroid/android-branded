@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.testapp.pixelmagsapp" >
+    package="com.pixelmags.android.pixelmagsapp" >
 
-    <!-- To access Google+ APIs: -->
+    <!-- To access APIs: -->
     <uses-permission android:name="android.permission.INTERNET" />
     <!--
  To retrieve OAuth 2.0 tokens or invalidate tokens to disconnect a user. This disconnect

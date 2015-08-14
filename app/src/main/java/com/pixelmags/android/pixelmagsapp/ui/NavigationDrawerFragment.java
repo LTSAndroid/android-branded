@@ -25,7 +25,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.testapp.pixelmagsapp.R;
+import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.pixelmagsapp.LaunchActivity;
 
 /**

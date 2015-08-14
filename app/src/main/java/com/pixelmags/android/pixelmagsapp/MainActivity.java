@@ -14,7 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
-import com.example.testapp.pixelmagsapp.R;
+import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.pixelmagsapp.ui.LoginFragment;
 import com.pixelmags.android.pixelmagsapp.ui.NavigationDrawerFragment;
 import com.pixelmags.android.pixelmagsapp.ui.RegisterFragment;

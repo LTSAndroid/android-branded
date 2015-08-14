@@ -6,7 +6,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 
-import com.example.testapp.pixelmagsapp.R;
+import com.pixelmags.android.pixelmagsapp.R;
 
 public class LaunchActivity extends Activity {
 
