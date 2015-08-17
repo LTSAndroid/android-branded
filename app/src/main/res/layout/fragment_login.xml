@@ -1,21 +1,58 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="fill_parent"
     android:id="@+id/fragment_login"
     android:background="#EDEDED"
     tools:context="com.pixelmags.android.pixelmagsapp.ui.LoginFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
-        android:text="@string/login_fragment"
-        android:id="@+id/loginText" />
-
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Register"
         android:id="@+id/goToRegisterButton"
-        android:layout_gravity="center"
-        android:nestedScrollingEnabled="false" />
+        android:layout_gravity="center_horizontal|bottom"
+        android:nestedScrollingEnabled="false"
+        android:layout_below="@+id/forgotPassword"
+        android:layout_alignLeft="@+id/logInButton"
+        android:layout_alignStart="@+id/logInButton" />
 
-</FrameLayout>
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textEmailAddress"
+        android:ems="10"
+        android:id="@+id/loginEmail"
+        android:layout_marginTop="59dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignLeft="@+id/loginPassword"
+        android:layout_alignStart="@+id/loginPassword"
+        android:hint="@string/hint_email" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/loginPassword"
+        android:layout_below="@+id/loginEmail"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="45dp"
+        android:hint="@string/hint_password" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/log_in_button"
+        android:id="@+id/logInButton"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/forgot_password"
+        android:id="@+id/forgotPassword"
+        android:layout_below="@+id/logInButton"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>

@@ -23,7 +23,26 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
+    <!-- Log In Screen -->
+    <string name="log_in_button">Log In</string>
+    <string name="forgot_password">Forgot password ?</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
 
+    <!-- Register Screen -->
+    <string name="hint_first_name">First Name</string>
+    <string name="hint_last_name">Last Name</string>
+    <string name="hint_date_of_birth">Date Of Birth</string>
+    <!-- hint_email reused here-->
+    <!-- hint_password reused here-->
+    <string name="hint_confirm_password">Confirm password</string>
+    <string name="accept_terms_and_conditions">I accept the Terms and Conditions</string>
+    <string name="do_register">Register</string>
+
+
+
+
+    <!-- Post App Strings -->
 
     <string name="action_settings">Settings</string>
 
@@ -33,4 +52,7 @@
     <string name="title_activity_launch">LaunchActivity</string>
 
     <string name="hello_world">Hello world!</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
