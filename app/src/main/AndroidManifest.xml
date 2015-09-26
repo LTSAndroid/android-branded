@@ -2,10 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.pixelmags.android.pixelmagsapp" >
 
-    <!-- To access APIs: -->
+    <!-- To access Internet, API's : -->
     <uses-permission android:name="android.permission.INTERNET" />
+
     <!--
- To retrieve OAuth 2.0 tokens or invalidate tokens to disconnect a user. This disconnect
+     To retrieve OAuth 2.0 tokens or invalidate tokens to disconnect a user. This disconnect
      option is required to comply with the Google+ Sign-In developer policies
     -->
     <uses-permission android:name="android.permission.USE_CREDENTIALS" /> <!-- To retrieve the account name (email) as part of sign-in: -->

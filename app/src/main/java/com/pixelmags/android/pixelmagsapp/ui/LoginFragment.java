@@ -2,7 +2,9 @@ package com.pixelmags.android.pixelmagsapp.ui;
 
 
 import android.app.Activity;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -11,8 +13,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
+import com.pixelmags.android.pixelmagsapp.LaunchActivity;
 import com.pixelmags.android.pixelmagsapp.R;
+import com.pixelmags.android.pixelmagsapp.test.ResultsFragment;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 
 /**
@@ -87,6 +99,18 @@ public class LoginFragment extends Fragment {
 
         // ##22 Set title bar based on fragment
       //  ((MainActivity) getActivity()) .setActionBarTitle("Login title");
+
+        // set the Log in Listener
+        Button button = (Button) rootView.findViewById(R.id.logInButton);
+        button.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                doLogin();
+            }
+        });
+
 
 
         return rootView;
@@ -164,6 +188,80 @@ public class LoginFragment extends Fragment {
     // retrieve the action bar
     private ActionBar getActionBar() {
         return ((AppCompatActivity) getActivity()).getSupportActionBar();
+    }
+
+    // On click log in button
+    public void doLogin(){
+        new CallAPI().execute("");
+    }
+
+
+    private class CallAPI extends AsyncTask<String, String, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            String urlString=params[0]; // URL to call
+
+            urlString="http://www.google.co.uk";
+
+            String resultToDisplay = "";
+
+            InputStream in = null;
+
+            // HTTP Get
+            try {
+
+                URL url = new URL(urlString);
+
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+
+                in = new BufferedInputStream(urlConnection.getInputStream());
+
+
+                BufferedReader r = new BufferedReader(new InputStreamReader(in));
+                StringBuilder total = new StringBuilder();
+                String line;
+                while ((line = r.readLine()) != null) {
+                    total.append(line);
+                }
+
+                resultToDisplay = total.toString();
+
+            } catch (Exception e ) {
+
+                System.out.println(e.getMessage());
+                return e.getMessage();
+
+            }
+
+            return resultToDisplay;
+
+        }
+
+        protected void onPostExecute(String result) {
+
+            if (result != null){
+                System.out.println("API result :: " + result);
+            }
+
+
+            Fragment fragment = new ResultsFragment();
+            Bundle args = new Bundle();
+            args.putInt("Results Key", 5);
+            args.putString("DISPLAY_RESULTS", result);
+            fragment.setArguments(args);
+
+            FragmentManager fragmentManager = getFragmentManager();
+            // FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+            fragmentManager.beginTransaction()
+                    .replace(((ViewGroup)(getView().getParent())).getId(), fragment)
+                    .addToBackStack(null)
+                    .commit();
+
+        }
+
     }
 
 }

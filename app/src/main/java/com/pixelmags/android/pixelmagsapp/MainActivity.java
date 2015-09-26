@@ -15,12 +15,13 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
 import com.pixelmags.android.pixelmagsapp.R;
+import com.pixelmags.android.pixelmagsapp.test.ResultsFragment;
 import com.pixelmags.android.pixelmagsapp.ui.LoginFragment;
 import com.pixelmags.android.pixelmagsapp.ui.NavigationDrawerFragment;
 import com.pixelmags.android.pixelmagsapp.ui.RegisterFragment;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, LoginFragment.OnFragmentInteractionListener , RegisterFragment.OnFragmentInteractionListener{
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, LoginFragment.OnFragmentInteractionListener , RegisterFragment.OnFragmentInteractionListener, ResultsFragment.OnFragmentInteractionListener {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.

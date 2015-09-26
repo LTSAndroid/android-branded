@@ -1,0 +1,24 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#EDEDED"
+    tools:context="com.pixelmags.android.pixelmagsapp.test.ResultsFragment">
+
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="449dp"
+        android:inputType="textMultiLine"
+        android:ems="10"
+        android:id="@+id/resultsText"
+        android:layout_gravity="center_horizontal|bottom"
+        android:text="This text view should display the results passed on to it." />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Results"
+        android:id="@+id/textView"
+        android:layout_gravity="left|top" />
+</FrameLayout>
