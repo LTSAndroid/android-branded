@@ -28,6 +28,7 @@
     <string name="forgot_password">Forgot password ?</string>
     <string name="hint_email">Email</string>
     <string name="hint_password">Password</string>
+    <string name="register">Register</string>
 
     <!-- Register Screen -->
     <string name="hint_first_name">First Name</string>

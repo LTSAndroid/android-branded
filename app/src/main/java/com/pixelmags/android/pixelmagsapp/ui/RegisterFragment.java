@@ -1,18 +1,28 @@
 package com.pixelmags.android.pixelmagsapp.ui;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.Toast;
 
+import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.pixelmagsapp.test.ResultsFragment;
 
@@ -55,6 +65,21 @@ public class RegisterFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private EditText mEmailView;
+    private EditText mPasswordView;
+    private EditText mfirstnameView;
+    private EditText mlastnameView;
+    private EditText mDOBView;
+    private EditText mCPasswordView;
+    private CheckBox mtemsconditionsView;
+    private View mProgressView;
+    private View mRegisterFormView;
+
+    /**
+     * Keep track of the login task to ensure we can cancel it if requested.
+     */
+    private UserRegistrationTask mRegisterTask = null;
+
     private OnFragmentInteractionListener mListener;
 
     /**
@@ -86,7 +111,10 @@ public class RegisterFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
     }
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -103,7 +131,14 @@ public class RegisterFragment extends Fragment {
                 doRegister();
             }
         });
-        // Inflate the layout for this fragment
+        mEmailView = (EditText) rootView.findViewById(R.id.registerEmail);
+
+        mPasswordView = (EditText) rootView.findViewById(R.id.registerPassword);
+        mCPasswordView = (EditText) rootView.findViewById(R.id.registerConfirmPassword);
+        mfirstnameView = (EditText) rootView.findViewById(R.id.registerFirstName);
+        mlastnameView = (EditText) rootView.findViewById(R.id.registerLastName);
+        mDOBView = (EditText) rootView.findViewById(R.id.registerDateOfBirth);
+        mtemsconditionsView = (CheckBox) rootView.findViewById(R.id.registerAcceptTermsConditions);
         return rootView;
     }
 
@@ -113,6 +148,7 @@ public class RegisterFragment extends Fragment {
             mListener.onFragmentInteraction(uri);
         }
     }
+
 
     @Override
     public void onAttach(Activity activity) {
@@ -130,6 +166,7 @@ public class RegisterFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
+
 
     /**
      * This interface must be implemented by activities that contain this
@@ -159,28 +196,140 @@ public class RegisterFragment extends Fragment {
     }
 
     // On click log in button
-    public void doRegister(){
-        new CallAPI().execute("");
+    public void doRegister()
+    {
+        // Reset errors.
+        mEmailView.setError(null);
+        mPasswordView.setError(null);
+        mCPasswordView.setError(null);
+        mfirstnameView.setError(null);
+        mDOBView.setError(null);
+        mlastnameView.setError(null);
+        mtemsconditionsView.setError(null);
+
+        // Store values at the time of the login attempt.
+        String email = mEmailView.getText().toString();
+        String password = mPasswordView.getText().toString();
+        String cPassword = mCPasswordView.getText().toString();
+        String firstName = mfirstnameView.getText().toString();
+        String lastName = mlastnameView.getText().toString();
+        String DOB = mDOBView.getText().toString();
+        Boolean termsConditions = mtemsconditionsView.isChecked();
+
+        boolean cancel = false;
+        View focusView = null;
+
+        // Check for a valid password, if the user entered one.
+        if (TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+            mPasswordView.setError(getString(R.string.error_invalid_password));
+            focusView = mPasswordView;
+            cancel = true;
+        }
+        //for confirm password
+        if (TextUtils.isEmpty(cPassword) && !isPasswordValid(cPassword)) {
+            mCPasswordView.setError(getString(R.string.error_invalid_password));
+            focusView = mCPasswordView;
+            cancel = true;
+        }
+        //first name
+        if (TextUtils.isEmpty(firstName)) {
+            mfirstnameView.setError(getString(R.string.error_field_required));
+            focusView = mfirstnameView;
+            cancel = true;
+        }
+        //second name
+        if (TextUtils.isEmpty(lastName)) {
+            mlastnameView.setError(getString(R.string.error_field_required));
+            focusView = mlastnameView;
+            cancel = true;
+        }
+
+        //DOB
+        if (TextUtils.isEmpty(DOB)) {
+            mDOBView.setError(getString(R.string.error_field_required));
+            focusView = mDOBView;
+            cancel = true;
+        }
+
+        //Terms n Conditions
+        if (!termsConditions) {
+            mtemsconditionsView.setError(getString(R.string.error_field_required));
+            focusView = mtemsconditionsView;
+            cancel = true;
+        }
+        // Check for a valid email address.
+        if (TextUtils.isEmpty(email)) {
+            mEmailView.setError(getString(R.string.error_field_required));
+            focusView = mEmailView;
+            cancel = true;
+        } else if (!isEmailValid(email)) {
+            mEmailView.setError(getString(R.string.error_invalid_email));
+            focusView = mEmailView;
+            cancel = true;
+        }
+
+        if (cancel) {
+            // There was an error; don't attempt register and focus the first
+            // form field with an error.
+            focusView.requestFocus();
+        } else {
+            // perform the user register attempt.
+            mRegisterTask = new UserRegistrationTask(email, password,firstName,lastName,DOB);
+            mRegisterTask.execute((String) null);
+        }
     }
 
 
-    private class CallAPI extends AsyncTask<String, String, String> {
+    private boolean isEmailValid(String email) {
+        //TODO: Replace this with your own logic
+        return email.contains("@");
+    }
+
+    private boolean isPasswordValid(String password) {
+        //TODO: Replace this with your own logic
+        return password.length() > 4;
+    }
+
+    /**
+     * Represents an asynchronous login/registration task used to authenticate
+     * the user.
+     */
+    public class UserRegistrationTask extends AsyncTask<String, String, String> {
+
+        private final String mEmail;
+        private final String mPassword;
+        private final String mFirstName;
+        private final String mLastName;
+        private final String mDOB;
+
+        UserRegistrationTask(String email, String password,String firstName , String lastName, String DOB) {
+            mEmail = email;
+            mPassword = password;
+            mFirstName = firstName;
+            mLastName = lastName;
+            mDOB = DOB;
+        }
 
         @Override
         protected String doInBackground(String... params) {
+            // TODO: attempt authentication against a network service.
+
             String resultToDisplay = "";
             HttpClient httpclient = new DefaultHttpClient();
-            HttpPost httppost = new HttpPost("https://api.pixelmags.com/validateUser");
+            HttpPost httppost = new HttpPost("https://api.pixelmags.com/createUser");
 
             try {
                 // Add your data
-                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(6);
-                nameValuePairs.add(new BasicNameValuePair("auth_email_address", "raj1@gmail.com"));
-                nameValuePairs.add(new BasicNameValuePair("auth_password", "pixelmags"));
+                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(9);
+                nameValuePairs.add(new BasicNameValuePair("email", mEmail));
+                nameValuePairs.add(new BasicNameValuePair("password", mPassword));
+                nameValuePairs.add(new BasicNameValuePair("date_of_birth", mDOB));
+                nameValuePairs.add(new BasicNameValuePair("first_name", mFirstName));
+                nameValuePairs.add(new BasicNameValuePair("last_name", mLastName));
                 nameValuePairs.add(new BasicNameValuePair("device_id", "testingforbanded"));
-                nameValuePairs.add(new BasicNameValuePair("magazine_id", "2"));
-                nameValuePairs.add(new BasicNameValuePair("api_mode", "dedicated"));
-                nameValuePairs.add(new BasicNameValuePair("api_version", "2"));
+                nameValuePairs.add(new BasicNameValuePair("magazine_id", Config.Magazine_Number));
+                nameValuePairs.add(new BasicNameValuePair("api_mode",Config.api_mode));
+                nameValuePairs.add(new BasicNameValuePair("api_version", Config.api_version));
                 httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
                 // Execute HTTP Post Request
@@ -191,8 +340,8 @@ public class RegisterFragment extends Fragment {
 
                 int current = 0;
 
-                while((current = bis.read()) != -1){
-                    baf.append((byte)current);
+                while ((current = bis.read()) != -1) {
+                    baf.append((byte) current);
                 }
 
             /* Convert the Bytes read to a String. */
@@ -208,7 +357,10 @@ public class RegisterFragment extends Fragment {
 
         protected void onPostExecute(String result) {
 
-            if (result != null){
+            mRegisterTask = null;
+            //showProgress(false);
+
+            if (result != null) {
                 System.out.println("API result :: " + result);
             }
 
@@ -223,12 +375,15 @@ public class RegisterFragment extends Fragment {
             // FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
             fragmentManager.beginTransaction()
-                    .replace(((ViewGroup)(getView().getParent())).getId(), fragment)
+                    .replace(((ViewGroup) (getView().getParent())).getId(), fragment)
                     .addToBackStack(null)
                     .commit();
 
         }
 
+        @Override
+        protected void onCancelled() {
+            mRegisterTask = null;
+        }
     }
-
 }

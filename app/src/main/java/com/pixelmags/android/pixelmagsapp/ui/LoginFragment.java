@@ -98,24 +98,18 @@ public class LoginFragment extends Fragment {
                 });
 
         // ##22 Set title bar based on fragment
-      //  ((MainActivity) getActivity()) .setActionBarTitle("Login title");
+        //  ((MainActivity) getActivity()) .setActionBarTitle("Login title");
 
         // set the Log in Listener
         Button button = (Button) rootView.findViewById(R.id.logInButton);
-        button.setOnClickListener(new View.OnClickListener()
-        {
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 doLogin();
             }
         });
-
-
-
         return rootView;
     }
-
 
     private void navigateToRegisterButton() {
 
