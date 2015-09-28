@@ -225,14 +225,26 @@ public class NavigationDrawerFragment extends Fragment {
                 startActivity(launch);
                 break;
             case 1:
+
                 Intent a = new Intent(getActivity().getBaseContext(), LoginActivity.class);
                 startActivity(a);
                 break;
             case 2:
-
-                Fragment fragment = new LoginFragment();
+               /* Fragment fragment = new RegisterFragment();
                 Bundle args = new Bundle();
-                args.putInt("2", position);
+                args.putInt("Register Key", 4);
+                fragment.setArguments(args);
+
+                FragmentManager fragmentManager = getFragmentManager();
+                // FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+                fragmentManager.beginTransaction()
+                        .replace(((ViewGroup)(getView().getParent())).getId(), fragment)
+                        .addToBackStack(null)
+                        .commit();*/
+                Fragment fragment = new RegisterFragment();
+                Bundle args = new Bundle();
+                args.putInt("4", position);
                 fragment.setArguments(args);
 
                 // fragment = (LoginFragment) getFragmentManager().findFragmentById(R.id.fragment_login);
