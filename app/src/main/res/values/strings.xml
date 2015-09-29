@@ -1,7 +1,7 @@
 <resources>
 
     <!-- App Name -->
-    <string name="app_name">PixelMags App</string>
+    <string name="app_name"></string>
 
     <!-- Navigation Menu Items -->
     <string name="menu_title_account">Account</string>

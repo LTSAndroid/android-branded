@@ -7,13 +7,16 @@ import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+import android.widget.TextView;
 
+import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.pixelmagsapp.test.ResultsFragment;
 import com.pixelmags.android.pixelmagsapp.ui.LoginFragment;
@@ -90,17 +93,28 @@ public class MainActivity extends AppCompatActivity
                 mTitle = getString(R.string.menu_title_about);
                 break;
             default:
-                mTitle = getString(R.string.app_name);
+               // mTitle = getString(R.string.app_name);
                 break;
         }
     }
 
 
     public void restoreActionBar() {
+        ViewGroup actionBarLayout = (ViewGroup) this.getLayoutInflater().inflate(R.layout.actionbar_layout, null);
+
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(mTitle);
+        actionBar.setDisplayShowCustomEnabled(true);
+        ActionBar.LayoutParams params = new
+                ActionBar.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT,
+                ActionBar.LayoutParams.MATCH_PARENT, Gravity.CENTER);
+        actionBar.setCustomView(actionBarLayout, params);
+        View v = getSupportActionBar().getCustomView();
+        TextView titleTxtView = (TextView) v.findViewById(R.id.textviewactivityname);
+        titleTxtView.setText(Config.Magazine_Title);
+
+
     }
 
     @Override
