@@ -22,6 +22,7 @@ import com.pixelmags.android.pixelmagsapp.test.ResultsFragment;
 import com.pixelmags.android.pixelmagsapp.ui.LoginFragment;
 import com.pixelmags.android.pixelmagsapp.ui.NavigationDrawerFragment;
 import com.pixelmags.android.pixelmagsapp.ui.RegisterFragment;
+import com.pixelmags.android.util.Util;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, LoginFragment.OnFragmentInteractionListener , RegisterFragment.OnFragmentInteractionListener, ResultsFragment.OnFragmentInteractionListener {
@@ -49,6 +50,8 @@ public class MainActivity extends AppCompatActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        Util.doPreLaunchSteps();
     }
 
     @Override

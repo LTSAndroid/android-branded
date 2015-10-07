@@ -22,6 +22,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.pixelmags.android.api.CreateUser;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.pixelmagsapp.test.ResultsFragment;
@@ -315,7 +316,19 @@ public class RegisterFragment extends Fragment {
             // TODO: attempt authentication against a network service.
 
             String resultToDisplay = "";
-            HttpClient httpclient = new DefaultHttpClient();
+
+            try{
+                CreateUser apiCreateUser = new CreateUser();
+                apiCreateUser.setAPIData(mEmail,mPassword,mFirstName,mLastName,mDOB);
+                resultToDisplay = apiCreateUser.doPostRequest();
+
+            }catch (Exception e){
+
+            }
+
+
+
+          /*  HttpClient httpclient = new DefaultHttpClient();
             HttpPost httppost = new HttpPost("https://api.pixelmags.com/createUser");
 
             try {
@@ -344,12 +357,13 @@ public class RegisterFragment extends Fragment {
                     baf.append((byte) current);
                 }
 
-            /* Convert the Bytes read to a String. */
+
                 resultToDisplay = new String(baf.toByteArray());
                 // TODO Auto-generated catch block
             } catch (IOException e) {
                 // TODO Auto-generated catch block
             }
+            */
 
             return resultToDisplay;
 
