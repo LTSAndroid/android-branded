@@ -1,14 +1,14 @@
 <resources>
 
     <!-- App Name -->
-    <string name="app_name"></string>
+    <string name="app_name">PixelMags app</string>
 
     <!-- Navigation Menu Items -->
+    <string name="menu_title_allissues">All Issues</string>
     <string name="menu_title_account">Account</string>
     <string name="menu_title_login">Log in</string>
     <string name="menu_title_register">Register</string>
     <string name="menu_title_subscriptions">Subscriptions</string>
-    <string name="menu_title_allissues">All Issues</string>
     <string name="menu_title_specialissues">Special Issues</string>
     <string name="menu_title_contactsupport">Contact Support</string>
     <string name="menu_title_about">About</string>
@@ -25,10 +25,12 @@
 
     <!-- Log In Screen -->
     <string name="log_in_button">Log In</string>
-    <string name="forgot_password">Forgot password ?</string>
-    <string name="hint_email">Email</string>
-    <string name="hint_password">Password</string>
-    <string name="register">Register</string>
+    <string name="hint_email">Give your Email id</string>
+    <string name="hint_password">Give your Password</string>
+    <string name="lblemailid">Email id :</string>
+    <string name="lbluserid">User id :</string>
+    <string name="lblname">Name :</string>
+
 
     <!-- Register Screen -->
     <string name="hint_first_name">First Name</string>
@@ -40,12 +42,24 @@
     <string name="accept_terms_and_conditions">I accept the Terms and Conditions</string>
     <string name="do_register">Register</string>
 
+    <!-- Account Screen -->
+    <string name="hint_user_id">User id</string>
+    <string name="hint_Email_view">Email id</string>
+    <string name="hint_Name">Name</string>
+    <string name="hint_do_Logout">LOGOUT</string>
+    <string name="do_Logout">LOGOUT</string>
 
-
+    <!-- About Screen -->
+    <string name="hint_Version">Version</string>
+    <string name="hint_Copyright">CopyRight</string>
+    <string name="my_url">"http://www.pixelmags.com"</string>
+    <string name="my_url1">"http://www.pixelmags.com/t+c/current"</string>
 
     <!-- Post App Strings -->
 
     <string name="action_settings">Settings</string>
+    <string-array name="action_account_settings">Account Settings</string-array>
+    <string-array name="action_account_fragment_about">About</string-array>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="login_fragment">Login fragment</string>
@@ -56,4 +70,9 @@
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="PixelMags">PixelMags <a href="http://www.pixelmags.com"></a></string>
+    <string name="Pixelmags">PixelMags <a href="http://www.pixelmags.com/t+c/current"></a></string>
+    <string name="go_to_register">REGISTER</string>
+    <string name="font_family_body_1_material">sans-serif</string>
+
 </resources>

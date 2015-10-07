@@ -6,18 +6,27 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -25,8 +34,25 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.pixelmags.android.comms.Config;
+import com.pixelmags.android.comms.Model;
 import com.pixelmags.android.pixelmagsapp.R;
+import com.pixelmags.android.pixelmagsapp.test.ResultsFragment;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.ByteArrayBuffer;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,6 +92,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
+
                 if (id == R.id.login || id == EditorInfo.IME_NULL) {
                     attemptLogin();
                     return true;
@@ -73,6 +100,13 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 return false;
             }
         });
+
+            boolean finish = getIntent().getBooleanExtra("finish", false);
+            if (finish) {
+                startActivity(new Intent(this, UserAccountFragment.class));
+                finish();
+                return;
+            }
 
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
@@ -139,7 +173,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             // perform the user login attempt.
             showProgress(true);
             mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
+            mAuthTask.execute((String) null);
         }
     }
 
@@ -152,6 +186,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         //TODO: Replace this with your own logic
         return password.length() > 4;
     }
+
+
 
     /**
      * Shows the progress UI and hides the login form.
@@ -247,7 +283,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    public class UserLoginTask extends AsyncTask<String, String, String> {
 
         private final String mEmail;
         private final String mPassword;
@@ -258,40 +294,84 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         }
 
         @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
+        protected String doInBackground(String... params) {
+            String urlString=""; // URL to call
+
+            HttpClient httpclient = new DefaultHttpClient();
+            HttpPost httppost = new HttpPost("https://api.pixelmags.com/validateUser");
+
+            String resultToDisplay = "";
 
             try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
+                // Add your data
+                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(6);
+                nameValuePairs.add(new BasicNameValuePair("email", mEmail));
+                nameValuePairs.add(new BasicNameValuePair("password", mPassword));
+                nameValuePairs.add(new BasicNameValuePair("device_id", "testingforbanded"));
+                nameValuePairs.add(new BasicNameValuePair("magazine_id", Config.Magazine_Number));
+                nameValuePairs.add(new BasicNameValuePair("api_mode",Config.api_mode));
+                nameValuePairs.add(new BasicNameValuePair("api_version", Config.api_version));
+                httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
+                // Execute HTTP Post Request
+                HttpResponse response = httpclient.execute(httppost);
+                InputStream is = response.getEntity().getContent();
+                BufferedInputStream bis = new BufferedInputStream(is);
+                ByteArrayBuffer baf = new ByteArrayBuffer(20);
+
+                int current = 0;
+
+                while ((current = bis.read()) != -1) {
+                    baf.append((byte) current);
                 }
+
+            /* Convert the Bytes read to a String. */
+                resultToDisplay = new String(baf.toByteArray());
+                // TODO Auto-generated catch block
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
             }
 
-            // TODO: register the new account here.
-            return true;
+            return resultToDisplay;
+
         }
 
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-            showProgress(false);
 
-            if (success) {
-                finish();
-            } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
+        protected void onPostExecute(String result) {
+            if (result != null){
+                System.out.println("API result :: " + result);
             }
+            try {
+
+                JSONObject jObj = new JSONObject(result);
+                String isSuccess = jObj.getString("success");
+                if(isSuccess.equals("true"))
+                {
+                    Model.IsLogginedIn = "true";
+                }
+                else
+                {
+                    new AlertDialog.Builder(LoginActivity.this)
+                            .setTitle("Error")
+                            .setMessage("sorry something wrong")
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // continue with delete
+                                }
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
+                }
+
+            } catch (JSONException e) {
+                Log.e("MYAPP", "unexpected JSON exception", e);
+                // Do something to recover ... or kill the app.
+            }
+
+
+
         }
+
 
         @Override
         protected void onCancelled() {

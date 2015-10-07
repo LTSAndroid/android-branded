@@ -2,7 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="fill_parent"
     tools:context="com.pixelmags.android.pixelmagsapp.ui.RegisterFragment"
-    android:background="#EDEDED"
     android:id="@+id/fragment_register">
 
     <!--
@@ -16,7 +15,7 @@
         android:layout_height="wrap_content"
         android:inputType="textPersonName"
         android:ems="10"
-        android:id="@+id/registerFirstName"
+        android:id="@+id/accountuserid"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="47dp"
@@ -27,8 +26,8 @@
         android:layout_height="wrap_content"
         android:inputType="textPersonName"
         android:ems="10"
-        android:id="@+id/registerLastName"
-        android:layout_below="@+id/registerFirstName"
+        android:id="@+id/accountEmailid"
+        android:layout_below="@+id/accountuserid"
         android:layout_centerHorizontal="true"
         android:hint="@string/hint_last_name" />
 
@@ -48,7 +47,7 @@
         android:inputType="date"
         android:ems="10"
         android:id="@+id/registerDateOfBirth"
-        android:layout_below="@+id/registerLastName"
+        android:layout_below="@+id/accountEmailid"
         android:layout_centerHorizontal="true"
         android:hint="@string/hint_date_of_birth" />
 
@@ -61,7 +60,7 @@
         android:layout_height="wrap_content"
         android:inputType="textEmailAddress"
         android:ems="10"
-        android:id="@+id/registerEmail"
+        android:id="@+id/accountName"
         android:layout_below="@+id/registerDateOfBirth"
         android:layout_alignLeft="@+id/registerDateOfBirth"
         android:layout_alignStart="@+id/registerDateOfBirth"
@@ -73,9 +72,9 @@
         android:inputType="textPassword"
         android:ems="10"
         android:id="@+id/registerPassword"
-        android:layout_below="@+id/registerEmail"
-        android:layout_alignLeft="@+id/registerEmail"
-        android:layout_alignStart="@+id/registerEmail"
+        android:layout_below="@+id/accountName"
+        android:layout_alignLeft="@+id/accountName"
+        android:layout_alignStart="@+id/accountName"
         android:hint="@string/hint_password" />
 
     <EditText

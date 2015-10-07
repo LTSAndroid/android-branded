@@ -1,8 +1,10 @@
 package com.pixelmags.android.pixelmagsapp.ui;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.app.Activity;
 import android.support.v7.app.ActionBar;
@@ -25,6 +27,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.pixelmags.android.comms.Model;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.pixelmagsapp.LaunchActivity;
 
@@ -63,6 +66,7 @@ public class NavigationDrawerFragment extends Fragment {
     private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
+    private CharSequence mTitle;
 
     public NavigationDrawerFragment() {
     }
@@ -115,11 +119,11 @@ public class NavigationDrawerFragment extends Fragment {
                 android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1,
                 new String[]{
+                        getString(R.string.menu_title_allissues),
                         getString(R.string.menu_title_account),
                         getString(R.string.menu_title_login),
                         getString(R.string.menu_title_register),
                         getString(R.string.menu_title_subscriptions),
-                        getString(R.string.menu_title_allissues),
                         getString(R.string.menu_title_specialissues),
                         getString(R.string.menu_title_contactsupport),
                         getString(R.string.menu_title_about)
@@ -220,16 +224,65 @@ public class NavigationDrawerFragment extends Fragment {
 
 
         switch (position){
+
             case 0:
-                Intent launch = new Intent(getActivity().getBaseContext(), LaunchActivity.class);
-                startActivity(launch);
+                mTitle = getString(R.string.menu_title_allissues);
+
+                /**Fragment fragment = new AllIssuesFragment();
+                // Insert the fragment by replacing any existing fragment
+                FragmentManager allIssuesFragmentManager = getFragmentManager();
+                allIssuesFragmentManager.beginTransaction()
+                        .replace(R.id.main_fragment_container, fragmentAllIsuues)
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .addToBackStack(null)
+                        .commit();*/
                 break;
             case 1:
+                mTitle = getString(R.string.menu_title_account);
+                /*Intent launch = new Intent(getActivity().getBaseContext(), LaunchActivity.class);
+                startActivity(launch);*/
+                if( Model.IsLogginedIn.equals("true"))
+               {
+                Fragment userFragment = new UserAccountFragment();
+                Bundle argsUser = new Bundle();
+                argsUser.putInt("4", position);
+                userFragment.setArguments(argsUser);
 
+                // fragment = (LoginFragment) getFragmentManager().findFragmentById(R.id.fragment_login);
+
+                // Insert the fragment by replacing any existing fragment
+                FragmentManager userFragmentManager = getFragmentManager();
+                userFragmentManager.beginTransaction()
+                        .replace(R.id.main_fragment_container, userFragment)
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .addToBackStack(null)
+                        .commit();
+              }
+               else
+                {
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle("Error")
+                            .setMessage("You are not logged In")
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // continue with delete
+                                }
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
+                }
+
+                break;
+
+
+            case 2:
+                mTitle = getString(R.string.menu_title_login);
                 Intent a = new Intent(getActivity().getBaseContext(), LoginActivity.class);
                 startActivity(a);
                 break;
-            case 2:
+
+            case 3:
+                mTitle = getString(R.string.menu_title_register);
                /* Fragment fragment = new RegisterFragment();
                 Bundle args = new Bundle();
                 args.putInt("Register Key", 4);
@@ -256,8 +309,37 @@ public class NavigationDrawerFragment extends Fragment {
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                         .addToBackStack(null)
                         .commit();
+                break;
+            case 4:
+                mTitle = getString(R.string.menu_title_subscriptions);
+                break;
+            case 5:
+                mTitle = getString(R.string.menu_title_specialissues);
+                break;
+            case 6:
+                mTitle = getString(R.string.menu_title_contactsupport);
+                break;
+            case 7:
+                mTitle = getString(R.string.menu_title_about);
+
+                Fragment aboutFragment = new AboutFragment();
+                Bundle args1 = new Bundle();
+                args1.putInt("4", position);
+                aboutFragment.setArguments(args1);
+
+                fragment = (AboutFragment) getFragmentManager().findFragmentById(R.id.fragment_about);
+
+                // Insert the fragment by replacing any existing fragment
+                FragmentManager aboutFragmentManager = getFragmentManager();
+                aboutFragmentManager.beginTransaction()
+                        .replace(R.id.main_fragment_container, aboutFragment)
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .addToBackStack(null)
+                        .commit();
+                break;
 
             default:
+                mTitle = getString(R.string.app_name);
                 break;
         }
 

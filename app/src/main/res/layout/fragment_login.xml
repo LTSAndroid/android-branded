@@ -2,57 +2,69 @@
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="fill_parent"
     android:id="@+id/fragment_login"
-    android:background="#EDEDED"
     tools:context="com.pixelmags.android.pixelmagsapp.ui.LoginFragment">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Register"
-        android:id="@+id/goToRegisterButton"
-        android:layout_gravity="center_horizontal|bottom"
-        android:nestedScrollingEnabled="false"
-        android:layout_below="@+id/forgotPassword"
-        android:layout_alignLeft="@+id/logInButton"
-        android:layout_alignStart="@+id/logInButton" />
+    <TextView
+        android:layout_width="125dp"
+        android:layout_height="50dp"
+        android:id="@+id/lblEmail"
+        android:text="Email :"
+        android:textSize="25px"
+        android:layout_marginRight="9dip"
+        android:layout_marginLeft="10dip"
+        android:layout_marginTop="70dip"
+        android:layout_alignParentLeft="true"/>
 
     <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="80dp"
+        android:layout_height="40dp"
         android:inputType="textEmailAddress"
-        android:ems="10"
         android:id="@+id/loginEmail"
         android:layout_marginTop="59dp"
         android:layout_alignParentTop="true"
-        android:layout_alignLeft="@+id/loginPassword"
-        android:layout_alignStart="@+id/loginPassword"
+        android:layout_alignLeft="@+id/lblEmail"
+        android:layout_alignStart="@+id/lblEmail"
         android:hint="@string/hint_email" />
 
+    <TextView
+        android:layout_width="80dp"
+        android:layout_height="50dp"
+        android:id="@+id/lblPassword"
+        android:text="Password :"
+        android:layout_marginRight="9dip"
+        android:layout_marginLeft="10dip"
+        android:layout_marginTop="115dip"
+        android:layout_alignParentLeft="true"/>
+
     <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="125dp"
+        android:layout_height="40dp"
         android:inputType="textPassword"
-        android:ems="10"
         android:id="@+id/loginPassword"
         android:layout_below="@+id/loginEmail"
+        android:layout_alignLeft="@+id/lblPassword"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="45dp"
         android:hint="@string/hint_password" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/log_in_button"
+        android:text="LOGIN"
         android:id="@+id/logInButton"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:onClick="onButtonClick" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/forgot_password"
-        android:id="@+id/forgotPassword"
+        android:text="REGISTER"
+        android:id="@+id/register"
+        android:hint="@string/go_to_register"
+        android:onClick="onButtonclick"
         android:layout_below="@+id/logInButton"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignRight="@+id/logInButton"
+        android:layout_alignEnd="@+id/logInButton" />
+
 
 </RelativeLayout>

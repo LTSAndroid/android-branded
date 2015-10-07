@@ -1,0 +1,70 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="fill_parent"
+    tools:context="com.pixelmags.android.pixelmagsapp.ui.UserAccountFragment"
+    android:id="@+id/fragment_useraccount">
+
+    <TextView
+        android:layout_width="125dp"
+        android:layout_height="50dp"
+        android:id="@+id/lbluserid"
+        android:layout_marginTop="60dp"
+        android:textSize="20dp"
+        android:hint="@string/lbluserid"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/txtuserid"
+        android:layout_toStartOf="@+id/txtuserid" />
+
+    <TextView
+        android:layout_width="250dp"
+        android:layout_height="40dp"
+        android:id="@+id/txtuserid"
+        android:textSize="20dp"
+        android:layout_alignTop="@+id/lbluserid"
+        android:layout_alignLeft="@+id/txtemailid"
+        android:layout_alignStart="@+id/txtemailid" />
+
+    <TextView
+        android:layout_width="125dp"
+        android:layout_height="50dp"
+        android:id="@+id/lblemailid"
+        android:hint="@string/lblemailid"
+        android:textSize="20dp"
+        android:layout_below="@+id/lbluserid"
+        android:layout_toLeftOf="@+id/txtemailid"
+        android:layout_toStartOf="@+id/txtemailid"
+        />
+
+    <TextView
+        android:layout_width="250dp"
+        android:layout_height="40dp"
+        android:inputType="textEmailAddress"
+        android:id="@+id/txtemailid"
+        android:ems="10"
+        android:textSize="20dp"
+        android:layout_alignTop="@+id/lblemailid"
+        android:layout_alignLeft="@+id/LOGOUT"
+        android:layout_alignStart="@+id/LOGOUT" />
+
+    <TextView
+        android:layout_width="230dp"
+        android:layout_height="40dp"
+        android:id="@+id/txtname"
+        android:textSize="20dp"
+        android:hint="@string/lblname"
+        android:layout_below="@+id/lblemailid"
+        android:layout_alignLeft="@+id/lblemailid"
+        android:layout_alignStart="@+id/lblemailid" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/LOGOUT"
+        android:onClick="onButtonClick"
+        android:hint="@string/hint_do_Logout"
+        android:layout_marginTop="92dp"
+        android:layout_below="@+id/lblemailid"
+        android:layout_centerHorizontal="true" />
+
+
+</RelativeLayout>

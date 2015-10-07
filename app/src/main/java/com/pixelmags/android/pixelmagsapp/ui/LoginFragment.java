@@ -10,21 +10,36 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 
+import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.pixelmagsapp.LaunchActivity;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.pixelmagsapp.test.ResultsFragment;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.ByteArrayBuffer;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -44,9 +59,14 @@ public class LoginFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
+    private EditText mEmailView;
+    private EditText mPasswordView;
     private OnFragmentInteractionListener mListener;
 
+    /**
+     * Keep track of the login task to ensure we can cancel it if requested.
+     */
+    private ValidateUser mValidateUserTask = null;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -89,7 +109,7 @@ public class LoginFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_login, container, false);
 
         // Demonstration of a collection-browsing activity.
-        rootView.findViewById(R.id.goToRegisterButton)
+        rootView.findViewById(R.id.register)
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -99,9 +119,11 @@ public class LoginFragment extends Fragment {
 
         // ##22 Set title bar based on fragment
         //  ((MainActivity) getActivity()) .setActionBarTitle("Login title");
+        mEmailView = (EditText) rootView.findViewById(R.id.email);
 
+        mPasswordView = (EditText) rootView.findViewById(R.id.password);
         // set the Log in Listener
-        Button button = (Button) rootView.findViewById(R.id.logInButton);
+        Button button = (Button) rootView.findViewById(R.id.email_sign_in_button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -184,55 +206,111 @@ public class LoginFragment extends Fragment {
         return ((AppCompatActivity) getActivity()).getSupportActionBar();
     }
 
+    private boolean isEmailValid(String email) {
+        //TODO: Replace this with your own logic
+        return email.contains("@");
+    }
+
+    private boolean isPasswordValid(String password) {
+        //TODO: Replace this with your own logic
+        return password.length() > 4;
+    }
+
     // On click log in button
-    public void doLogin(){
-        new CallAPI().execute("");
+    public void doLogin()
+    {
+        // Reset errors.
+        mEmailView.setError(null);
+        mPasswordView.setError(null);
+        // Store values at the time of the login attempt.
+        String email = mEmailView.getText().toString();
+        String password = mPasswordView.getText().toString();
+
+        boolean cancel = false;
+        View focusView = null;
+
+        // Check for a valid password, if the user entered one.
+        if (TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+            mPasswordView.setError(getString(R.string.error_invalid_password));
+            focusView = mPasswordView;
+            cancel = true;
+        }
+        // Check for a valid email address.
+        if (TextUtils.isEmpty(email)) {
+            mEmailView.setError(getString(R.string.error_field_required));
+            focusView = mEmailView;
+            cancel = true;
+        } else if (!isEmailValid(email)) {
+            mEmailView.setError(getString(R.string.error_invalid_email));
+            focusView = mEmailView;
+            cancel = true;
+        }
+
+        if (cancel) {
+            // There was an error; don't attempt register and focus the first
+            // form field with an error.
+            focusView.requestFocus();
+        } else {
+            // perform the user register attempt.
+            mValidateUserTask = new ValidateUser(email, password);
+            mValidateUserTask.execute((String) null);
+        }
     }
 
 
-    private class CallAPI extends AsyncTask<String, String, String> {
+    private class ValidateUser extends AsyncTask<String, String,String> {
 
+        private final String mEmail;
+        private final String mPassword;
+
+        ValidateUser(String email, String password) {
+            mEmail = email;
+            mPassword = password;
+
+        }
         @Override
         protected String doInBackground(String... params) {
 
-            String urlString=params[0]; // URL to call
+            String urlString=""; // URL to call
 
-            urlString="http://www.google.co.uk";
+            HttpClient httpclient = new DefaultHttpClient();
+            HttpPost httppost = new HttpPost("https://api.pixelmags.com/validateUser");
 
             String resultToDisplay = "";
 
-            InputStream in = null;
-
-            // HTTP Get
             try {
+                // Add your data
+                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(9);
+                nameValuePairs.add(new BasicNameValuePair("email", mEmail));
+                nameValuePairs.add(new BasicNameValuePair("password", mPassword));
+                nameValuePairs.add(new BasicNameValuePair("device_id", "testingforbanded"));
+                nameValuePairs.add(new BasicNameValuePair("magazine_id", Config.Magazine_Number));
+                nameValuePairs.add(new BasicNameValuePair("api_mode",Config.api_mode));
+                nameValuePairs.add(new BasicNameValuePair("api_version", Config.api_version));
+                httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
-                URL url = new URL(urlString);
+                // Execute HTTP Post Request
+                HttpResponse response = httpclient.execute(httppost);
+                InputStream is = response.getEntity().getContent();
+                BufferedInputStream bis = new BufferedInputStream(is);
+                ByteArrayBuffer baf = new ByteArrayBuffer(20);
 
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                int current = 0;
 
-                in = new BufferedInputStream(urlConnection.getInputStream());
-
-
-                BufferedReader r = new BufferedReader(new InputStreamReader(in));
-                StringBuilder total = new StringBuilder();
-                String line;
-                while ((line = r.readLine()) != null) {
-                    total.append(line);
+                while ((current = bis.read()) != -1) {
+                    baf.append((byte) current);
                 }
 
-                resultToDisplay = total.toString();
-
-            } catch (Exception e ) {
-
-                System.out.println(e.getMessage());
-                return e.getMessage();
-
+            /* Convert the Bytes read to a String. */
+                resultToDisplay = new String(baf.toByteArray());
+                // TODO Auto-generated catch block
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
             }
 
             return resultToDisplay;
 
         }
-
         protected void onPostExecute(String result) {
 
             if (result != null){

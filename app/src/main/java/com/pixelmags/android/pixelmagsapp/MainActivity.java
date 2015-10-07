@@ -61,16 +61,16 @@ public class MainActivity extends AppCompatActivity
         fragmentManager.beginTransaction()
                 .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
                 .commit();
-
-
     }
-
 
 
     // set the title based on the menu item
     public void onSectionAttached(int number) {
 
         switch (number) {
+            case 0:
+                mTitle = getString(R.string.menu_title_allissues);
+                break;
             case 1:
                 mTitle = getString(R.string.menu_title_account);
                 break;
@@ -84,19 +84,16 @@ public class MainActivity extends AppCompatActivity
                 mTitle = getString(R.string.menu_title_subscriptions);
                 break;
             case 5:
-                mTitle = getString(R.string.menu_title_allissues);
-                break;
-            case 6:
                 mTitle = getString(R.string.menu_title_specialissues);
                 break;
-            case 7:
+            case 6:
                 mTitle = getString(R.string.menu_title_contactsupport);
                 break;
-            case 8:
+            case 7:
                 mTitle = getString(R.string.menu_title_about);
                 break;
             default:
-               // mTitle = getString(R.string.app_name);
+               mTitle = getString(R.string.app_name);
                 break;
         }
     }

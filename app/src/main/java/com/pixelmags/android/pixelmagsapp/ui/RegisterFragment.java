@@ -1,12 +1,8 @@
 package com.pixelmags.android.pixelmagsapp.ui;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -16,11 +12,9 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.pixelmags.android.api.CreateUser;
 import com.pixelmags.android.comms.Config;
@@ -29,7 +23,6 @@ import com.pixelmags.android.pixelmagsapp.test.ResultsFragment;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
@@ -38,12 +31,8 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.ByteArrayBuffer;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -132,12 +121,12 @@ public class RegisterFragment extends Fragment {
                 doRegister();
             }
         });
-        mEmailView = (EditText) rootView.findViewById(R.id.registerEmail);
+        mEmailView = (EditText) rootView.findViewById(R.id.accountName);
 
         mPasswordView = (EditText) rootView.findViewById(R.id.registerPassword);
         mCPasswordView = (EditText) rootView.findViewById(R.id.registerConfirmPassword);
-        mfirstnameView = (EditText) rootView.findViewById(R.id.registerFirstName);
-        mlastnameView = (EditText) rootView.findViewById(R.id.registerLastName);
+        mfirstnameView = (EditText) rootView.findViewById(R.id.accountuserid);
+        mlastnameView = (EditText) rootView.findViewById(R.id.accountEmailid);
         mDOBView = (EditText) rootView.findViewById(R.id.registerDateOfBirth);
         mtemsconditionsView = (CheckBox) rootView.findViewById(R.id.registerAcceptTermsConditions);
         return rootView;
@@ -188,7 +177,7 @@ public class RegisterFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getActionBar().setTitle("Register");
+        //getActionBar().setTitle("Register");
     }
 
     // retrieve the action bar

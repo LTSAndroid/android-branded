@@ -1,10 +1,54 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.pixelmags.android.pixelmagsapp.ui.AboutFragment">
+    android:orientation="vertical"
+    tools:context="com.pixelmags.android.pixelmagsapp.ui.AboutFragment"
+    android:id="@+id/fragment_about">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/Version"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:text="PixelMags Version 1.0"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:textSize="20dp" />
 
-</FrameLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/copyright"
+        android:layout_centerHorizontal="true"
+        android:text="Copyright PixelMags, Inc."
+        android:layout_below="@+id/Version"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:textSize="20dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/ourwebsite"
+        android:onClick="onClick"
+        android:text="www.pixelmags.com"
+        android:textSize="20dp"
+        android:autoLink="web"
+        android:linksClickable="true"
+        android:layout_below="@+id/copyright"
+        android:layout_centerHorizontal="true"
+        android:textAppearance="@color/wallet_holo_blue_light" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/ourconditions"
+        android:onClick="onClick"
+        android:text="www.pixelmags.com/t+c/current/"
+        android:textSize="20dp"
+        android:autoLink="web"
+        android:linksClickable="true"
+        android:layout_below="@+id/ourwebsite"
+        android:layout_centerHorizontal="true"
+        android:textAppearance="@color/wallet_holo_blue_light" />
+
+</RelativeLayout>
