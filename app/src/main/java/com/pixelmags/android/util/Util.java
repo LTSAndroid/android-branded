@@ -16,7 +16,7 @@ public class Util {
 public static void doPreLaunchSteps(){
 
     // to be extended as per launch flow
-    UserPrefs.storeDeviceID();
+    UserPrefs.setDeviceId();
 
 }
 

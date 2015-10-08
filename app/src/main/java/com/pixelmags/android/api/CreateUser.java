@@ -2,6 +2,8 @@ package com.pixelmags.android.api;
 
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.comms.WebRequest;
+import com.pixelmags.android.json.CreateUserParser;
+import com.pixelmags.android.storage.UserPrefs;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -23,13 +25,14 @@ public class CreateUser extends WebRequest {
     private String mFirstName;
     private String mLastName;
     private String mDOB;
+    CreateUserParser cParser;
 
 
     public CreateUser(){
         super(API_NAME);
     }
 
-    public void setAPIData(String email, String password,String firstName , String lastName, String DOB) {
+    public void init(String email, String password,String firstName , String lastName, String DOB) {
 
         mEmail = email;
         mPassword = password;
@@ -38,7 +41,23 @@ public class CreateUser extends WebRequest {
         mDOB = DOB;
 
         setApiNameValuePairs();
+        doPostRequest();
 
+        if(responseCode==200){
+            cParser = new CreateUserParser(getAPIResultData());
+            if(cParser.initJSONParse()){
+
+                if(cParser.isSuccess()){
+                    cParser.parse();
+                    saveCreateUserDataToApp();
+                } else{
+
+                    // Add error handling code here
+
+                }
+
+            }
+        }
 
     }
 
@@ -54,6 +73,17 @@ public class CreateUser extends WebRequest {
         baseApiNameValuePairs.add(new BasicNameValuePair("magazine_id", baseMagazineId));
         baseApiNameValuePairs.add(new BasicNameValuePair("api_mode",baseApiMode));
         baseApiNameValuePairs.add(new BasicNameValuePair("api_version", baseApiVersion));
+
+    }
+
+    public void saveCreateUserDataToApp(){
+
+        UserPrefs.setUserEmail(mEmail);
+        UserPrefs.setUserPassword(mPassword);
+        UserPrefs.setUserDob(mDOB);
+        UserPrefs.setUserFirstName(mFirstName);
+        UserPrefs.setUserLastName(mLastName);
+        UserPrefs.setUserPixelmagsId(cParser.mUserID);
 
     }
 

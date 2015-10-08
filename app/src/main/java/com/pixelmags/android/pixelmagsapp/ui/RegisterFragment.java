@@ -20,6 +20,7 @@ import com.pixelmags.android.api.CreateUser;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.pixelmagsapp.test.ResultsFragment;
+import com.pixelmags.android.storage.UserPrefs;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -308,8 +309,8 @@ public class RegisterFragment extends Fragment {
 
             try{
                 CreateUser apiCreateUser = new CreateUser();
-                apiCreateUser.setAPIData(mEmail,mPassword,mFirstName,mLastName,mDOB);
-                resultToDisplay = apiCreateUser.doPostRequest();
+                apiCreateUser.init(mEmail,mPassword,mFirstName,mLastName,mDOB);
+
 
             }catch (Exception e){
 
@@ -367,6 +368,10 @@ public class RegisterFragment extends Fragment {
                 System.out.println("API result :: " + result);
             }
 
+
+            System.out.println("PRINT PREFS  :: " + UserPrefs.getUserEmail());
+            System.out.println("PRINT PREFS  :: " + UserPrefs.getUserFirstName());
+            System.out.println("PRINT PREFS  :: " + UserPrefs.getUserPixelmagsId());
 
             Fragment fragment = new ResultsFragment();
             Bundle args = new Bundle();
