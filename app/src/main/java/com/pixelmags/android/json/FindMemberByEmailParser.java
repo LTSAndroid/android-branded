@@ -3,12 +3,12 @@ package com.pixelmags.android.json;
 /**
  * Created by Annie on 09/10/15.
  */
-public class CanPurchaseParser extends JSONParser {
+public class FindMemberByEmailParser extends JSONParser {
 
-    public String missueID;
-    
+    public String mUserID;
 
-    public CanPurchaseParser(String Data){
+
+    public FindMemberByEmailParser(String Data){
         super(Data);
     }
 
@@ -19,7 +19,7 @@ public class CanPurchaseParser extends JSONParser {
 
         try{
 
-            missueID = baseJSON.getString("issue_id");
+            mUserID = baseJSON.getString("mUserID");
 
         }catch(Exception e){}
 

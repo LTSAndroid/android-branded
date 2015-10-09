@@ -53,9 +53,9 @@ public class CanPurchase extends WebRequest
     }
     private void setApiNameValuePairs(){
 
-        baseApiNameValuePairs = new ArrayList<NameValuePair>(9);
-        baseApiNameValuePairs.add(new BasicNameValuePair("auth_email_address", mEmail));
-        baseApiNameValuePairs.add(new BasicNameValuePair("auth_password", mPassword));
+        baseApiNameValuePairs = new ArrayList<NameValuePair>(8);
+        baseApiNameValuePairs.add(new BasicNameValuePair("email", mEmail));
+        baseApiNameValuePairs.add(new BasicNameValuePair("password", mPassword));
         baseApiNameValuePairs.add(new BasicNameValuePair("payment_gateway", mPaymentGateway));
         baseApiNameValuePairs.add(new BasicNameValuePair("issue_id", mIssueID));
         baseApiNameValuePairs.add(new BasicNameValuePair("device_id", baseDeviceId));
