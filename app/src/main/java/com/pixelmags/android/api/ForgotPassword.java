@@ -1,7 +1,7 @@
 package com.pixelmags.android.api;
 
 import com.pixelmags.android.comms.WebRequest;
-import com.pixelmags.android.json.FindMemberByEmailParser;
+import com.pixelmags.android.json.ForgotPasswordParser;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -15,7 +15,7 @@ public class ForgotPassword extends WebRequest
 {
     private static final String API_NAME="forgotPassword";
     private String mEmail;
-    FindMemberByEmailParser fParser;
+    ForgotPasswordParser fParser;
 
     public ForgotPassword(){
         super(API_NAME);
@@ -28,7 +28,7 @@ public class ForgotPassword extends WebRequest
         doPostRequest();
 
         if(responseCode==200){
-            fParser = new FindMemberByEmailParser(getAPIResultData());
+            fParser = new ForgotPasswordParser(getAPIResultData());
             if(fParser.initJSONParse()){
 
                 if(fParser.isSuccess()){
