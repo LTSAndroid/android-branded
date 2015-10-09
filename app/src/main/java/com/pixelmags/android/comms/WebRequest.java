@@ -34,6 +34,7 @@ public class WebRequest {
 
     public String baseDeviceId;
     public String baseMagazineId;
+    public String baseAppBundleId;
     public String baseApiMode;
     public String baseApiVersion;
 
@@ -49,6 +50,7 @@ public class WebRequest {
 
         baseDeviceId = UserPrefs.getDeviceID();
         baseMagazineId = Config.Magazine_Number;
+        baseAppBundleId = Config.Bundle_ID;
         baseApiMode = Config.api_mode;
         baseApiVersion = Config.api_version;
 
