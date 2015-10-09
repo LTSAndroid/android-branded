@@ -27,6 +27,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.comms.Model;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.pixelmagsapp.LaunchActivity;
@@ -318,6 +319,13 @@ public class NavigationDrawerFragment extends Fragment {
                 break;
             case 6:
                 mTitle = getString(R.string.menu_title_contactsupport);
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("message/rfc822");
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Contact PixelMags");
+                intent.putExtra(Intent.EXTRA_TEXT, "Title: "+ Config.Magazine_Title +", Bundle ID: "+ Config.Bundle_ID +", App Version: "+Config.Version);
+                intent.putExtra(Intent.EXTRA_EMAIL, new String[]{Config.Support_EMail});
+                Intent mailer = Intent.createChooser(intent, null);
+                startActivity(mailer);
                 break;
             case 7:
                 mTitle = getString(R.string.menu_title_about);
