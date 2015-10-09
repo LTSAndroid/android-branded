@@ -229,14 +229,14 @@ public class NavigationDrawerFragment extends Fragment {
             case 0:
                 mTitle = getString(R.string.menu_title_allissues);
 
-                /**Fragment fragment = new AllIssuesFragment();
+                Fragment fragmentAllIsuues = new AllIssuesFragment();
                 // Insert the fragment by replacing any existing fragment
                 FragmentManager allIssuesFragmentManager = getFragmentManager();
                 allIssuesFragmentManager.beginTransaction()
                         .replace(R.id.main_fragment_container, fragmentAllIsuues)
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                         .addToBackStack(null)
-                        .commit();*/
+                        .commit();
                 break;
             case 1:
                 mTitle = getString(R.string.menu_title_account);

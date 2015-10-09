@@ -7,8 +7,8 @@ public class Config
 {
     public static final String API_BASE_URL = "https://api.pixelmags.com";
     public static final String Support_EMail = "support.kindle@pixelmags.com";
-    public static final String Magazine_Number = "2";
-    public static final String Magazine_Title = "Cosmopolitan";
+    public static final String Magazine_Number = "1959";
+    public static final String Magazine_Title = "Now";
     public static final String Bundle_ID = "com.pixelmags.reader.managed.android-amazon.ipc-media-now";
     public static final String Version = "1.0";
     public static final String api_mode = "dedicated";

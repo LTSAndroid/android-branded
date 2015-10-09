@@ -30,7 +30,6 @@ public class GetIssues extends WebRequest
         if(responseCode==200){
             getIssuesParserParser = new GetIssuesParser(getAPIResultData());
             if(getIssuesParserParser.initJSONParse()){
-
                 if(getIssuesParserParser.isSuccess()){
                     getIssuesParserParser.parse();
 
@@ -46,7 +45,7 @@ public class GetIssues extends WebRequest
     }
     private void setApiNameValuePairs(){
 
-        baseApiNameValuePairs = new ArrayList<NameValuePair>(3);
+        baseApiNameValuePairs = new ArrayList<NameValuePair>(4);
         baseApiNameValuePairs.add(new BasicNameValuePair("magazine_id", mMagazineID));
         baseApiNameValuePairs.add(new BasicNameValuePair("app_bundle_id", mAppBundleID));
         baseApiNameValuePairs.add(new BasicNameValuePair("api_mode", baseApiMode));

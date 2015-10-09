@@ -309,11 +309,11 @@ public class RegisterFragment extends Fragment {
             String resultToDisplay = "";
 
             try{
-                //CreateUser apiCreateUser = new CreateUser();
-               // apiCreateUser.init(mEmail,mPassword,mFirstName,mLastName,mDOB);
+                CreateUser apiCreateUser = new CreateUser();
+                apiCreateUser.init(mEmail,mPassword,mFirstName,mLastName,mDOB);
 
-                GetSubscriptions apiGetSubs = new GetSubscriptions();
-                apiGetSubs.init();
+               // GetSubscriptions apiGetSubs = new GetSubscriptions();
+                //apiGetSubs.init();
 
 
 
