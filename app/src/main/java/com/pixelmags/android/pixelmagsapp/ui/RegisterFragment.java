@@ -17,6 +17,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.pixelmags.android.api.CreateUser;
+import com.pixelmags.android.api.GetSubscriptions;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.pixelmagsapp.test.ResultsFragment;
@@ -308,8 +309,12 @@ public class RegisterFragment extends Fragment {
             String resultToDisplay = "";
 
             try{
-                CreateUser apiCreateUser = new CreateUser();
-                apiCreateUser.init(mEmail,mPassword,mFirstName,mLastName,mDOB);
+                //CreateUser apiCreateUser = new CreateUser();
+               // apiCreateUser.init(mEmail,mPassword,mFirstName,mLastName,mDOB);
+
+                GetSubscriptions apiGetSubs = new GetSubscriptions();
+                apiGetSubs.init();
+
 
 
             }catch (Exception e){
