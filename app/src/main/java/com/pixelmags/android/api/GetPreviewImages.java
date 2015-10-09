@@ -1,9 +1,7 @@
 package com.pixelmags.android.api;
 
 import com.pixelmags.android.comms.WebRequest;
-import com.pixelmags.android.json.GetIssuesParser;
 import com.pixelmags.android.json.GetPreviewImagesParser;
-
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import java.util.ArrayList;
