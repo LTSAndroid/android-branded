@@ -21,7 +21,7 @@ public class FindUserByDeviceIDParser extends JSONParser {
 
         try{
 
-            mUserID = baseJSON.getString("mUserID");
+            mUserID = baseJSON.getString("user_id");
             memail = baseJSON.getString("email");
             mFirstName = baseJSON.getString("first_name");
 

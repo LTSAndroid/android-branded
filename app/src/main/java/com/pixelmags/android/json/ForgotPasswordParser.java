@@ -3,12 +3,12 @@ package com.pixelmags.android.json;
 /**
  * Created by Annie on 09/10/15.
  */
-public class FindMemberByEmailParser extends JSONParser {
+public class ForgotPasswordParser extends JSONParser {
 
-    public String mUserID;
+    public String msuccess;
 
 
-    public FindMemberByEmailParser(String Data){
+    public ForgotPasswordParser(String Data){
         super(Data);
     }
 
@@ -19,7 +19,7 @@ public class FindMemberByEmailParser extends JSONParser {
 
         try{
 
-            mUserID = baseJSON.getString("user_id");
+            msuccess = baseJSON.getString("success");
 
         }catch(Exception e){}
 
@@ -28,3 +28,4 @@ public class FindMemberByEmailParser extends JSONParser {
     }
 
 }
+
