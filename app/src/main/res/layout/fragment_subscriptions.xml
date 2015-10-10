@@ -1,11 +1,17 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.pixelmags.android.pixelmagsapp.ui.SubscriptionsFragment"
-    android:background="@drawable/three">>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    tools:context="com.pixelmags.android.pixelmagsapp.ui.SubscriptionsFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <TextView android:layout_width="fill_parent" android:layout_height="fill_parent"
+        android:text="@string/menu_title_subscriptions"
+        android:layout_gravity="center"
+        android:layout_alignParentTop="false"
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentStart="false"
+        android:layout_centerInParent="true"
+        android:gravity="center_vertical|center_horizontal"
+        android:id="@+id/subscriptions_text" />
 
-</FrameLayout>
+</RelativeLayout>
