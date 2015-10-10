@@ -13,11 +13,15 @@ import android.view.ViewGroup;
 import com.pixelmags.android.api.CreateUser;
 import com.pixelmags.android.api.GetIssues;
 import com.pixelmags.android.comms.Config;
+import com.pixelmags.android.datamodels.Magazine;
+import com.pixelmags.android.datamodels.Subscription;
 import com.pixelmags.android.json.GetIssuesParser;
 import com.pixelmags.android.json.JSONParser;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.pixelmagsapp.test.ResultsFragment;
 import com.pixelmags.android.storage.UserPrefs;
+
+import java.util.ArrayList;
 
 
 public class AllIssuesFragment extends Fragment {
@@ -54,6 +58,8 @@ public class AllIssuesFragment extends Fragment {
         private final String mMagazineID;
         private final String mAppBundleID;
 
+        ArrayList<Magazine> issuessArray = null;
+
         GetAllIssuesTask(String MagazineID, String appBundleID) {
             mMagazineID = MagazineID;
             mAppBundleID = appBundleID;
@@ -70,7 +76,6 @@ public class AllIssuesFragment extends Fragment {
                 apiGetIssues.init(mMagazineID,mAppBundleID);
                 resultToDisplay = apiGetIssues.getAPIResultData();
 
-
             }catch (Exception e){
 
             }
@@ -81,23 +86,13 @@ public class AllIssuesFragment extends Fragment {
         protected void onPostExecute(String result) {
 
             mGetAllIssuesTask = null;
-            if (result != null) {
-                System.out.println("API result :: " + result);
+
+            for(int i=0; i< issuessArray.size();i++) {
+
+                Magazine magazine = issuessArray.get(i);
+
             }
 
-            Fragment fragment = new ResultsFragment();
-            Bundle args = new Bundle();
-            args.putInt("Results Key", 1);
-            args.putString("DISPLAY_RESULTS", result);
-            fragment.setArguments(args);
-
-            FragmentManager fragmentManager = getFragmentManager();
-            // FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-            fragmentManager.beginTransaction()
-                    .replace(((ViewGroup) (getView().getParent())).getId(), fragment)
-                    .addToBackStack(null)
-                    .commit();
 
         }
 
