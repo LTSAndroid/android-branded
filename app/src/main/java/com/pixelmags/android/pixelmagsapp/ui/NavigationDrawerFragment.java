@@ -313,6 +313,14 @@ public class NavigationDrawerFragment extends Fragment {
                 break;
             case 4:
                 mTitle = getString(R.string.menu_title_subscriptions);
+                Fragment fragmentSubscriptions = new SubscriptionsFragment();
+                // Insert the fragment by replacing any existing fragment
+                FragmentManager subscriptionsFragmentManager = getFragmentManager();
+                subscriptionsFragmentManager.beginTransaction()
+                        .replace(R.id.main_fragment_container, fragmentSubscriptions)
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .addToBackStack(null)
+                        .commit();
                 break;
             case 5:
                 mTitle = getString(R.string.menu_title_specialissues);

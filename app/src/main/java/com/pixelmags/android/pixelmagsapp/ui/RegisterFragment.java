@@ -312,10 +312,7 @@ public class RegisterFragment extends Fragment {
                 CreateUser apiCreateUser = new CreateUser();
                 apiCreateUser.init(mEmail,mPassword,mFirstName,mLastName,mDOB);
 
-               // GetSubscriptions apiGetSubs = new GetSubscriptions();
-                //apiGetSubs.init();
-
-
+                resultToDisplay = apiCreateUser.getAPIResultData();
 
             }catch (Exception e){
 

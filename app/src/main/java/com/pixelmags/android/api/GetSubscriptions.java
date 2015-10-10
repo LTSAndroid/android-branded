@@ -4,7 +4,9 @@ import com.pixelmags.android.comms.WebRequest;
 import com.pixelmags.android.datamodels.Subscription;
 import com.pixelmags.android.json.CreateUserParser;
 import com.pixelmags.android.json.GetSubscriptionsParser;
+import com.pixelmags.android.storage.SubscriptionsDataSet;
 import com.pixelmags.android.storage.UserPrefs;
+import com.pixelmags.android.util.BaseApp;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -72,7 +74,8 @@ public class GetSubscriptions extends WebRequest {
         }
 
         // Save the Subscription Objects into the SQlite DB
-
+        SubscriptionsDataSet mDbHelper = new SubscriptionsDataSet(BaseApp.getContext());
+        mDbHelper.insert_all_subscriptions(mDbHelper.getWritableDatabase(), subsParser.subscriptionsList);
 
     }
 
