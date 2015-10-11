@@ -87,11 +87,11 @@ public class AllIssuesFragment extends Fragment {
 
             mGetAllIssuesTask = null;
 
-            for(int i=0; i< issuessArray.size();i++) {
+           /* for(int i=0; i< issuessArray.size();i++) {
 
                 Magazine magazine = issuessArray.get(i);
 
-            }
+            }*/
 
 
         }
