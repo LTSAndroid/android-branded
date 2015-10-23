@@ -38,14 +38,14 @@ public class GetIssuesParser extends JSONParser {
                 JSONObject unit = arrayData.getJSONObject(i);
 
                 magazine.id = unit.getInt("ID");
-                magazine.magazineId = unit.getInt("ID");
+            //    magazine.magazineId = unit.getInt("ID"); // Is this different from ID field ??
                 magazine.synopsis = unit.getString("synopsis");
                 magazine.type = unit.getString("type");
-                magazine.magazine_title = unit.getString("title");
+                magazine.title = unit.getString("title");
                 magazine.mediaFormat = unit.getString("media_format");
                 magazine.manifest = unit.getString("manifest");
                 // magazine.lastModified = unit.getString("lastModified"); // how to get date?
-                magazine.android_issue_sku = unit.getString("iTunesStoreSKU");
+                magazine.android_store_sku = unit.getString("iTunesStoreSKU");
                 magazine.price = unit.getDouble("price");
                 magazine.thumbnailURL = unit.getString("thumbnailURL");
                 magazine.ageRestriction = unit.getString("ageRestriction");

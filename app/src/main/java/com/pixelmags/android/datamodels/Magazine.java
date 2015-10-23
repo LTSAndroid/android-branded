@@ -17,15 +17,14 @@ public class Magazine
     public int id;
     public String title;
     public String synopsis;
-    public String magazine_title;
-    public int magazineId;
+//    public int magazineId;
     public double price;
-    public String android_issue_sku;
+    public String android_store_sku;
     public String type;
     public String manifest;
     public Date lastModified;
     public Date issueDate;
-    public Boolean isPublished;
+    public boolean isPublished;
     public boolean removeFromSale;
     public String ageRestriction;
     public String exclude_from_subscription;
@@ -38,7 +37,7 @@ public class Magazine
     public Boolean issueOwned;
     public String issueId;
     public String status = Magazine.STATUS_PRICE;
-    public Object data;
+//    public Object data;
     public Number sortOrder;
     public Array thumbs;
     public Object sortedThumbs;
