@@ -20,4 +20,6 @@ public class Config
     public static final Boolean Is_Preflight = false;
 
 
+    public static final Boolean DEVELOPER_MODE = true; // set to false in live apps
+
 }

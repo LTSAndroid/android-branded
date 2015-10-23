@@ -2,6 +2,7 @@ package com.pixelmags.android.pixelmagsapp;
 
 import android.app.Activity;
 import android.net.Uri;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -23,6 +24,7 @@ import com.pixelmags.android.pixelmagsapp.ui.LoginFragment;
 import com.pixelmags.android.pixelmagsapp.ui.NavigationDrawerFragment;
 import com.pixelmags.android.pixelmagsapp.ui.RegisterFragment;
 import com.pixelmags.android.pixelmagsapp.ui.SubscriptionsFragment;
+import com.pixelmags.android.util.PMStrictMode;
 import com.pixelmags.android.util.Util;
 
 public class MainActivity extends AppCompatActivity
@@ -53,6 +55,10 @@ public class MainActivity extends AppCompatActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        // setting STRICT DEVELOPER MODE (Disable this for live apps)
+        PMStrictMode.setStrictMode(Config.DEVELOPER_MODE);
+
 
         Util.doPreLaunchSteps();
     }
