@@ -76,7 +76,7 @@ public class GetSubscriptions extends WebRequest {
         // Save the Subscription Objects into the SQlite DB
         SubscriptionsDataSet mDbHelper = new SubscriptionsDataSet(BaseApp.getContext());
         mDbHelper.insert_all_subscriptions(mDbHelper.getWritableDatabase(), subsParser.subscriptionsList);
-
+        mDbHelper.close();
     }
 
 
