@@ -139,6 +139,9 @@ public class SubscriptionsDataSet extends BrandedSQLiteHelper{
                     subscriptionsArray.add(sub);
 
                 }
+
+                queryCursor.close();
+                db.close();
             }
 
 
