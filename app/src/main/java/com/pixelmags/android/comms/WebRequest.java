@@ -76,12 +76,12 @@ public class WebRequest {
 
             httppost.setEntity(new UrlEncodedFormEntity(baseApiNameValuePairs));
 
-
+/*  // To analyse if any API returns erroreous data
             for (int i = 0; i < baseApiNameValuePairs.size(); i++) {
                 System.out.println("baseApiNameValuePairs NAME === " + baseApiNameValuePairs.get(i).getName());
                 System.out.println("baseApiNameValuePairs VALUE == " + baseApiNameValuePairs.get(i).getValue());
             }
-
+*/
 
             // Execute HTTP Post Request
             HttpResponse response = httpclient.execute(httppost);
@@ -100,7 +100,18 @@ public class WebRequest {
             /* Convert the Bytes read to a String. */
                 resultData = new String(baf.toByteArray());
 
+
+                is.close();
             }
+
+
+            if( response.getEntity() != null ) {
+                response.getEntity().consumeContent();
+            }
+
+
+            httpclient.getConnectionManager().closeExpiredConnections();
+            httpclient.getConnectionManager().shutdown();  // shutdown the HttpClient after use
 
 
         } catch (IOException e) {
