@@ -156,7 +156,7 @@ public class SubscriptionsFragment extends Fragment {
 
                 SubscriptionsDataSet mDbHelper = new SubscriptionsDataSet(BaseApp.getContext());
                 subscriptionsArray = mDbHelper.getAllSubscriptions(mDbHelper.getReadableDatabase());
-
+                mDbHelper.close();
 
             }catch (Exception e){
 
