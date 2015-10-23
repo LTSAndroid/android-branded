@@ -1,7 +1,11 @@
 package com.pixelmags.android.api;
 
 import com.pixelmags.android.comms.WebRequest;
+import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.json.GetIssuesParser;
+import com.pixelmags.android.storage.AllIssuesDataSet;
+import com.pixelmags.android.util.BaseApp;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import java.util.ArrayList;
@@ -9,31 +13,31 @@ import java.util.ArrayList;
 /**
  * Created by Annie on 09/10/15.
  */
-public class GetIssues extends WebRequest
-{
-    private static final String API_NAME="getIssues";
+public class GetIssues extends WebRequest {
+    private static final String API_NAME = "getIssues";
     private String mMagazineID;
     private String mAppBundleID;
     GetIssuesParser getIssuesParserParser;
 
-    public GetIssues(){
+    public GetIssues() {
         super(API_NAME);
     }
-    public void init(String magazineID,String appBundleID)
-    {
+
+    public void init(String magazineID, String appBundleID) {
         mMagazineID = magazineID;
         mAppBundleID = appBundleID;
 
         setApiNameValuePairs();
         doPostRequest();
 
-        if(responseCode==200){
+        if (responseCode == 200) {
             getIssuesParserParser = new GetIssuesParser(getAPIResultData());
-            if(getIssuesParserParser.initJSONParse()){
-                if(getIssuesParserParser.isSuccess()){
+            if (getIssuesParserParser.initJSONParse()) {
+                if (getIssuesParserParser.isSuccess()) {
                     getIssuesParserParser.parse();
+                    saveAllIssuesData();
 
-                } else{
+                } else {
 
                     // Add error handling code here
 
@@ -43,7 +47,8 @@ public class GetIssues extends WebRequest
         }
 
     }
-    private void setApiNameValuePairs(){
+
+    private void setApiNameValuePairs() {
 
         baseApiNameValuePairs = new ArrayList<NameValuePair>(4);
         baseApiNameValuePairs.add(new BasicNameValuePair("magazine_id", mMagazineID));
@@ -52,5 +57,24 @@ public class GetIssues extends WebRequest
         baseApiNameValuePairs.add(new BasicNameValuePair("api_version", baseApiVersion));
 
     }
-}
 
+
+    public void saveAllIssuesData() {
+
+        // printing the values of the Subscriptions objects
+        for (int i = 0; i < getIssuesParserParser.allIssuesList.size(); i++) {
+
+            Magazine mag = getIssuesParserParser.allIssuesList.get(i);
+
+            System.out.println("MAGAZINE Title === " + mag.title);
+
+        }
+
+        // Save the Subscription Objects into the SQlite DB
+        AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
+        mDbHelper.insert_all_issues_data(mDbHelper.getWritableDatabase(), getIssuesParserParser.allIssuesList);
+        mDbHelper.close();
+
+    }
+
+}
