@@ -2,6 +2,8 @@ package com.pixelmags.android.pixelmagsapp.ui;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,8 +13,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.pixelmags.android.api.CreateUser;
 import com.pixelmags.android.api.GetIssues;
@@ -27,40 +31,15 @@ import com.pixelmags.android.storage.AllIssuesDataSet;
 import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.util.BaseApp;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 
 
 public class AllIssuesFragment extends Fragment {
 
-    private Integer[] mThumbIds = {
-            R.drawable.cast_ic_notification_0,
-            R.drawable.cast_ic_notification_0,
-            R.drawable.cast_ic_notification_0,
-            R.drawable.cast_ic_notification_0,
-            R.drawable.cast_ic_notification_0,
-            R.drawable.cast_ic_notification_0,
-            R.drawable.cast_ic_notification_0,
-            R.drawable.cast_ic_notification_0,
-            R.drawable.cast_ic_notification_0,
-            R.drawable.cast_ic_notification_0,
-            R.drawable.cast_ic_notification_0,
-            R.drawable.cast_ic_notification_0,
-            R.drawable.cast_ic_notification_0,
-            R.drawable.cast_ic_notification_0,
-            R.drawable.cast_ic_notification_0,
-            R.drawable.cast_ic_notification_0,
-            R.drawable.cast_ic_notification_0,
-            R.drawable.cast_ic_notification_0,
-            R.drawable.cast_ic_notification_0,
-            R.drawable.cast_ic_notification_0,
-            R.drawable.cast_ic_notification_0,
-            R.drawable.cast_ic_notification_0,
-            R.drawable.cast_ic_notification_0,
-            R.drawable.cast_ic_notification_0,
-            R.drawable.cast_ic_notification_0,
-    };
-
+    private ArrayList<Magazine> magazinesList = null;
     private GetAllIssuesTask mGetAllIssuesTask = null;
+    public CustomGridAdapter gridAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,37 +58,50 @@ public class AllIssuesFragment extends Fragment {
         mGetAllIssuesTask = new GetAllIssuesTask(Config.Magazine_Number,Config.Bundle_ID);
         mGetAllIssuesTask.execute((String) null);
 
-
-        GridView gridview = (GridView) rootView.findViewById(R.id.displayIssuesGridView);
-
-        gridview.setAdapter(new MyAdapter(getActivity()));
-        gridview.setNumColumns(4);
-
+        setGridAdapter(rootView);
 
         // Inflate the layout for this fragment
         return rootView;
     }
 
+
+   public void setGridAdapter(View rootView){
+
+       // set the Grid Adapter
+
+       // use rootview to fetch view (when called from onCreateView) else null returns
+       GridView gridview = (GridView) rootView.findViewById(R.id.displayIssuesGridView);
+       gridAdapter = new CustomGridAdapter(getActivity());
+       gridview.setAdapter(gridAdapter);
+       //   gridview.setNumColumns(4);
+   }
+
+
 /**
  *  A custom GridView to display the Magazines.
  *
      */
-    public class MyAdapter extends BaseAdapter {
+    public class CustomGridAdapter extends BaseAdapter {
 
         private Context mContext;
 
-        public MyAdapter(Context c) {
+        public CustomGridAdapter(Context c) {
             mContext = c;
         }
 
         @Override
         public int getCount() {
-            return mThumbIds.length;
+
+            if(magazinesList == null){
+                return 0;
+            }
+
+            return magazinesList.size();
         }
 
         @Override
         public Object getItem(int arg0) {
-            return mThumbIds[arg0];
+            return magazinesList.get(arg0).thumbnailBitmap;
         }
 
         @Override
@@ -132,8 +124,23 @@ public class AllIssuesFragment extends Fragment {
                 grid = (View)convertView;
             }
 
-            ImageView imageView = (ImageView)grid.findViewById(R.id.gridImage);
-            imageView.setImageResource(mThumbIds[position]);
+            // Set the magazine image
+            if(magazinesList.get(position).thumbnailBitmap != null) {
+                ImageView imageView = (ImageView) grid.findViewById(R.id.gridImage);
+                imageView.setImageBitmap(magazinesList.get(position).thumbnailBitmap);
+                //imageView.setImageResource(mThumbIds[position]);
+            }
+
+            if(magazinesList.get(position).title != null) {
+                TextView issueTitleText = (TextView) grid.findViewById(R.id.gridTitleText);
+                issueTitleText.setText(magazinesList.get(position).title);
+            }
+
+
+            Button issuePriceButton = (Button) grid.findViewById(R.id.gridPriceButton);
+            double price = magazinesList.get(position).price;
+            String priceConv = String.valueOf(price);
+            issuePriceButton.setText(priceConv);
 
             return grid;
         }
@@ -153,8 +160,6 @@ public class AllIssuesFragment extends Fragment {
         private final String mMagazineID;
         private final String mAppBundleID;
 
-        ArrayList<Magazine> issuessArray = null;
-
         GetAllIssuesTask(String MagazineID, String appBundleID) {
             mMagazineID = MagazineID;
             mAppBundleID = appBundleID;
@@ -166,17 +171,13 @@ public class AllIssuesFragment extends Fragment {
 
             String resultToDisplay = "";
 
-            try{
+            try {
+
                 GetIssues apiGetIssues = new GetIssues();
-                apiGetIssues.init(mMagazineID,mAppBundleID);
-
-                AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
-                issuessArray = mDbHelper.getAllIssues(mDbHelper.getReadableDatabase());
-                mDbHelper.close();
-
+                apiGetIssues.init(mMagazineID, mAppBundleID);
 
             }catch (Exception e){
-
+                    e.printStackTrace();
             }
             return resultToDisplay;
 
@@ -186,7 +187,7 @@ public class AllIssuesFragment extends Fragment {
 
             mGetAllIssuesTask = null;
 
-
+            loadAllIssues();
            /* for(int i=0; i< issuessArray.size();i++) {
 
                 Magazine magazine = issuessArray.get(i);
@@ -200,6 +201,75 @@ public class AllIssuesFragment extends Fragment {
         protected void onCancelled() {
             mGetAllIssuesTask = null;
         }
+    }
+
+
+    public void loadAllIssues(){
+
+        magazinesList = null; // clear the list
+
+        AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
+        magazinesList = mDbHelper.getAllIssues(mDbHelper.getReadableDatabase());
+        mDbHelper.close();
+
+
+        if(magazinesList != null){
+
+
+            for(int i=0; i< magazinesList.size();i++) {
+                DownloadImageTask mDownloadTask = new DownloadImageTask(i);
+                mDownloadTask.execute((String) null);
+            }
+        }
+    }
+
+
+
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+
+        int index;
+        //Bitmap bmImage;
+
+        public DownloadImageTask(int i) {
+            this.index = i;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+
+            String urldisplay = magazinesList.get(index).thumbnailURL;
+            Bitmap imageBitmap = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                magazinesList.get(index).thumbnailBitmap = BitmapFactory.decodeStream(in);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return magazinesList.get(index).thumbnailBitmap;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+
+            if(result!=null){
+                System.out.println("Image downladed for Issue :: " + magazinesList.get(index).id);
+
+                displayMagazineInGrid(index);
+            }
+           // bmImage.setImageBitmap(result);
+        }
+    }
+
+
+    public void displayMagazineInGrid(int index){
+
+        // update the Grid View Adapter here
+
+        if(gridAdapter!=null){
+            gridAdapter.notifyDataSetChanged();
+        }
 
     }
+
+
+ // end of class
 }
