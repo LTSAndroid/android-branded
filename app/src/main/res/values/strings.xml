@@ -3,6 +3,11 @@
     <!-- App Name -->
     <string name="app_name">PixelMags app</string>
 
+    <!-- Generic - to re-use -->
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+
+
     <!-- Navigation Menu Items -->
     <string name="menu_title_allissues">All Issues</string>
     <string name="menu_title_account">Account</string>
@@ -15,6 +20,12 @@
 
     <!-- Action menu title-->
     <string name="action_menu_title">More</string>
+
+
+    <!--All Issues Screen -->
+    <string name="allIssues_purchase_title">Purchase</string>
+    <string name="allIssues_purchase_message">Purchase issue</string>
+
 
     <!-- Activities/Fragment Titles -->
     <string name="fragment_title_register">Register</string>

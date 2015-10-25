@@ -1,6 +1,7 @@
 package com.pixelmags.android.pixelmagsapp.ui;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,6 +13,7 @@ import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
@@ -70,17 +72,34 @@ public class AllIssuesFragment extends Fragment {
        // set the Grid Adapter
 
        // use rootview to fetch view (when called from onCreateView) else null returns
-       GridView gridview = (GridView) rootView.findViewById(R.id.displayIssuesGridView);
+       GridView gridView = (GridView) rootView.findViewById(R.id.displayIssuesGridView);
        gridAdapter = new CustomGridAdapter(getActivity());
-       gridview.setAdapter(gridAdapter);
+       gridView.setAdapter(gridAdapter);
        //   gridview.setNumColumns(4);
+
    }
+
+
+
+    public void gridPriceButtonClicked(int position){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        builder.setTitle(getString(R.string.allIssues_purchase_title));
+        String message = getString(R.string.allIssues_purchase_message)+ " "+magazinesList.get(position).title + "?";
+        builder.setMessage(message);
+        builder.setPositiveButton("OK", null);
+        builder.setNegativeButton("Cancel", null);
+        builder.show();
+
+    }
 
 
 /**
  *  A custom GridView to display the Magazines.
  *
-     */
+ */
+
     public class CustomGridAdapter extends BaseAdapter {
 
         private Context mContext;
@@ -141,6 +160,16 @@ public class AllIssuesFragment extends Fragment {
             double price = magazinesList.get(position).price;
             String priceConv = String.valueOf(price);
             issuePriceButton.setText(priceConv);
+            issuePriceButton.setTag(position); // save the gridview index
+            issuePriceButton.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+
+                    gridPriceButtonClicked((Integer)v.getTag());
+
+                }
+            });
 
             return grid;
         }
