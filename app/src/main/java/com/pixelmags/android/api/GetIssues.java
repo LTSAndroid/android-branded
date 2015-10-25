@@ -61,15 +61,12 @@ public class GetIssues extends WebRequest {
 
     public void saveAllIssuesData() {
 
-        // printing the values of the Subscriptions objects
-        for (int i = 0; i < getIssuesParserParser.allIssuesList.size(); i++) {
-
+        // printing the values of the Magazine objects
+/*        for (int i = 0; i < getIssuesParserParser.allIssuesList.size(); i++) {
             Magazine mag = getIssuesParserParser.allIssuesList.get(i);
-
             System.out.println("MAGAZINE Title === " + mag.title);
-
         }
-
+*/
         // Save the Subscription Objects into the SQlite DB
         AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
         mDbHelper.insert_all_issues_data(mDbHelper.getWritableDatabase(), getIssuesParserParser.allIssuesList);

@@ -1,5 +1,7 @@
 package com.pixelmags.android.datamodels;
 
+import android.graphics.Bitmap;
+
 import java.lang.reflect.Array;
 import java.util.Date;
 
@@ -43,5 +45,7 @@ public class Magazine
     public Object sortedThumbs;
     public Array renditions;
 
+
+    public Bitmap thumbnailBitmap; // to store temporarily once downloaded
 
 }
