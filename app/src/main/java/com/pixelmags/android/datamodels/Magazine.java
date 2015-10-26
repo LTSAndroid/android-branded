@@ -2,13 +2,14 @@ package com.pixelmags.android.datamodels;
 
 import android.graphics.Bitmap;
 
+import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.Date;
 
 /**
  * Created by Annie on 10/10/15.
  */
-public class Magazine
+public class Magazine implements Serializable
 {
     public static String STATUS_BUY = "Buy";
     public static String STATUS_DOWNLOAD = "Download";
