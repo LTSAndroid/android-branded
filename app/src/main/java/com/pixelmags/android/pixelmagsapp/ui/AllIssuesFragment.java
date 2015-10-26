@@ -94,6 +94,22 @@ public class AllIssuesFragment extends Fragment {
 
     }
 
+    public void gridIssueImageClicked(int position){
+
+        navigateToIssueDetails(position);
+
+    }
+
+    private void navigateToIssueDetails(int position) {
+
+        FragmentManager fragmentManager = getFragmentManager();
+        Fragment fragment = IssueDetailsFragment.newInstance(magazinesList.get(position));
+        fragmentManager.beginTransaction()
+                .replace(((ViewGroup)(getView().getParent())).getId(), fragment)
+                .addToBackStack(null)
+                .commit();
+
+    }
 
 /**
  *  A custom GridView to display the Magazines.
@@ -148,6 +164,16 @@ public class AllIssuesFragment extends Fragment {
                 ImageView imageView = (ImageView) grid.findViewById(R.id.gridImage);
                 imageView.setImageBitmap(magazinesList.get(position).thumbnailBitmap);
                 //imageView.setImageResource(mThumbIds[position]);
+                imageView.setTag(position);
+                imageView.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+
+                        gridIssueImageClicked((Integer) v.getTag());
+
+                    }
+                });
             }
 
             if(magazinesList.get(position).title != null) {
