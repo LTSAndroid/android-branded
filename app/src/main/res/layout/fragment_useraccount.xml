@@ -7,63 +7,71 @@
     <TextView
         android:layout_width="125dp"
         android:layout_height="50dp"
-        android:id="@+id/lbluserid"
-        android:layout_marginTop="60dp"
+        android:id="@+id/labelUserId"
+        android:layout_marginTop="64dp"
         android:textSize="20dp"
-        android:hint="@string/lbluserid"
+        android:text="@string/account_user_id"
         android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/txtuserid"
-        android:layout_toStartOf="@+id/txtuserid" />
+        android:layout_toLeftOf="@+id/accountLogout"
+        android:layout_toStartOf="@+id/accountLogout" />
 
     <TextView
-        android:layout_width="250dp"
+        android:layout_width="150dp"
         android:layout_height="40dp"
-        android:id="@+id/txtuserid"
+        android:id="@+id/dataUserId"
         android:textSize="20dp"
-        android:layout_alignTop="@+id/lbluserid"
-        android:layout_alignLeft="@+id/txtemailid"
-        android:layout_alignStart="@+id/txtemailid" />
+        android:layout_alignTop="@+id/labelUserId"
+        android:layout_centerHorizontal="true" />
 
     <TextView
         android:layout_width="125dp"
         android:layout_height="50dp"
-        android:id="@+id/lblemailid"
-        android:hint="@string/lblemailid"
+        android:id="@+id/labelUserEmail"
+        android:text="@string/account_user_email"
         android:textSize="20dp"
-        android:layout_below="@+id/lbluserid"
-        android:layout_toLeftOf="@+id/txtemailid"
-        android:layout_toStartOf="@+id/txtemailid"
-        />
+        android:layout_below="@+id/dataUserId"
+        android:layout_alignLeft="@+id/labelUserId"
+        android:layout_alignStart="@+id/labelUserId" />
 
     <TextView
-        android:layout_width="250dp"
+        android:layout_width="150dp"
         android:layout_height="40dp"
         android:inputType="textEmailAddress"
-        android:id="@+id/txtemailid"
+        android:id="@+id/dataUserEmail"
         android:ems="10"
         android:textSize="20dp"
-        android:layout_alignTop="@+id/lblemailid"
-        android:layout_alignLeft="@+id/LOGOUT"
-        android:layout_alignStart="@+id/LOGOUT" />
+        android:layout_alignTop="@+id/labelUserEmail"
+        android:layout_alignLeft="@+id/dataUserId"
+        android:layout_alignStart="@+id/dataUserId" />
 
     <TextView
-        android:layout_width="230dp"
+        android:layout_width="50dp"
         android:layout_height="40dp"
-        android:id="@+id/txtname"
+        android:id="@+id/labelUserName"
         android:textSize="20dp"
-        android:hint="@string/lblname"
-        android:layout_below="@+id/lblemailid"
-        android:layout_alignLeft="@+id/lblemailid"
-        android:layout_alignStart="@+id/lblemailid" />
+        android:text="@string/account_user_full_name"
+        android:layout_below="@+id/labelUserEmail"
+        android:layout_alignLeft="@+id/labelUserEmail"
+        android:layout_alignStart="@+id/labelUserEmail"
+        android:layout_toLeftOf="@+id/dataUserEmail"
+        android:layout_toStartOf="@+id/dataUserEmail" />
+
+    <TextView
+        android:layout_width="150dp"
+        android:layout_height="40dp"
+        android:id="@+id/dataUserFullName"
+        android:textSize="20dp"
+        android:layout_below="@+id/labelUserEmail"
+        android:layout_toRightOf="@+id/labelUserName"
+        android:layout_toEndOf="@+id/labelUserName" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/LOGOUT"
+        android:id="@+id/accountLogout"
         android:onClick="onButtonClick"
-        android:hint="@string/hint_do_Logout"
-        android:layout_marginTop="92dp"
-        android:layout_below="@+id/lblemailid"
+        android:text="@string/log_out"
+        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 
 

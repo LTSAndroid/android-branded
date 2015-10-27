@@ -32,7 +32,7 @@ public class UserAccountFragment extends Fragment {
 
         // set the Logout Listener
         View rootView = inflater.inflate(R.layout.fragment_useraccount, container, false);
-        Button button = (Button) rootView.findViewById(R.id.LOGOUT);
+        Button button = (Button) rootView.findViewById(R.id.accountLogout);
         button.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -45,10 +45,8 @@ public class UserAccountFragment extends Fragment {
             }
         });
 
+        // populate with user account info
 
-        mEmailView = (TextView) rootView.findViewById(R.id.accountEmailid);
-        mName = (TextView) rootView.findViewById(R.id.accountName);
-        mUserid = (TextView) rootView.findViewById(R.id.accountuserid);
         return rootView;
     }
 
