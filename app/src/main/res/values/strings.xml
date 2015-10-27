@@ -6,6 +6,9 @@
     <!-- Generic - to re-use -->
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="log_in">Log in</string>
+    <string name="log_out">Log out</string>
+    <string name="register">Register</string>
 
 
     <!-- Navigation Menu Items -->
@@ -35,12 +38,8 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <!-- Log In Screen -->
-    <string name="log_in_button">Log In</string>
-    <string name="hint_email">Give your Email id</string>
-    <string name="hint_password">Give your Password</string>
-    <string name="lblemailid">Email id :</string>
-    <string name="lbluserid">User id :</string>
-    <string name="lblname">Name :</string>
+    <string name="hint_email">Enter Email</string>
+    <string name="hint_password">Enter Password</string>
 
 
     <!-- Register Screen -->
@@ -51,14 +50,13 @@
     <!-- hint_password reused here-->
     <string name="hint_confirm_password">Confirm password</string>
     <string name="accept_terms_and_conditions">I accept the Terms and Conditions</string>
-    <string name="do_register">Register</string>
+
 
     <!-- Account Screen -->
-    <string name="hint_user_id">User id</string>
-    <string name="hint_Email_view">Email id</string>
-    <string name="hint_Name">Name</string>
-    <string name="hint_do_Logout">LOGOUT</string>
-    <string name="do_Logout">LOGOUT</string>
+    <string name="account_user_id">Account</string>
+    <string name="account_user_email">Email</string>
+    <string name="account_user_full_name">Name</string>
+
 
     <!-- About Screen -->
     <string name="hint_Version">Version</string>
