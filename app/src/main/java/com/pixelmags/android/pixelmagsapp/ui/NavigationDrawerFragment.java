@@ -278,8 +278,17 @@ public class NavigationDrawerFragment extends Fragment {
 
             case 2:
                 mTitle = getString(R.string.menu_title_login);
-                Intent a = new Intent(getActivity().getBaseContext(), LoginActivity.class);
-                startActivity(a);
+                //Intent a = new Intent(getActivity().getBaseContext(), LoginActivity.class);
+                //startActivity(a);
+
+                Fragment fragmentLogin = new LoginFragment();
+
+                FragmentManager loginFragmentManager = getFragmentManager();
+                loginFragmentManager.beginTransaction()
+                        .replace(R.id.main_fragment_container, fragmentLogin)
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .addToBackStack(null)
+                        .commit();
                 break;
 
             case 3:

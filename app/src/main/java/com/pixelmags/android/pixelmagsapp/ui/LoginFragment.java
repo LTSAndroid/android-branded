@@ -108,28 +108,28 @@ public class LoginFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_login, container, false);
 
-        // Demonstration of a collection-browsing activity.
-        rootView.findViewById(R.id.register)
-                .setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        navigateToRegisterButton();
-                    }
-                });
-
         // ##22 Set title bar based on fragment
         //  ((MainActivity) getActivity()) .setActionBarTitle("Login title");
-        mEmailView = (EditText) rootView.findViewById(R.id.email);
+        mEmailView = (EditText) rootView.findViewById(R.id.loginEmail);
 
-        mPasswordView = (EditText) rootView.findViewById(R.id.password);
+        mPasswordView = (EditText) rootView.findViewById(R.id.loginPassword);
         // set the Log in Listener
-        Button button = (Button) rootView.findViewById(R.id.email_sign_in_button);
-        button.setOnClickListener(new View.OnClickListener() {
+        Button doLoginButton = (Button) rootView.findViewById(R.id.logInButton);
+        doLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 doLogin();
             }
         });
+
+        Button doRegisterButton = (Button) rootView.findViewById(R.id.registerButton);
+        doRegisterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                navigateToRegisterButton();
+            }
+        });
+
         return rootView;
     }
 
