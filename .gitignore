@@ -5,3 +5,7 @@
 .DS_Store
 /build
 /captures
+
+app/src/main/res/drawable-xhdpi/four.jpg
+
+app/src/main/res/drawable-xhdpi/three.jpg

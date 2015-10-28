@@ -83,5 +83,6 @@
     <string name="Pixelmags">PixelMags <a href="http://www.pixelmags.com/t+c/current"></a></string>
     <string name="go_to_register">REGISTER</string>
     <string name="font_family_body_1_material">sans-serif</string>
+    <string name="do_backtologin">Back to Login</string>
 
 </resources>

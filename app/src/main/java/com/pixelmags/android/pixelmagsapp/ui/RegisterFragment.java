@@ -107,32 +107,57 @@ public class RegisterFragment extends Fragment {
     }
 
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         // set the Log in Listener
         View rootView = inflater.inflate(R.layout.fragment_register, container, false);
-        Button button = (Button) rootView.findViewById(R.id.registerDoRegister);
-        button.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                doRegister();
-            }
-        });
         mEmailView = (EditText) rootView.findViewById(R.id.accountName);
-
         mPasswordView = (EditText) rootView.findViewById(R.id.registerPassword);
         mCPasswordView = (EditText) rootView.findViewById(R.id.registerConfirmPassword);
         mfirstnameView = (EditText) rootView.findViewById(R.id.accountuserid);
         mlastnameView = (EditText) rootView.findViewById(R.id.accountEmailid);
         mDOBView = (EditText) rootView.findViewById(R.id.registerDateOfBirth);
         mtemsconditionsView = (CheckBox) rootView.findViewById(R.id.registerAcceptTermsConditions);
+        Button button = (Button) rootView.findViewById(R.id.registerDoRegister);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                doRegister();
+            }
+        });
+
+        Button backtologinbutton = (Button) rootView.findViewById(R.id.backtologin);
+        backtologinbutton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                navigateTobacktologinbutton();
+            }
+        });
         return rootView;
     }
+
+        public void navigateTobacktologinbutton() {
+
+        // Intent a = new Intent(getActivity().getBaseContext(), LoginActivity.class);
+        //  startActivity(a);
+
+
+        Fragment fragment = new LoginFragment();
+        Bundle args = new Bundle();
+        args.putInt("Register Key", 4);
+        fragment.setArguments(args);
+
+        FragmentManager fragmentManager = getFragmentManager();
+        // FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        fragmentManager.beginTransaction()
+                .replace(((ViewGroup)(getView().getParent())).getId(), fragment)
+                .addToBackStack(null)
+                .commit();
+
+    }
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
