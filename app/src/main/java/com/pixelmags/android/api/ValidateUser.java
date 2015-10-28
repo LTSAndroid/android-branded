@@ -35,7 +35,7 @@ public class ValidateUser extends WebRequest
         if(responseCode==200){
 
             validateParser = new ValidateUserParser(getAPIResultData());
-            
+
             //System.out.println("Log in Data ::"+getAPIResultData());
 
             if(validateParser.initJSONParse()){
