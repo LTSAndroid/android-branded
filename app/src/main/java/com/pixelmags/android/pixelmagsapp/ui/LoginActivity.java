@@ -35,7 +35,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.pixelmags.android.comms.Config;
-import com.pixelmags.android.comms.Model;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.pixelmagsapp.test.ResultsFragment;
 
@@ -347,7 +346,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 String isSuccess = jObj.getString("success");
                 if(isSuccess.equals("true"))
                 {
-                    Model.IsLogginedIn = "true";
+                    // no longer in use
+                   // Model.IsLogginedIn = "true";
                 }
                 else
                 {

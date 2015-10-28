@@ -2,6 +2,8 @@ package com.pixelmags.android.pixelmagsapp.ui;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -17,10 +19,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.pixelmags.android.api.ValidateUser;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.pixelmagsapp.LaunchActivity;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.pixelmagsapp.test.ResultsFragment;
+import com.pixelmags.android.storage.UserPrefs;
+import com.pixelmags.android.util.AccountUtil;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -32,12 +37,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.ByteArrayBuffer;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,7 +66,7 @@ public class LoginFragment extends Fragment {
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private ValidateUser mValidateUserTask = null;
+    private ValidateUserTask mValidateUserTask = null;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -206,15 +206,7 @@ public class LoginFragment extends Fragment {
         return ((AppCompatActivity) getActivity()).getSupportActionBar();
     }
 
-    private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
-        return email.contains("@");
-    }
 
-    private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
-        return password.length() > 4;
-    }
 
     // On click log in button
     public void doLogin()
@@ -222,6 +214,7 @@ public class LoginFragment extends Fragment {
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
+
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
@@ -229,19 +222,32 @@ public class LoginFragment extends Fragment {
         boolean cancel = false;
         View focusView = null;
 
+        // Do the checks in reverse
+
         // Check for a valid password, if the user entered one.
-        if (TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+        if (!TextUtils.isEmpty(password) && !AccountUtil.isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
         }
+
         // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
+        if (!AccountUtil.isEmailValid(email)) {
+            mEmailView.setError(getString(R.string.error_invalid_email));
             focusView = mEmailView;
             cancel = true;
-        } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
+        }
+
+        // check if password field is empty
+        if (TextUtils.isEmpty(password)) {
+            mPasswordView.setError(getString(R.string.error_field_required));
+            focusView = mPasswordView;
+            cancel = true;
+        }
+
+        //Check if email field is empty
+        if (TextUtils.isEmpty(email)) {
+            mEmailView.setError(getString(R.string.error_field_required));
             focusView = mEmailView;
             cancel = true;
         }
@@ -252,18 +258,28 @@ public class LoginFragment extends Fragment {
             focusView.requestFocus();
         } else {
             // perform the user register attempt.
-            mValidateUserTask = new ValidateUser(email, password);
+            mValidateUserTask = new ValidateUserTask(email, password);
             mValidateUserTask.execute((String) null);
         }
     }
 
+    public void displayLogInFailed(){
 
-    private class ValidateUser extends AsyncTask<String, String,String> {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(getString(R.string.log_in_fail_title));
+        builder.setMessage(getString(R.string.log_in_fail_message));
+        builder.setPositiveButton(getString(R.string.ok), null);
+        builder.show();
+
+    }
+
+    private class ValidateUserTask extends AsyncTask<String, String,String> {
 
         private final String mEmail;
         private final String mPassword;
+        ValidateUser apiValidateUser;
 
-        ValidateUser(String email, String password) {
+        ValidateUserTask(String email, String password) {
             mEmail = email;
             mPassword = password;
 
@@ -271,23 +287,36 @@ public class LoginFragment extends Fragment {
         @Override
         protected String doInBackground(String... params) {
 
+            String resultToDisplay = "";
+
+            apiValidateUser = new ValidateUser(mEmail, mPassword);
+            apiValidateUser.init();
+
+            /*
+
             String urlString=""; // URL to call
 
             HttpClient httpclient = new DefaultHttpClient();
             HttpPost httppost = new HttpPost("https://api.pixelmags.com/validateUser");
 
-            String resultToDisplay = "";
-
             try {
                 // Add your data
                 List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(9);
-                nameValuePairs.add(new BasicNameValuePair("email", mEmail));
-                nameValuePairs.add(new BasicNameValuePair("password", mPassword));
+                nameValuePairs.add(new BasicNameValuePair("auth_email_address", mEmail));
+                nameValuePairs.add(new BasicNameValuePair("auth_password", mPassword));
                 nameValuePairs.add(new BasicNameValuePair("device_id", "testingforbanded"));
                 nameValuePairs.add(new BasicNameValuePair("magazine_id", Config.Magazine_Number));
                 nameValuePairs.add(new BasicNameValuePair("api_mode",Config.api_mode));
                 nameValuePairs.add(new BasicNameValuePair("api_version", Config.api_version));
                 httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+
+                // To analyse if any API returns erroreous data
+                for (int i = 0; i < nameValuePairs.size(); i++) {
+                    System.out.println("baseApiNameValuePairs NAME === " + nameValuePairs.get(i).getName());
+                    System.out.println("baseApiNameValuePairs VALUE == " + nameValuePairs.get(i).getValue());
+                }
+
 
                 // Execute HTTP Post Request
                 HttpResponse response = httpclient.execute(httppost);
@@ -301,19 +330,40 @@ public class LoginFragment extends Fragment {
                     baf.append((byte) current);
                 }
 
-            /* Convert the Bytes read to a String. */
+            // Convert the Bytes read to a String.
                 resultToDisplay = new String(baf.toByteArray());
                 // TODO Auto-generated catch block
-            } catch (IOException e) {
+            } catch (Exception e) {
                 // TODO Auto-generated catch block
             }
+
+            */
 
             return resultToDisplay;
 
         }
         protected void onPostExecute(String result) {
 
-            if (result != null){
+
+            // successful or failed login action
+            if(UserPrefs.getUserLoggedIn()){
+
+                System.out.println("LOG IN SUCCESS");
+
+                // Do post log in Tasks
+                // (getMyIssues ?)
+
+                // Navigate to issues page
+
+
+            }else{
+
+                // Display log in fail
+                displayLogInFailed();
+
+            }
+
+/*            if (result != null){
                 System.out.println("API result :: " + result);
             }
 
@@ -331,7 +381,7 @@ public class LoginFragment extends Fragment {
                     .replace(((ViewGroup)(getView().getParent())).getId(), fragment)
                     .addToBackStack(null)
                     .commit();
-
+*/
         }
 
     }

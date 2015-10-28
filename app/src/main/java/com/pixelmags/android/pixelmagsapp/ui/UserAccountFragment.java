@@ -11,14 +11,16 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.pixelmags.android.pixelmagsapp.R;
+import com.pixelmags.android.storage.UserPrefs;
 
 /**
  * Created by Annie on 29/09/15.
  */
 public class UserAccountFragment extends Fragment {
-    private TextView mUserid;
-    private TextView mEmailView;
-    private TextView mName;
+
+    private TextView dataUserId;
+    private TextView dataEmail;
+    private TextView dataFullName;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -32,6 +34,18 @@ public class UserAccountFragment extends Fragment {
 
         // set the Logout Listener
         View rootView = inflater.inflate(R.layout.fragment_useraccount, container, false);
+
+        dataUserId = (TextView) rootView.findViewById(R.id.dataUserId);
+        dataUserId.setText(UserPrefs.getUserPixelmagsId());
+
+        dataEmail = (TextView) rootView.findViewById(R.id.dataUserEmail);
+        dataEmail.setText(UserPrefs.getUserEmail());
+
+        dataFullName = (TextView) rootView.findViewById(R.id.dataUserFullName);
+        String fullName = UserPrefs.getUserFirstName() +" "+UserPrefs.getUserLastName();
+        dataFullName.setText(fullName);
+
+
         Button button = (Button) rootView.findViewById(R.id.accountLogout);
         button.setOnClickListener(new View.OnClickListener() {
 
@@ -57,9 +71,6 @@ public class UserAccountFragment extends Fragment {
 
     }
 
-    private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
-        return email.contains("@");
-    }
+
 }
 

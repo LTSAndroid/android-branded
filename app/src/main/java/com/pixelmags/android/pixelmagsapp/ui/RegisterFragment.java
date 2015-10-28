@@ -337,8 +337,6 @@ public class RegisterFragment extends Fragment {
                 CreateUser apiCreateUser = new CreateUser();
                 apiCreateUser.init(mEmail,mPassword,mFirstName,mLastName,mDOB);
 
-                resultToDisplay = apiCreateUser.getAPIResultData();
-
             }catch (Exception e){
 
             }

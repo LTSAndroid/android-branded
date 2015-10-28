@@ -13,9 +13,8 @@ import java.util.ArrayList;
  */
 public class ValidateUserParser extends JSONParser {
 
-    public String mSuccess;
-    public String muserID;
-    public ArrayList<User> userList;
+    public String loginSuccess;
+    public User userDetails;
 
     public ValidateUserParser(String Data){
         super(Data);
@@ -28,19 +27,12 @@ public class ValidateUserParser extends JSONParser {
 
         try{
 
-            mSuccess = baseJSON.getString("success");
-            muserID = baseJSON.getString("user_id");
-
-
-                User user = new User();
-
-            user.id = baseJSON.getInt("user_id");
-            user.firstName = baseJSON.getString("first_name");
-            user.lastName = baseJSON.getString("last_name");
-            user.email = baseJSON.getString("email");
-            user.deviceId = baseJSON.getString("device_id");
-
-
+            userDetails = new User();
+            userDetails.account_id = baseJSON.getString("user_id");
+            userDetails.firstName = baseJSON.getString("first_name");
+            userDetails.lastName = baseJSON.getString("last_name");
+            userDetails.email = baseJSON.getString("email");
+            userDetails.deviceId = baseJSON.getString("device_id");
 
         }catch(Exception e){
             e.printStackTrace();

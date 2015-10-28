@@ -16,12 +16,14 @@
         android:layout_toStartOf="@+id/accountLogout" />
 
     <TextView
-        android:layout_width="150dp"
+        android:layout_width="200dp"
         android:layout_height="40dp"
         android:id="@+id/dataUserId"
+        android:text="Pixelmags user id"
         android:textSize="20dp"
         android:layout_alignTop="@+id/labelUserId"
-        android:layout_centerHorizontal="true" />
+        android:layout_toRightOf="@+id/labelUserId"
+        android:layout_toEndOf="@+id/labelUserId" />
 
     <TextView
         android:layout_width="125dp"
@@ -34,10 +36,11 @@
         android:layout_alignStart="@+id/labelUserId" />
 
     <TextView
-        android:layout_width="150dp"
+        android:layout_width="200dp"
         android:layout_height="40dp"
         android:inputType="textEmailAddress"
         android:id="@+id/dataUserEmail"
+        android:text="user email address"
         android:ems="10"
         android:textSize="20dp"
         android:layout_alignTop="@+id/labelUserEmail"
@@ -57,9 +60,10 @@
         android:layout_toStartOf="@+id/dataUserEmail" />
 
     <TextView
-        android:layout_width="150dp"
+        android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:id="@+id/dataUserFullName"
+        android:text="Full name"
         android:textSize="20dp"
         android:layout_below="@+id/labelUserEmail"
         android:layout_toRightOf="@+id/labelUserName"

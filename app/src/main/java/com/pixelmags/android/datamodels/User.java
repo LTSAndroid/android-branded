@@ -10,7 +10,7 @@ public class User
      * One of the main reason for Uer Model is to enable the app to go through auto login procress. i.e: once user logged In
      * we never show login screen untill he log out
      */
-    public int id;
+    public String account_id;
 
     public String email;
 

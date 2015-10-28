@@ -63,6 +63,9 @@ public class UserPrefs {
 
     }
 
+
+    // Note : if the preference values are set before u call them, for boolean, a true is returned,
+    // so make sure that when app launches values are set before access
     private static boolean getBooleanPrefs(String PrefID, boolean defaultValue){
 
         SharedPreferences settings = BaseApp.getContext().getSharedPreferences(PREFS_NAME, 0);

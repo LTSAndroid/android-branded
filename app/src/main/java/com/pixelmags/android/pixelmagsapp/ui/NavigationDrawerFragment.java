@@ -28,9 +28,9 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.pixelmags.android.comms.Config;
-import com.pixelmags.android.comms.Model;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.pixelmagsapp.LaunchActivity;
+import com.pixelmags.android.storage.UserPrefs;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -242,7 +242,7 @@ public class NavigationDrawerFragment extends Fragment {
                 mTitle = getString(R.string.menu_title_account);
                 /*Intent launch = new Intent(getActivity().getBaseContext(), LaunchActivity.class);
                 startActivity(launch);*/
-                if( Model.IsLogginedIn.equals("true"))
+                if(UserPrefs.getUserLoggedIn())
                {
                 Fragment userFragment = new UserAccountFragment();
                 Bundle argsUser = new Bundle();
