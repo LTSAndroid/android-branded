@@ -20,6 +20,7 @@ public class JSONParser {
 
         baseJSON = null;
         JSONRawData = Data;
+        success = false;
 
     }
 

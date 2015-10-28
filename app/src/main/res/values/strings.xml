@@ -41,6 +41,14 @@
     <string name="hint_email">Enter Email</string>
     <string name="hint_password">Enter Password</string>
 
+    <string name="error_invalid_email">Email invalid</string>
+    <string name="error_invalid_password">Password is too short</string>
+    <string name="error_incorrect_password">Incorrect password</string>
+    <string name="error_field_required">Enter details</string>
+
+    <string name="log_in_fail_title">Log in Failed</string>
+    <string name="log_in_fail_message">Please check log in details and try again.</string>
+
 
     <!-- Register Screen -->
     <string name="hint_first_name">First Name</string>
@@ -70,12 +78,18 @@
     <string-array name="action_account_settings">Account Settings</string-array>
     <string-array name="action_account_fragment_about">About</string-array>
 
+
+
+
 <!-- TODO: Remove or change this placeholder text -->
     <string name="login_fragment">Login fragment</string>
     <string name="register_fragment">Register fragment</string>
     <string name="title_activity_launch">LaunchActivity</string>
 
     <string name="hello_world">Hello world!</string>
+
+    <!--Do not delete : test Activity-->
+    <string name="title_activity_login">LaunchActivity</string>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
