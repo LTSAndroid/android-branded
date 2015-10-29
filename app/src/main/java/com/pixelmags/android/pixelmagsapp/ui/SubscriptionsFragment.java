@@ -151,8 +151,10 @@ public class SubscriptionsFragment extends Fragment {
 
             try{
 
-                GetSubscriptions apiGetSubs = new GetSubscriptions();
-                apiGetSubs.init();
+
+                // No longer api get subs here - done on launch
+                //GetSubscriptions apiGetSubs = new GetSubscriptions();
+                //apiGetSubs.init();
 
                 SubscriptionsDataSet mDbHelper = new SubscriptionsDataSet(BaseApp.getContext());
                 subscriptionsArray = mDbHelper.getAllSubscriptions(mDbHelper.getReadableDatabase());

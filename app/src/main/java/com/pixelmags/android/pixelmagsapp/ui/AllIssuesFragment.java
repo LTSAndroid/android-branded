@@ -56,9 +56,11 @@ public class AllIssuesFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_display_issues, container, false);
 
-        // retrieving the issues
-        mGetAllIssuesTask = new GetAllIssuesTask(Config.Magazine_Number,Config.Bundle_ID);
-        mGetAllIssuesTask.execute((String) null);
+        // retrieving the issues - no longer retrieve the issues here. Only refresh of thumbnails.
+        //mGetAllIssuesTask = new GetAllIssuesTask(Config.Magazine_Number,Config.Bundle_ID);
+        //mGetAllIssuesTask.execute((String) null);
+
+        loadAllIssues();
 
         setGridAdapter(rootView);
 
@@ -228,8 +230,8 @@ public class AllIssuesFragment extends Fragment {
 
             try {
 
-                GetIssues apiGetIssues = new GetIssues();
-                apiGetIssues.init(mMagazineID, mAppBundleID);
+                //GetIssues apiGetIssues = new GetIssues();
+               // apiGetIssues.init(mMagazineID, mAppBundleID);
 
             }catch (Exception e){
                     e.printStackTrace();
