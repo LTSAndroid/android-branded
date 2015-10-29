@@ -4,10 +4,13 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical"
+    android:background="@drawable/splash_android_portrait"
     tools:context="com.pixelmags.android.pixelmagsapp.LaunchActivity">
 
-
+<!--
 <ImageView android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:src="@drawable/splash_android_portrait" />
+-->
+
 </LinearLayout>
