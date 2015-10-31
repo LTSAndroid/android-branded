@@ -35,16 +35,18 @@ public class GetMySubscriptionsParser extends JSONParser {
                 JSONObject unit = arrayData.getJSONObject(i);
 
                 mySubscription.creditsAvailable = unit.getInt("credits_available");
-                mySubscription.issueID = unit.getInt("issue_id");
+                //   mySubscription.issueID = unit.getInt("issue_id");  // Does not exist
                 mySubscription.purchaseDate = unit.getString("purchase_date");
                 mySubscription.expiresDate = unit.getString("expires_date");
                 mySubscription.magazineID = unit.getString("magazine_id");
-                mySubscription.subscriptionProductId = unit.getInt("subscription_product_id");
+                mySubscription.subscriptionProductId = unit.getString("subscription_product_id");
 
                 mySubscriptionsList.add(mySubscription);
             }
 
-        }catch(Exception e){}
+        }catch(Exception e){
+            e.printStackTrace();
+        }
 
 
         return true;
