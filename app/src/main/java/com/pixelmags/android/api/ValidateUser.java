@@ -74,7 +74,7 @@ public class ValidateUser extends WebRequest
         if(validateParser.userDetails != null){
 
             UserPrefs.setUserEmail(validateParser.userDetails.email);
-            UserPrefs.setUserPassword(validateParser.userDetails.password);
+            UserPrefs.setUserPassword(mPassword); // ValidateUser Parser does not contain password
             UserPrefs.setUserFirstName(validateParser.userDetails.firstName);
             UserPrefs.setUserLastName(validateParser.userDetails.lastName);
             UserPrefs.setUserPixelmagsId(validateParser.userDetails.account_id);
