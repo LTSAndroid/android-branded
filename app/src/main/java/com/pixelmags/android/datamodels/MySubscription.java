@@ -10,5 +10,5 @@ public class MySubscription
     public String purchaseDate;
     public String expiresDate;
     public String magazineID;
-    public int subscriptionProductId;
+    public String subscriptionProductId;
 }
