@@ -64,7 +64,7 @@ public class GetSubscriptions extends WebRequest {
     public void saveSubscriptionsDataToApp(){
 
         // printing the values of the Subscriptions objects
-        for(int i=0; i<subsParser.subscriptionsList.size();i++){
+      /*  for(int i=0; i<subsParser.subscriptionsList.size();i++){
             Subscription sub = subsParser.subscriptionsList.get(i);
 
             System.out.println("SUBSCRIPTION Synopsis === " + sub.synopsis);
@@ -72,6 +72,7 @@ public class GetSubscriptions extends WebRequest {
             System.out.println("SUBSCRIPTION Description === " + sub.description);
 
         }
+        */
 
         // Save the Subscription Objects into the SQlite DB
         SubscriptionsDataSet mDbHelper = new SubscriptionsDataSet(BaseApp.getContext());

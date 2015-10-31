@@ -9,6 +9,8 @@ import android.view.MenuItem;
 import android.view.Window;
 
 import com.pixelmags.android.api.GetIssues;
+import com.pixelmags.android.api.GetMyIssues;
+import com.pixelmags.android.api.GetMySubscriptions;
 import com.pixelmags.android.api.GetSubscriptions;
 import com.pixelmags.android.api.ValidateUser;
 import com.pixelmags.android.comms.Config;
@@ -64,6 +66,9 @@ public class LaunchActivity extends Activity {
         GetIssues apiGetIssues;
         GetSubscriptions apiGetSubs;
         ValidateUser apiValidateUser;
+        GetMyIssues apiGetMyIssues;
+        GetMySubscriptions apiGetMySubscriptions;
+
 
         //apiGetIssues ::
         //apiGetSubscriptions ::
@@ -81,6 +86,11 @@ public class LaunchActivity extends Activity {
             String resultToDisplay = "";
 
 
+            System.out.println("USER LOGGED IN :"+ UserPrefs.getUserLoggedIn());
+            System.out.println("USER Email STORED:" + UserPrefs.getUserEmail());
+
+
+            //Phase 1 - Get All issues and Subs for app
             try {
 
                 apiGetIssues = new GetIssues();
@@ -94,22 +104,38 @@ public class LaunchActivity extends Activity {
                 e.printStackTrace();
             }
 
+
+
+            // Phase 2
             // check if user is logged in
-            if(UserPrefs.getUserLoggedIn()){
 
 
+            try{
 
-                //Validate the user again
-                apiValidateUser = new ValidateUser(UserPrefs.getUserEmail(), UserPrefs.getUserPassword());
-                apiValidateUser.init();
+                if(UserPrefs.getUserLoggedIn()){
 
-                if(apiValidateUser.isSuccess()){
+                    //Validate the user again
+                    apiValidateUser = new ValidateUser(UserPrefs.getUserEmail(), UserPrefs.getUserPassword());
+                    apiValidateUser.init();
+
+                    System.out.println("apiValidateUser success  - " + apiValidateUser.isSuccess());
+
+                    if(apiValidateUser.isSuccess()){
 
                         // Get MyIssues
+                        apiGetMyIssues = new GetMyIssues();
+                        apiGetMyIssues.init();
+
                         // Get MySubscriptions
+                        apiGetMySubscriptions = new GetMySubscriptions();
+                        apiGetMySubscriptions.init();
+
+                    }
 
                 }
 
+            }catch (Exception e){
+                e.printStackTrace();
             }
 
 
