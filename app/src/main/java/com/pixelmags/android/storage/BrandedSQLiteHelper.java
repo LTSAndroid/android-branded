@@ -17,6 +17,7 @@ public class BrandedSQLiteHelper extends SQLiteOpenHelper {
     // List of TABLES used in Branded DB
     public static final String TABLE_SUBSCRIPTIONS="Subscriptions";
     public static final String TABLE_ALL_ISSUES="All_Issues";
+    public static final String TABLE_MY_ISSUES="My_Issues";
 
 
     public BrandedSQLiteHelper(Context context) {
