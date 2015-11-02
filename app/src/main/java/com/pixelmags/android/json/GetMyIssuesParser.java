@@ -36,7 +36,7 @@ public class GetMyIssuesParser extends JSONParser {
 
                 myIssue.magazineID = unit.getInt("magazine_id");
                 myIssue.issueID = unit.getInt("issue_id");
-                myIssue.removeFromSale = unit.getString("remove_from_sale");
+                myIssue.removeFromSale = unit.getBoolean("remove_from_sale");
 
                 myIssuesList.add(myIssue);
             }

@@ -7,5 +7,5 @@ public class MyIssue
 {
     public int magazineID;
     public int issueID;
-    public String removeFromSale;
+    public boolean removeFromSale;
 }
