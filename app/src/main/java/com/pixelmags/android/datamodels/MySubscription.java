@@ -5,10 +5,10 @@ package com.pixelmags.android.datamodels;
  */
 public class MySubscription
 {
+//    public int issueID;
+    public String magazineID;
     public int creditsAvailable;
-    public int issueID;
     public String purchaseDate;
     public String expiresDate;
-    public String magazineID;
     public String subscriptionProductId;
 }

@@ -6,6 +6,7 @@ import com.pixelmags.android.datamodels.MySubscription;
 import com.pixelmags.android.datamodels.Subscription;
 import com.pixelmags.android.json.GetMySubscriptionsParser;
 import com.pixelmags.android.json.GetSubscriptionsParser;
+import com.pixelmags.android.storage.MySubscriptionsDataSet;
 import com.pixelmags.android.storage.SubscriptionsDataSet;
 import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.util.BaseApp;
@@ -67,11 +68,16 @@ public class GetMySubscriptions extends WebRequest {
 
     public void saveMySubscriptionsDataToApp(){
 
+        MySubscriptionsDataSet mDbHelper = new MySubscriptionsDataSet(BaseApp.getContext());
+        mDbHelper.insert_my_subscriptions(mDbHelper.getWritableDatabase(), mySubsParser.mySubscriptionsList);
+        mDbHelper.close();
 
-        for(int i=0; i< mySubsParser.mySubscriptionsList.size();i++) {
 
-            MySubscription sub = mySubsParser.mySubscriptionsList.get(i);
+        MySubscriptionsDataSet mDbReader = new MySubscriptionsDataSet(BaseApp.getContext());
+        ArrayList<MySubscription> mySubsArray = mDbReader.getMySubscriptions(mDbReader.getReadableDatabase());
 
+        for(int i=0; i< mySubsArray.size();i++) {
+            MySubscription sub = mySubsArray.get(i);
             System.out.println(" MySubscription CREDITS ::" + sub.creditsAvailable);
         }
 
@@ -79,11 +85,7 @@ public class GetMySubscriptions extends WebRequest {
         // Save the MySubscription Objects into the SQlite DB
 
 
-        /*
-        SubscriptionsDataSet mDbHelper = new SubscriptionsDataSet(BaseApp.getContext());
-        mDbHelper.insert_all_subscriptions(mDbHelper.getWritableDatabase(), subsParser.subscriptionsList);
-        mDbHelper.close();
-        */
+
     }
 
 
