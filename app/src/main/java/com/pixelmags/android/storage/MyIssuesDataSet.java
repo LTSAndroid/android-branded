@@ -65,7 +65,7 @@ public class MyIssuesDataSet  extends BrandedSQLiteHelper {
     }
 
 
-    public ArrayList<MyIssue> getAllSubscriptions(SQLiteDatabase db){
+    public ArrayList<MyIssue> getMyIssues(SQLiteDatabase db){
 
         ArrayList<MyIssue> myIssuesArray = null;
 

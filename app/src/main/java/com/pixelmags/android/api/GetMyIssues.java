@@ -5,7 +5,9 @@ import com.pixelmags.android.comms.WebRequest;
 import com.pixelmags.android.datamodels.MyIssue;
 import com.pixelmags.android.json.GetIssuesParser;
 import com.pixelmags.android.json.GetMyIssuesParser;
+import com.pixelmags.android.storage.MyIssuesDataSet;
 import com.pixelmags.android.storage.UserPrefs;
+import com.pixelmags.android.util.BaseApp;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -63,21 +65,23 @@ public class GetMyIssues extends WebRequest
 
     public void saveMyIssuesDataToApp(){
 
-        for(int i=0; i< getMyIssuesParser.myIssuesList.size();i++) {
 
-            MyIssue issue = getMyIssuesParser.myIssuesList.get(i);
+        // Save the Subscription Objects into the SQlite DB
+        MyIssuesDataSet mDbHelper = new MyIssuesDataSet(BaseApp.getContext());
+        mDbHelper.insert_my_issues(mDbHelper.getWritableDatabase(), getMyIssuesParser.myIssuesList);
+        mDbHelper.close();
 
+        // Test the saved output
+        MyIssuesDataSet mDbReader = new MyIssuesDataSet(BaseApp.getContext());
+        ArrayList<MyIssue> myIssueArray = mDbReader.getMyIssues(mDbReader.getReadableDatabase());
+
+        for(int i=0; i< myIssueArray.size();i++) {
+            MyIssue issue = myIssueArray.get(i);
             System.out.println(" MyIssue ID ::" +issue.issueID);
-
         }
 
 
-        // Save the Subscription Objects into the SQlite DB
-        /*
-        SubscriptionsDataSet mDbHelper = new SubscriptionsDataSet(BaseApp.getContext());
-        mDbHelper.insert_all_subscriptions(mDbHelper.getWritableDatabase(), subsParser.subscriptionsList);
-        mDbHelper.close();
-        */
+
     }
 
 
