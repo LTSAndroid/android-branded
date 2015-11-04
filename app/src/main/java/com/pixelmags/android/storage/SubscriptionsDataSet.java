@@ -81,7 +81,7 @@ public class SubscriptionsDataSet extends BrandedSQLiteHelper{
 
     public ArrayList<Subscription> getAllSubscriptions(SQLiteDatabase db){
 
-        ArrayList<Subscription> subscriptionsArray = null;
+        ArrayList<Subscription> subscriptionsArray = new ArrayList<Subscription>();
 
         try{
 
@@ -116,7 +116,7 @@ public class SubscriptionsDataSet extends BrandedSQLiteHelper{
 
             if(queryCursor != null ){
 
-                subscriptionsArray = new ArrayList<Subscription>();
+
 
                 //queryCursor.getCount();
                 while (queryCursor.moveToNext()) {
