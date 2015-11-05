@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 
+import com.pixelmags.android.api.GetIssue;
 import com.pixelmags.android.api.GetIssues;
 import com.pixelmags.android.api.GetMyIssues;
 import com.pixelmags.android.api.GetMySubscriptions;
@@ -129,6 +130,12 @@ public class LaunchActivity extends Activity {
                         // Get MySubscriptions
                         apiGetMySubscriptions = new GetMySubscriptions();
                         apiGetMySubscriptions.init();
+
+                        // testing Get Issue and parse
+                        GetIssue issueFetch = new GetIssue();
+                        issueFetch.init("110422");
+
+
 
                     }
 
