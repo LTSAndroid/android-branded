@@ -9,6 +9,10 @@ import java.util.Date;
 /**
  * Created by Annie on 10/10/15.
  */
+
+/*
+    This datamodel represents an issue in the Store View
+ */
 public class Magazine implements Serializable
 {
     public static String STATUS_BUY = "Buy";
