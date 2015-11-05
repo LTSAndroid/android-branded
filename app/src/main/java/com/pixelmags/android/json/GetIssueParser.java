@@ -1,7 +1,8 @@
 package com.pixelmags.android.json;
 
-import com.pixelmags.android.datamodels.GetIssue;
-import com.pixelmags.android.datamodels.MyIssue;
+import com.pixelmags.android.datamodels.Issue;
+import com.pixelmags.android.datamodels.Page;
+import com.pixelmags.android.datamodels.PageTypeImage;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -14,11 +15,11 @@ import java.util.ArrayList;
 public class GetIssueParser extends JSONParser {
 
     public Object mData;
-    public ArrayList<GetIssue> getIssueList;
+    public ArrayList<Issue> getIssueList;
 
     public GetIssueParser(String Data){
         super(Data);
-        getIssueList = new ArrayList<GetIssue>();
+        getIssueList = new ArrayList<Issue>();
     }
 
     public boolean parse(){
@@ -28,23 +29,49 @@ public class GetIssueParser extends JSONParser {
 
         try{
 
-            JSONArray arrayData = baseJSON.getJSONArray("issue");
-            for(int i=0;i<arrayData.length();i++)
-            {
-                GetIssue getIssue = new GetIssue();
-                JSONObject unit = arrayData.getJSONObject(i);
+            JSONObject unit = baseJSON.getJSONObject("issue");
 
-                getIssue.issueID = unit.getInt("ID");
-                getIssue.pageCount = unit.getInt("pageCount");
-                getIssue.title = unit.getString("title");
-                getIssue.pageManifest = unit.getJSONArray("page_manifest");
-                getIssue.searchTerms = unit.getJSONArray("search_terms");
-                getIssue.manifest = unit.getString("manifest");
+                Issue issue = new Issue();
+                issue.issueID = unit.getInt("ID");
+                issue.magazineID = unit.getInt("magazine_id");
+                issue.title = unit.getString("title");
+                issue.thumbnailURL = unit.getString("thumbnailURL");
+                issue.issueDate = unit.getString("issueDate");
+                issue.created = unit.getString("created");
+                issue.lastModified = unit.getString("lastModified");
+                issue.media_format = unit.getString("media_format");
 
-                getIssueList.add(getIssue);
-            }
+                int pageCount = unit.getInt("pageCount");
+                issue.pageCount = pageCount;
 
-        }catch(Exception e){}
+                System.out.println("RETRIEVED ISSUE===" +unit.getString("title"));
+
+                JSONObject pageManifestArrayData = unit.getJSONObject("page_manifest");
+                for(int pageNo=1; pageNo<=pageCount; pageNo++)
+                {
+                    String pg = String.valueOf(pageNo);
+                    JSONObject pageUnit = pageManifestArrayData.getJSONObject(pg);
+
+
+                    //   pages.add(0,base);
+                    String pageId = pageUnit.getString("id");
+                    String pageMedia = pageUnit.getJSONObject("media").toString();
+
+                        System.out.println("PAGE ID ==== "+pageId);
+                        System.out.println("PAGE Media ==== "+pageMedia);
+
+                    Page pageImage = new PageTypeImage(pageNo, pageId, pageMedia);
+
+                    issue.pages.add(pageImage);
+                }
+
+
+            getIssueList.add(issue);
+
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
 
 
         return true;

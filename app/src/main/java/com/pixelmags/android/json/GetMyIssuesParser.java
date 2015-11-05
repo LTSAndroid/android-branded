@@ -41,7 +41,9 @@ public class GetMyIssuesParser extends JSONParser {
                 myIssuesList.add(myIssue);
             }
 
-        }catch(Exception e){}
+        }catch(Exception e){
+            e.printStackTrace();
+        }
 
 
         return true;
