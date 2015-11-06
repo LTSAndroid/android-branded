@@ -40,7 +40,7 @@ public class IssueDataSet extends BrandedSQLiteHelper{
 
 
 
-    /* Inner class that defines the table contents */
+    /* Inner class that defines the ISSUE table contents */
     public static class IssueEntry {
 
         public static final String ISSUE_TABLE_NAME = BrandedSQLiteHelper.TABLE_ISSUE_DATA;
@@ -74,7 +74,14 @@ public class IssueDataSet extends BrandedSQLiteHelper{
 
     }
 
+    /* Inner class that defines the PAGE DATA contents */
+    public static class PageDataEntry {
 
+        public static final String COLUMN_PAGE_NO = "page_no";
+        public static final String COLUMN_PAGE_ID = "page_id";
+        public static final String COLUMN_PAGE_JSON = "page_json";
+
+    }
 
 
     public void insertIssueData(SQLiteDatabase db, Issue issue){
