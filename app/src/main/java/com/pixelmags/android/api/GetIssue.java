@@ -2,9 +2,13 @@ package com.pixelmags.android.api;
 
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.comms.WebRequest;
+import com.pixelmags.android.datamodels.Issue;
+import com.pixelmags.android.datamodels.Page;
 import com.pixelmags.android.json.GetIssueParser;
 import com.pixelmags.android.json.GetMyIssuesParser;
+import com.pixelmags.android.storage.IssueDataSet;
 import com.pixelmags.android.storage.UserPrefs;
+import com.pixelmags.android.util.BaseApp;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -42,6 +46,8 @@ public class GetIssue extends WebRequest
                 if(getIssueParser.isSuccess()){
                     getIssueParser.parse();
 
+                    saveIssueToApp();
+
                 } else{
 
                     // Add error handling code here
@@ -52,6 +58,7 @@ public class GetIssue extends WebRequest
         }
 
     }
+
     private void setApiNameValuePairs(){
 
         baseApiNameValuePairs = new ArrayList<NameValuePair>(8);
@@ -64,5 +71,29 @@ public class GetIssue extends WebRequest
         baseApiNameValuePairs.add(new BasicNameValuePair("api_mode", Config.api_mode));
         baseApiNameValuePairs.add(new BasicNameValuePair("api_version", Config.api_version));
     }
+
+    private void saveIssueToApp(){
+
+        // Save the Subscription Objects into the SQlite DB
+        IssueDataSet mDbHelper = new IssueDataSet(BaseApp.getContext());
+        mDbHelper.insertIssueData(mDbHelper.getWritableDatabase(), getIssueParser.mIssue);
+        mDbHelper.close();
+
+        // Test the saved output
+        IssueDataSet mDbReader = new IssueDataSet(BaseApp.getContext());
+        Issue issueData = mDbReader.getIssue(mDbReader.getReadableDatabase(), "110422");
+
+        if(issueData!=null){
+
+            System.out.println(" Retrieved Issue ::" +issueData.issueID + ","+issueData.pageCount);
+            for(int i=0; i< issueData.pages.size();i++) {
+                Page page = issueData.pages.get(i);
+                System.out.println(" Page ID ::" +page.pageID + ","+page.getPageJSONData());
+            }
+        }
+
+    }
+
+
 }
 
