@@ -19,6 +19,8 @@ public class BrandedSQLiteHelper extends SQLiteOpenHelper {
     public static final String TABLE_MY_SUBSCRIPTIONS="My_Subscriptions";
     public static final String TABLE_ALL_ISSUES="All_Issues";
     public static final String TABLE_MY_ISSUES="My_Issues";
+    public static final String TABLE_ISSUE_DATA="Issue_Data";
+    public static final String TABLE_PAGE_DATA_PREFIX="Page_Data_";  // for every issue its pages are stored under the table Page_Data_(IssueId)
 
 
     public BrandedSQLiteHelper(Context context) {
