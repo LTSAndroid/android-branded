@@ -83,6 +83,9 @@ public class IssueDataSet extends BrandedSQLiteHelper{
 
         // update page unit here
 
+        
+        // page table drop on import
+
     }
 
 
