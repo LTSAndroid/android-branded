@@ -1,10 +1,15 @@
 package com.pixelmags.android.datamodels;
 
+import com.pixelmags.android.json.PageTypeImageParser;
+
 /**
  * Created by austincoutinho on 04/11/15.
  */
 
 public class PageTypeImage extends Page {
+
+    private PageTypeImageParser pageParser;
+
 
    public enum MediaType {
        SMALL, MEDIUM, LARGE
@@ -18,27 +23,26 @@ public class PageTypeImage extends Page {
 
 
 
-    private PageDetails getPageDetails(MediaType pageSize){
+    public PageDetails getPageDetails(MediaType pageSize){
 
-        PageDetails page = null;
+        PageDetails pageDetail = null;
+        pageParser = new PageTypeImageParser();
 
        switch(pageSize){
            case SMALL:
-               page = new PageDetails(pageSize);
-
-
-
-
+               pageDetail = pageParser.getPageDetailsSmall(new PageDetails(pageSize), getPageJSONData());
                break;
            case MEDIUM:
+               pageDetail = pageParser.getPageDetailsMedium(new PageDetails(pageSize), getPageJSONData());
                break;
            case LARGE:
+               pageDetail = pageParser.getPageDetailsLarge(new PageDetails(pageSize), getPageJSONData());
                break;
            default:
                break;
        }
 
-        return page;
+        return pageDetail;
 
     }
 
@@ -55,8 +59,8 @@ public class PageTypeImage extends Page {
         public int height; 	//400
         public MediaType imageSize;
 
-        PageDetails(MediaType size){
-            imageSize = size;
+        PageDetails(MediaType sizeOfImage){
+            imageSize = sizeOfImage;
         }
 
     }
