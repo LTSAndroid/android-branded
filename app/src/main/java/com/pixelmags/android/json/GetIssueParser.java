@@ -53,7 +53,7 @@ public class GetIssueParser extends JSONParser {
                 String pageId = pageUnit.getString("id");
                 String pageMedia = pageUnit.getJSONObject("media").toString();
 
-                    System.out.println("PAGE ID ==== "+pageId);
+                    // System.out.println("PAGE ID ==== "+pageId);
                     // System.out.println("PAGE Media ==== "+pageMedia);
 
                 Page pageImageData = new PageTypeImage(pageNo, pageId, pageMedia);

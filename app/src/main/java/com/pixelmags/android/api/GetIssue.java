@@ -4,6 +4,7 @@ import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.comms.WebRequest;
 import com.pixelmags.android.datamodels.Issue;
 import com.pixelmags.android.datamodels.Page;
+import com.pixelmags.android.datamodels.PageTypeImage;
 import com.pixelmags.android.json.GetIssueParser;
 import com.pixelmags.android.json.GetMyIssuesParser;
 import com.pixelmags.android.storage.IssueDataSet;
@@ -80,18 +81,24 @@ public class GetIssue extends WebRequest
         mDbHelper.close();
 
         // Test the saved output
- /*       IssueDataSet mDbReader = new IssueDataSet(BaseApp.getContext());
+        IssueDataSet mDbReader = new IssueDataSet(BaseApp.getContext());
         Issue issueData = mDbReader.getIssue(mDbReader.getReadableDatabase(), "110422");
 
         if(issueData!=null){
 
             System.out.println(" Retrieved Issue ::" +issueData.issueID + ","+issueData.pageCount);
             for(int i=0; i< issueData.pages.size();i++) {
-                Page page = issueData.pages.get(i);
-                System.out.println(" Page ID ::" +page.pageID + ","+page.getPageJSONData());
+                PageTypeImage page = (PageTypeImage) issueData.pages.get(i);
+
+                PageTypeImage.PageDetails pageDetails = page.getPageDetails(PageTypeImage.MediaType.SMALL);
+                System.out.println(" Page SMALL URL ::" + pageDetails.url);
+
+                PageTypeImage.PageDetails pageDetailsMed = page.getPageDetails(PageTypeImage.MediaType.MEDIUM);
+                System.out.println(" Page MEDIUM MD5 ::" + pageDetailsMed.checksum_md5);
+
             }
         }
-*/
+
     }
 
 
