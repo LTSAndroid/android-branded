@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.pixelmags.android.datamodels.Issue;
 import com.pixelmags.android.datamodels.Page;
+import com.pixelmags.android.datamodels.PageTypeImage;
 
 import java.util.ArrayList;
 
@@ -282,6 +283,8 @@ public class IssueDataSet extends BrandedSQLiteHelper{
 
     private ArrayList<Page> getPagesFromTable(SQLiteDatabase db, String pagesTableName){
 
+        System.out.println("fetching PAGES from Table");
+
         ArrayList<Page> pages = new ArrayList<Page>();
 
         try{
@@ -297,7 +300,7 @@ public class IssueDataSet extends BrandedSQLiteHelper{
             String sortOrder = PageDataEntry.COLUMN_PAGE_NO + " ASC";
 
             Cursor queryCursor = db.query(
-                    IssueEntry.ISSUE_TABLE_NAME,    // The table to query
+                    pagesTableName,    // The table to query
                     projection,                                     // The columns to return
                     null,                                         // The columns for the WHERE clause
                     null,                                           // The values for the WHERE clause
@@ -317,7 +320,7 @@ public class IssueDataSet extends BrandedSQLiteHelper{
                     String pageId = queryCursor.getString(queryCursor.getColumnIndex(PageDataEntry.COLUMN_PAGE_ID));
                     String pageJson = queryCursor.getString(queryCursor.getColumnIndex(PageDataEntry.COLUMN_PAGE_JSON));
 
-                    Page page = new Page(pageNo, pageId, pageJson);
+                    PageTypeImage page = new PageTypeImage(pageNo, pageId, pageJson);
                     pages.add(page);
 
                 }
