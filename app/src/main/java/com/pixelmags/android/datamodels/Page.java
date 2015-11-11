@@ -14,7 +14,7 @@ public class Page {
     public String PageJSONData; // holds the JSON data as string from the media block of page_manifest
 
 
-    Page(int pgNo, String pgID, String JSONData){
+    public Page(int pgNo, String pgID, String JSONData){
         this.pageNo = pgNo;
         this.pageID = pgID;
         this.PageJSONData = JSONData;

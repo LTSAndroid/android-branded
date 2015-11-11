@@ -27,6 +27,16 @@ public class IssueDataSet extends BrandedSQLiteHelper{
         db.execSQL(IssueEntry.DROP_ISSUE_TABLE);
     }
 
+    public void createTablePageData(SQLiteDatabase db, int issueID){
+        db.execSQL(PageDataEntry.getSQLForCreatePageDataTable(issueID));
+    }
+
+    public void dropTablePageData(SQLiteDatabase db, int issueID){
+        db.execSQL(PageDataEntry.getSQLForDropPageDataTable(issueID));
+    }
+
+
+
     public void deleteIssueEntry(SQLiteDatabase db, String IssueId){
 
         // delete the issue entry from ISSUE table,
@@ -34,9 +44,6 @@ public class IssueDataSet extends BrandedSQLiteHelper{
 
     }
 
-    public String getPageDataTableName(Issue issue){
-        return TABLE_PAGE_DATA_PREFIX + issue.issueID;
-    }
 
 
 
@@ -83,8 +90,33 @@ public class IssueDataSet extends BrandedSQLiteHelper{
 
         // update page unit here
 
-        
-        // page table drop on import
+        public static String getPageDataTableName(int issueId){
+            return TABLE_PAGE_DATA_PREFIX + issueId;
+        }
+
+        public static String getPageDataTableName(Issue issue){
+            return TABLE_PAGE_DATA_PREFIX + issue.issueID;
+        }
+
+
+        public static String getSQLForCreatePageDataTable(int issueId){
+            String createTable  ="CREATE TABLE IF NOT EXISTS "
+                    + getPageDataTableName(issueId)
+                    + "("
+                    + COLUMN_PAGE_NO + " INTEGER PRIMARY KEY ,"      // There should only be one record of an Issue
+                    + COLUMN_PAGE_ID + " TEXT,"
+                    + COLUMN_PAGE_JSON + " TEXT"
+                    + ")"; ;
+
+            return createTable;
+
+        }
+
+        public static String getSQLForDropPageDataTable(int issueId){
+
+            return "DROP TABLE IF EXISTS " + getPageDataTableName(issueId);
+
+        }
 
     }
 
@@ -107,17 +139,32 @@ public class IssueDataSet extends BrandedSQLiteHelper{
             insertValues.put(IssueEntry.COLUMN_CREATED, issue.created);
             insertValues.put(IssueEntry.COLUMN_LAST_MODIFIED, issue.lastModified);
             insertValues.put(IssueEntry.COLUMN_MEDIA_FORMAT , issue.media_format);
-            insertValues.put(IssueEntry.COLUMN_PAGE_DATA_TABLE , getPageDataTableName(issue));
+            insertValues.put(IssueEntry.COLUMN_PAGE_DATA_TABLE , PageDataEntry.getPageDataTableName(issue));
 
             try{ // to catch an Primary Key Violation
 
                 // run create table if exists
                 createTableIssueData(db);
 
-                // TODO : check if a record exits for an issue and act appropriately
+                // Issue ID is unique in the table so use insertWithOnConflict with CONFLICT_IGNORE
+                db.insertWithOnConflict(IssueEntry.ISSUE_TABLE_NAME, null, insertValues, SQLiteDatabase.CONFLICT_REPLACE);
 
-                // insert the record
-                db.insert(IssueEntry.ISSUE_TABLE_NAME, null, insertValues);
+                /*
+                To update record with unique key insert with insertWithOnConflict with CONFLICT_IGNORE and then update the table.
+                 Useful when you want to update just a single column
+
+                int id = (int) yourdb.insertWithOnConflict("your_table", null, initialValues, SQLiteDatabase.CONFLICT_IGNORE);
+                if (id == -1) {
+                                yourdb.update("your_table", initialValues, "_id=?", new String[] {1});
+                }
+
+
+                */
+
+                // Once the issue data has been saved, create the Page Data
+                saveEveryPage(db, issue);
+
+
 
             }catch(Exception e){
                 e.printStackTrace();
@@ -131,6 +178,34 @@ public class IssueDataSet extends BrandedSQLiteHelper{
         }catch (Exception e){
             System.out.println(e.getStackTrace());
         }
+
+    }
+
+    private void saveEveryPage(SQLiteDatabase db, Issue issue) {
+
+
+        try{
+
+            // run create table if exists
+            dropTablePageData(db, issue.issueID);
+            createTablePageData(db, issue.issueID);
+
+            for(int i=0; i< issue.pages.size();i++) {
+                Page page = issue.pages.get(i);
+
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(PageDataEntry.COLUMN_PAGE_NO, page.getPageNo());
+                contentValues.put(PageDataEntry.COLUMN_PAGE_ID, page.getPageID());
+                contentValues.put(PageDataEntry.COLUMN_PAGE_JSON, page.getPageJSONData());
+
+                db.insert(PageDataEntry.getPageDataTableName(issue.issueID), null, contentValues);
+
+            }
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
 
     }
 
@@ -189,7 +264,7 @@ public class IssueDataSet extends BrandedSQLiteHelper{
 
                     String pagesTable = queryCursor.getString(queryCursor.getColumnIndex(IssueEntry.COLUMN_PAGE_DATA_TABLE));
 
-                    issueData.pages = getPagesFromTable(pagesTable);
+                    issueData.pages = getPagesFromTable(db, pagesTable);
 
                 }
 
@@ -205,10 +280,58 @@ public class IssueDataSet extends BrandedSQLiteHelper{
         return issueData;
     }
 
-
-    private ArrayList<Page> getPagesFromTable(String pagesTableName){
+    private ArrayList<Page> getPagesFromTable(SQLiteDatabase db, String pagesTableName){
 
         ArrayList<Page> pages = new ArrayList<Page>();
+
+        try{
+
+            // Define a projection i.e specify columns to retrieve
+            String[] projection = {
+                    PageDataEntry.COLUMN_PAGE_NO,
+                    PageDataEntry.COLUMN_PAGE_ID,
+                    PageDataEntry.COLUMN_PAGE_JSON
+            };
+
+            // Specify the sort order
+            String sortOrder = PageDataEntry.COLUMN_PAGE_NO + " ASC";
+
+            Cursor queryCursor = db.query(
+                    IssueEntry.ISSUE_TABLE_NAME,    // The table to query
+                    projection,                                     // The columns to return
+                    null,                                         // The columns for the WHERE clause
+                    null,                                           // The values for the WHERE clause
+                    null,
+                    null,
+                    sortOrder                                       // The sort order
+            );
+
+            if(queryCursor != null ){
+
+                //queryCursor.getCount();
+                while (queryCursor.moveToNext()) {
+
+                    // Extract data.
+
+                    int pageNo = queryCursor.getInt(queryCursor.getColumnIndex(PageDataEntry.COLUMN_PAGE_NO));
+                    String pageId = queryCursor.getString(queryCursor.getColumnIndex(PageDataEntry.COLUMN_PAGE_ID));
+                    String pageJson = queryCursor.getString(queryCursor.getColumnIndex(PageDataEntry.COLUMN_PAGE_JSON));
+
+                    Page page = new Page(pageNo, pageId, pageJson);
+                    pages.add(page);
+
+                }
+
+                queryCursor.close();
+                db.close();
+            }
+
+
+        }catch (Exception e){
+            System.out.println(e.getStackTrace());
+        }
+
+
 
         return pages;
 

@@ -80,7 +80,7 @@ public class GetIssue extends WebRequest
         mDbHelper.close();
 
         // Test the saved output
-        IssueDataSet mDbReader = new IssueDataSet(BaseApp.getContext());
+ /*       IssueDataSet mDbReader = new IssueDataSet(BaseApp.getContext());
         Issue issueData = mDbReader.getIssue(mDbReader.getReadableDatabase(), "110422");
 
         if(issueData!=null){
@@ -91,7 +91,7 @@ public class GetIssue extends WebRequest
                 System.out.println(" Page ID ::" +page.pageID + ","+page.getPageJSONData());
             }
         }
-
+*/
     }
 
 

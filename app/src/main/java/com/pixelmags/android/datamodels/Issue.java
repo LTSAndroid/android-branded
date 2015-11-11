@@ -34,6 +34,11 @@ public class Issue
     }
 
 
+    public void insertPage(Page page){
+        pages.add(page);
+    }
+
+
     public void getSmallPage(){
 
       //  Page base = null;
