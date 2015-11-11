@@ -1,20 +1,32 @@
 package com.pixelmags.android.pixelmagsapp.ui;
 
+
+
 import android.app.Activity;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.app.DatePickerDialog;
+import android.app.DatePickerDialog.OnDateSetListener;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
+
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.pixelmags.android.api.CreateUser;
 import com.pixelmags.android.api.GetSubscriptions;
@@ -35,8 +47,13 @@ import org.apache.http.util.ByteArrayBuffer;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 
 /**
@@ -61,12 +78,14 @@ public class RegisterFragment extends Fragment {
     private EditText mPasswordView;
     private EditText mfirstnameView;
     private EditText mlastnameView;
-    private EditText mDOBView;
+    private TextView mDOBView;
     private EditText mCPasswordView;
     private CheckBox mtemsconditionsView;
     private View mProgressView;
     private View mRegisterFormView;
-
+    private int yy,mm,dd;
+    private TextView pickDate;
+    private Calendar calendar;
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -96,6 +115,7 @@ public class RegisterFragment extends Fragment {
         // Required empty public constructor
     }
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,8 +138,11 @@ public class RegisterFragment extends Fragment {
         mCPasswordView = (EditText) rootView.findViewById(R.id.registerConfirmPassword);
         mfirstnameView = (EditText) rootView.findViewById(R.id.accountuserid);
         mlastnameView = (EditText) rootView.findViewById(R.id.accountEmailid);
-        mDOBView = (EditText) rootView.findViewById(R.id.registerDateOfBirth);
+        mDOBView = (TextView) rootView.findViewById(R.id.registerDateOfBirth);
         mtemsconditionsView = (CheckBox) rootView.findViewById(R.id.registerAcceptTermsConditions);
+        calendar = Calendar.getInstance(TimeZone.getDefault());
+        mDOBView= (TextView) rootView.findViewById(R.id.registerDateOfBirthText);
+
         Button button = (Button) rootView.findViewById(R.id.registerDoRegister);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,10 +157,42 @@ public class RegisterFragment extends Fragment {
                 navigateTobacktologinbutton();
             }
         });
+
+        Button datePicker = (Button) rootView.findViewById(R.id.pick_dob);
+        datePicker.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                DatePickerDialog datePicker = new DatePickerDialog(getActivity(),
+                        R.style.AppTheme, datePickerListener,
+                        calendar.get(Calendar.YEAR),
+                        calendar.get(Calendar.MONTH),
+                        calendar.get(Calendar.DAY_OF_MONTH));
+                datePicker.setCancelable(false);
+                datePicker.setTitle("Select the date");
+                datePicker.show();
+            }
+        });
+
         return rootView;
     }
 
-        public void navigateTobacktologinbutton() {
+    // Listener
+    private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDialog.OnDateSetListener() {
+
+        // when dialog box is closed, below method will be called.
+        public void onDateSet(DatePicker view, int selectedYear,
+                              int selectedMonth, int selectedDay) {
+            String year1 = String.valueOf(selectedYear);
+            String month1 = String.valueOf(selectedMonth + 1);
+            String day1 = String.valueOf(selectedDay);
+
+            mDOBView.setText(day1 + "/" + month1 + "/" + year1);
+
+        }
+    };
+
+
+    public void navigateTobacktologinbutton() {
 
         // Intent a = new Intent(getActivity().getBaseContext(), LoginActivity.class);
         //  startActivity(a);
@@ -152,7 +207,7 @@ public class RegisterFragment extends Fragment {
         // FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         fragmentManager.beginTransaction()
-                .replace(((ViewGroup)(getView().getParent())).getId(), fragment)
+                .replace(((ViewGroup) (getView().getParent())).getId(), fragment)
                 .addToBackStack(null)
                 .commit();
 
@@ -195,6 +250,8 @@ public class RegisterFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
+
+
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
@@ -254,6 +311,7 @@ public class RegisterFragment extends Fragment {
             focusView = mfirstnameView;
             cancel = true;
         }
+
         //second name
         if (TextUtils.isEmpty(lastName)) {
             mlastnameView.setError(getString(R.string.error_field_required));
@@ -261,12 +319,12 @@ public class RegisterFragment extends Fragment {
             cancel = true;
         }
 
-        //DOB
-        if (TextUtils.isEmpty(DOB)) {
+       //DOB
+       /* if (TextUtils.isEmpty(DOB)) {
             mDOBView.setError(getString(R.string.error_field_required));
             focusView = mDOBView;
             cancel = true;
-        }
+        }*/
 
         //Terms n Conditions
         if (!termsConditions) {
@@ -275,16 +333,17 @@ public class RegisterFragment extends Fragment {
             cancel = true;
         }
         // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
-            cancel = true;
-        } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
-            cancel = true;
-        }
 
+        if (TextUtils.isEmpty(email)) {
+        mEmailView.setError(getString(R.string.error_field_required));
+        focusView = mEmailView;
+        cancel = true;
+    }
+        else if (!isEmailValid(email)) {
+        mEmailView.setError(getString(R.string.error_invalid_email));
+        focusView = mEmailView;
+        cancel = true;
+    }
         if (cancel) {
             // There was an error; don't attempt register and focus the first
             // form field with an error.
@@ -303,6 +362,7 @@ public class RegisterFragment extends Fragment {
     }
 
     private boolean isPasswordValid(String password) {
+
         //TODO: Replace this with your own logic
         return password.length() > 4;
     }
@@ -383,6 +443,44 @@ public class RegisterFragment extends Fragment {
             return resultToDisplay;
 
         }
+
+    /*   @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+           // Use the current date as the default date in the picker
+           final Calendar c = Calendar.getInstance();
+           int year = c.get(Calendar.YEAR);
+           int month = c.get(Calendar.MONTH);
+           int day = c.get(Calendar.DAY_OF_MONTH);
+
+           DatePickerDialog dpd = new DatePickerDialog(this,
+                   new DatePickerDialog.OnDateSetListener() {*//*
+
+           // Create a new instance of DatePickerDialog and return it
+                           return new DatePickerDialog(getActivity(), this, mYear, mMonth, day);
+                       }
+
+                       public void onDateSet(DatePicker view, int year, int month, int day, int dayOfMonth ,int monthOfYear)
+                       {
+
+                           // Display Selected date in textbox
+                           mtxtDate.setText(dayOfMonth + "-"
+                                   + (monthOfYear + 1) + "-" + year);
+
+                       }
+                   }, mYear, mMonth, mDay);
+
+       }*/
+
+            // Do something with the date chosen by the user
+
+   /* @Override
+    public void onClick(View v) {
+
+        final Calendar c = Calendar.getInstance();
+        mYear = c.get(Calendar.YEAR);
+        mMonth = c.get(Calendar.MONTH);
+        mDay = c.get(Calendar.DAY_OF_MONTH);
+    }*/
 
         protected void onPostExecute(String result) {
 

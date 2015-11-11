@@ -1,16 +1,10 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/fragment_login"
     android:orientation="vertical"
-    android:padding="10dp"
+    android:padding="20dp"
     tools:context="com.pixelmags.android.pixelmagsapp.ui.LoginFragment">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Email id :"
-        android:textStyle="bold"/>
 
     <EditText
         android:layout_width="match_parent"
@@ -18,24 +12,21 @@
         android:inputType="textEmailAddress"
         android:id="@+id/loginEmail"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Password :"
-        android:textStyle="bold" />
+        android:layout_centerHorizontal="true"
+        android:hint="@string/hint_email"/>
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textPassword"
         android:id="@+id/loginPassword"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:hint="@string/hint_password"
+        android:layout_below="@+id/loginEmail"/>
 
     <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="180dp"
+        android:layout_height="50dp"
         android:text="@string/log_in"
         android:id="@+id/logInButton"
         android:onClick="onButtonClick"
@@ -43,8 +34,8 @@
         android:layout_centerHorizontal="true" />
 
     <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="180dp"
+        android:layout_height="50dp"
         android:text="@string/register"
         android:id="@+id/registerButton"
         android:hint="@string/go_to_register"
@@ -53,4 +44,4 @@
         android:layout_centerHorizontal="true" />
 
 
-</LinearLayout>
+</RelativeLayout>

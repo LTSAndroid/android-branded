@@ -5,19 +5,15 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
-import com.pixelmags.android.api.GetSubscriptions;
-import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.datamodels.Subscription;
 import com.pixelmags.android.pixelmagsapp.R;
-import com.pixelmags.android.pixelmagsapp.test.ResultsFragment;
 import com.pixelmags.android.storage.SubscriptionsDataSet;
-import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.util.BaseApp;
 
 import java.util.ArrayList;
@@ -42,7 +38,7 @@ public class SubscriptionsFragment extends Fragment {
     private String mParam2;
 
     private GetSubscriptionsTask mGetSubscriptions = null;
-    TextView mTextView;
+    //TextView mTextView;
 
     private OnFragmentInteractionListener mListener;
 
@@ -88,10 +84,37 @@ public class SubscriptionsFragment extends Fragment {
         // retrieving the issues
         mGetSubscriptions = new GetSubscriptionsTask();
         mGetSubscriptions.execute((String) null);
+        //mTextView = (TextView) rootView.findViewById(R.id.subscriptions_text);
 
+      Button button1 = (Button) rootView.findViewById(R.id.subscriptions_price_1);
 
+        button1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-        mTextView = (TextView) rootView.findViewById(R.id.subscriptions_text);
+              //  mTextView.setText("Subscribing..");
+            }
+        });
+
+      Button button2 = (Button) rootView.findViewById(R.id.subscriptions_price_2);
+
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+              //  mTextView.setText("Subscribing for 6months");
+            }
+        });
+
+        Button button3 = (Button) rootView.findViewById(R.id.subscriptions_price_3);
+
+        button3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+              //  mTextView.setText("Subscribing for 3months");
+            }
+        });
 
 
         // Inflate the layout for this fragment
@@ -196,9 +219,9 @@ public class SubscriptionsFragment extends Fragment {
     public void updateTextView(String text){
 
 
-        System.out.println("SUBS TEXT :::: "+text);
+        System.out.println("SUBS TEXT :::: " + text);
 
-        mTextView.setText(text);
+       // mTextView.setText(text);
     }
 
 

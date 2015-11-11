@@ -1,107 +1,92 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:padding="20dp"
     tools:context="com.pixelmags.android.pixelmagsapp.ui.RegisterFragment"
     android:id="@+id/fragment_register">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="First name :"
-        android:textStyle="bold"/>
-
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
+        android:inputType="textCapCharacters"
         android:ems="10"
         android:id="@+id/accountuserid"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Last name :"
-        android:textStyle="bold"/>
+        android:layout_centerHorizontal="true"
+        android:hint="@string/hint_first_name"/>
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
+        android:inputType="textCapCharacters"
         android:ems="10"
+        android:hint="@string/hint_last_name"
         android:id="@+id/accountEmailid"
         android:layout_below="@+id/accountuserid"
         android:layout_centerHorizontal="true" />
 
-<!--
-    <DatePicker
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+     <!--<DatePicker
+        android:layout_width="150dp"
+        android:layout_height="45dp"
         android:id="@+id/datePicker"
+         android:onClick="onPickdatebutton"
         android:layout_below="@+id/registerLastName"
         android:layout_centerHorizontal="true"
-        android:hint="@string/hint_last_name" /
-    >
--->
+        android:hint="@string/hint_last_name" />-->
 
+    <requestFocus />
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Date of Birth :"
-        android:textStyle="bold"/>
-
-    <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="date"
-        android:ems="10"
-        android:id="@+id/registerDateOfBirth"
+        android:id="@+id/registerDateOfBirthText"
+        android:singleLine="true"
+        android:layout_marginTop="6dp"
         android:layout_below="@+id/accountEmailid"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignParentLeft="true"
+        android:hint="@string/hint_date_of_birth"
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Email id :"
-        android:textStyle="bold"/>
+    <Button
+        android:layout_width="130dp"
+        android:layout_height="40dp"
+        android:layout_toLeftOf="@+id/registerDateOfBirth"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/accountEmailid"
+        android:singleLine="true"
+        android:text="@string/pick_dateofbirth"
+        android:id="@+id/pick_dob"/>
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textEmailAddress"
+        android:layout_marginTop="6dp"
         android:id="@+id/accountName"
-        android:layout_below="@+id/registerDateOfBirth"
+        android:hint="@string/hint_email"
+        android:layout_below="@+id/registerDateOfBirthText"
         android:layout_alignLeft="@+id/registerDateOfBirth"
         android:layout_alignStart="@+id/registerDateOfBirth" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Password :"
-        android:textStyle="bold"/>
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textPassword"
+        android:digits="0,1,2,3,4,5,6,7,8,9,*,@,qwertzuiopasdfghjklyxcvbnm"
         android:id="@+id/registerPassword"
+        android:hint="@string/hint_password"
         android:layout_below="@+id/accountName"
         android:layout_alignLeft="@+id/accountName"
         android:layout_alignStart="@+id/accountName"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Confirm Password :"
-        android:textStyle="bold"/>
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textPassword"
+        android:hint="@string/hint_confirm_password"
+        android:digits="0,1,2,3,4,5,6,7,8,9,*,@,qwertzuiopasdfghjklyxcvbnm"
         android:id="@+id/registerConfirmPassword"
         android:layout_below="@+id/registerPassword"
         android:layout_alignLeft="@+id/registerPassword"
@@ -116,25 +101,21 @@
         android:layout_alignLeft="@+id/registerConfirmPassword"
         android:layout_alignStart="@+id/registerConfirmPassword"
         android:checked="false" />
-<LinearLayout
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content">
 
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="180dp"
+        android:layout_height="50dp"
         android:text="@string/register"
         android:id="@+id/registerDoRegister"
-        android:layout_alignParentLeft="true"
+        android:layout_centerHorizontal="true"
         android:layout_below="@+id/registerAcceptTermsConditions" />
 
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/do_backtologin"
-        android:layout_alignParentRight="true"
+        android:layout_width="180dp"
+        android:layout_height="50dp"
+        android:text="@string/do_back"
+        android:layout_centerHorizontal="true"
         android:id="@+id/backtologin"
-        />
+        android:layout_below="@+id/registerDoRegister"/>
 
-        </LinearLayout>
-</LinearLayout>
+</RelativeLayout>

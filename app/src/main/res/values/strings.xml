@@ -58,6 +58,8 @@
     <!-- hint_password reused here-->
     <string name="hint_confirm_password">Confirm password</string>
     <string name="accept_terms_and_conditions">I accept the Terms and Conditions</string>
+    <string name="pick_date_of_birth">DatePicker</string>
+    <string name="error_invalid_first_name">Enter firstname</string>
 
 
     <!-- Account Screen -->
@@ -72,12 +74,19 @@
     <string name="my_url">"http://www.pixelmags.com"</string>
     <string name="my_url1">"http://www.pixelmags.com/t+c/current"</string>
 
+    <!-- Subscriptions Screen -->
+    <string name="subscriptions_buy_now">Buy now</string>
+    <string name="subscriptions_6_months">6 Months Subscription</string>
+    <string name="subscriptions_3_months">3 Months Subscription</string>
+    <string name="subscription_price_1">£1.99</string>
+    <string name="subscription_price_2">£1.99</string>
+    <string name="subscription_price_3">£1.99</string>
+
     <!-- Post App Strings -->
 
     <string name="action_settings">Settings</string>
     <string-array name="action_account_settings">Account Settings</string-array>
     <string-array name="action_account_fragment_about">About</string-array>
-
 
 
 
@@ -97,6 +106,7 @@
     <string name="Pixelmags">PixelMags <a href="http://www.pixelmags.com/t+c/current"></a></string>
     <string name="go_to_register">REGISTER</string>
     <string name="font_family_body_1_material">sans-serif</string>
-    <string name="do_backtologin">Back to Login</string>
+    <string name="do_back">Back</string>
+    <string name="pick_dateofbirth">PickDate</string>
 
 </resources>
