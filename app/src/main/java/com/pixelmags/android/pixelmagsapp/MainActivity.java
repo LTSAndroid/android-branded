@@ -1,6 +1,7 @@
 package com.pixelmags.android.pixelmagsapp;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.pixelmagsapp.R;
+import com.pixelmags.android.pixelmagsapp.service.DownloadService;
 import com.pixelmags.android.pixelmagsapp.test.ResultsFragment;
 import com.pixelmags.android.pixelmagsapp.ui.LoginFragment;
 import com.pixelmags.android.pixelmagsapp.ui.NavigationDrawerFragment;
@@ -45,6 +47,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        startDownloadService();
 
         setContentView(R.layout.activity_main);
 
@@ -197,6 +201,28 @@ public class MainActivity extends AppCompatActivity
 
 
     /* All added code here */
+
+    @Override
+    public void onDestroy() {
+
+        stopDownloadService();
+        super.onDestroy();
+
+    }
+
+
+    // Service :: start download service
+    public void startDownloadService() {
+        startService(new Intent(getBaseContext(), DownloadService.class));
+    }
+
+    // Service :: stop download service
+    public void stopDownloadService() {
+        stopService(new Intent(getBaseContext(), DownloadService.class));
+    }
+
+
+
 
 
     // implement function, mandatory
