@@ -13,35 +13,31 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" /> <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" /> <!-- To read the device id, etc-->
-    <uses-permission android:name="com.android.vending.BILLING" /><!--permission to communicate request and response messages to the Google Play’s billing service.  -->
-    <!--
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" /> <!-- To read the device id, etc -->
+    <uses-permission android:name="com.android.vending.BILLING" />
 
+    <!-- permission to communicate request and response messages to the Google Play’s billing service. -->
+    <!--
      android:name="com.pixelmags.android.util.BaseApp" - used to instantiate the App context so that the App context can be
      called from anywhere within the app.
-
     -->
-
-
     <application
+        android:name="com.pixelmags.android.util.BaseApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:name="com.pixelmags.android.util.BaseApp"
         android:theme="@style/AppTheme" >
-
         <activity
-            android:name="com.pixelmags.android.pixelmagsapp.LaunchActivity"
-            android:label="@string/title_activity_launch" >
+            android:name=".LaunchActivity"
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-
         <activity
-            android:name="com.pixelmags.android.pixelmagsapp.MainActivity"
+            android:name=".MainActivity"
             android:label="@string/app_name" >
         </activity>
 
@@ -49,15 +45,17 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-
-
         <activity
-            android:name="com.pixelmags.android.pixelmagsapp.ui.LoginActivity"
+            android:name=".ui.LoginActivity"
             android:label="@string/title_activity_login"
             android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
 
-
+        <service
+            android:name=".service.DownloadService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
     </application>
 
 </manifest>
