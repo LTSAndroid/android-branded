@@ -42,7 +42,7 @@ public class Magazine implements Serializable
     public String thumbnailURL;
     public Boolean inAnytime;
     public Boolean issueOwned;
-    public String issueId;
+//    public String issueId;
     public String status = Magazine.STATUS_PRICE;
 //    public Object data;
     public Number sortOrder;
@@ -52,5 +52,7 @@ public class Magazine implements Serializable
 
 
     public Bitmap thumbnailBitmap; // to store temporarily once downloaded
+    public String thumbnailDownloadedInternalPath;
+    public boolean isThumbnailDownloaded;
 
 }
