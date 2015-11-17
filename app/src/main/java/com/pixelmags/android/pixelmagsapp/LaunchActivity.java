@@ -87,9 +87,8 @@ public class LaunchActivity extends Activity {
             String resultToDisplay = "";
 
 
-            System.out.println("USER LOGGED IN :"+ UserPrefs.getUserLoggedIn());
-            System.out.println("USER Email STORED:" + UserPrefs.getUserEmail());
-
+            //System.out.println("USER LOGGED IN :"+ UserPrefs.getUserLoggedIn());
+            //System.out.println("USER Email STORED:" + UserPrefs.getUserEmail());
 
             //Phase 1 - Get All issues and Subs for app
             try {
