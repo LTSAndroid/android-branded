@@ -33,6 +33,8 @@ import com.pixelmags.android.storage.AllIssuesDataSet;
 import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.util.BaseApp;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 
@@ -162,20 +164,27 @@ public class AllIssuesFragment extends Fragment {
             }
 
             // Set the magazine image
-            if(magazinesList.get(position).thumbnailBitmap != null) {
-                ImageView imageView = (ImageView) grid.findViewById(R.id.gridImage);
-                imageView.setImageBitmap(magazinesList.get(position).thumbnailBitmap);
-                //imageView.setImageResource(mThumbIds[position]);
-                imageView.setTag(position);
-                imageView.setOnClickListener(new View.OnClickListener() {
+            if(magazinesList.get(position).isThumbnailDownloaded) {
 
-                    @Override
-                    public void onClick(View v) {
+               // Bitmap bmp = loadImageFromStorage(magazinesList.get(position).thumbnailDownloadedInternalPath);
 
-                        gridIssueImageClicked((Integer) v.getTag());
+                if(magazinesList.get(position).thumbnailBitmap != null){
+                    ImageView imageView = (ImageView) grid.findViewById(R.id.gridImage);
+                    imageView.setImageBitmap(magazinesList.get(position).thumbnailBitmap);
+                    //imageView.setImageBitmap(bmp);
 
-                    }
-                });
+                    imageView.setTag(position);
+                    imageView.setOnClickListener(new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View v) {
+
+                            gridIssueImageClicked((Integer) v.getTag());
+
+                        }
+                    });
+                }
+
             }
 
             if(magazinesList.get(position).title != null) {
@@ -246,12 +255,15 @@ public class AllIssuesFragment extends Fragment {
 
             mGetAllIssuesTask = null;
 
-
            /* for(int i=0; i< issuessArray.size();i++) {
 
                 Magazine magazine = issuessArray.get(i);
 
             }*/
+
+            if(gridAdapter!=null){
+                gridAdapter.notifyDataSetChanged();
+            }
 
 
         }
@@ -273,17 +285,41 @@ public class AllIssuesFragment extends Fragment {
 
 
         if(magazinesList != null){
-
-
             for(int i=0; i< magazinesList.size();i++) {
-                DownloadImageTask mDownloadTask = new DownloadImageTask(i);
-                mDownloadTask.execute((String) null);
+               // DownloadImageTask mDownloadTask = new DownloadImageTask(i);
+               // mDownloadTask.execute((String) null);
+               if( magazinesList.get(i).isThumbnailDownloaded){
+                   magazinesList.get(i).thumbnailBitmap = loadImageFromStorage(magazinesList.get(i).thumbnailDownloadedInternalPath);
+               }
             }
         }
+
+
+    }
+
+    private Bitmap loadImageFromStorage(String path)
+    {
+
+        Bitmap issueThumbnail = null;
+        try {
+            File file = new File(path);
+            FileInputStream inputStream = new FileInputStream(file);
+            issueThumbnail = BitmapFactory.decodeStream(inputStream);
+
+
+            inputStream.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        return issueThumbnail;
+
     }
 
 
-
+/*
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
 
         int index;
@@ -317,7 +353,7 @@ public class AllIssuesFragment extends Fragment {
            // bmImage.setImageBitmap(result);
         }
     }
-
+*/
 
     public void displayMagazineInGrid(int index){
 

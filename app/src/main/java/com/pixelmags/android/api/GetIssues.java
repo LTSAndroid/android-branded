@@ -2,6 +2,7 @@ package com.pixelmags.android.api;
 
 import com.pixelmags.android.comms.WebRequest;
 import com.pixelmags.android.datamodels.Magazine;
+import com.pixelmags.android.download.DownloadThumbnails;
 import com.pixelmags.android.json.GetIssuesParser;
 import com.pixelmags.android.storage.AllIssuesDataSet;
 import com.pixelmags.android.util.BaseApp;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
  * Created by Annie on 09/10/15.
  */
 public class GetIssues extends WebRequest {
+
     private static final String API_NAME = "getIssues";
     private String mMagazineID;
     private String mAppBundleID;
@@ -67,6 +69,10 @@ public class GetIssues extends WebRequest {
             System.out.println("MAGAZINE Title === " + mag.title);
         }
 */
+
+        getIssuesParserParser.allIssuesList = DownloadThumbnails.DownloadAllThumbnailData(getIssuesParserParser.allIssuesList);
+
+
         // Save the Subscription Objects into the SQlite DB
         AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
         mDbHelper.insert_all_issues_data(mDbHelper.getWritableDatabase(), getIssuesParserParser.allIssuesList);
