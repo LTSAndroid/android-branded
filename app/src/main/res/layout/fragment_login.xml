@@ -26,8 +26,13 @@
 
     <Button
         android:layout_width="180dp"
-        android:layout_height="50dp"
+        android:layout_height="45dp"
         android:text="@string/log_in"
+        android:background="@drawable/shape"
+        android:shadowColor="#FFFFFF"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
         android:id="@+id/logInButton"
         android:onClick="onButtonClick"
         android:layout_below="@+id/loginPassword"
@@ -35,8 +40,14 @@
 
     <Button
         android:layout_width="180dp"
-        android:layout_height="50dp"
+        android:layout_height="45dp"
         android:text="@string/register"
+        android:background="@drawable/shape"
+        android:shadowColor="#FFFFFF"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
+        android:layout_marginTop="7dip"
         android:id="@+id/registerButton"
         android:hint="@string/go_to_register"
         android:onClick="onButtonclick"

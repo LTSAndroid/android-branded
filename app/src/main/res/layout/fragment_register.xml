@@ -55,6 +55,11 @@
         android:layout_alignParentRight="true"
         android:layout_below="@+id/accountEmailid"
         android:singleLine="true"
+        android:background="@drawable/shape"
+        android:shadowColor="#99ebff"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
         android:text="@string/pick_dateofbirth"
         android:id="@+id/pick_dob"/>
 
@@ -104,18 +109,29 @@
 
     <Button
         android:layout_width="180dp"
-        android:layout_height="50dp"
+        android:layout_height="45dp"
         android:text="@string/register"
+        android:background="@drawable/shape"
+        android:shadowColor="#99ebff"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
         android:id="@+id/registerDoRegister"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/registerAcceptTermsConditions" />
 
     <Button
         android:layout_width="180dp"
-        android:layout_height="50dp"
+        android:layout_height="45dp"
         android:text="@string/do_back"
         android:layout_centerHorizontal="true"
         android:id="@+id/backtologin"
+        android:layout_marginTop="7dip"
+        android:background="@drawable/shape"
+        android:shadowColor="#99ebff"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
         android:layout_below="@+id/registerDoRegister"/>
 
 </RelativeLayout>
