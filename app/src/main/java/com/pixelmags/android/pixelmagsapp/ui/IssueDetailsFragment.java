@@ -1,6 +1,7 @@
 package com.pixelmags.android.pixelmagsapp.ui;
 
 import android.app.Activity;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.pixelmags.android.datamodels.Magazine;
@@ -72,6 +74,18 @@ public class IssueDetailsFragment extends Fragment {
             issueDetailsPriceButton.setText(String.valueOf(issueData.price));
 
 
+            /* TODO - replace with scoll of preview images */
+            LinearLayout layout = (LinearLayout) rootView.findViewById(R.id.issueDetailsPreviewImageLayout);
+            for (int i = 0; i < 10; i++) {
+                ImageView imageView = new ImageView(rootView.getContext());
+                imageView.setId(i);
+                imageView.setPadding(2, 2, 2, 2);
+                imageView.setImageResource(R.drawable.ic_launcher1);
+ //               imageView.setImageBitmap(R.drawable.ic_launcher1);
+                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                layout.addView(imageView);
+            }
+            
 
         }
 
