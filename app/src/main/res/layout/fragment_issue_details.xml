@@ -5,12 +5,12 @@
 
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="400dp"
+        android:layout_height="250dp"
         android:id="@+id/issueDetailsImageView"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="65dp" />
+        android:layout_marginTop="20dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -20,7 +20,7 @@
         android:id="@+id/issueDetailsTitle"
         android:layout_below="@+id/issueDetailsImageView"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="38dp" />
+        android:layout_marginTop="12dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -30,15 +30,38 @@
         android:id="@+id/issueDetailsSynopsis"
         android:layout_below="@+id/issueDetailsTitle"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="38dp" />
+        android:gravity="center_horizontal|center_vertical"
+        android:layout_marginTop="9dp" />
 
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="145dp"
+        android:layout_height="35dp"
         android:text="Issue Price"
         android:id="@+id/issueDetailsPriceButton"
         android:layout_below="@+id/issueDetailsSynopsis"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignParentLeft="true"
+        android:background="@drawable/shape"
+        android:shadowColor="#3384ff"
+        android:textColor="#ffffff"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
+        android:layout_marginTop="7dp"/>
+
+    <Button
+        android:layout_width="145dp"
+        android:layout_height="35dp"
+        android:text="Back"
+        android:id="@+id/issueDetailsBackButton"
+        android:layout_below="@+id/issueDetailsSynopsis"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/shape"
+        android:shadowColor="#3384ff"
+        android:textColor="#ffffff"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
+        android:layout_marginTop="7dp"/>
 
     <HorizontalScrollView
         android:layout_width="wrap_content"
@@ -60,3 +83,4 @@
 
 
 </RelativeLayout>
+
