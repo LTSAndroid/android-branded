@@ -1,9 +1,13 @@
 package com.pixelmags.android.pixelmagsapp;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
@@ -17,15 +21,21 @@ import com.pixelmags.android.api.ValidateUser;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.storage.UserPrefs;
+import com.pixelmags.android.util.IabHelper;
+import com.pixelmags.android.util.IabResult;
 
 public class LaunchActivity extends Activity {
+
+
+    private static final String TAG = "<your domain>.inappbilling";
+    public static IabHelper mHelper;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_launch);
-
         PreLaunchAppTask mPreLaunchTask = new PreLaunchAppTask();
         mPreLaunchTask.execute((String) null);
 
@@ -43,7 +53,33 @@ public class LaunchActivity extends Activity {
         };
         timerThread.start();
 
+        String base64EncodedPublicKey = "com.pixelmags.android.pixelmagsapp";
+        mHelper = new IabHelper(this, base64EncodedPublicKey);
 
+        mHelper.startSetup(new
+                                   IabHelper.OnIabSetupFinishedListener() {
+                                       public void onIabSetupFinished(IabResult result) {
+                                           if (!result.isSuccess()) {
+                                               //failed
+                                           } else {
+                                               //success
+                                           }
+                                       }
+                                   });
+
+
+       //Configurations.getInstance().getGooglePlayLicenseKey();
+        mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
+            public void onIabSetupFinished(IabResult result) {
+                if (!result.isSuccess()) {
+                    /*Utilities.log("Unable to setup billing: " + result);
+                    isBillingSetup = false;*/
+                } else {
+                    /*Utilities.log("Billing setup successfully");
+                    isBillingSetup = true;*/
+                }
+            }
+        });
     }
 
     @Override
@@ -155,6 +191,18 @@ public class LaunchActivity extends Activity {
         }
 
     }
-
+/**
+ 094.
+ * Very important!
+ 095.
+ */
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mHelper != null) {
+            mHelper.dispose();
+            mHelper = null;
+        }
+    }
 }
 

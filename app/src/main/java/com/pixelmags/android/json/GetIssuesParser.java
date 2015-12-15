@@ -1,8 +1,16 @@
 package com.pixelmags.android.json;
 
 
+import android.os.Bundle;
+
 import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.datamodels.Subscription;
+import com.pixelmags.android.pixelmagsapp.LaunchActivity;
+import com.pixelmags.android.pixelmagsapp.MainActivity;
+import com.pixelmags.android.util.IabHelper;
+import com.pixelmags.android.util.IabResult;
+import com.pixelmags.android.util.Inventory;
+import com.pixelmags.android.util.Purchase;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -17,7 +25,7 @@ public class GetIssuesParser extends JSONParser {
     public Object mData;
     public ArrayList<Magazine> allIssuesList;
 
-
+    public ArrayList<String> skuList;
 
     public GetIssuesParser(String Data){
         super(Data);
@@ -30,6 +38,8 @@ public class GetIssuesParser extends JSONParser {
             return false; // return false if the JSON base object cannot be parsed
 
         try{
+
+            skuList = new ArrayList<String>();
 
             JSONArray arrayData = baseJSON.getJSONArray("data");
             for(int i=0;i<arrayData.length();i++)
@@ -54,7 +64,25 @@ public class GetIssuesParser extends JSONParser {
                 magazine.exclude_from_subscription = unit.getString("exclude_from_subscription");
 
                 allIssuesList.add(magazine);
+                skuList.add(magazine.android_store_sku);
             }
+// IAB is fully set up. Now, let's get an inventory of stuff we own.
+            //LaunchActivity.mHelper.queryInventoryAsync(true,skuList,iabInventoryListener());
+
+
+         /*   int response = skuDetails.getInt("RESPONSE_CODE");
+            if (response == 0) {
+                ArrayList<String> responseList
+                        = skuDetails.getStringArrayList("DETAILS_LIST");
+
+                for (String thisResponse : responseList) {
+                    JSONObject object = new JSONObject(thisResponse);
+                    String sku = object.getString("productId");
+                    String price = object.getString("price");
+                    *//*if (sku.equals("premiumUpgrade")) mPremiumUpgradePrice = price;
+                    else if (sku.equals("gas")) mGasPrice = price;*//*
+                }
+            }*/
 
         }catch(Exception e){
             e.printStackTrace();
@@ -62,5 +90,23 @@ public class GetIssuesParser extends JSONParser {
 
         return true;
     }
-
+/**
+ * Listener that's called when we finish querying the items and subscriptions we own
+ *//*
+    private IabHelper.QueryInventoryFinishedListener iabInventoryListener() {
+        return new IabHelper.QueryInventoryFinishedListener() {
+            @Override
+            public void onQueryInventoryFinished(IabResult result, Inventory inventory) {
+            // Have we been disposed of in the meantime? If so, quit.
+                if (LaunchActivity.mHelper == null) {
+                    return;
+                }
+            // Something went wrong
+                if (!result.isSuccess()) {
+                    return;
+                }
+               // Purchase purchasePro = inventory.getPurchase(G.SKU_PRO); // Where G.SKU_PRO is your product ID (eg. permanent.ad_removal)
+            }
+        };
+    }*/
 }

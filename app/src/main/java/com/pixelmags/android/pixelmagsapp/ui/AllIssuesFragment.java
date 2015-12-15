@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,16 +28,23 @@ import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.datamodels.Subscription;
 import com.pixelmags.android.json.GetIssuesParser;
 import com.pixelmags.android.json.JSONParser;
+import com.pixelmags.android.pixelmagsapp.LaunchActivity;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.pixelmagsapp.test.ResultsFragment;
 import com.pixelmags.android.storage.AllIssuesDataSet;
 import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.util.BaseApp;
+import com.pixelmags.android.util.IabHelper;
+import com.pixelmags.android.util.IabResult;
+import com.pixelmags.android.util.Purchase;
 
 import java.io.File;
 import java.io.FileInputStream;
+import org.json.JSONObject;
+
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class AllIssuesFragment extends Fragment {
@@ -44,6 +52,7 @@ public class AllIssuesFragment extends Fragment {
     private ArrayList<Magazine> magazinesList = null;
     private GetAllIssuesTask mGetAllIssuesTask = null;
     public CustomGridAdapter gridAdapter;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,6 +75,10 @@ public class AllIssuesFragment extends Fragment {
 
         setGridAdapter(rootView);
 
+        //
+       /* Bundle querySkus = new Bundle();
+        querySkus.putStringArrayList('ITEM_ID_LIST', skuList);*/
+
         // Inflate the layout for this fragment
         return rootView;
     }
@@ -86,6 +99,10 @@ public class AllIssuesFragment extends Fragment {
 
 
     public void gridPriceButtonClicked(int position){
+
+
+        LaunchActivity.mHelper.launchPurchaseFlow(getActivity(), "SKU", 10001,
+                mPurchaseFinishedListener, "bGoa+V7g/yqDXvKRqq+JTFn4uQZbPiQJo4pf9RzJ");
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
@@ -285,13 +302,27 @@ public class AllIssuesFragment extends Fragment {
 
 
         if(magazinesList != null){
+
             for(int i=0; i< magazinesList.size();i++) {
                // DownloadImageTask mDownloadTask = new DownloadImageTask(i);
                // mDownloadTask.execute((String) null);
                if( magazinesList.get(i).isThumbnailDownloaded){
                    magazinesList.get(i).thumbnailBitmap = loadImageFromStorage(magazinesList.get(i).thumbnailDownloadedInternalPath);
                }
+
+
+            /*ArrayList<String> skuList = new ArrayList<String> ();
+
+            for(int i=0; i< magazinesList.size();i++) {
+
+                skuList.add(magazinesList.get(i).android_store_sku);
+                DownloadImageTask mDownloadTask = new DownloadImageTask(i);
+                mDownloadTask.execute((String) null);*/
+
             }
+
+            /*Bundle querySkus = new Bundle();
+            querySkus.putStringArrayList("ITEM_ID_LIST", skuList);*/
         }
 
 
@@ -319,8 +350,8 @@ public class AllIssuesFragment extends Fragment {
     }
 
 
-/*
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+
+    /*private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
 
         int index;
         //Bitmap bmImage;
@@ -365,6 +396,21 @@ public class AllIssuesFragment extends Fragment {
 
     }
 
-
+    IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener
+            = new IabHelper.OnIabPurchaseFinishedListener() {
+        public void onIabPurchaseFinished(IabResult result, Purchase purchase)
+        {
+            if (result.isFailure()) {
+                //error
+                return;
+            }
+            else if (purchase.getSku().equals("SKU")) {
+                // consume the gas and update the UI
+            }
+            else if (purchase.getSku().equals("SKU")) {
+                // give user access to premium content and update the UI
+            }
+        }
+    };
  // end of class
 }
