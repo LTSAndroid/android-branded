@@ -75,8 +75,6 @@ public class AllIssuesFragment extends Fragment {
 
         setGridAdapter(rootView);
 
-
-
         // Inflate the layout for this fragment
         return rootView;
     }
@@ -99,12 +97,8 @@ public class AllIssuesFragment extends Fragment {
     public void gridPriceButtonClicked(int position)
     {
 
-
         MainActivity myAct = (MainActivity) getActivity();
-
         myAct.purchaseLauncher();
-
-
 
        /* AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
@@ -308,7 +302,8 @@ public class AllIssuesFragment extends Fragment {
             for(int i=0; i< magazinesList.size();i++) {
                // DownloadImageTask mDownloadTask = new DownloadImageTask(i);
                // mDownloadTask.execute((String) null);
-               if( magazinesList.get(i).isThumbnailDownloaded){
+               if( magazinesList.get(i).isThumbnailDownloaded)
+               {
                    magazinesList.get(i).thumbnailBitmap = loadImageFromStorage(magazinesList.get(i).thumbnailDownloadedInternalPath);
                }
 

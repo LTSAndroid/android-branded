@@ -29,6 +29,7 @@ import android.widget.TextView;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.pixelmags.android.comms.Config;
+import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.pixelmagsapp.service.DownloadService;
 import com.pixelmags.android.pixelmagsapp.test.ResultsFragment;
@@ -36,6 +37,8 @@ import com.pixelmags.android.pixelmagsapp.ui.LoginFragment;
 import com.pixelmags.android.pixelmagsapp.ui.NavigationDrawerFragment;
 import com.pixelmags.android.pixelmagsapp.ui.RegisterFragment;
 import com.pixelmags.android.pixelmagsapp.ui.SubscriptionsFragment;
+import com.pixelmags.android.storage.AllIssuesDataSet;
+import com.pixelmags.android.util.BaseApp;
 import com.pixelmags.android.util.IabHelper;
 import com.pixelmags.android.util.IabResult;
 import com.pixelmags.android.util.Inventory;
@@ -43,13 +46,16 @@ import com.pixelmags.android.util.PMStrictMode;
 import com.pixelmags.android.util.Purchase;
 import com.pixelmags.android.util.Util;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, LoginFragment.OnFragmentInteractionListener ,
         RegisterFragment.OnFragmentInteractionListener, ResultsFragment.OnFragmentInteractionListener,
         SubscriptionsFragment.OnFragmentInteractionListener {
 
     public IabHelper mHelper;
-
+    private ArrayList<Magazine> magazinesList = null;
+    public ArrayList<String> skuList;
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -61,10 +67,8 @@ public class MainActivity extends AppCompatActivity
     private CharSequence mTitle;
 
 
-
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         startDownloadService();
@@ -82,7 +86,6 @@ public class MainActivity extends AppCompatActivity
 
         // setting STRICT DEVELOPER MODE (Disable this for live apps)
         PMStrictMode.setStrictMode(Config.DEVELOPER_MODE);
-
 
 
         Util.doPreLaunchSteps();
@@ -112,12 +115,67 @@ public class MainActivity extends AppCompatActivity
                 } else {
                     /*Utilities.log("Billing setup successfully");
                     isBillingSetup = true;*/
+                    magazinesList = null; // clear the list
+
+                    AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
+                    magazinesList = mDbHelper.getAllIssues(mDbHelper.getReadableDatabase());
+                    mDbHelper.close();
+                    skuList = new ArrayList<String>();
+
+                    if (magazinesList != null) {
+
+                        for (int i = 0; i < magazinesList.size(); i++) {
+                            skuList.add(magazinesList.get(i).android_store_sku);
+
+                        }
+                    }
+                    mHelper.queryInventoryAsync(true, skuList,
+                            mQueryFinishedListener);
                 }
             }
         });
 
 
     }
+
+
+    IabHelper.QueryInventoryFinishedListener
+            mQueryFinishedListener = new IabHelper.QueryInventoryFinishedListener()
+    {
+        public void onQueryInventoryFinished(IabResult result, Inventory inventory)
+        {
+            if (result.isFailure())
+            {
+                // handle error
+                return;
+            }
+
+            String applePrice =
+                    inventory.getSkuDetails("com.pixelmags.androidbranded.test1").getPrice();
+            String bananaPrice =
+                    inventory.getSkuDetails("com.pixelmags.androidbranded.test2").getPrice();
+
+            // update the UI
+            mHelper.queryInventoryAsync(mGotInventoryListener);
+        }
+
+    };
+
+    IabHelper.QueryInventoryFinishedListener mGotInventoryListener
+            = new IabHelper.QueryInventoryFinishedListener() {
+        public void onQueryInventoryFinished(IabResult result,
+                                             Inventory inventory) {
+
+            if (result.isFailure()) {
+                // handle error here
+            }
+            else {
+                // does the user have the premium upgrade?
+                //mIsPremium = inventory.hasPurchase(SKU_PREMIUM);
+                // update UI accordingly
+            }
+        }
+    };
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {

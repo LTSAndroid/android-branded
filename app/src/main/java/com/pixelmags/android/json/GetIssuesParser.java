@@ -25,21 +25,22 @@ public class GetIssuesParser extends JSONParser {
     public Object mData;
     public ArrayList<Magazine> allIssuesList;
 
-    public ArrayList<String> skuList;
+
 
     public GetIssuesParser(String Data){
         super(Data);
         allIssuesList = new ArrayList<Magazine>();
     }
 
-    public boolean parse(){
+    public boolean parse()
+    {
 
         if(!initJSONParse())
             return false; // return false if the JSON base object cannot be parsed
 
         try{
 
-            skuList = new ArrayList<String>();
+
 
             JSONArray arrayData = baseJSON.getJSONArray("data");
             for(int i=0;i<arrayData.length();i++)
@@ -64,7 +65,7 @@ public class GetIssuesParser extends JSONParser {
                 magazine.exclude_from_subscription = unit.getString("exclude_from_subscription");
 
                 allIssuesList.add(magazine);
-                skuList.add(magazine.android_store_sku);
+
             }
 // IAB is fully set up. Now, let's get an inventory of stuff we own.
         //    LaunchActivity.mHelper.queryInventoryAsync(true,skuList,iabInventoryListener());
