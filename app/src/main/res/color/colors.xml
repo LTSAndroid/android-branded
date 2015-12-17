@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:color="#FF33B5E5"/>
+    <item android:color="#FFAA66CC"/>
+    <item android:color="#FF99CC00"/>
+    <item android:color="#FFFFBB33"/>
+    <item android:color="#FFFF4444"/>
+    <item android:color="#FF0099CC"/>
+    <item android:color="#FF9933CC"/>
+    <item android:color="#FF669900"/>
+    <item android:color="#FFFF8800"/>
+    <item android:color="#FFCC0000"/>
+    <item android:color="#FF000000"/>
+    <item android:color="#FFFFFFFF"/>
+
+    <integer-array android:name="color">
+        <item>@color/blue</item>
+        <item>@color/purple</item>
+        <item>@color/green</item>
+        <item>@color/orange</item>
+        <item>@color/red</item>
+        <item>@color/darkblue</item>
+        <item>@color/darkpurple</item>
+        <item>@color/darkgreen</item>
+        <item>@color/darkorange</item>
+        <item>@color/darkred</item>
+        <item>@color/black</item>
+        <item>@color/white</item>
+    </integer-array>
+
+</selector>
