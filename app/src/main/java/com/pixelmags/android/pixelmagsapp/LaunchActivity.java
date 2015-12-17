@@ -53,7 +53,7 @@ public class LaunchActivity extends Activity {
         };
         timerThread.start();
 
-        String base64EncodedPublicKey = "com.pixelmags.android.pixelmagsapp";
+        String base64EncodedPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhE2tqqq+WSoEXHyqOdeFjKFGgWVuhapArdTe/b0wzxAJE0pdsM8FlywwyIQlLd51hj6vvDkmd8T3dRi6LX2Ww2M8+fpK7jP3ydMyTZB9efuAiRZq2tlo2GmrFmO0vTdD0MkY4OdX9ROEvY9k/cbzXX73uNH0FAcZ38ypr/qf66IS2yI+z+Oiip7c39pDrG0P4kVamJQOjs7PLTmtwU1PWc43phqISxxpLJWxj0yW/YjfZ7Knk5n84p02CpDJcoZXdsBu7X4GOc79DRURDHuLu3tgkp3roXTQeX6y4Ht9843Hu5rSRgADQ/5828+SozdhIAhQ4CT/MZ0w0NEd0/OitwIDAQAB";
         mHelper = new IabHelper(this, base64EncodedPublicKey);
 
         mHelper.startSetup(new
