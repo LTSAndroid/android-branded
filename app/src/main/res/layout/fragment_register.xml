@@ -40,7 +40,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/registerDateOfBirthText"
+        android:id="@+id/registerDateOfBirth"
         android:singleLine="true"
         android:layout_marginTop="6dp"
         android:layout_below="@+id/accountEmailid"
@@ -71,7 +71,7 @@
         android:layout_marginTop="6dp"
         android:id="@+id/accountName"
         android:hint="@string/hint_email"
-        android:layout_below="@+id/registerDateOfBirthText"
+        android:layout_below="@+id/registerDateOfBirth"
         android:layout_alignLeft="@+id/registerDateOfBirth"
         android:layout_alignStart="@+id/registerDateOfBirth" />
 

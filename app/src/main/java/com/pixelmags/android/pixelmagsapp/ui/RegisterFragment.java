@@ -141,7 +141,7 @@ public class RegisterFragment extends Fragment {
         mDOBView = (TextView) rootView.findViewById(R.id.registerDateOfBirth);
         mtemsconditionsView = (CheckBox) rootView.findViewById(R.id.registerAcceptTermsConditions);
         calendar = Calendar.getInstance(TimeZone.getDefault());
-        mDOBView= (TextView) rootView.findViewById(R.id.registerDateOfBirthText);
+     //   mDOBView= (TextView) rootView.findViewById(R.id.registerDateOfBirthText);
 
         Button button = (Button) rootView.findViewById(R.id.registerDoRegister);
         button.setOnClickListener(new View.OnClickListener() {
