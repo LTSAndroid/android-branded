@@ -27,10 +27,6 @@ import com.pixelmags.android.util.IabResult;
 public class LaunchActivity extends Activity {
 
 
-    private static final String TAG = "<your domain>.inappbilling";
-    public static IabHelper mHelper;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,33 +49,7 @@ public class LaunchActivity extends Activity {
         };
         timerThread.start();
 
-        String base64EncodedPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhE2tqqq+WSoEXHyqOdeFjKFGgWVuhapArdTe/b0wzxAJE0pdsM8FlywwyIQlLd51hj6vvDkmd8T3dRi6LX2Ww2M8+fpK7jP3ydMyTZB9efuAiRZq2tlo2GmrFmO0vTdD0MkY4OdX9ROEvY9k/cbzXX73uNH0FAcZ38ypr/qf66IS2yI+z+Oiip7c39pDrG0P4kVamJQOjs7PLTmtwU1PWc43phqISxxpLJWxj0yW/YjfZ7Knk5n84p02CpDJcoZXdsBu7X4GOc79DRURDHuLu3tgkp3roXTQeX6y4Ht9843Hu5rSRgADQ/5828+SozdhIAhQ4CT/MZ0w0NEd0/OitwIDAQAB";
-        mHelper = new IabHelper(this, base64EncodedPublicKey);
 
-        mHelper.startSetup(new
-                                   IabHelper.OnIabSetupFinishedListener() {
-                                       public void onIabSetupFinished(IabResult result) {
-                                           if (!result.isSuccess()) {
-                                               //failed
-                                           } else {
-                                               //success
-                                           }
-                                       }
-                                   });
-
-
-       //Configurations.getInstance().getGooglePlayLicenseKey();
-        mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
-            public void onIabSetupFinished(IabResult result) {
-                if (!result.isSuccess()) {
-                    /*Utilities.log("Unable to setup billing: " + result);
-                    isBillingSetup = false;*/
-                } else {
-                    /*Utilities.log("Billing setup successfully");
-                    isBillingSetup = true;*/
-                }
-            }
-        });
     }
 
     @Override
@@ -199,10 +169,7 @@ public class LaunchActivity extends Activity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mHelper != null) {
-            mHelper.dispose();
-            mHelper = null;
-        }
+
     }
 }
 

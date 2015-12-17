@@ -310,6 +310,13 @@ public class IabHelper {
         return mSubscriptionsSupported;
     }
 
+    public boolean isAsyncInProgress(){
+        return mAsyncInProgress;
+    }
+    public boolean isSetupDone (){
+        return mSetupDone;
+    }
+
 
     /**
      * Callback that notifies when a purchase is finished.

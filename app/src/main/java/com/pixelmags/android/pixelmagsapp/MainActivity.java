@@ -1,8 +1,17 @@
 package com.pixelmags.android.pixelmagsapp;
 
 import android.app.Activity;
+/*<<<<<<< Updated upstream*/
 import android.content.Intent;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+/*>>>>>>> Stashed changes*/
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.IBinder;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
@@ -18,6 +27,7 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.TextView;
 
+import com.android.vending.billing.IInAppBillingService;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.pixelmagsapp.service.DownloadService;
@@ -26,13 +36,19 @@ import com.pixelmags.android.pixelmagsapp.ui.LoginFragment;
 import com.pixelmags.android.pixelmagsapp.ui.NavigationDrawerFragment;
 import com.pixelmags.android.pixelmagsapp.ui.RegisterFragment;
 import com.pixelmags.android.pixelmagsapp.ui.SubscriptionsFragment;
+import com.pixelmags.android.util.IabHelper;
+import com.pixelmags.android.util.IabResult;
+import com.pixelmags.android.util.Inventory;
 import com.pixelmags.android.util.PMStrictMode;
+import com.pixelmags.android.util.Purchase;
 import com.pixelmags.android.util.Util;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, LoginFragment.OnFragmentInteractionListener ,
         RegisterFragment.OnFragmentInteractionListener, ResultsFragment.OnFragmentInteractionListener,
         SubscriptionsFragment.OnFragmentInteractionListener {
+
+    public IabHelper mHelper;
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -44,8 +60,11 @@ public class MainActivity extends AppCompatActivity
      */
     private CharSequence mTitle;
 
+
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
 
         startDownloadService();
@@ -65,7 +84,39 @@ public class MainActivity extends AppCompatActivity
         PMStrictMode.setStrictMode(Config.DEVELOPER_MODE);
 
 
+
         Util.doPreLaunchSteps();
+
+        //
+        String base64EncodedPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhE2tqqq+WSoEXHyqOdeFjKFGgWVuhapArdTe/b0wzxAJE0pdsM8FlywwyIQlLd51hj6vvDkmd8T3dRi6LX2Ww2M8+fpK7jP3ydMyTZB9efuAiRZq2tlo2GmrFmO0vTdD0MkY4OdX9ROEvY9k/cbzXX73uNH0FAcZ38ypr/qf66IS2yI+z+Oiip7c39pDrG0P4kVamJQOjs7PLTmtwU1PWc43phqISxxpLJWxj0yW/YjfZ7Knk5n84p02CpDJcoZXdsBu7X4GOc79DRURDHuLu3tgkp3roXTQeX6y4Ht9843Hu5rSRgADQ/5828+SozdhIAhQ4CT/MZ0w0NEd0/OitwIDAQAB";
+        mHelper = new IabHelper(this, base64EncodedPublicKey);
+
+        mHelper.startSetup(new
+                                   IabHelper.OnIabSetupFinishedListener() {
+                                       public void onIabSetupFinished(IabResult result) {
+                                           if (!result.isSuccess()) {
+                                               //failed
+                                           } else {
+                                               //success
+                                           }
+                                       }
+                                   });
+
+
+        //Configurations.getInstance().getGooglePlayLicenseKey();
+        mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
+            public void onIabSetupFinished(IabResult result) {
+                if (!result.isSuccess()) {
+                    /*Utilities.log("Unable to setup billing: " + result);
+                    isBillingSetup = false;*/
+                } else {
+                    /*Utilities.log("Billing setup successfully");
+                    isBillingSetup = true;*/
+                }
+            }
+        });
+
+
     }
 
     @Override
@@ -112,6 +163,47 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    public void purchaseLauncher(){
+
+        mHelper.launchPurchaseFlow(this, "com.pixelmags.androidbranded.test1", 10001,
+                mPurchaseFinishedListener, "bGoa+V7g/yqDXvKRqq+JTFn4uQZbPiQJo4pf9RzJ");
+    }
+
+
+
+    IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener
+            = new IabHelper.OnIabPurchaseFinishedListener() {
+        public void onIabPurchaseFinished(IabResult result,
+                                          Purchase purchase)
+        {
+            if (result.isFailure()) {
+                // Handle error
+                return;
+            }
+            else if (purchase.getSku().equals("com.pixelmags.androidbranded.test1"))
+            {
+                //true
+              //  consumeItem();
+               // buyButton.setEnabled(false);
+            }
+
+        }
+    };
+
+
+
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode,
+                                    Intent data)
+    {
+        if (!mHelper.handleActivityResult(requestCode,
+                resultCode, data)) {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
 
     public void restoreActionBar() {
         ViewGroup actionBarLayout = (ViewGroup) this.getLayoutInflater().inflate(R.layout.actionbar_layout, null);
@@ -120,6 +212,7 @@ public class MainActivity extends AppCompatActivity
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setBackgroundDrawable(new ColorDrawable(Color.DKGRAY));
         ActionBar.LayoutParams params = new
                 ActionBar.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT,
                 ActionBar.LayoutParams.MATCH_PARENT, Gravity.CENTER);
@@ -149,14 +242,25 @@ public class MainActivity extends AppCompatActivity
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+       /* int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }*/
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+// settings
+                return true;
+            case R.id.action_manage_subscriptions:
+// manage subscriptions action
+                return true;
+            case R.id.action_sort:
+// sort action
+            return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -206,7 +310,13 @@ public class MainActivity extends AppCompatActivity
     public void onDestroy() {
 
         stopDownloadService();
+
         super.onDestroy();
+
+        if (mHelper != null) {
+            mHelper.dispose();
+            mHelper = null;
+        }
 
     }
 

@@ -138,7 +138,7 @@ public class RegisterFragment extends Fragment {
         mCPasswordView = (EditText) rootView.findViewById(R.id.registerConfirmPassword);
         mfirstnameView = (EditText) rootView.findViewById(R.id.accountuserid);
         mlastnameView = (EditText) rootView.findViewById(R.id.accountEmailid);
-        mDOBView = (TextView) rootView.findViewById(R.id.registerDateOfBirth);
+       // mDOBView = (TextView) rootView.findViewById(R.id.dateOfBirthregister);
         mtemsconditionsView = (CheckBox) rootView.findViewById(R.id.registerAcceptTermsConditions);
         calendar = Calendar.getInstance(TimeZone.getDefault());
      //   mDOBView= (TextView) rootView.findViewById(R.id.registerDateOfBirthText);

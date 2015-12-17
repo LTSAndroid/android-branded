@@ -29,6 +29,7 @@ import com.pixelmags.android.datamodels.Subscription;
 import com.pixelmags.android.json.GetIssuesParser;
 import com.pixelmags.android.json.JSONParser;
 import com.pixelmags.android.pixelmagsapp.LaunchActivity;
+import com.pixelmags.android.pixelmagsapp.MainActivity;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.pixelmagsapp.test.ResultsFragment;
 import com.pixelmags.android.storage.AllIssuesDataSet;
@@ -53,7 +54,6 @@ public class AllIssuesFragment extends Fragment {
     private GetAllIssuesTask mGetAllIssuesTask = null;
     public CustomGridAdapter gridAdapter;
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,9 +75,7 @@ public class AllIssuesFragment extends Fragment {
 
         setGridAdapter(rootView);
 
-        //
-       /* Bundle querySkus = new Bundle();
-        querySkus.putStringArrayList('ITEM_ID_LIST', skuList);*/
+
 
         // Inflate the layout for this fragment
         return rootView;
@@ -98,20 +96,24 @@ public class AllIssuesFragment extends Fragment {
 
 
 
-    public void gridPriceButtonClicked(int position){
+    public void gridPriceButtonClicked(int position)
+    {
 
 
-        LaunchActivity.mHelper.launchPurchaseFlow(getActivity(), "SKU", 10001,
-                mPurchaseFinishedListener, "bGoa+V7g/yqDXvKRqq+JTFn4uQZbPiQJo4pf9RzJ");
+        MainActivity myAct = (MainActivity) getActivity();
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        myAct.purchaseLauncher();
+
+
+
+       /* AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         builder.setTitle(getString(R.string.allIssues_purchase_title));
         String message = getString(R.string.allIssues_purchase_message)+ " "+magazinesList.get(position).title + "?";
         builder.setMessage(message);
         builder.setPositiveButton("OK", null);
         builder.setNegativeButton("Cancel", null);
-        builder.show();
+        builder.show();*/
 
     }
 
@@ -396,21 +398,5 @@ public class AllIssuesFragment extends Fragment {
 
     }
 
-    IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener
-            = new IabHelper.OnIabPurchaseFinishedListener() {
-        public void onIabPurchaseFinished(IabResult result, Purchase purchase)
-        {
-            if (result.isFailure()) {
-                //error
-                return;
-            }
-            else if (purchase.getSku().equals("SKU")) {
-                // consume the gas and update the UI
-            }
-            else if (purchase.getSku().equals("SKU")) {
-                // give user access to premium content and update the UI
-            }
-        }
-    };
  // end of class
 }
