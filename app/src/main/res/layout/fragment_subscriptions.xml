@@ -2,8 +2,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="4dp"
     tools:context="com.pixelmags.android.pixelmagsapp.ui.SubscriptionsFragment"
     android:useDefaultMargins="true"
+    android:orientation="vertical"
     android:alignmentMode="alignBounds"
     android:columnOrderPreserved="false"
     android:columnCount="2">
@@ -11,13 +13,24 @@
     <!-- TODO: Update blank fragment layout -->
 
 
-     <TextView
-        android:layout_width="225dp"
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:id="@+id/subscriptions_text"
+        android:text="Subscriptions"
+        android:ellipsize="marquee"
+        android:singleLine="false"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="200dp"
         android:layout_height="50dp"
         android:id="@+id/subscriptionsBuyNowButton"
+        android:layout_below="@+id/subscriptions_text"
         android:text="1 Month Subscription"
-         android:layout_marginTop="70dp"
-         android:textStyle="bold"
+        android:textStyle="bold"
+        android:gravity="center"
         android:layout_alignParentLeft="true"
         />
 
@@ -25,14 +38,19 @@
             android:layout_width="100dp"
             android:layout_height="40dp"
             android:id="@+id/subscriptions_price_1"
-            android:layout_marginTop="70dp"
+            android:background="@drawable/shape"
+            android:shadowColor="#7995A8"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="5"
             android:text="£1.99"
             android:layout_toRightOf="@+id/subscriptionsBuyNowButton"/>
 
     <TextView
-            android:layout_width="225dp"
+            android:layout_width="200dp"
             android:layout_height="50dp"
             android:textStyle="bold"
+            android:gravity="center"
             android:id="@+id/subscriptions6MonthsText"
             android:text="3 Months Subscription"
             android:layout_below="@+id/subscriptionsBuyNowButton" />
@@ -42,14 +60,21 @@
             android:layout_width="100dp"
             android:layout_height="40dp"
             android:id="@+id/subscriptions_price_2"
+            android:gravity="center"
             android:text="£1.99"
+            android:background="@drawable/shape"
+            android:shadowColor="#7995A8"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="5"
             android:layout_toRightOf="@+id/subscriptions6MonthsText"
             android:layout_below="@+id/subscriptions_price_1"/>
 
 
         <TextView
-            android:layout_width="225dp"
+            android:layout_width="200dp"
             android:layout_height="50dp"
+            android:gravity="center"
             android:textStyle="bold"
             android:id="@+id/subscriptions3MonthsText"
             android:text="6 Months Subscription"
@@ -57,12 +82,18 @@
 
 
         <Button
-        android:layout_width="100dp"
-        android:layout_height="40dp"
-        android:id="@+id/subscriptions_price_3"
-        android:text="£1.99"
-        android:layout_toRightOf="@+id/subscriptions3MonthsText"
-        android:layout_below="@+id/subscriptions_price_2"/>
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:id="@+id/subscriptions_price_3"
+            android:text="£1.99"
+            android:background="@drawable/shape"
+            android:shadowColor="#7995A8"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="5"
+            android:layout_toRightOf="@+id/subscriptions3MonthsText"
+            android:layout_below="@+id/subscriptions_price_2"/>
 
 
 </GridLayout>

@@ -2,6 +2,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.pixelmags.android.pixelmagsapp.LaunchActivity">
+
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />
+
+    <item android:id="@+id/action_manage_subscriptions" android:title="@string/action_manage_subscriptions"
+        android:orderInCategory="100" app:showAsAction="never" />
+
+    <item android:id="@+id/action_sort" android:title="@string/action_sort"
+        android:orderInCategory="100" app:showAsAction="never" />
+
 </menu>

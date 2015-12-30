@@ -108,5 +108,7 @@
     <string name="font_family_body_1_material">sans-serif</string>
     <string name="do_back">Back</string>
     <string name="pick_dateofbirth">PickDate</string>
+    <string name="action_manage_subscriptions">manage_subscriptions</string>
+    <string name="action_sort">sort</string>
 
 </resources>

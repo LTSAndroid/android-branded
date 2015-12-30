@@ -38,7 +38,7 @@ public class SubscriptionsFragment extends Fragment {
     private String mParam2;
 
     private GetSubscriptionsTask mGetSubscriptions = null;
-    //TextView mTextView;
+    TextView mTextView;
 
     private OnFragmentInteractionListener mListener;
 
@@ -84,7 +84,7 @@ public class SubscriptionsFragment extends Fragment {
         // retrieving the issues
         mGetSubscriptions = new GetSubscriptionsTask();
         mGetSubscriptions.execute((String) null);
-        //mTextView = (TextView) rootView.findViewById(R.id.subscriptions_text);
+        mTextView = (TextView) rootView.findViewById(R.id.subscriptions_text);
 
       Button button1 = (Button) rootView.findViewById(R.id.subscriptions_price_1);
 
@@ -92,7 +92,7 @@ public class SubscriptionsFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-              //  mTextView.setText("Subscribing..");
+             mTextView.setText("Subscribing..");
             }
         });
 
@@ -102,7 +102,7 @@ public class SubscriptionsFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-              //  mTextView.setText("Subscribing for 6months");
+                mTextView.setText("Subscribing for 6months");
             }
         });
 
@@ -112,7 +112,7 @@ public class SubscriptionsFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-              //  mTextView.setText("Subscribing for 3months");
+              mTextView.setText("Subscribing for 3months");
             }
         });
 
@@ -221,7 +221,7 @@ public class SubscriptionsFragment extends Fragment {
 
         System.out.println("SUBS TEXT :::: " + text);
 
-       // mTextView.setText(text);
+        mTextView.setText(text);
     }
 
 
