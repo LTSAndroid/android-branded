@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity
                 // handle error here
             }
             else {
-                // does the user have the purchased sku?
+                // does the user have the premium upgrade?
                 //mIsPremium = inventory.hasPurchase(SKU_PREMIUM);
                 // update UI accordingly
             }
@@ -221,9 +221,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-
-    public void purchaseLauncher()
-    {
+    public void purchaseLauncher(){
 
         mHelper.launchPurchaseFlow(this, "com.pixelmags.androidbranded.test1", 10001,
                 mPurchaseFinishedListener, "bGoa+V7g/yqDXvKRqq+JTFn4uQZbPiQJo4pf9RzJ");

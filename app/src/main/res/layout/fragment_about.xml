@@ -30,13 +30,13 @@
         android:layout_height="wrap_content"
         android:id="@+id/ourwebsite"
         android:onClick="onClick"
-        android:textColor="#3384ff"
         android:text="www.pixelmags.com"
         android:textSize="20dp"
         android:autoLink="web"
         android:linksClickable="true"
         android:layout_below="@+id/copyright"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        android:textAppearance="@color/wallet_holo_blue_light" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -44,12 +44,11 @@
         android:id="@+id/ourconditions"
         android:onClick="onClick"
         android:text="www.pixelmags.com/t+c/current/"
-        android:textColor="#3384ff"
         android:textSize="20dp"
         android:autoLink="web"
         android:linksClickable="true"
         android:layout_below="@+id/ourwebsite"
         android:layout_centerHorizontal="true"
-         />
+        android:textAppearance="@color/wallet_holo_blue_light" />
 
 </RelativeLayout>
