@@ -150,10 +150,10 @@ public class MainActivity extends AppCompatActivity
                 return;
             }
 
-            String applePrice =
+            /*String applePrice =
                     inventory.getSkuDetails("com.pixelmags.androidbranded.test1").getPrice();
             String bananaPrice =
-                    inventory.getSkuDetails("com.pixelmags.androidbranded.test2").getPrice();
+                    inventory.getSkuDetails("com.pixelmags.androidbranded.test2").getPrice();*/
 
             // update the UI
             mHelper.queryInventoryAsync(mGotInventoryListener);
