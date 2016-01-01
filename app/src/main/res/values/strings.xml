@@ -17,7 +17,8 @@
     <string name="menu_title_login">Log in</string>
     <string name="menu_title_register">Register</string>
     <string name="menu_title_subscriptions">Subscriptions</string>
-    <string name="menu_title_specialissues">Special Issues</string>
+    <!-- <string name="menu_title_specialissues">Special Issues</string> -->
+    <string name="menu_title_downloads">Downloads</string>
     <string name="menu_title_contactsupport">Contact Support</string>
     <string name="menu_title_about">About</string>
 

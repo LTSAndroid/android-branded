@@ -125,7 +125,7 @@ public class NavigationDrawerFragment extends Fragment {
                         getString(R.string.menu_title_login),
                         getString(R.string.menu_title_register),
                         getString(R.string.menu_title_subscriptions),
-                        getString(R.string.menu_title_specialissues),
+                        getString(R.string.menu_title_downloads),
                         getString(R.string.menu_title_contactsupport),
                         getString(R.string.menu_title_about)
                 }));
@@ -332,7 +332,7 @@ public class NavigationDrawerFragment extends Fragment {
                         .commit();
                 break;
             case 5:
-                mTitle = getString(R.string.menu_title_specialissues);
+                mTitle = getString(R.string.menu_title_downloads);
                 break;
             case 6:
                 mTitle = getString(R.string.menu_title_contactsupport);

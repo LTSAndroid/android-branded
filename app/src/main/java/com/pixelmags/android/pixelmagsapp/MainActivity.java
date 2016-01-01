@@ -207,7 +207,7 @@ public class MainActivity extends AppCompatActivity
                 mTitle = getString(R.string.menu_title_subscriptions);
                 break;
             case 5:
-                mTitle = getString(R.string.menu_title_specialissues);
+                mTitle = getString(R.string.menu_title_downloads);
                 break;
             case 6:
                 mTitle = getString(R.string.menu_title_contactsupport);
@@ -310,12 +310,12 @@ public class MainActivity extends AppCompatActivity
             case R.id.action_settings:
 // settings
                 return true;
-            case R.id.action_manage_subscriptions:
+//            case R.id.action_manage_subscriptions:
 // manage subscriptions action
-                return true;
-            case R.id.action_sort:
+ //               return true;
+//            case R.id.action_sort:
 // sort action
-            return true;
+//            return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
