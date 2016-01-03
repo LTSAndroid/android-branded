@@ -2,6 +2,8 @@ package com.pixelmags.android.pixelmagsapp.ui;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
@@ -240,7 +242,7 @@ public class NavigationDrawerFragment extends Fragment {
                 allIssuesFragmentManager.beginTransaction()
                         .replace(R.id.main_fragment_container, fragmentAllIsuues)
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                        .addToBackStack(null)
+                 //       .addToBackStack(null)
                         .commit();
                 break;
             case 1:
@@ -264,7 +266,7 @@ public class NavigationDrawerFragment extends Fragment {
                     userFragmentManager.beginTransaction()
                             .replace(R.id.main_fragment_container, userFragment)
                             .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                            .addToBackStack(null)
+                //            .addToBackStack(null)
                             .commit();
               }
                else
@@ -276,7 +278,7 @@ public class NavigationDrawerFragment extends Fragment {
                     loginFragmentManager.beginTransaction()
                             .replace(R.id.main_fragment_container, fragmentLogin)
                             .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                            .addToBackStack(null)
+                 //           .addToBackStack(null)
                             .commit();
                 }
 
@@ -325,7 +327,7 @@ public class NavigationDrawerFragment extends Fragment {
                 subscriptionsFragmentManager.beginTransaction()
                         .replace(R.id.main_fragment_container, fragmentSubscriptions)
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                        .addToBackStack(null)
+                 //       .addToBackStack(null)
                         .commit();
                 break;
             case 3:
@@ -356,7 +358,7 @@ public class NavigationDrawerFragment extends Fragment {
                 aboutFragmentManager.beginTransaction()
                         .replace(R.id.main_fragment_container, aboutFragment)
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                        .addToBackStack(null)
+                 //       .addToBackStack(null)
                         .commit();
                 break;
 
@@ -401,10 +403,14 @@ public class NavigationDrawerFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // If the drawer is open, show the global app actions in the action bar. See also
         // showGlobalContextActionBar, which controls the top-left area of the action bar.
+
+        /*  // Disabling 'More' option in the action bar
         if (mDrawerLayout != null && isDrawerOpen()) {
             inflater.inflate(R.menu.global, menu);
             showGlobalContextActionBar();
         }
+        */
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -427,10 +433,12 @@ public class NavigationDrawerFragment extends Fragment {
      * 'context', rather than just what's in the current screen.
      */
     private void showGlobalContextActionBar() {
+
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setTitle(R.string.app_name);
+
     }
 
     private ActionBar getActionBar() {

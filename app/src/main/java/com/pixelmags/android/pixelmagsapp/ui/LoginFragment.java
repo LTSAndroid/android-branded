@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -306,8 +307,9 @@ public class LoginFragment extends Fragment {
         }
         protected void onPostExecute(String result) {
 
-
-            loginProgressDialog.dismiss();
+            if(loginProgressDialog != null) {
+                loginProgressDialog.dismiss();
+            }
 
             // successful or failed login action
             if(UserPrefs.getUserLoggedIn()){
@@ -315,9 +317,10 @@ public class LoginFragment extends Fragment {
                 System.out.println("LOG IN SUCCESS");
 
                 // Do post log in Tasks
-                // (getMyIssues ?)
+                // TODO: (getMyIssues ?)
 
                 // Navigate to issues page
+                loadAllIssuesPage();
 
 
             }else{
@@ -326,8 +329,19 @@ public class LoginFragment extends Fragment {
                 displayLogInFailed();
 
             }
-
         }
+    }
+
+    public void loadAllIssuesPage(){
+
+        Fragment fragmentAllIsuues = new AllIssuesFragment();
+
+        // Insert the fragment by replacing any existing fragment
+        FragmentManager allIssuesFragmentManager = getFragmentManager();
+        allIssuesFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment_container, fragmentAllIsuues)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .commit();
 
     }
 

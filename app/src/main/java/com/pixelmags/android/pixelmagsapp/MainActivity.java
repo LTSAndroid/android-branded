@@ -263,7 +263,9 @@ public class MainActivity extends AppCompatActivity
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setDisplayShowCustomEnabled(true);
-        actionBar.setBackgroundDrawable(new ColorDrawable(Color.DKGRAY));
+
+        // replacing Color.DKGRAY with #FF0099CC
+        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FF0099CC")));
         ActionBar.LayoutParams params = new
                 ActionBar.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT,
                 ActionBar.LayoutParams.MATCH_PARENT, Gravity.CENTER);
@@ -271,8 +273,7 @@ public class MainActivity extends AppCompatActivity
         View v = getSupportActionBar().getCustomView();
         TextView titleTxtView = (TextView) v.findViewById(R.id.textviewactivityname);
         titleTxtView.setText(Config.Magazine_Title);
-
-
+        
     }
 
     @Override
@@ -281,7 +282,12 @@ public class MainActivity extends AppCompatActivity
             // Only show items in the action bar relevant to this screen
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
-            getMenuInflater().inflate(R.menu.main, menu);
+
+
+            // Supressing the default Options Menu
+            //getMenuInflater().inflate(R.menu.main, menu);
+
+
             restoreActionBar();
             return true;
         }
