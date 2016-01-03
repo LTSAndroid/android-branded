@@ -3,6 +3,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.pixelmags.android.pixelmagsapp.ui.AboutFragment"
+    android:background="#FFFFFF"
     android:id="@+id/fragment_about">
 
     <TextView
