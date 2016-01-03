@@ -13,7 +13,7 @@
 
     <!-- Navigation Menu Items -->
     <string name="menu_title_allissues">All Issues</string>
-    <string name="menu_title_account">Account</string>
+    <string name="menu_title_my_account">My Account</string>
     <string name="menu_title_login">Log in</string>
     <string name="menu_title_register">Register</string>
     <string name="menu_title_subscriptions">Subscriptions</string>

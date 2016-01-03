@@ -195,24 +195,17 @@ public class MainActivity extends AppCompatActivity
                 mTitle = getString(R.string.menu_title_allissues);
                 break;
             case 1:
-                mTitle = getString(R.string.menu_title_account);
-                break;
+                mTitle = Util.getLoginOrMyAccount();
             case 2:
-                mTitle = getString(R.string.menu_title_login);
-                break;
-            case 3:
-                mTitle = getString(R.string.menu_title_register);
-                break;
-            case 4:
                 mTitle = getString(R.string.menu_title_subscriptions);
                 break;
-            case 5:
+            case 3:
                 mTitle = getString(R.string.menu_title_downloads);
                 break;
-            case 6:
+            case 4:
                 mTitle = getString(R.string.menu_title_contactsupport);
                 break;
-            case 7:
+            case 5:
                 mTitle = getString(R.string.menu_title_about);
                 break;
             default:
@@ -401,6 +394,13 @@ public class MainActivity extends AppCompatActivity
     // to change the action bar dynamically
     public void setActionBarTitle(String title) {
         getSupportActionBar().setTitle(title);
+    }
+
+
+    // refresh naviagtion drawer
+    public void refreshNavigationDrawer(){
+
+
     }
 
 

@@ -31,6 +31,7 @@ import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.pixelmagsapp.LaunchActivity;
 import com.pixelmags.android.storage.UserPrefs;
+import com.pixelmags.android.util.Util;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -115,20 +116,20 @@ public class NavigationDrawerFragment extends Fragment {
             }
         });
 
+
         mDrawerListView.setAdapter(new ArrayAdapter<String>(
                 getActionBar().getThemedContext(),
                 android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1,
                 new String[]{
                         getString(R.string.menu_title_allissues),
-                        getString(R.string.menu_title_account),
-                        getString(R.string.menu_title_login),
-                        getString(R.string.menu_title_register),
+                        Util.getLoginOrMyAccount(),
                         getString(R.string.menu_title_subscriptions),
                         getString(R.string.menu_title_downloads),
                         getString(R.string.menu_title_contactsupport),
                         getString(R.string.menu_title_about)
                 }));
+
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
     }
@@ -177,6 +178,10 @@ public class NavigationDrawerFragment extends Fragment {
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
+
+                refreshNavigationDrawer();
+
+
                 if (!isAdded()) {
                     return;
                 }
@@ -239,42 +244,44 @@ public class NavigationDrawerFragment extends Fragment {
                         .commit();
                 break;
             case 1:
-                mTitle = getString(R.string.menu_title_account);
+
                 /*Intent launch = new Intent(getActivity().getBaseContext(), LaunchActivity.class);
                 startActivity(launch);*/
                 if(UserPrefs.getUserLoggedIn())
                {
-                Fragment userFragment = new UserAccountFragment();
-                Bundle argsUser = new Bundle();
-                argsUser.putInt("4", position);
-                userFragment.setArguments(argsUser);
 
-                // fragment = (LoginFragment) getFragmentManager().findFragmentById(R.id.fragment_login);
+                    mTitle = getString(R.string.menu_title_my_account);
 
-                // Insert the fragment by replacing any existing fragment
-                FragmentManager userFragmentManager = getFragmentManager();
-                userFragmentManager.beginTransaction()
-                        .replace(R.id.main_fragment_container, userFragment)
-                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                        .addToBackStack(null)
-                        .commit();
+                    Fragment userFragment = new UserAccountFragment();
+                    Bundle argsUser = new Bundle();
+                    argsUser.putInt("4", position);
+                    userFragment.setArguments(argsUser);
+
+                    // fragment = (LoginFragment) getFragmentManager().findFragmentById(R.id.fragment_login);
+
+                    // Insert the fragment by replacing any existing fragment
+                    FragmentManager userFragmentManager = getFragmentManager();
+                    userFragmentManager.beginTransaction()
+                            .replace(R.id.main_fragment_container, userFragment)
+                            .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                            .addToBackStack(null)
+                            .commit();
               }
                else
                 {
-                    new AlertDialog.Builder(getActivity())
-                            .setTitle("Error")
-                            .setMessage("You are not logged In")
-                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // continue with delete
-                                }
-                            })
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .show();
+                    mTitle = getString(R.string.menu_title_login);
+
+                    Fragment fragmentLogin = new LoginFragment();
+                    FragmentManager loginFragmentManager = getFragmentManager();
+                    loginFragmentManager.beginTransaction()
+                            .replace(R.id.main_fragment_container, fragmentLogin)
+                            .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                            .addToBackStack(null)
+                            .commit();
                 }
 
                 break;
-
+/*
 
             case 2:
                 mTitle = getString(R.string.menu_title_login);
@@ -293,18 +300,7 @@ public class NavigationDrawerFragment extends Fragment {
 
             case 3:
                 mTitle = getString(R.string.menu_title_register);
-               /* Fragment fragment = new RegisterFragment();
-                Bundle args = new Bundle();
-                args.putInt("Register Key", 4);
-                fragment.setArguments(args);
 
-                FragmentManager fragmentManager = getFragmentManager();
-                // FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-                fragmentManager.beginTransaction()
-                        .replace(((ViewGroup)(getView().getParent())).getId(), fragment)
-                        .addToBackStack(null)
-                        .commit();*/
                 Fragment fragment = new RegisterFragment();
                 Bundle args = new Bundle();
                 args.putInt("4", position);
@@ -320,7 +316,8 @@ public class NavigationDrawerFragment extends Fragment {
                         .addToBackStack(null)
                         .commit();
                 break;
-            case 4:
+*/
+            case 2:
                 mTitle = getString(R.string.menu_title_subscriptions);
                 Fragment fragmentSubscriptions = new SubscriptionsFragment();
                 // Insert the fragment by replacing any existing fragment
@@ -331,10 +328,10 @@ public class NavigationDrawerFragment extends Fragment {
                         .addToBackStack(null)
                         .commit();
                 break;
-            case 5:
+            case 3:
                 mTitle = getString(R.string.menu_title_downloads);
                 break;
-            case 6:
+            case 4:
                 mTitle = getString(R.string.menu_title_contactsupport);
                 Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setType("message/rfc822");
@@ -344,7 +341,7 @@ public class NavigationDrawerFragment extends Fragment {
                 Intent mailer = Intent.createChooser(intent, null);
                 startActivity(mailer);
                 break;
-            case 7:
+            case 5:
                 mTitle = getString(R.string.menu_title_about);
 
                 Fragment aboutFragment = new AboutFragment();
@@ -352,7 +349,7 @@ public class NavigationDrawerFragment extends Fragment {
                 args1.putInt("4", position);
                 aboutFragment.setArguments(args1);
 
-                fragment = (AboutFragment) getFragmentManager().findFragmentById(R.id.fragment_about);
+                // fragment = (AboutFragment) getFragmentManager().findFragmentById(R.id.fragment_about);
 
                 // Insert the fragment by replacing any existing fragment
                 FragmentManager aboutFragmentManager = getFragmentManager();
@@ -448,5 +445,26 @@ public class NavigationDrawerFragment extends Fragment {
          * Called when an item in the navigation drawer is selected.
          */
         void onNavigationDrawerItemSelected(int position);
+    }
+
+
+    public void refreshNavigationDrawer(){
+
+       if(mDrawerListView != null){
+
+           mDrawerListView.setAdapter(new ArrayAdapter<String>(
+                   getActionBar().getThemedContext(),
+                   android.R.layout.simple_list_item_activated_1,
+                   android.R.id.text1,
+                   new String[]{
+                           getString(R.string.menu_title_allissues),
+                           Util.getLoginOrMyAccount(),
+                           getString(R.string.menu_title_subscriptions),
+                           getString(R.string.menu_title_downloads),
+                           getString(R.string.menu_title_contactsupport),
+                           getString(R.string.menu_title_about)
+                   }));
+       }
+
     }
 }

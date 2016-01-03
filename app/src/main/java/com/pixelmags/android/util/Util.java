@@ -3,6 +3,7 @@ package com.pixelmags.android.util;
 import android.content.Context;
 import android.telephony.TelephonyManager;
 
+import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.storage.UserPrefs;
 
 /**
@@ -20,6 +21,24 @@ public static void doPreLaunchSteps(){
 
 }
 
+    public static String getLoginOrMyAccount(){
+
+        if(UserPrefs.getUserLoggedIn()){
+            return BaseApp.getContext().getString(R.string.menu_title_my_account);
+        }
+
+        return BaseApp.getContext().getString(R.string.menu_title_login);
+    }
 
 
+    public static void doAllLogoutSteps() {
+
+        UserPrefs.setUserLoggedIn(false);
+        UserPrefs.setUserPixelmagsId("");
+        UserPrefs.setUserFirstName("");
+        UserPrefs.setUserLastName("");
+        UserPrefs.setUserPassword("");
+
+
+    }
 }

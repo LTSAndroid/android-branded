@@ -3,6 +3,8 @@ package com.pixelmags.android.pixelmagsapp.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +14,7 @@ import android.widget.TextView;
 
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.storage.UserPrefs;
+import com.pixelmags.android.util.Util;
 
 /**
  * Created by Annie on 29/09/15.
@@ -53,7 +56,7 @@ public class UserAccountFragment extends Fragment {
             public void onClick(View view) {
                 //logout current user
 
-                startActivity(new Intent(getActivity(), LoginActivity.class));
+                //startActivity(new Intent(getActivity(), LoginActivity.class));
                 do_Logout();
 
             }
@@ -67,6 +70,14 @@ public class UserAccountFragment extends Fragment {
 
     public void do_Logout() {
 
+        Util.doAllLogoutSteps();
+
+        Fragment fragmentLogin = new LoginFragment();
+        FragmentManager loginFragmentManager = getFragmentManager();
+        loginFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment_container, fragmentLogin)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .commit();
 
 
     }
