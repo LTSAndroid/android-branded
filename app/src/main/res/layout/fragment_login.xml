@@ -4,6 +4,7 @@
     android:id="@+id/fragment_login"
     android:orientation="vertical"
     android:padding="20dp"
+    android:background="#FFFFFF"
     tools:context="com.pixelmags.android.pixelmagsapp.ui.LoginFragment">
 
     <EditText
