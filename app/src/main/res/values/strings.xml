@@ -50,6 +50,9 @@
     <string name="log_in_fail_title">Log in Failed</string>
     <string name="log_in_fail_message">Please check log in details and try again.</string>
 
+    <string name="log_in_progress_dialog_title">Logging in...</string>
+    <string name="log_in_progress_dialog_message">Checking your details...</string>
+
 
     <!-- Register Screen -->
     <string name="hint_first_name">First Name</string>

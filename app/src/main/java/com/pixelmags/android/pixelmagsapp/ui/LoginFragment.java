@@ -3,6 +3,7 @@ package com.pixelmags.android.pixelmagsapp.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -67,6 +68,10 @@ public class LoginFragment extends Fragment {
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private ValidateUserTask mValidateUserTask = null;
+
+    private ProgressDialog loginProgressDialog;
+
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -257,6 +262,10 @@ public class LoginFragment extends Fragment {
             // form field with an error.
             focusView.requestFocus();
         } else {
+
+            loginProgressDialog = ProgressDialog.show(getActivity(), getString(R.string.log_in_progress_dialog_title),
+                    getString(R.string.log_in_progress_dialog_message), true);
+
             // perform the user register attempt.
             mValidateUserTask = new ValidateUserTask(email, password);
             mValidateUserTask.execute((String) null);
@@ -292,58 +301,13 @@ public class LoginFragment extends Fragment {
             apiValidateUser = new ValidateUser(mEmail, mPassword);
             apiValidateUser.init();
 
-            /*
-
-            String urlString=""; // URL to call
-
-            HttpClient httpclient = new DefaultHttpClient();
-            HttpPost httppost = new HttpPost("https://api.pixelmags.com/validateUser");
-
-            try {
-                // Add your data
-                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(9);
-                nameValuePairs.add(new BasicNameValuePair("auth_email_address", mEmail));
-                nameValuePairs.add(new BasicNameValuePair("auth_password", mPassword));
-                nameValuePairs.add(new BasicNameValuePair("device_id", "testingforbanded"));
-                nameValuePairs.add(new BasicNameValuePair("magazine_id", Config.Magazine_Number));
-                nameValuePairs.add(new BasicNameValuePair("api_mode",Config.api_mode));
-                nameValuePairs.add(new BasicNameValuePair("api_version", Config.api_version));
-                httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-
-
-                // To analyse if any API returns erroreous data
-                for (int i = 0; i < nameValuePairs.size(); i++) {
-                    System.out.println("baseApiNameValuePairs NAME === " + nameValuePairs.get(i).getName());
-                    System.out.println("baseApiNameValuePairs VALUE == " + nameValuePairs.get(i).getValue());
-                }
-
-
-                // Execute HTTP Post Request
-                HttpResponse response = httpclient.execute(httppost);
-                InputStream is = response.getEntity().getContent();
-                BufferedInputStream bis = new BufferedInputStream(is);
-                ByteArrayBuffer baf = new ByteArrayBuffer(20);
-
-                int current = 0;
-
-                while ((current = bis.read()) != -1) {
-                    baf.append((byte) current);
-                }
-
-            // Convert the Bytes read to a String.
-                resultToDisplay = new String(baf.toByteArray());
-                // TODO Auto-generated catch block
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-            }
-
-            */
-
             return resultToDisplay;
 
         }
         protected void onPostExecute(String result) {
 
+
+            loginProgressDialog.dismiss();
 
             // successful or failed login action
             if(UserPrefs.getUserLoggedIn()){
@@ -363,25 +327,6 @@ public class LoginFragment extends Fragment {
 
             }
 
-/*            if (result != null){
-                System.out.println("API result :: " + result);
-            }
-
-
-            Fragment fragment = new ResultsFragment();
-            Bundle args = new Bundle();
-            args.putInt("Results Key", 5);
-            args.putString("DISPLAY_RESULTS", result);
-            fragment.setArguments(args);
-
-            FragmentManager fragmentManager = getFragmentManager();
-            // FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-            fragmentManager.beginTransaction()
-                    .replace(((ViewGroup)(getView().getParent())).getId(), fragment)
-                    .addToBackStack(null)
-                    .commit();
-*/
         }
 
     }
