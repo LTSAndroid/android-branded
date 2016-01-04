@@ -3,6 +3,7 @@ package com.pixelmags.android.pixelmagsapp.ui;
 import android.app.Activity;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -13,9 +14,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.pixelmags.android.comms.Config;
+import com.pixelmags.android.datamodels.Issue;
 import com.pixelmags.android.datamodels.Magazine;
+import com.pixelmags.android.datamodels.PageTypeImage;
+import com.pixelmags.android.download.DownloadIssue;
+import com.pixelmags.android.download.DownloadIssueThreaded;
+import com.pixelmags.android.download.DownloadThumbnails;
 import com.pixelmags.android.pixelmagsapp.R;
-
+import com.pixelmags.android.storage.IssueDataSet;
+import com.pixelmags.android.util.BaseApp;
 
 
 public class IssueDetailsFragment extends Fragment {
@@ -23,6 +31,8 @@ public class IssueDetailsFragment extends Fragment {
 
     public Magazine issueData;
     private static final String SERIALIZABLE_MAG_KEY = "serializable_mag_key";
+
+    private DownloadIssueAsyncTask mIssueTask = null;
 
     public IssueDetailsFragment() {
         // Required empty public constructor
@@ -73,6 +83,13 @@ public class IssueDetailsFragment extends Fragment {
             Button issueDetailsPriceButton = (Button) rootView.findViewById(R.id.issueDetailsPriceButton);
             issueDetailsPriceButton.setText(String.valueOf(issueData.price));
 
+            issueDetailsPriceButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mIssueTask = new DownloadIssueAsyncTask(Config.Magazine_Number, "110422");
+                    mIssueTask.execute((String) null);
+                }
+            });
 
             /* TODO - replace with scoll of preview images */
             LinearLayout layout = (LinearLayout) rootView.findViewById(R.id.issueDetailsPreviewImageLayout);
@@ -88,6 +105,8 @@ public class IssueDetailsFragment extends Fragment {
             
 
         }
+
+
 
         return rootView;
     }
@@ -117,5 +136,62 @@ public class IssueDetailsFragment extends Fragment {
     }
      */
 
+    private void startIssueDownload(String issueId){
+
+        // Test the saved output
+        IssueDataSet mDbReader = new IssueDataSet(BaseApp.getContext());
+        Issue issueData = mDbReader.getIssue(mDbReader.getReadableDatabase(), issueId);
+
+        System.out.println("<<< STARTING ISSUE DOWNLOAD >>>");
+
+        if(issueData != null){
+        // Download via queueing
+            //DownloadIssue downloadIssue = new DownloadIssue(issueData);
+            //downloadIssue.initDownload();
+
+            DownloadIssueThreaded.DownloadIssuePages(issueData);
+
+        }
+    }
+
+
+    /**
+     *
+     * Represents an asynchronous task used to download an issues.
+     *
+     */
+    public class DownloadIssueAsyncTask extends AsyncTask<String, String, String> {
+
+        private final String mIssueID;
+
+        DownloadIssueAsyncTask(String magID, String issueID) {
+            mIssueID = issueID;
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            // TODO: attempt authentication against a network service.
+
+            String resultToDisplay = "";
+
+            try {
+
+                startIssueDownload(mIssueID);
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            return resultToDisplay;
+
+        }
+
+        protected void onPostExecute(String result) {
+        }
+
+        @Override
+        protected void onCancelled() {
+            mIssueTask = null;
+        }
+    }
 
 }

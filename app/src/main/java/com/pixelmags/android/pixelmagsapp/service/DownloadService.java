@@ -4,6 +4,27 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
+
+/*
+
+Created : Austin Coutinho
+
+Perform all large downloads in the background
+
+Usage :
+- download thumnails in batches
+
+- download the issue in batches
+    - pause issue download
+
+- service to run at start
+- end when the all the downloads are complete and the app is no longer being used
+
+- run a batch download of a table
+- Download via wifi only (make this setting avaiable to the user)
+
+ */
+
 public class DownloadService extends Service {
 
     public DownloadService() {

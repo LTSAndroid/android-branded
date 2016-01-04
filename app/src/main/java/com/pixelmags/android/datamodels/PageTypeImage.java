@@ -63,6 +63,8 @@ public class PageTypeImage extends Page {
             imageSize = sizeOfImage;
         }
 
+
+
     }
 
 

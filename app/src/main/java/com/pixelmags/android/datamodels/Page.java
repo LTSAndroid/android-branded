@@ -13,6 +13,9 @@ public class Page {
     public String pageID;
     public String PageJSONData; // holds the JSON data as string from the media block of page_manifest
 
+    public boolean isDownloaded;
+    public String savedPath;
+
 
     public Page(int pgNo, String pgID, String JSONData){
         this.pageNo = pgNo;
