@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Created by Annie on 09/10/15.
@@ -28,20 +29,25 @@ public class GetPreviewImagesParser extends JSONParser {
 
         try{
 
-            mData = baseJSON.getJSONArray("data");
-            JSONArray arrayData = baseJSON.getJSONArray("data");
-            for(int i=0;i<arrayData.length();i++)
+//           mData = baseJSON.getJSONArray("data");
+            JSONObject data = baseJSON.getJSONObject("data");
+
+            Iterator x = data.keys();
+            JSONArray jsonArray = new JSONArray();
+
+            while (x.hasNext()){
+                String key = (String) x.next();
+                jsonArray.put(data.get(key));
+            }
+
+            for(int i=0;i<jsonArray.length();i++)
             {
                 PreviewImage pm = new PreviewImage();
-                JSONObject unit = arrayData.getJSONObject(i);
+                JSONObject unit = jsonArray.getJSONObject(i);
 
-                pm.setId(unit.getInt("ID"));
-                pm.setChecksum_md5(unit.getString("checksum_md5"));
-                pm.setEncryption(unit.getString("encryption"));
-                pm.setThumb(unit.getString("url"));
-                pm.setMimeType(unit.getString("mime_type"));
-                pm.setObjWidth(unit.getInt("width"));
-                pm.setObjHeight(unit.getInt("height"));
+                pm.setPreviewImageURL(unit.getString("url"));
+                pm.setImageWidth(unit.getInt("width"));
+                pm.setImageHeight(unit.getInt("height"));
 
                 previewImagesList.add(pm);
             }

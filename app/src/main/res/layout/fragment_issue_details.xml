@@ -75,7 +75,7 @@
         android:id="@+id/issueDetailsHorizontalScrollView"
         android:layout_below="@+id/issueDetailsPriceButton"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="32dp">
+        android:layout_marginTop="20dp">
 
         <LinearLayout
             android:id="@+id/issueDetailsPreviewImageLayout"

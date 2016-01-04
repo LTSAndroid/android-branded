@@ -1,6 +1,7 @@
 package com.pixelmags.android.api;
 
 import com.pixelmags.android.comms.WebRequest;
+import com.pixelmags.android.datamodels.PreviewImage;
 import com.pixelmags.android.json.GetPreviewImagesParser;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -19,7 +20,7 @@ public class GetPreviewImages extends WebRequest
     public GetPreviewImages(){
         super(API_NAME);
     }
-    public void init(String issueID,String appBundleID)
+    public ArrayList<PreviewImage> init(String issueID,String appBundleID)
     {
         mIssueID = issueID;
         mAppBundleID = appBundleID;
@@ -34,6 +35,8 @@ public class GetPreviewImages extends WebRequest
                 if(getPreviewImagesParser.isSuccess()){
                     getPreviewImagesParser.parse();
 
+                    return getPreviewImagesParser.previewImagesList;
+
                 } else{
 
                     // Add error handling code here
@@ -42,6 +45,8 @@ public class GetPreviewImages extends WebRequest
 
             }
         }
+
+        return null;
 
     }
     private void setApiNameValuePairs(){

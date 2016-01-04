@@ -14,16 +14,21 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.pixelmags.android.api.GetPreviewImages;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.datamodels.Issue;
 import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.datamodels.PageTypeImage;
+import com.pixelmags.android.datamodels.PreviewImage;
 import com.pixelmags.android.download.DownloadIssue;
 import com.pixelmags.android.download.DownloadIssueThreaded;
+import com.pixelmags.android.download.DownloadPreviewImages;
 import com.pixelmags.android.download.DownloadThumbnails;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.storage.IssueDataSet;
 import com.pixelmags.android.util.BaseApp;
+
+import java.util.ArrayList;
 
 
 public class IssueDetailsFragment extends Fragment {
@@ -33,6 +38,10 @@ public class IssueDetailsFragment extends Fragment {
     private static final String SERIALIZABLE_MAG_KEY = "serializable_mag_key";
 
     private DownloadIssueAsyncTask mIssueTask = null;
+
+    LinearLayout previewImagesLayout;
+    private DownloadPreviewImagesAsyncTask mPreviewImagesTask = null;
+
 
     public IssueDetailsFragment() {
         // Required empty public constructor
@@ -92,7 +101,9 @@ public class IssueDetailsFragment extends Fragment {
             });
 
             /* TODO - replace with scoll of preview images */
-            LinearLayout layout = (LinearLayout) rootView.findViewById(R.id.issueDetailsPreviewImageLayout);
+            previewImagesLayout = (LinearLayout) rootView.findViewById(R.id.issueDetailsPreviewImageLayout);
+
+            /*
             for (int i = 0; i < 10; i++) {
                 ImageView imageView = new ImageView(rootView.getContext());
                 imageView.setId(i);
@@ -100,9 +111,12 @@ public class IssueDetailsFragment extends Fragment {
                 imageView.setImageResource(R.drawable.ic_launcher1);
  //               imageView.setImageBitmap(R.drawable.ic_launcher1);
                 imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                layout.addView(imageView);
+                previewImagesLayout.addView(imageView);
             }
-            
+            */
+
+            mPreviewImagesTask = new DownloadPreviewImagesAsyncTask(Config.Magazine_Number, String.valueOf(issueData.id));
+            mPreviewImagesTask.execute((String) null);
 
         }
 
@@ -193,5 +207,80 @@ public class IssueDetailsFragment extends Fragment {
             mIssueTask = null;
         }
     }
+
+    /**
+     *
+     * Represents an asynchronous task used to download an issues.
+     *
+     */
+    public class DownloadPreviewImagesAsyncTask extends AsyncTask<String, String, String> {
+
+        private final String mIssueID;
+        ArrayList<PreviewImage> previewImageArrayList;
+
+        DownloadPreviewImagesAsyncTask(String magID, String issueID) {
+            mIssueID = issueID;
+            previewImageArrayList = null;
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            // TODO: attempt authentication against a network service.
+
+            String resultToDisplay = "";
+
+            try {
+
+                GetPreviewImages getPreviewImages = new GetPreviewImages();
+                previewImageArrayList = getPreviewImages.init(mIssueID, Config.Bundle_ID);
+
+                if(previewImageArrayList != null){
+                    previewImageArrayList = DownloadPreviewImages.DownloadPreviewImageBitmaps(previewImageArrayList);
+                }
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            return resultToDisplay;
+
+        }
+
+        protected void onPostExecute(String result) {
+
+            try{
+                previewImagesLayout = (LinearLayout) getActivity().findViewById(R.id.issueDetailsPreviewImageLayout);
+
+                // start async task to download and update
+                if(previewImageArrayList != null){
+                    for (int i = 0; i < previewImageArrayList.size() && i < DownloadPreviewImages.MAX_PREVIEW_IMAGE_COUNT; i++){
+
+                        PreviewImage previewImage = previewImageArrayList.get(i);
+
+                        if(previewImage.previewImageBitmap != null) {
+                            ImageView imageView = new ImageView(getActivity());
+                            imageView.setId(i);
+                            imageView.setPadding(2, 2, 5, 2);
+                            imageView.setMinimumWidth(previewImage.imageWidth);
+                            imageView.setImageBitmap(previewImage.previewImageBitmap);
+                            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+
+                            previewImagesLayout.addView(imageView);
+                        }
+                    }
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+
+        }
+
+        @Override
+        protected void onCancelled() {
+            mIssueTask = null;
+        }
+    }
+
+
 
 }
