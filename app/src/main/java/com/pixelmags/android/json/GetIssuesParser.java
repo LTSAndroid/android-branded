@@ -43,7 +43,7 @@ public class GetIssuesParser extends JSONParser {
 
 
             JSONArray arrayData = baseJSON.getJSONArray("data");
-            for(int i=0;i<arrayData.length();i++)
+            for(int i=0;i< 3;i++)
             {
                 Magazine magazine = new Magazine();
                 JSONObject unit = arrayData.getJSONObject(i);
@@ -57,7 +57,7 @@ public class GetIssuesParser extends JSONParser {
                 magazine.manifest = unit.getString("manifest");
                 // magazine.lastModified = unit.getString("lastModified"); // how to get date?
                 magazine.android_store_sku = unit.getString("iTunesStoreSKU");
-                magazine.price = unit.getDouble("price");
+                magazine.price = unit.getString("price");
                 magazine.thumbnailURL = unit.getString("thumbnailURL");
                 magazine.ageRestriction = unit.getString("ageRestriction");
                 magazine.removeFromSale = unit.getBoolean("remove_from_sale");
