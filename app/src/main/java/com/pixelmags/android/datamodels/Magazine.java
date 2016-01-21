@@ -25,7 +25,7 @@ public class Magazine implements Serializable
     public String title;
     public String synopsis;
 //    public int magazineId;
-    public double price;
+    public String price;
     public String android_store_sku;
     public String type;
     public String manifest;
