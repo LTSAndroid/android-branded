@@ -98,7 +98,7 @@ public class AllIssuesFragment extends Fragment {
     {
 
         MainActivity myAct = (MainActivity) getActivity();
-        myAct.purchaseLauncher();
+        myAct.purchaseLauncher(magazinesList.get(position).android_store_sku);
 
        /* AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
@@ -207,7 +207,7 @@ public class AllIssuesFragment extends Fragment {
 
 
             Button issuePriceButton = (Button) grid.findViewById(R.id.gridPriceButton);
-            double price = magazinesList.get(position).price;
+            String price = magazinesList.get(position).price;
             String priceConv = String.valueOf(price);
             issuePriceButton.setText(priceConv);
             issuePriceButton.setTag(position); // save the gridview index
@@ -254,7 +254,7 @@ public class AllIssuesFragment extends Fragment {
 
                 //GetIssues apiGetIssues = new GetIssues();
                // apiGetIssues.init(mMagazineID, mAppBundleID);
-                loadAllIssues();
+                loadAllIssues(); //new change
 
 
             }catch (Exception e){
@@ -295,7 +295,6 @@ public class AllIssuesFragment extends Fragment {
         AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
         magazinesList = mDbHelper.getAllIssues(mDbHelper.getReadableDatabase());
         mDbHelper.close();
-
 
         if(magazinesList != null){
 
