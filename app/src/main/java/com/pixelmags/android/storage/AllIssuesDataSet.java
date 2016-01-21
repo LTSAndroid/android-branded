@@ -173,7 +173,7 @@ public class AllIssuesDataSet extends BrandedSQLiteHelper{
                     mag.title = queryCursor.getString(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_TITLE));
                     mag.synopsis = queryCursor.getString(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_SYNOPSIS));
                     mag.android_store_sku = queryCursor.getString(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_ANDROID_STORE_SKU));
-                    mag.price = queryCursor.getDouble(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_PRICE));
+                    mag.price = queryCursor.getString(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_PRICE));
                     mag.type = queryCursor.getString(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_TYPE));
                     mag.manifest = queryCursor.getString(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_MANIFEST));
                     mag.thumbnailURL = queryCursor.getString(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_THUMBNAIL_URL));

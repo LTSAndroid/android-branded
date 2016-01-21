@@ -13,6 +13,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.IBinder;
 import android.os.StrictMode;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -33,6 +34,7 @@ import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.pixelmagsapp.service.DownloadService;
 import com.pixelmags.android.pixelmagsapp.test.ResultsFragment;
+import com.pixelmags.android.pixelmagsapp.ui.AllIssuesFragment;
 import com.pixelmags.android.pixelmagsapp.ui.LoginFragment;
 import com.pixelmags.android.pixelmagsapp.ui.NavigationDrawerFragment;
 import com.pixelmags.android.pixelmagsapp.ui.RegisterFragment;
@@ -44,9 +46,14 @@ import com.pixelmags.android.util.IabResult;
 import com.pixelmags.android.util.Inventory;
 import com.pixelmags.android.util.PMStrictMode;
 import com.pixelmags.android.util.Purchase;
+import com.pixelmags.android.util.SkuDetails;
 import com.pixelmags.android.util.Util;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, LoginFragment.OnFragmentInteractionListener ,
@@ -55,10 +62,14 @@ public class MainActivity extends AppCompatActivity
 
     public IabHelper mHelper;
     private ArrayList<Magazine> magazinesList = null;
+    public ArrayList<Magazine> billingMagazinesList;
+
     public ArrayList<String> skuList;
+
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
+
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
     /**
@@ -68,7 +79,8 @@ public class MainActivity extends AppCompatActivity
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
 
         startDownloadService();
@@ -95,24 +107,32 @@ public class MainActivity extends AppCompatActivity
         mHelper = new IabHelper(this, base64EncodedPublicKey);
 
         mHelper.startSetup(new
-                                   IabHelper.OnIabSetupFinishedListener() {
-                                       public void onIabSetupFinished(IabResult result) {
-                                           if (!result.isSuccess()) {
+                                   IabHelper.OnIabSetupFinishedListener()
+                                   {
+                                       public void onIabSetupFinished(IabResult result)
+                                       {
+                                           if (!result.isSuccess())
+                                           {
                                                //failed
-                                           } else {
+                                           }
+                                           else
+                                           {
                                                //success
                                            }
                                        }
                                    });
 
 
-        //Configurations.getInstance().getGooglePlayLicenseKey();
-        mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
-            public void onIabSetupFinished(IabResult result) {
-                if (!result.isSuccess()) {
+        mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener()
+        {
+            public void onIabSetupFinished(IabResult result)
+            {
+                if (!result.isSuccess())
+                {
                     /*Utilities.log("Unable to setup billing: " + result);
                     isBillingSetup = false;*/
-                } else {
+                } else
+                {
                     /*Utilities.log("Billing setup successfully");
                     isBillingSetup = true;*/
                     magazinesList = null; // clear the list
@@ -122,15 +142,18 @@ public class MainActivity extends AppCompatActivity
                     mDbHelper.close();
                     skuList = new ArrayList<String>();
 
-                    if (magazinesList != null) {
+                    if (magazinesList != null)
+                    {
 
-                        for (int i = 0; i < magazinesList.size(); i++) {
+                        for (int i = 0; i < magazinesList.size(); i++)
+                        {
                             skuList.add(magazinesList.get(i).android_store_sku);
 
                         }
+                        skuList.add("com.pixelmags.androidbranded.test1");//This to confirm billing sku
+                        skuList.add("com.pixelmags.androidbranded.test2");//This is to confirm billing sku
                     }
-                    mHelper.queryInventoryAsync(true, skuList,
-                            mQueryFinishedListener);
+                    mHelper.queryInventoryAsync(true, skuList, mQueryFinishedListener);
                 }
             }
         });
@@ -139,8 +162,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    IabHelper.QueryInventoryFinishedListener
-            mQueryFinishedListener = new IabHelper.QueryInventoryFinishedListener()
+    IabHelper.QueryInventoryFinishedListener mQueryFinishedListener = new IabHelper.QueryInventoryFinishedListener()
     {
         public void onQueryInventoryFinished(IabResult result, Inventory inventory)
         {
@@ -149,12 +171,48 @@ public class MainActivity extends AppCompatActivity
                 // handle error
                 return;
             }
+            List<String> allOwnedSKUS = inventory.getAllOwnedSkus();
 
-            /*String applePrice =
-                    inventory.getSkuDetails("com.pixelmags.androidbranded.test1").getPrice();
-            String bananaPrice =
-                    inventory.getSkuDetails("com.pixelmags.androidbranded.test2").getPrice();*/
+            billingMagazinesList = new ArrayList<Magazine>();
 
+            for (int i = 0; i < magazinesList.size(); i++)
+            {
+                String SKU = magazinesList.get(i).android_store_sku;
+
+                if(inventory.hasDetails("com.pixelmags.androidbranded.test1")) //yet to be changed,this is for billing test
+                {
+                    SkuDetails details = inventory.getSkuDetails("com.pixelmags.androidbranded.test1");
+
+                   // String price = details.getPrice();
+                    magazinesList.get(i).price = "939";
+                    Magazine finalMagazine = new Magazine();
+
+                    finalMagazine.id = magazinesList.get(i).id;
+                    //    magazine.magazineId = unit.getInt("ID"); // Is this different from ID field ??
+                    finalMagazine.synopsis = magazinesList.get(i).synopsis;
+                    finalMagazine.type = magazinesList.get(i).type;
+                    finalMagazine.title = magazinesList.get(i).title;
+                    finalMagazine.mediaFormat = magazinesList.get(i).mediaFormat;
+                    finalMagazine.manifest = magazinesList.get(i).manifest;
+                    // magazine.lastModified = unit.getString("lastModified"); // how to get date?
+                    finalMagazine.android_store_sku = magazinesList.get(i).android_store_sku;
+                    finalMagazine.price = magazinesList.get(i).price;
+                    finalMagazine.thumbnailURL = magazinesList.get(i).thumbnailURL;
+                    finalMagazine.ageRestriction = magazinesList.get(i).ageRestriction;
+                    finalMagazine.removeFromSale = magazinesList.get(i).removeFromSale;
+                    finalMagazine.isPublished = magazinesList.get(i).isPublished;
+                    finalMagazine.exclude_from_subscription = magazinesList.get(i).exclude_from_subscription;
+
+                    billingMagazinesList.add(finalMagazine);
+                }
+            }
+
+            // Save the Subscription Objects into the SQlite DB
+            AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
+            mDbHelper.insert_all_issues_data(mDbHelper.getWritableDatabase(), billingMagazinesList);
+            mDbHelper.close();
+
+        
             // update the UI
             mHelper.queryInventoryAsync(mGotInventoryListener);
         }
@@ -162,14 +220,18 @@ public class MainActivity extends AppCompatActivity
     };
 
     IabHelper.QueryInventoryFinishedListener mGotInventoryListener
-            = new IabHelper.QueryInventoryFinishedListener() {
+            = new IabHelper.QueryInventoryFinishedListener()
+    {
         public void onQueryInventoryFinished(IabResult result,
-                                             Inventory inventory) {
+                                             Inventory inventory)
+        {
 
-            if (result.isFailure()) {
+            if (result.isFailure())
+            {
                 // handle error here
             }
-            else {
+            else
+            {
                 // does the user have the premium upgrade?
                 //mIsPremium = inventory.hasPurchase(SKU_PREMIUM);
                 // update UI accordingly
@@ -178,7 +240,8 @@ public class MainActivity extends AppCompatActivity
     };
 
     @Override
-    public void onNavigationDrawerItemSelected(int position) {
+    public void onNavigationDrawerItemSelected(int position)
+    {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
@@ -214,20 +277,22 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void purchaseLauncher(){
+    public void purchaseLauncher(String sku)
+    {
 
-        mHelper.launchPurchaseFlow(this, "com.pixelmags.androidbranded.test1", 10001,
+        mHelper.launchPurchaseFlow(this, sku, 10001,
                 mPurchaseFinishedListener, "bGoa+V7g/yqDXvKRqq+JTFn4uQZbPiQJo4pf9RzJ");
     }
 
 
 
     IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener
-            = new IabHelper.OnIabPurchaseFinishedListener() {
-        public void onIabPurchaseFinished(IabResult result,
-                                          Purchase purchase)
+            = new IabHelper.OnIabPurchaseFinishedListener()
+    {
+        public void onIabPurchaseFinished(IabResult result,Purchase purchase)
         {
-            if (result.isFailure()) {
+            if (result.isFailure())
+            {
                 // Handle error
                 return;
             }
@@ -240,9 +305,6 @@ public class MainActivity extends AppCompatActivity
 
         }
     };
-
-
-
 
 
     @Override
@@ -295,7 +357,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
