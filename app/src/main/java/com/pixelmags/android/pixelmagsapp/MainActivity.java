@@ -318,6 +318,9 @@ public class MainActivity extends AppCompatActivity
          try {
             JSONObject jo = new JSONObject(purchaseData);
             String sku = jo.getString("productId");
+			String orderID = jo.getString("orderId");
+            String purchaseState = jo.getString("purchaseState");
+            String purchaseToken = jo.getString("purchaseToken");
           }
           catch (JSONException e) {
              e.printStackTrace();
