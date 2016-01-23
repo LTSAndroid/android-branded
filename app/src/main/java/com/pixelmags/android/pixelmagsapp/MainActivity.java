@@ -209,9 +209,9 @@ public class MainActivity extends AppCompatActivity
             }
 
             // Save the Subscription Objects into the SQlite DB
-            AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
+            /*AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
             mDbHelper.insert_all_issues_data(mDbHelper.getWritableDatabase(), billingMagazinesList);
-            mDbHelper.close();
+            mDbHelper.close();*/
 
         
             // update the UI

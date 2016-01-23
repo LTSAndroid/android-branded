@@ -50,6 +50,10 @@
             android:label="@string/title_activity_login"
             android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
+        <activity
+            android:name="com.pixelmags.android.IssueView.IssueViewActivity"
+            android:theme="@android:style/Theme.Holo.NoActionBar">
+        </activity>
 
         <service
             android:name=".service.DownloadService"
