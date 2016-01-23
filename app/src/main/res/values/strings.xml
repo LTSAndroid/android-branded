@@ -87,6 +87,10 @@
     <string name="subscription_price_2">£1.99</string>
     <string name="subscription_price_3">£1.99</string>
 
+    <!-- Download Strings -->
+    <string name="download_queued">Issue queued for download.</string>
+    <string name="download_queued_fail">Error with download. Please try again.</string>
+
     <!-- Post App Strings -->
 
     <string name="action_settings">Settings</string>

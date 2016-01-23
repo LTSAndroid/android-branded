@@ -40,7 +40,7 @@ public class IssueDataSet extends BrandedSQLiteHelper{
 
     public void deleteIssueEntry(SQLiteDatabase db, String IssueId){
 
-        // delete the issue entry from ISSUE table,
+        // TODO :- delete the issue entry from ISSUE table,
         // IMPORTANT -  Corresponding PAGE DATA table needs to be deleted first
 
     }

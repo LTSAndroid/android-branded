@@ -4,12 +4,14 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.widget.Toast;
 
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.datamodels.Issue;
 import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.datamodels.Page;
 import com.pixelmags.android.datamodels.PageTypeImage;
+import com.pixelmags.android.storage.AllDownloadsDataSet;
 import com.pixelmags.android.util.BaseApp;
 
 import java.io.File;
@@ -17,6 +19,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import com.pixelmags.android.pixelmagsapp.R;
 
 /**
  * Created by austincoutinho on 17/12/15.
@@ -43,12 +46,23 @@ public class DownloadIssueThreaded implements Runnable {
 
     public static Issue mIssue;
 
-    public static void DownloadIssuePages(Issue issue) {
+    public static boolean DownloadIssuePages(Issue issue) {
 
         mIssue = issue;
 
-      //  createAndClearStorageDirectory();
+        AllDownloadsDataSet mDbReader = new AllDownloadsDataSet(BaseApp.getContext());
+        if(mDbReader.issueDownloadPreChecksAndDownload(mDbReader.getWritableDatabase(), issue)){
+            System.out.println("ISSUE " +issue.issueID+ " QUEUED for download");
+            return true;
+        }else{
+            System.out.println("ISSUE " +issue.issueID+ " Download Init Failed");
+            return false;
+        }
 
+
+        // This works!!!
+
+    /*
         ArrayList<Thread> pagesDownloadThreads = new ArrayList<Thread>();
 
 
@@ -70,6 +84,7 @@ public class DownloadIssueThreaded implements Runnable {
         for (Thread thread : pagesDownloadThreads){
                 thread.start();
         }
+    */
 
     }
 
