@@ -1,12 +1,8 @@
 package com.pixelmags.android.pixelmagsapp.ui;
 
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.app.Activity;
 import android.support.v7.app.ActionBar;
@@ -31,7 +27,6 @@ import android.widget.Toast;
 
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.pixelmagsapp.R;
-import com.pixelmags.android.pixelmagsapp.LaunchActivity;
 import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.util.Util;
 
@@ -129,7 +124,8 @@ public class NavigationDrawerFragment extends Fragment {
                         getString(R.string.menu_title_subscriptions),
                         getString(R.string.menu_title_downloads),
                         getString(R.string.menu_title_contactsupport),
-                        getString(R.string.menu_title_about)
+                        getString(R.string.menu_title_about),
+                        getString(R.string.menu_issue_view)
                 }));
 
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
@@ -362,6 +358,12 @@ public class NavigationDrawerFragment extends Fragment {
                         .commit();
                 break;
 
+            case 6:
+                mTitle = getString(R.string.menu_issue_view);
+
+
+
+                break;
             default:
                 mTitle = getString(R.string.app_name);
                 break;
@@ -470,7 +472,8 @@ public class NavigationDrawerFragment extends Fragment {
                            getString(R.string.menu_title_subscriptions),
                            getString(R.string.menu_title_downloads),
                            getString(R.string.menu_title_contactsupport),
-                           getString(R.string.menu_title_about)
+                           getString(R.string.menu_title_about),
+                           getString(R.string.menu_issue_view)
                    }));
        }
 

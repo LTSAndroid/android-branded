@@ -49,6 +49,7 @@ import com.pixelmags.android.util.Purchase;
 import com.pixelmags.android.util.SkuDetails;
 import com.pixelmags.android.util.Util;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -270,6 +271,9 @@ public class MainActivity extends AppCompatActivity
                 break;
             case 5:
                 mTitle = getString(R.string.menu_title_about);
+                break;
+            case 6:
+                mTitle = getString(R.string.menu_issue_view);
                 break;
             default:
                mTitle = getString(R.string.app_name);
