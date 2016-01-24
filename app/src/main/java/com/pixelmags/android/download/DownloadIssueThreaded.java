@@ -51,13 +51,18 @@ public class DownloadIssueThreaded implements Runnable {
         mIssue = issue;
 
         AllDownloadsDataSet mDbReader = new AllDownloadsDataSet(BaseApp.getContext());
-        if(mDbReader.issueDownloadPreChecksAndDownload(mDbReader.getWritableDatabase(), issue)){
-            System.out.println("ISSUE " +issue.issueID+ " QUEUED for download");
-            return true;
-        }else{
-            System.out.println("ISSUE " +issue.issueID+ " Download Init Failed");
-            return false;
+        boolean result = mDbReader.issueDownloadPreChecksAndDownload(mDbReader.getWritableDatabase(), issue);
+        mDbReader.close();
+
+        if(result){
+            //move the issue thumbnail inside the Issue Download Thumbnail folder
+            DownloadThumbnails.copyThumbnailOfIssueDownloaded(String.valueOf(issue.issueID));
+
+            //TODO :- Remove this thumnail on delete
         }
+
+
+        return result;
 
 
         // This works!!!

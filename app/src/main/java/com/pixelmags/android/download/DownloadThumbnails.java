@@ -9,8 +9,11 @@ import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.util.BaseApp;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 
 /**
@@ -19,6 +22,7 @@ import java.util.ArrayList;
 public class DownloadThumbnails implements Runnable {
 
     private static final String THUMBNAIL_DIR_PREFIX="/Temp/IssueThumbnails";
+    private static final String THUMBNAILS_DOWNLOADEDISSUE_DIR_PREFIX="/Permanent/DownloadedIssueThumbnails";
 
     private int issueIndex;
     private String url;
@@ -35,6 +39,78 @@ public class DownloadThumbnails implements Runnable {
     }
 
     public static ArrayList<Magazine> allIssues;
+
+    public static void copyThumbnailOfIssueDownloaded(String issueID) {
+
+        try{
+
+            ContextWrapper cw = new ContextWrapper(BaseApp.getContext());
+            File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+
+            String sourcePath = directory.getAbsolutePath() + THUMBNAIL_DIR_PREFIX +"/"+issueID+".jpg";
+            File source = new File(sourcePath);
+
+
+            File downloadFolder = new File(directory.getAbsolutePath() + THUMBNAILS_DOWNLOADEDISSUE_DIR_PREFIX);
+            downloadFolder.mkdirs();
+            String thumbnailFilename = issueID+".jpg";
+            File destinationPath = new File(downloadFolder, thumbnailFilename);
+
+
+            //FileChannel inChannel = new FileInputStream(source).getChannel();
+            // FileChannel outChannel = new FileOutputStream(destinationPath).getChannel();
+
+            try {
+                //inChannel.transferTo(0, inChannel.size(), outChannel);
+                if(source.exists()){
+
+                    InputStream in = new FileInputStream(source);
+                    OutputStream out = new FileOutputStream(destinationPath);
+
+                    // Copy the bits from instream to outstream
+                    byte[] buf = new byte[1024];
+                    int len;
+
+                    while ((len = in.read(buf)) > 0) {
+                        out.write(buf, 0, len);
+                    }
+
+                    in.close();
+                    out.close();
+
+                }
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+            /*
+                finally {
+                if (inChannel != null)
+                    inChannel.close();
+                if (outChannel != null)
+                    outChannel.close();
+            }*/
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+
+    }
+
+    public static String getIssueDownloadedThumbnailStorageDirectory(String issueID){
+
+        String path = null;
+
+        ContextWrapper cw = new ContextWrapper(BaseApp.getContext());
+        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+        File folder = new File(directory.getAbsolutePath()+THUMBNAILS_DOWNLOADEDISSUE_DIR_PREFIX);
+
+        if(folder!=null){
+            path = folder.getAbsolutePath()+"/"+issueID+".jpg";
+        }
+
+        return path;
+    }
 
     public static ArrayList<Magazine> DownloadAllThumbnailData(ArrayList<Magazine> allIssuesList) {
 
@@ -140,6 +216,7 @@ public class DownloadThumbnails implements Runnable {
         }
 
     }
+
 
 
 }

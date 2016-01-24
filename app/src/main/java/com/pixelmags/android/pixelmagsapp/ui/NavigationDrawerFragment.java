@@ -328,6 +328,12 @@ public class NavigationDrawerFragment extends Fragment {
                 break;
             case 3:
                 mTitle = getString(R.string.menu_title_downloads);
+                Fragment fragmentAllDownloads = new AllDownloadsFragment();
+                FragmentManager downloadsFragmentManager = getFragmentManager();
+                downloadsFragmentManager.beginTransaction()
+                        .replace(R.id.main_fragment_container, fragmentAllDownloads)
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .commit();
                 break;
             case 4:
                 mTitle = getString(R.string.menu_title_contactsupport);

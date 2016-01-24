@@ -91,6 +91,11 @@
     <string name="download_queued">Issue queued for download.</string>
     <string name="download_queued_fail">Error with download. Please try again.</string>
 
+    <string name="download_status_in_queue">In Queue</string>
+    <string name="download_status_started">Downloading..</string>
+    <string name="download_status_paused">Paused</string>
+    <string name="download_status_completed">Complete</string>
+    <string name="download_status_failed">Error</string>
     <!-- Post App Strings -->
 
     <string name="action_settings">Settings</string>

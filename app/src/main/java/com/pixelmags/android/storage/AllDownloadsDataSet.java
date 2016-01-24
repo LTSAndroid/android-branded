@@ -6,9 +6,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.format.Time;
 
+import com.pixelmags.android.datamodels.DownloadedIssue;
 import com.pixelmags.android.datamodels.Issue;
 import com.pixelmags.android.datamodels.MySubscription;
 import com.pixelmags.android.util.BaseApp;
+import com.pixelmags.android.pixelmagsapp.R;
 
 import java.util.ArrayList;
 
@@ -26,6 +28,27 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
     public static int DOWNLOAD_STATUS_STARTED = 3;
     public static int DOWNLOAD_STATUS_QUEUED = 4;
 
+
+    public static String getDownloadStatusText(int status){
+
+        String statusText = " ";
+
+        if (status == -1) {
+            statusText = BaseApp.getContext().getString(R.string.download_status_failed);
+        }
+        if(status == 4){
+            statusText = BaseApp.getContext().getString(R.string.download_status_in_queue);
+        }if(status == 3 || status == 2){
+            statusText = BaseApp.getContext().getString(R.string.download_status_started);
+        }if(status == 1){
+            statusText = BaseApp.getContext().getString(R.string.download_status_paused);
+        }if(status == 0){
+            statusText = BaseApp.getContext().getString(R.string.download_status_completed);
+        }
+
+
+        return statusText;
+    }
 
     public AllDownloadsDataSet(Context context) {
         super(context);
@@ -154,7 +177,68 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
         return false;
     }
 
+    public ArrayList<DownloadedIssue> getDownloadIssueList(SQLiteDatabase db, String magazineID){
 
+        ArrayList<DownloadedIssue> downloadedIssues = null;
+
+         try {
+
+                // Define a projection i.e specify columns to retrieve
+                String[] projection = {
+                        AllDownloadsEntry.COLUMN_ISSUE_ID,
+                        AllDownloadsEntry.COLUMN_MAGAZINE_ID,
+                        AllDownloadsEntry.COLUMN_UNIQUE_ISSUE_DOWNLOAD_TABLE,
+                        AllDownloadsEntry.COLUMN_PRIORITY,
+                        AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS
+                };
+
+
+             // Specify the sort order
+             String sortOrder = AllDownloadsEntry.COLUMN_PRIORITY + " DESC";
+
+             String whereClause = AllDownloadsEntry.COLUMN_MAGAZINE_ID+"=?";
+             String [] whereArgs = {magazineID};
+
+                Cursor queryCursor = db.query(
+                        AllDownloadsEntry.ALL_DOWNLOADS_TABLE_NAME,    // The table to query
+                        projection,                                     // The columns to return
+                        whereClause,                                           // The columns for the WHERE clause
+                        whereArgs,                                           // The values for the WHERE clause
+                        null,
+                        null,
+                        sortOrder                                       // The sort order
+                );
+
+                if (queryCursor != null) {
+
+
+                    downloadedIssues = new ArrayList<DownloadedIssue>();
+
+                    //queryCursor.getCount();
+                    while (queryCursor.moveToNext()) {
+
+                        DownloadedIssue issue = new DownloadedIssue();
+
+                        issue.issueID = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_ISSUE_ID));
+                        issue.magazineID = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_MAGAZINE_ID));
+                        issue.uniqueIssueDownloadTable = queryCursor.getString(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_UNIQUE_ISSUE_DOWNLOAD_TABLE));
+                        issue.priority = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_PRIORITY));
+                        issue.downloadStatus = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS));
+
+                        downloadedIssues.add(issue);
+
+                    }
+
+                    queryCursor.close();
+                }
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return downloadedIssues;
+    }
 
 
     /* Inner class that defines the table contents */
