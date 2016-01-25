@@ -25,6 +25,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.pixelmags.android.IssueView.FullScreenImages;
+import com.pixelmags.android.IssueView.IssueViewActivity;
+import com.pixelmags.android.IssueView.IssueViewAdapter;
+import com.pixelmags.android.IssueView.NewIssueView;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.storage.UserPrefs;
@@ -361,9 +365,11 @@ public class NavigationDrawerFragment extends Fragment {
             case 6:
                 mTitle = getString(R.string.menu_issue_view);
 
-
-
+                /*Intent myIntent = new Intent(getActivity(), IssueViewActivity.class);
+                startActivity(myIntent);*/
+                startActivity(new Intent(getActivity(),NewIssueView.class));
                 break;
+
             default:
                 mTitle = getString(R.string.app_name);
                 break;

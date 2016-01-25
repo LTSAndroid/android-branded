@@ -51,8 +51,8 @@
             android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
         <activity
-            android:name="com.pixelmags.android.IssueView.IssueViewActivity"
-            android:theme="@android:style/Theme.Holo.NoActionBar">
+            android:name="com.pixelmags.android.IssueView.NewIssueView"
+            >
         </activity>
 
         <service
