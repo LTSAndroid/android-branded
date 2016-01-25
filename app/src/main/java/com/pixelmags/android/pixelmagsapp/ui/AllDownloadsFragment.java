@@ -33,7 +33,7 @@ import java.util.ArrayList;
 
 public class AllDownloadsFragment extends Fragment {
 
-    private ArrayList<Magazine> downloadedMagazinesList = null;
+    private ArrayList<DownloadedIssue> downloadedIssuesList = null;
     public CustomAllDownloadsGridAdapter gridDownloadAdapter;
     private GetAllDownloadedIssuesTask mGetAllDownloadedIssuesTask;
 
@@ -93,16 +93,16 @@ public class AllDownloadsFragment extends Fragment {
         @Override
         public int getCount() {
 
-            if(downloadedMagazinesList == null){
+            if(downloadedIssuesList == null){
                 return 0;
             }
 
-            return downloadedMagazinesList.size();
+            return downloadedIssuesList.size();
         }
 
         @Override
         public Object getItem(int arg0) {
-            return downloadedMagazinesList.get(arg0).thumbnailBitmap;
+            return downloadedIssuesList.get(arg0).thumbnailBitmap;
         }
 
         @Override
@@ -127,10 +127,10 @@ public class AllDownloadsFragment extends Fragment {
 
             // Set the magazine image
 
-                if(downloadedMagazinesList.get(position).thumbnailBitmap != null){
+                if(downloadedIssuesList.get(position).thumbnailBitmap != null){
 
                     ImageView imageView = (ImageView) grid.findViewById(R.id.gridDownloadedIssueImage);
-                    imageView.setImageBitmap(downloadedMagazinesList.get(position).thumbnailBitmap);
+                    imageView.setImageBitmap(downloadedIssuesList.get(position).thumbnailBitmap);
                     //imageView.setImageBitmap(bmp);
 
                     imageView.setTag(position);
@@ -145,20 +145,17 @@ public class AllDownloadsFragment extends Fragment {
                     });
                 }
 
-            if(downloadedMagazinesList.get(position).title != null) {
+            if(downloadedIssuesList.get(position).issueTitle != null) {
                 TextView issueTitleText = (TextView) grid.findViewById(R.id.gridDownloadedTitleText);
-                issueTitleText.setText(downloadedMagazinesList.get(position).title);
+                issueTitleText.setText(downloadedIssuesList.get(position).issueTitle);
             }
 
 
             Button gridDownloadStatusButton = (Button) grid.findViewById(R.id.gridDownloadStatusButton);
-            if(downloadedMagazinesList.get(position).issueDownloadData!=null){
-
-                int status = downloadedMagazinesList.get(position).issueDownloadData.downloadStatus;
+                int status = downloadedIssuesList.get(position).downloadStatus;
                 String downloadStatusText = AllDownloadsDataSet.getDownloadStatusText(status);
                 gridDownloadStatusButton.setText(downloadStatusText);
 
-            }
             gridDownloadStatusButton.setTag(position); // save the gridview index
             gridDownloadStatusButton.setOnClickListener(new View.OnClickListener() {
 
@@ -198,37 +195,25 @@ public class AllDownloadsFragment extends Fragment {
 
             try {
 
+                downloadedIssuesList = null; // clear the list
+
                 AllDownloadsDataSet mDbReader = new AllDownloadsDataSet(BaseApp.getContext());
-                ArrayList<DownloadedIssue> downloadedIssues = mDbReader.getDownloadIssueList(mDbReader.getReadableDatabase(), Config.Magazine_Number);
+                downloadedIssuesList = mDbReader.getDownloadIssueList(mDbReader.getReadableDatabase(), Config.Magazine_Number);
                 mDbReader.close();
 
-                if(downloadedIssues != null) {
+                if(downloadedIssuesList != null) {
 
-                    downloadedMagazinesList = null; // clear the list
-                    downloadedMagazinesList = new ArrayList<Magazine>();
+                    for (int i = 0; i < downloadedIssuesList.size(); i++) {
 
+                        System.out.println("<< singleDownloadedIssue "+downloadedIssuesList.get(i).issueID+" >>");
+                        downloadedIssuesList.get(i).thumbnailBitmap = loadImageFromStorage(
+                                DownloadThumbnails.getIssueDownloadedThumbnailStorageDirectory(
+                                        String.valueOf(downloadedIssuesList.get(i).issueID)
+                                )
+                        );
 
-                    AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
-                    for (int i = 0; i < downloadedIssues.size(); i++) {
-
-                        DownloadedIssue singleDownloadedIssue = downloadedIssues.get(i);
-
-                        System.out.println("<< singleDownloadedIssue "+singleDownloadedIssue.issueID+" >>");
-
-
-                        Magazine mag = mDbHelper.getSingleIssue(mDbHelper.getReadableDatabase(),String.valueOf(singleDownloadedIssue.issueID));
-                        if(mag != null){
-
-                            mag.issueDownloadData = singleDownloadedIssue;
-
-                            System.out.println("<< String.valueOf(mag.id) "+ String.valueOf(mag.id) +" >>");
-
-                            mag.thumbnailBitmap = loadImageFromStorage(DownloadThumbnails.getIssueDownloadedThumbnailStorageDirectory(String.valueOf(mag.id)));
-                            downloadedMagazinesList.add(mag);
-                        }
                     }
 
-                    mDbHelper.close();
                 }
 
 

@@ -161,6 +161,7 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
             ContentValues insertValues = new ContentValues();
             insertValues.put(AllDownloadsEntry.COLUMN_ISSUE_ID, downloadIssue.issueID);
             insertValues.put(AllDownloadsEntry.COLUMN_MAGAZINE_ID, downloadIssue.magazineID);
+            insertValues.put(AllDownloadsEntry.COLUMN_ISSUE_TITLE, downloadIssue.title);
             insertValues.put(AllDownloadsEntry.COLUMN_UNIQUE_ISSUE_DOWNLOAD_TABLE, uniqueIssueDownloadTable);
             insertValues.put(AllDownloadsEntry.COLUMN_PRIORITY, priorityValue);
             insertValues.put(AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS, downloadStatus);
@@ -187,6 +188,7 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
                 String[] projection = {
                         AllDownloadsEntry.COLUMN_ISSUE_ID,
                         AllDownloadsEntry.COLUMN_MAGAZINE_ID,
+                        AllDownloadsEntry.COLUMN_ISSUE_TITLE,
                         AllDownloadsEntry.COLUMN_UNIQUE_ISSUE_DOWNLOAD_TABLE,
                         AllDownloadsEntry.COLUMN_PRIORITY,
                         AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS
@@ -221,6 +223,7 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
 
                         issue.issueID = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_ISSUE_ID));
                         issue.magazineID = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_MAGAZINE_ID));
+                        issue.issueTitle = queryCursor.getString(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_ISSUE_TITLE));
                         issue.uniqueIssueDownloadTable = queryCursor.getString(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_UNIQUE_ISSUE_DOWNLOAD_TABLE));
                         issue.priority = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_PRIORITY));
                         issue.downloadStatus = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS));
@@ -247,6 +250,7 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
         public static final String ALL_DOWNLOADS_TABLE_NAME = BrandedSQLiteHelper.TABLE_ALL_DOWNLOADS;
         public static final String COLUMN_ISSUE_ID = "issue_id";
         public static final String COLUMN_MAGAZINE_ID = "magazine_id";
+        public static final String COLUMN_ISSUE_TITLE = "issue_title";
         public static final String COLUMN_UNIQUE_ISSUE_DOWNLOAD_TABLE = "issue_download_tracker_table"; // the tablename under which the issue is stored.
         public static final String COLUMN_PRIORITY = "download_priority";
         public static final String COLUMN_DOWNLOAD_STATUS = "download_status";
@@ -256,6 +260,7 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
                 + "("
                 + COLUMN_ISSUE_ID + " INTEGER PRIMARY KEY,"
                 + COLUMN_MAGAZINE_ID + " INTEGER,"
+                + COLUMN_ISSUE_TITLE + " TEXT,"
                 + COLUMN_UNIQUE_ISSUE_DOWNLOAD_TABLE + " TEXT,"
                 + COLUMN_PRIORITY + " INTEGER,"
                 + COLUMN_DOWNLOAD_STATUS + " INTEGER"
