@@ -1,6 +1,7 @@
 package com.pixelmags.android.pixelmagsapp.ui;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -27,9 +28,12 @@ import com.pixelmags.android.download.DownloadIssueThreaded;
 import com.pixelmags.android.download.DownloadPreviewImages;
 import com.pixelmags.android.download.DownloadThumbnails;
 import com.pixelmags.android.pixelmagsapp.R;
+import com.pixelmags.android.storage.AllIssuesDataSet;
 import com.pixelmags.android.storage.IssueDataSet;
 import com.pixelmags.android.util.BaseApp;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 
 
@@ -38,6 +42,8 @@ public class IssueDetailsFragment extends Fragment {
 
     public Magazine issueData;
     private static final String SERIALIZABLE_MAG_KEY = "serializable_mag_key";
+    private static final String ISSUE_ID_KEY = "issue_id_key";
+    private static final String MAGAZINE_ID_KEY = "magazine_id_key";
 
     private DownloadIssueAsyncTask mIssueTask = null;
 
@@ -49,11 +55,13 @@ public class IssueDetailsFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static IssueDetailsFragment newInstance(Magazine magazineData) {
+    public static IssueDetailsFragment newInstance(String issueID, String magazineID) {
 
         IssueDetailsFragment fragment = new IssueDetailsFragment();
         Bundle args = new Bundle();
-        args.putSerializable(SERIALIZABLE_MAG_KEY, magazineData);
+        args.putString(ISSUE_ID_KEY, issueID);
+        args.putString(MAGAZINE_ID_KEY, magazineID);
+       // args.putSerializable(SERIALIZABLE_MAG_KEY, magazineData);
         fragment.setArguments(args);
 
         return fragment;
@@ -65,7 +73,15 @@ public class IssueDetailsFragment extends Fragment {
 
         try{
         if (getArguments() != null) {
-            issueData = (Magazine) getArguments().getSerializable(SERIALIZABLE_MAG_KEY);
+
+            String issueID = (String) getArguments().getString(ISSUE_ID_KEY);
+            String magID = (String) getArguments().getString(MAGAZINE_ID_KEY);
+
+            AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
+            issueData = mDbHelper.getSingleIssue(mDbHelper.getReadableDatabase(),issueID);
+            mDbHelper.close();
+
+            //issueData = (Magazine) getArguments().getSerializable(SERIALIZABLE_MAG_KEY);
         }
         }catch(Exception e){
             e.printStackTrace();
@@ -85,7 +101,8 @@ public class IssueDetailsFragment extends Fragment {
             // Load all data for the issue details page here
 
             ImageView issueDetailsImageView = (ImageView) rootView.findViewById(R.id.issueDetailsImageView);
-            if(issueData.thumbnailBitmap!=null){
+            if(issueData.isThumbnailDownloaded){
+                issueData.thumbnailBitmap = loadImageFromStorage(issueData.thumbnailDownloadedInternalPath);
                 issueDetailsImageView.setImageBitmap(issueData.thumbnailBitmap);
             }
 
@@ -306,6 +323,25 @@ public class IssueDetailsFragment extends Fragment {
         }
     }
 
+    private Bitmap loadImageFromStorage(String path)
+    {
 
+        Bitmap issueThumbnail = null;
+        try {
+            File file = new File(path);
+            FileInputStream inputStream = new FileInputStream(file);
+            issueThumbnail = BitmapFactory.decodeStream(inputStream);
+
+
+            inputStream.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        return issueThumbnail;
+
+    }
 
 }

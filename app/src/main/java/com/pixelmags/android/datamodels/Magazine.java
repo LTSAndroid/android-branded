@@ -14,7 +14,7 @@ import java.util.Date;
 /*
     This datamodel represents an issue in the Store View
  */
-public class Magazine implements Serializable
+public class Magazine
 {
     public static String STATUS_BUY = "Buy";
     public static String STATUS_DOWNLOAD = "Download";

@@ -120,7 +120,11 @@ public class AllIssuesFragment extends Fragment {
     private void navigateToIssueDetails(int position) {
 
         FragmentManager fragmentManager = getFragmentManager();
-        Fragment fragment = IssueDetailsFragment.newInstance(magazinesList.get(position));
+
+        Magazine mag = magazinesList.get(position);
+        String issueID = String.valueOf(mag.id);
+
+        Fragment fragment = IssueDetailsFragment.newInstance(issueID, Config.Magazine_Number);
         fragmentManager.beginTransaction()
                 .replace(((ViewGroup)(getView().getParent())).getId(), fragment)
                 .addToBackStack(null)
