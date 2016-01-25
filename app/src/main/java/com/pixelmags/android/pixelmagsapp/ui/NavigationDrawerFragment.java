@@ -25,9 +25,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.pixelmags.android.IssueView.FullScreenImages;
-import com.pixelmags.android.IssueView.IssueViewActivity;
-import com.pixelmags.android.IssueView.IssueViewAdapter;
+
 import com.pixelmags.android.IssueView.NewIssueView;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.pixelmagsapp.R;
