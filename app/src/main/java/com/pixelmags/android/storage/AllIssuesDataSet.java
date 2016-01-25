@@ -201,5 +201,83 @@ public class AllIssuesDataSet extends BrandedSQLiteHelper{
         return magazinesArray;
     }
 
+    public Magazine getSingleIssue(SQLiteDatabase db, String IssueID){
+
+        Magazine mMagazine = null;
+
+        try{
+
+            // Define a projection i.e specify columns to retrieve
+            String[] projection = {
+                    AllIssuesEntry.COLUMN_ID,
+                    AllIssuesEntry.COLUMN_TITLE,
+                    AllIssuesEntry.COLUMN_SYNOPSIS,
+                    AllIssuesEntry.COLUMN_ANDROID_STORE_SKU,
+                    AllIssuesEntry.COLUMN_PRICE,
+                    AllIssuesEntry.COLUMN_TYPE,
+                    AllIssuesEntry.COLUMN_MANIFEST,
+                    AllIssuesEntry.COLUMN_THUMBNAIL_URL,
+                    AllIssuesEntry.COLUMN_IS_PUBLISHED,
+                    AllIssuesEntry.COLUMN_REMOVE_FROM_SALE,
+                    AllIssuesEntry.COLUMN_AGE_RESTRICTION,
+                    AllIssuesEntry.COLUMN_EXCLUDE_FROM_SUBSCRIPTION,
+                    AllIssuesEntry.COLUMN_INTERNAL_SAVED_URL,
+                    AllIssuesEntry.COLUMN_IS_THUMBNAIL_DOWNLOADED,
+                    AllIssuesEntry.COLUMN_MEDIA_FORMAT
+            };
+
+            // Specify the sort order
+            String sortOrder = AllIssuesEntry.COLUMN_ID + " DESC";
+
+            String whereClause = AllIssuesEntry.COLUMN_ID+"=?";
+            String [] whereArgs = {IssueID};
+
+            Cursor queryCursor = db.query(
+                    AllIssuesEntry.ALL_ISSUES_TABLE_NAME,    // The table to query
+                    projection,                                     // The columns to return
+                    whereClause,                                           // The columns for the WHERE clause
+                    whereArgs,                                           // The values for the WHERE clause
+                    null,
+                    null,
+                    sortOrder                                       // The sort order
+            );
+
+            if(queryCursor != null ){
+
+                //queryCursor.getCount();
+                while (queryCursor.moveToNext()) {
+
+                    mMagazine = new Magazine();
+
+                    mMagazine.id = queryCursor.getInt(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_ID));
+                    mMagazine.title = queryCursor.getString(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_TITLE));
+                    mMagazine.synopsis = queryCursor.getString(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_SYNOPSIS));
+                    mMagazine.android_store_sku = queryCursor.getString(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_ANDROID_STORE_SKU));
+                    mMagazine.price = queryCursor.getString(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_PRICE));
+                    mMagazine.type = queryCursor.getString(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_TYPE));
+                    mMagazine.manifest = queryCursor.getString(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_MANIFEST));
+                    mMagazine.thumbnailURL = queryCursor.getString(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_THUMBNAIL_URL));
+                    mMagazine.isPublished = (queryCursor.getInt(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_IS_PUBLISHED)) == 1) ? true : false;
+                    mMagazine.removeFromSale = (queryCursor.getInt(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_REMOVE_FROM_SALE)) == 1) ? true : false;
+                    mMagazine.ageRestriction = queryCursor.getString(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_AGE_RESTRICTION));
+                    mMagazine.exclude_from_subscription = queryCursor.getString(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_EXCLUDE_FROM_SUBSCRIPTION));
+                    mMagazine.thumbnailDownloadedInternalPath = queryCursor.getString(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_INTERNAL_SAVED_URL));
+                    mMagazine.isThumbnailDownloaded = (queryCursor.getInt(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_IS_THUMBNAIL_DOWNLOADED)) == 1) ? true : false;
+                    mMagazine.mediaFormat = queryCursor.getString(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_MEDIA_FORMAT));
+
+                }
+
+                queryCursor.close();
+                db.close();
+            }
+
+
+        }catch (Exception e){
+            System.out.println(e.getStackTrace());
+        }
+
+        return mMagazine;
+    }
+
 
 }

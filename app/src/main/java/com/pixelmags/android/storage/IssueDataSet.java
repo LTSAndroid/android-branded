@@ -40,7 +40,7 @@ public class IssueDataSet extends BrandedSQLiteHelper{
 
     public void deleteIssueEntry(SQLiteDatabase db, String IssueId){
 
-        // delete the issue entry from ISSUE table,
+        // TODO :- delete the issue entry from ISSUE table,
         // IMPORTANT -  Corresponding PAGE DATA table needs to be deleted first
 
     }
@@ -210,9 +210,9 @@ public class IssueDataSet extends BrandedSQLiteHelper{
 
     }
 
-    public Issue getIssue(SQLiteDatabase db, String issueId){
+    public Issue getIssue(SQLiteDatabase db, String issue_Id){
 
-        Issue issueData = new Issue();
+        Issue singleIssueData = null;
 
         try{
 
@@ -233,8 +233,10 @@ public class IssueDataSet extends BrandedSQLiteHelper{
             // Specify the sort order
             String sortOrder = IssueEntry.COLUMN_ISSUE_ID + " DESC";
 
+            System.out.println("<< COLUMN_ISSUE_ID :: "+ issue_Id +" >>");
+
             String whereClause = IssueEntry.COLUMN_ISSUE_ID+"=?";
-            String [] whereArgs = {issueId};
+            String [] whereArgs = {issue_Id};
 
             Cursor queryCursor = db.query(
                     IssueEntry.ISSUE_TABLE_NAME,    // The table to query
@@ -248,29 +250,29 @@ public class IssueDataSet extends BrandedSQLiteHelper{
 
             if(queryCursor != null ){
 
+
                 //queryCursor.getCount();
                 while (queryCursor.moveToNext()) {
 
-                    // Extract data.
+                    singleIssueData = new Issue();
 
-                    issueData.issueID = queryCursor.getInt(queryCursor.getColumnIndex(IssueEntry.COLUMN_ISSUE_ID));
-                    issueData.magazineID = queryCursor.getInt(queryCursor.getColumnIndex(IssueEntry.COLUMN_MAGAZINE_ID));
-                    issueData.title = queryCursor.getString(queryCursor.getColumnIndex(IssueEntry.COLUMN_TITLE));
-                    issueData.thumbnailURL = queryCursor.getString(queryCursor.getColumnIndex(IssueEntry.COLUMN_THUMBNAIL_URL));
-                    issueData.issueDate = queryCursor.getString(queryCursor.getColumnIndex(IssueEntry.COLUMN_ISSUE_DATE));
-                    issueData.pageCount = queryCursor.getInt(queryCursor.getColumnIndex(IssueEntry.COLUMN_PAGE_COUNT));
-                    issueData.created = queryCursor.getString(queryCursor.getColumnIndex(IssueEntry.COLUMN_CREATED));
-                    issueData.lastModified = queryCursor.getString(queryCursor.getColumnIndex(IssueEntry.COLUMN_LAST_MODIFIED));
-                    issueData.media_format = queryCursor.getString(queryCursor.getColumnIndex(IssueEntry.COLUMN_MEDIA_FORMAT));
+                    // Extract data.
+                    singleIssueData.issueID = queryCursor.getInt(queryCursor.getColumnIndex(IssueEntry.COLUMN_ISSUE_ID));
+                    singleIssueData.magazineID = queryCursor.getInt(queryCursor.getColumnIndex(IssueEntry.COLUMN_MAGAZINE_ID));
+                    singleIssueData.title = queryCursor.getString(queryCursor.getColumnIndex(IssueEntry.COLUMN_TITLE));
+                    singleIssueData.thumbnailURL = queryCursor.getString(queryCursor.getColumnIndex(IssueEntry.COLUMN_THUMBNAIL_URL));
+                    singleIssueData.issueDate = queryCursor.getString(queryCursor.getColumnIndex(IssueEntry.COLUMN_ISSUE_DATE));
+                    singleIssueData.pageCount = queryCursor.getInt(queryCursor.getColumnIndex(IssueEntry.COLUMN_PAGE_COUNT));
+                    singleIssueData.created = queryCursor.getString(queryCursor.getColumnIndex(IssueEntry.COLUMN_CREATED));
+                    singleIssueData.lastModified = queryCursor.getString(queryCursor.getColumnIndex(IssueEntry.COLUMN_LAST_MODIFIED));
+                    singleIssueData.media_format = queryCursor.getString(queryCursor.getColumnIndex(IssueEntry.COLUMN_MEDIA_FORMAT));
 
                     String pagesTable = queryCursor.getString(queryCursor.getColumnIndex(IssueEntry.COLUMN_PAGE_DATA_TABLE));
-
-                    issueData.pages = getPagesFromTable(db, pagesTable);
+                    singleIssueData.pages = getPagesFromTable(db, pagesTable);
 
                 }
 
                 queryCursor.close();
-                db.close();
             }
 
 
@@ -278,7 +280,7 @@ public class IssueDataSet extends BrandedSQLiteHelper{
             System.out.println(e.getStackTrace());
         }
 
-        return issueData;
+        return singleIssueData;
     }
 
     private ArrayList<Page> getPagesFromTable(SQLiteDatabase db, String pagesTableName){
@@ -326,7 +328,6 @@ public class IssueDataSet extends BrandedSQLiteHelper{
                 }
 
                 queryCursor.close();
-                db.close();
             }
 
 

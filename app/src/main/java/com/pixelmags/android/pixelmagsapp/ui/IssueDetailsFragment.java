@@ -13,7 +13,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.pixelmags.android.api.GetIssue;
 import com.pixelmags.android.api.GetPreviewImages;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.datamodels.Issue;
@@ -61,8 +63,12 @@ public class IssueDetailsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        try{
         if (getArguments() != null) {
             issueData = (Magazine) getArguments().getSerializable(SERIALIZABLE_MAG_KEY);
+        }
+        }catch(Exception e){
+            e.printStackTrace();
         }
 
     }
@@ -95,7 +101,7 @@ public class IssueDetailsFragment extends Fragment {
             issueDetailsPriceButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mIssueTask = new DownloadIssueAsyncTask(Config.Magazine_Number, "110422");
+                    mIssueTask = new DownloadIssueAsyncTask(Config.Magazine_Number, "120974");
                     mIssueTask.execute((String) null);
                 }
             });
@@ -150,22 +156,27 @@ public class IssueDetailsFragment extends Fragment {
     }
      */
 
-    private void startIssueDownload(String issueId){
+    private boolean startIssueDownload(String issueId){
 
         // Test the saved output
+        System.out.println("<<< issueId :: "+ issueId +" >>>");
+
         IssueDataSet mDbReader = new IssueDataSet(BaseApp.getContext());
         Issue issueData = mDbReader.getIssue(mDbReader.getReadableDatabase(), issueId);
+        mDbReader.close();
 
-        System.out.println("<<< STARTING ISSUE DOWNLOAD >>>");
+        System.out.println("<<< STARTING ISSUE DOWNLOAD "+ issueData.issueID +" >>>");
 
         if(issueData != null){
         // Download via queueing
             //DownloadIssue downloadIssue = new DownloadIssue(issueData);
             //downloadIssue.initDownload();
 
-            DownloadIssueThreaded.DownloadIssuePages(issueData);
+            return DownloadIssueThreaded.DownloadIssuePages(issueData);
 
         }
+
+        return false;
     }
 
 
@@ -174,7 +185,7 @@ public class IssueDetailsFragment extends Fragment {
      * Represents an asynchronous task used to download an issues.
      *
      */
-    public class DownloadIssueAsyncTask extends AsyncTask<String, String, String> {
+    public class DownloadIssueAsyncTask extends AsyncTask<String, String, Boolean> {
 
         private final String mIssueID;
 
@@ -183,23 +194,37 @@ public class IssueDetailsFragment extends Fragment {
         }
 
         @Override
-        protected String doInBackground(String... params) {
+        protected Boolean doInBackground(String... params) {
             // TODO: attempt authentication against a network service.
-
-            String resultToDisplay = "";
 
             try {
 
-                startIssueDownload(mIssueID);
+                //Fetch Issue Details as well.
+                GetIssue issueFetch = new GetIssue();
+                issueFetch.init(mIssueID);
+
+                return startIssueDownload(mIssueID);
 
             }catch (Exception e){
                 e.printStackTrace();
             }
-            return resultToDisplay;
+
+            return false;
 
         }
 
-        protected void onPostExecute(String result) {
+        protected void onPostExecute(Boolean result) {
+
+            if(result)
+            {
+                Toast toast = Toast.makeText(BaseApp.getContext(), BaseApp.getContext().getString(R.string.download_queued), Toast.LENGTH_SHORT);
+                toast.show();
+
+            }else{
+                Toast toast = Toast.makeText(BaseApp.getContext(), BaseApp.getContext().getString(R.string.download_queued_fail), Toast.LENGTH_SHORT);
+                toast.show();
+            }
+
         }
 
         @Override

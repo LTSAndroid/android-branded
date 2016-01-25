@@ -2,6 +2,7 @@ package com.pixelmags.android.datamodels;
 
 import android.graphics.Bitmap;
 
+
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.Date;
@@ -54,5 +55,7 @@ public class Magazine implements Serializable
     public Bitmap thumbnailBitmap; // to store temporarily once downloaded
     public String thumbnailDownloadedInternalPath;
     public boolean isThumbnailDownloaded;
+
+    public DownloadedIssue issueDownloadData; // for the download fragment
 
 }
