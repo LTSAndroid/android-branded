@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <com.pixelmags.android.IssueView.IssueImagePinchZoom
+    <info.androidhive.imageslider.helper.TouchImageView
         android:id="@+id/imgDisplay"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -19,7 +19,7 @@
         android:layout_marginTop="15dp"
         android:paddingTop="2dp"
         android:paddingBottom="2dp"
-        android:background="@color/blue"
+        android:background="@drawable/magone"
         android:textColor="#ffffff"
         android:text="Close" />
 

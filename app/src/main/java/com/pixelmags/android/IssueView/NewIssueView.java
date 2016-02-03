@@ -17,7 +17,7 @@ import com.pixelmags.android.pixelmagsapp.R;
  * Created by Annie on 24/01/2016.
  */
 public class NewIssueView extends FragmentActivity {
-    static final int NUM_ITEMS = 8;
+    static final int NUM_ITEMS = 8; // here number of items will be based on collection
     ImageFragmentPagerAdapter imageFragmentPagerAdapter;
     ViewPager viewPager;
     public static final String[] IMAGE_NAME = {"magone", "magtwo", "magthree", "magfour", "magfive", "magsix","magone","magtwo"};

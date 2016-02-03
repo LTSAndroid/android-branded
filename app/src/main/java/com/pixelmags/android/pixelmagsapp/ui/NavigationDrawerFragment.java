@@ -373,8 +373,6 @@ public class NavigationDrawerFragment extends Fragment {
             case 6:
                 mTitle = getString(R.string.menu_issue_view);
 
-                /*Intent myIntent = new Intent(getActivity(), IssueViewActivity.class);
-                startActivity(myIntent);*/
                 startActivity(new Intent(getActivity(),NewIssueView.class));
                 break;
 
