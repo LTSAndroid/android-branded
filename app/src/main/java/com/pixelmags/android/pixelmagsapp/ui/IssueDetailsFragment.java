@@ -22,6 +22,7 @@ import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.datamodels.PreviewImage;
 import com.pixelmags.android.download.DownloadPreviewImages;
 import com.pixelmags.android.download.QueueDownload;
+import com.pixelmags.android.pixelmagsapp.MainActivity;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.storage.AllIssuesDataSet;
 import com.pixelmags.android.util.BaseApp;
@@ -43,6 +44,11 @@ public class IssueDetailsFragment extends Fragment {
 
     LinearLayout previewImagesLayout;
     private DownloadPreviewImagesAsyncTask mPreviewImagesTask = null;
+    private LoadIssueAsyncTask mLoadIssueTask = null;
+
+    private String mIssueID;
+    private String mMagazineID;
+
 
 
     public IssueDetailsFragment() {
@@ -68,12 +74,8 @@ public class IssueDetailsFragment extends Fragment {
         try{
         if (getArguments() != null) {
 
-            String issueID = (String) getArguments().getString(ISSUE_ID_KEY);
-            String magID = (String) getArguments().getString(MAGAZINE_ID_KEY);
-
-            AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
-            issueData = mDbHelper.getSingleIssue(mDbHelper.getReadableDatabase(),issueID);
-            mDbHelper.close();
+            mIssueID = (String) getArguments().getString(ISSUE_ID_KEY);
+            mMagazineID = (String) getArguments().getString(MAGAZINE_ID_KEY);
 
             //issueData = (Magazine) getArguments().getSerializable(SERIALIZABLE_MAG_KEY);
         }
@@ -88,25 +90,44 @@ public class IssueDetailsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_issue_details, container, false);
+        previewImagesLayout = (LinearLayout) rootView.findViewById(R.id.issueDetailsPreviewImageLayout);
 
+        mLoadIssueTask = new LoadIssueAsyncTask(mMagazineID, mIssueID);
+        mLoadIssueTask.execute((String)null);
 
-        if(issueData!=null){
+        return rootView;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+
+        super.onActivityCreated(savedInstanceState);
+
+        mLoadIssueTask = new LoadIssueAsyncTask(mMagazineID, mIssueID);
+        mLoadIssueTask.execute((String) null);
+
+    }
+
+    public void loadIssueData(){
+
+        if(issueData != null) {
 
             // Load all data for the issue details page here
 
-            ImageView issueDetailsImageView = (ImageView) rootView.findViewById(R.id.issueDetailsImageView);
-            if(issueData.isThumbnailDownloaded){
-                issueData.thumbnailBitmap = loadImageFromStorage(issueData.thumbnailDownloadedInternalPath);
-                issueDetailsImageView.setImageBitmap(issueData.thumbnailBitmap);
+            ImageView issueDetailsImageView = (ImageView) getActivity().findViewById(R.id.issueDetailsImageView);
+            if (issueData.isThumbnailDownloaded) {
+                if(issueData.thumbnailBitmap != null){
+                    issueDetailsImageView.setImageBitmap(issueData.thumbnailBitmap);
+                }
             }
 
-            TextView issueDetailsTitle = (TextView) rootView.findViewById(R.id.issueDetailsTitle);
+            TextView issueDetailsTitle = (TextView) getActivity().findViewById(R.id.issueDetailsTitle);
             issueDetailsTitle.setText(issueData.title);
 
-            TextView issueDetailsSynopsis = (TextView) rootView.findViewById(R.id.issueDetailsSynopsis);
+            TextView issueDetailsSynopsis = (TextView) getActivity().findViewById(R.id.issueDetailsSynopsis);
             issueDetailsSynopsis.setText(issueData.synopsis);
 
-            Button issueDetailsPriceButton = (Button) rootView.findViewById(R.id.issueDetailsPriceButton);
+            Button issueDetailsPriceButton = (Button) getActivity().findViewById(R.id.issueDetailsPriceButton);
             issueDetailsPriceButton.setText(String.valueOf(issueData.price));
 
             issueDetailsPriceButton.setOnClickListener(new View.OnClickListener() {
@@ -117,32 +138,19 @@ public class IssueDetailsFragment extends Fragment {
                 }
             });
 
-            /* TODO - replace with scoll of preview images */
-            previewImagesLayout = (LinearLayout) rootView.findViewById(R.id.issueDetailsPreviewImageLayout);
-
-            /*
-            for (int i = 0; i < 10; i++) {
-                ImageView imageView = new ImageView(rootView.getContext());
-                imageView.setId(i);
-                imageView.setPadding(2, 2, 2, 2);
-                imageView.setImageResource(R.drawable.ic_launcher1);
- //               imageView.setImageBitmap(R.drawable.ic_launcher1);
-                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                previewImagesLayout.addView(imageView);
-            }
-            */
-
-            mPreviewImagesTask = new DownloadPreviewImagesAsyncTask(Config.Magazine_Number, String.valueOf(issueData.id));
-            mPreviewImagesTask.execute((String) null);
+            loadPreviewImages();
 
         }
 
 
-
-        return rootView;
     }
 
+    public void loadPreviewImages(){
 
+        mPreviewImagesTask = new DownloadPreviewImagesAsyncTask(Config.Magazine_Number, String.valueOf(issueData.id));
+        mPreviewImagesTask.execute((String) null);
+
+    }
 
 
     @Override
@@ -158,6 +166,66 @@ public class IssueDetailsFragment extends Fragment {
         return queueIssue.insertIssueInDownloadQueue(issueId);
 
     }
+
+    /**
+     *
+     * Represents an asynchronous task used to load the issues.
+     *
+     */
+    public class LoadIssueAsyncTask extends AsyncTask<String, String, Boolean> {
+
+        private final String mIssueID;
+
+        LoadIssueAsyncTask(String magID, String issueID) {
+            mIssueID = issueID;
+        }
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+            // TODO: attempt authentication against a network service.
+
+            try {
+
+                AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
+                issueData = mDbHelper.getSingleIssue(mDbHelper.getReadableDatabase(),mIssueID);
+                mDbHelper.close();
+
+
+                if(issueData != null) {
+
+                    // Load the issue Image here, as it is better to do it in the background
+                    if (issueData.isThumbnailDownloaded) {
+                        issueData.thumbnailBitmap = loadImageFromStorage(issueData.thumbnailDownloadedInternalPath);
+                    }
+                }
+
+                return true;
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+            return false;
+
+        }
+
+        protected void onPostExecute(Boolean result) {
+
+            if(result)
+            {
+                loadIssueData();
+
+            }
+
+        }
+
+        @Override
+        protected void onCancelled() {
+            mIssueTask = null;
+        }
+    }
+
+
 
     /**
      *
@@ -182,7 +250,14 @@ public class IssueDetailsFragment extends Fragment {
                 GetIssue issueFetch = new GetIssue();
                 issueFetch.init(mIssueID);
 
-                return startIssueDownload(mIssueID);
+                boolean result = startIssueDownload(mIssueID);
+
+                if(result){
+                    MainActivity mActivity = (MainActivity) getActivity();
+                    mActivity.notifyServiceOfNewDownload();
+                }
+
+                return result;
 
             }catch (Exception e){
                 e.printStackTrace();
