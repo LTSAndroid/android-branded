@@ -3,7 +3,6 @@ package com.pixelmags.android.pixelmagsapp.ui;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -19,17 +18,12 @@ import android.widget.Toast;
 import com.pixelmags.android.api.GetIssue;
 import com.pixelmags.android.api.GetPreviewImages;
 import com.pixelmags.android.comms.Config;
-import com.pixelmags.android.datamodels.Issue;
 import com.pixelmags.android.datamodels.Magazine;
-import com.pixelmags.android.datamodels.PageTypeImage;
 import com.pixelmags.android.datamodels.PreviewImage;
-import com.pixelmags.android.download.DownloadIssue;
-import com.pixelmags.android.download.DownloadIssueThreaded;
 import com.pixelmags.android.download.DownloadPreviewImages;
-import com.pixelmags.android.download.DownloadThumbnails;
+import com.pixelmags.android.download.QueueDownload;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.storage.AllIssuesDataSet;
-import com.pixelmags.android.storage.IssueDataSet;
 import com.pixelmags.android.util.BaseApp;
 
 import java.io.File;
@@ -157,45 +151,13 @@ public class IssueDetailsFragment extends Fragment {
 
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
-    }
-     */
 
     private boolean startIssueDownload(String issueId){
 
-        // Test the saved output
-        System.out.println("<<< issueId :: "+ issueId +" >>>");
+        QueueDownload queueIssue = new QueueDownload();
+        return queueIssue.insertIssueInDownloadQueue(issueId);
 
-        IssueDataSet mDbReader = new IssueDataSet(BaseApp.getContext());
-        Issue issueData = mDbReader.getIssue(mDbReader.getReadableDatabase(), issueId);
-        mDbReader.close();
-
-        System.out.println("<<< STARTING ISSUE DOWNLOAD "+ issueData.issueID +" >>>");
-
-        if(issueData != null){
-        // Download via queueing
-            //DownloadIssue downloadIssue = new DownloadIssue(issueData);
-            //downloadIssue.initDownload();
-
-            return DownloadIssueThreaded.DownloadIssuePages(issueData);
-
-        }
-
-        return false;
     }
-
 
     /**
      *
