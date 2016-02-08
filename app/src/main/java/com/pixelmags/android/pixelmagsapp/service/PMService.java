@@ -7,7 +7,6 @@ import android.os.Binder;
 import android.os.IBinder;
 
 import com.pixelmags.android.storage.AllDownloadsDataSet;
-import com.pixelmags.android.util.BaseApp;
 
 
 /*
@@ -33,7 +32,7 @@ Usage :
 
  */
 
-public class DownloadService extends Service {
+public class PMService extends Service {
 
     AllDownloadsDataSet allDownloads;
     DownloadsManager downloadsManager;
@@ -41,7 +40,7 @@ public class DownloadService extends Service {
     DownloadManagerAsyncTask mDMTask;
     boolean DMTaskCompleted = true;
 
-    public DownloadService() {
+    public PMService() {
     }
 
 
@@ -52,8 +51,8 @@ public class DownloadService extends Service {
      */
     public class LocalBinder extends Binder {
 
-        public DownloadService getService() {
-            return DownloadService.this;
+        public PMService getService() {
+            return PMService.this;
         }
 
     }
@@ -69,7 +68,7 @@ public class DownloadService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        System.out.println("DownloadService Started");
+        System.out.println("PMService Started");
         initiateDownloadsProcessing();
 
 
@@ -80,7 +79,7 @@ public class DownloadService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        System.out.println("DownloadService Stopped");
+        System.out.println("PMService Stopped");
     }
 
 

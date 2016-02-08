@@ -184,6 +184,7 @@ public class DownloadsManager {
     public void processDownloadForIssue(AllDownloadsIssueTracker issueToDownload){
 
 
+        // check if any process tried to interrupt Threads
         if(!interrupted){
 
             System.out.println("<< We are ready to initiate the threads for downloads for issue "+issueToDownload.issueID +" >>");
