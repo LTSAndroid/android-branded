@@ -137,6 +137,7 @@ public class DownloadsManager {
                 // get the Issue pages
                 IssueDataSet mDbReader = new IssueDataSet(BaseApp.getContext());
                 Issue issueWithPageData = mDbReader.getIssue(mDbReader.getReadableDatabase(), String.valueOf(issueToDownload.issueID));
+                mDbReader.close();
 
                 // and recreate / reload the table.
                 if(issueWithPageData!=null){
@@ -154,6 +155,7 @@ public class DownloadsManager {
 
                     SingleIssueDownloadDataSet mDbDownloadTableWriter = new SingleIssueDownloadDataSet(BaseApp.getContext());
                     boolean result = mDbDownloadTableWriter.initFormationOfSingleIssueDownloadTable(mDbDownloadTableWriter.getWritableDatabase(), issueToDownload, pagesForSingleDownloadTable);
+                    mDbDownloadTableWriter.close();
 
                     if(result){
                         processDownloadForIssue(issueToDownload);
@@ -184,7 +186,7 @@ public class DownloadsManager {
 
         if(!interrupted){
 
-            System.out.println("We are ready to initiate the actual threads for downloads");
+            System.out.println("<< We are ready to initiate the threads for downloads for issue "+issueToDownload.issueID +" >>");
 
         }
 

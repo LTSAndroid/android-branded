@@ -92,8 +92,8 @@ public class IssueDetailsFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_issue_details, container, false);
         previewImagesLayout = (LinearLayout) rootView.findViewById(R.id.issueDetailsPreviewImageLayout);
 
-        mLoadIssueTask = new LoadIssueAsyncTask(mMagazineID, mIssueID);
-        mLoadIssueTask.execute((String)null);
+ //       mLoadIssueTask = new LoadIssueAsyncTask(mMagazineID, mIssueID);
+ //       mLoadIssueTask.execute((String)null);
 
         return rootView;
     }
