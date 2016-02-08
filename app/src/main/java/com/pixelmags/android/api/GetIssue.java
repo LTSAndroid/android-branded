@@ -80,25 +80,6 @@ public class GetIssue extends WebRequest
         mDbHelper.insertIssueData(mDbHelper.getWritableDatabase(), getIssueParser.mIssue);
         mDbHelper.close();
 
-        // Test the saved output
-        IssueDataSet mDbReader = new IssueDataSet(BaseApp.getContext());
-        Issue issueData = mDbReader.getIssue(mDbReader.getReadableDatabase(), "110422");
-
-        if(issueData!=null){
-
-            System.out.println(" Retrieved Issue ::" +issueData.issueID + ","+issueData.pageCount);
-            for(int i=0; i< issueData.pages.size();i++) {
-                PageTypeImage page = (PageTypeImage) issueData.pages.get(i);
-
-                PageTypeImage.PageDetails pageDetails = page.getPageDetails(PageTypeImage.MediaType.SMALL);
-                System.out.println(" Page SMALL URL ::" + pageDetails.url);
-
-                PageTypeImage.PageDetails pageDetailsMed = page.getPageDetails(PageTypeImage.MediaType.MEDIUM);
-                System.out.println(" Page MEDIUM MD5 ::" + pageDetailsMed.checksum_md5);
-
-            }
-        }
-
     }
 
 
