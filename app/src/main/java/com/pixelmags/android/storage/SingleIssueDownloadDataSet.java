@@ -202,6 +202,69 @@ public class SingleIssueDownloadDataSet extends BrandedSQLiteHelper {
         return currentSingleIssueDownload;
     }
 
+    public ArrayList<SingleDownloadIssueTracker> getSingleIssuePagesPendingDownload(SQLiteDatabase db, String uniqueDownloadTable){
+
+        // fetch all the issues that still are pending download i.e. status = DOWNLOAD_STATUS_PENDING
+
+        ArrayList<SingleDownloadIssueTracker> pageSingleIssueDownload = null;
+
+        try {
+
+            // Define a projection i.e specify columns to retrieve
+            String[] projection = {
+                    SingleIssueDownloadEntry.COLUMN_PAGE_NO,
+                    SingleIssueDownloadEntry.COLUMN_URL_PDF_LARGE,
+                    SingleIssueDownloadEntry.COLUMN_MD5_CHECKSUM_LARGE,
+                    SingleIssueDownloadEntry.COLUMN_DOWNLOADED_LOCATION_PDF_LARGE,
+                    SingleIssueDownloadEntry.COLUMN_DOWNLOAD_STATUS_PDF_LARGE
+            };
+
+
+            // Specify the sort order
+            String sortOrder = SingleIssueDownloadEntry.COLUMN_PAGE_NO + " ASC";
+
+            String whereClause = SingleIssueDownloadEntry.COLUMN_DOWNLOAD_STATUS_PDF_LARGE+"=?";
+            String [] whereArgs = {String.valueOf(DOWNLOAD_STATUS_PENDING)};
+
+            Cursor queryCursor = db.query(
+                    uniqueDownloadTable,    // The table to query
+                    projection,                                     // The columns to return
+                    whereClause,                                           // The columns for the WHERE clause
+                    whereArgs,                                           // The values for the WHERE clause
+                    null,
+                    null,
+                    sortOrder                                       // The sort order
+            );
+
+            if (queryCursor != null) {
+
+                pageSingleIssueDownload = new ArrayList<SingleDownloadIssueTracker>();
+
+                //queryCursor.getCount();
+                while (queryCursor.moveToNext()) {
+
+                    SingleDownloadIssueTracker issueTracker = new SingleDownloadIssueTracker();
+
+                    issueTracker.pageNo = queryCursor.getInt(queryCursor.getColumnIndex(SingleIssueDownloadEntry.COLUMN_PAGE_NO));
+                    issueTracker.urlPdfLarge = queryCursor.getString(queryCursor.getColumnIndex(SingleIssueDownloadEntry.COLUMN_URL_PDF_LARGE));
+                    issueTracker.md5ChecksumLarge = queryCursor.getString(queryCursor.getColumnIndex(SingleIssueDownloadEntry.COLUMN_MD5_CHECKSUM_LARGE));
+                    issueTracker.downloadedLocationPdfLarge = queryCursor.getString(queryCursor.getColumnIndex(SingleIssueDownloadEntry.COLUMN_DOWNLOADED_LOCATION_PDF_LARGE));
+                    issueTracker.downloadStatusPdfLarge = queryCursor.getInt(queryCursor.getColumnIndex(SingleIssueDownloadEntry.COLUMN_DOWNLOAD_STATUS_PDF_LARGE));
+
+                    pageSingleIssueDownload.add(issueTracker);
+
+                }
+
+                queryCursor.close();
+            }
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return pageSingleIssueDownload;
+    }
 
     public void insertValuesIntoSingleDownloadTable(SQLiteDatabase db, ArrayList<SingleDownloadIssueTracker> dIssueList, String tableName){
 
@@ -215,7 +278,7 @@ public class SingleIssueDownloadDataSet extends BrandedSQLiteHelper {
     }
 
 
-    private boolean updateIssuePageEntry(SQLiteDatabase db, SingleDownloadIssueTracker dIssue, String tableName){
+    public boolean updateIssuePageEntry(SQLiteDatabase db, SingleDownloadIssueTracker dIssue, String tableName){
 
         try{
 

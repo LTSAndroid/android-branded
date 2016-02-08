@@ -112,7 +112,7 @@ public class PMService extends Service {
 
     /**
      *
-     * Represents an asynchronous task used to load the issues.
+     * Represents an asynchronous task used to process the downloads table.
      *
      */
     public class DownloadManagerAsyncTask extends AsyncTask<String, String, Boolean> {
