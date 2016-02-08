@@ -200,14 +200,11 @@ public class IssueDataSet extends BrandedSQLiteHelper{
                 contentValues.put(PageDataEntry.COLUMN_PAGE_JSON, page.getPageJSONData());
 
                 db.insert(PageDataEntry.getPageDataTableName(issue.issueID), null, contentValues);
-
             }
 
         }catch(Exception e){
             e.printStackTrace();
         }
-
-
     }
 
     public Issue getIssue(SQLiteDatabase db, String issue_Id){

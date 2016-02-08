@@ -6,9 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.format.Time;
 
-import com.pixelmags.android.datamodels.DownloadedIssue;
+import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
 import com.pixelmags.android.datamodels.Issue;
-import com.pixelmags.android.datamodels.MySubscription;
 import com.pixelmags.android.util.BaseApp;
 import com.pixelmags.android.pixelmagsapp.R;
 
@@ -178,9 +177,9 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
         return false;
     }
 
-    public ArrayList<DownloadedIssue> getDownloadIssueList(SQLiteDatabase db, String magazineID){
+    public ArrayList<AllDownloadsIssueTracker> getDownloadIssueList(SQLiteDatabase db, String magazineID){
 
-        ArrayList<DownloadedIssue> downloadedIssues = null;
+        ArrayList<AllDownloadsIssueTracker> allDownloadsIssueTrackers = null;
 
          try {
 
@@ -214,12 +213,12 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
                 if (queryCursor != null) {
 
 
-                    downloadedIssues = new ArrayList<DownloadedIssue>();
+                    allDownloadsIssueTrackers = new ArrayList<AllDownloadsIssueTracker>();
 
                     //queryCursor.getCount();
                     while (queryCursor.moveToNext()) {
 
-                        DownloadedIssue issue = new DownloadedIssue();
+                        AllDownloadsIssueTracker issue = new AllDownloadsIssueTracker();
 
                         issue.issueID = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_ISSUE_ID));
                         issue.magazineID = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_MAGAZINE_ID));
@@ -228,7 +227,7 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
                         issue.priority = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_PRIORITY));
                         issue.downloadStatus = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS));
 
-                        downloadedIssues.add(issue);
+                        allDownloadsIssueTrackers.add(issue);
 
                     }
 
@@ -240,7 +239,181 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
             e.printStackTrace();
         }
 
-        return downloadedIssues;
+        return allDownloadsIssueTrackers;
+    }
+
+
+    public AllDownloadsIssueTracker getIssueDownloadInProgress(SQLiteDatabase db, String magazineID){
+
+        AllDownloadsIssueTracker issueDownloadInProgress = null;
+
+        try {
+
+            // Define a projection i.e specify columns to retrieve
+            String[] projection = {
+                    AllDownloadsEntry.COLUMN_ISSUE_ID,
+                    AllDownloadsEntry.COLUMN_MAGAZINE_ID,
+                    AllDownloadsEntry.COLUMN_ISSUE_TITLE,
+                    AllDownloadsEntry.COLUMN_UNIQUE_ISSUE_DOWNLOAD_TABLE,
+                    AllDownloadsEntry.COLUMN_PRIORITY,
+                    AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS
+            };
+
+
+            // Specify the sort order
+            String sortOrder = AllDownloadsEntry.COLUMN_PRIORITY + " DESC";
+
+            String whereClause = AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS+"=?";
+            String [] whereArgs = {String.valueOf(DOWNLOAD_STATUS_IN_PROGRESS)};
+
+            Cursor queryCursor = db.query(
+                    AllDownloadsEntry.ALL_DOWNLOADS_TABLE_NAME,    // The table to query
+                    projection,                                     // The columns to return
+                    whereClause,                                           // The columns for the WHERE clause
+                    whereArgs,                                           // The values for the WHERE clause
+                    null,
+                    null,
+                    sortOrder                                       // The sort order
+            );
+
+            if (queryCursor != null) {
+
+                //queryCursor.getCount();
+                while (queryCursor.moveToNext()) {
+
+                    issueDownloadInProgress = new AllDownloadsIssueTracker();
+
+                    issueDownloadInProgress.issueID = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_ISSUE_ID));
+                    issueDownloadInProgress.magazineID = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_MAGAZINE_ID));
+                    issueDownloadInProgress.issueTitle = queryCursor.getString(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_ISSUE_TITLE));
+                    issueDownloadInProgress.uniqueIssueDownloadTable = queryCursor.getString(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_UNIQUE_ISSUE_DOWNLOAD_TABLE));
+                    issueDownloadInProgress.priority = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_PRIORITY));
+                    issueDownloadInProgress.downloadStatus = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS));
+                }
+
+                queryCursor.close();
+            }
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return issueDownloadInProgress;
+    }
+
+    public AllDownloadsIssueTracker getNextIssueInQueue(SQLiteDatabase db, String magazineID){
+
+        AllDownloadsIssueTracker issueToDownloadNext = null;
+
+        try {
+
+            // Define a projection i.e specify columns to retrieve
+            String[] projection = {
+                    AllDownloadsEntry.COLUMN_ISSUE_ID,
+                    AllDownloadsEntry.COLUMN_MAGAZINE_ID,
+                    AllDownloadsEntry.COLUMN_ISSUE_TITLE,
+                    AllDownloadsEntry.COLUMN_UNIQUE_ISSUE_DOWNLOAD_TABLE,
+                    AllDownloadsEntry.COLUMN_PRIORITY,
+                    AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS
+            };
+
+
+            // Specify the sort order
+            String sortOrder = AllDownloadsEntry.COLUMN_PRIORITY + " DESC";
+
+            String whereClause = AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS+"=?";
+            String [] whereArgs = {String.valueOf(DOWNLOAD_STATUS_QUEUED)};
+
+            String limit = "1";
+
+            Cursor queryCursor = db.query(
+                    AllDownloadsEntry.ALL_DOWNLOADS_TABLE_NAME,    // The table to query
+                    projection,                                     // The columns to return
+                    whereClause,                                           // The columns for the WHERE clause
+                    whereArgs,                                           // The values for the WHERE clause
+                    null,
+                    null,
+                    sortOrder,                                  // sort order
+                    limit                                       // fetches only the first row in the result
+            );
+
+            if (queryCursor != null) {
+
+                //queryCursor.getCount();
+                while (queryCursor.moveToNext()) {
+
+                    issueToDownloadNext = new AllDownloadsIssueTracker();
+
+                    issueToDownloadNext.issueID = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_ISSUE_ID));
+                    issueToDownloadNext.magazineID = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_MAGAZINE_ID));
+                    issueToDownloadNext.issueTitle = queryCursor.getString(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_ISSUE_TITLE));
+                    issueToDownloadNext.uniqueIssueDownloadTable = queryCursor.getString(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_UNIQUE_ISSUE_DOWNLOAD_TABLE));
+                    issueToDownloadNext.priority = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_PRIORITY));
+                    issueToDownloadNext.downloadStatus = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS));
+                }
+
+                queryCursor.close();
+            }
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return issueToDownloadNext;
+    }
+
+    public boolean setIssueToInProgress(SQLiteDatabase db, AllDownloadsIssueTracker dIssue){
+
+        return updateDownloadStatusOfIssue(db, dIssue, DOWNLOAD_STATUS_IN_PROGRESS);
+
+    }
+
+    public boolean setIssueToPaused(SQLiteDatabase db, AllDownloadsIssueTracker dIssue){
+
+        return updateDownloadStatusOfIssue(db, dIssue, DOWNLOAD_STATUS_PAUSED);
+
+    }
+
+    public boolean setIssueToFailed(SQLiteDatabase db, AllDownloadsIssueTracker dIssue){
+
+        return updateDownloadStatusOfIssue(db, dIssue, DOWNLOAD_STATUS_FAILED);
+
+    }
+
+    public boolean setIssueToCompleted(SQLiteDatabase db, AllDownloadsIssueTracker dIssue){
+
+        return updateDownloadStatusOfIssue(db, dIssue, DOWNLOAD_STATUS_COMPLETED);
+
+    }
+
+
+    private boolean updateDownloadStatusOfIssue(SQLiteDatabase db, AllDownloadsIssueTracker dIssue, int download_status){
+
+        try{
+
+            ContentValues updateValues = new ContentValues();
+            updateValues.put(AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS, download_status);
+
+            String whereClause = AllDownloadsEntry.COLUMN_ISSUE_ID+"=?";
+            String [] whereArgs = {String.valueOf(dIssue.issueID)};
+
+            db.update(
+                    AllDownloadsEntry.ALL_DOWNLOADS_TABLE_NAME,
+                    updateValues,
+                    whereClause,
+                    whereArgs
+                    );
+
+
+            return true;
+
+        }catch(Exception e){
+
+        }
+
+        return false;
     }
 
 
