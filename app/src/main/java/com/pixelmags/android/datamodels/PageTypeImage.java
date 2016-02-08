@@ -51,7 +51,7 @@ public class PageTypeImage extends Page {
 
         public String mime_type; 	//"image/jpeg"
         public String url; 	// http://cdn.pixel-mags.com/prod/ipc/now/issues/110422/104880/page_0001_medium.jpg
-        public String checksum_md5; 	// 2977130915f343fa61b8cef1ffb6e2b6
+        public String checksum_md5; 	// 2977130915f343fa61b8cef1ffb6e2b6 // this will let us know if the file has changed
         public String last_modified; 	//2015-11-02 17:55:06
         public String encryption; 	//aes256
         public int file_size; 	//63456
@@ -62,8 +62,6 @@ public class PageTypeImage extends Page {
         PageDetails(MediaType sizeOfImage){
             imageSize = sizeOfImage;
         }
-
-
 
     }
 
