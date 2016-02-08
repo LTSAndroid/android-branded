@@ -1,5 +1,7 @@
 package com.pixelmags.android.pixelmagsapp.service;
 
+import android.os.AsyncTask;
+
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
 import com.pixelmags.android.datamodels.Issue;
@@ -11,6 +13,8 @@ import com.pixelmags.android.storage.SingleIssueDownloadDataSet;
 import com.pixelmags.android.util.BaseApp;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.PriorityQueue;
 
 /**
  * Created by austincoutinho on 29/01/16.
@@ -37,8 +41,27 @@ public class DownloadsManager {
 
     private boolean interrupted = false;
 
+    // Queue will prioritise any page that has it's priority set
+    PriorityQueue<DownloadSinglePageThread> pageThreadQueue;
+
+    // the tasks and parameters that run the task queues
+    QueueProcessorAsyncTask mQueueProcessorTask;
+    boolean queueTaskCompleted = true;
+
+
     private DownloadsManager() {
-        // Prevent any other class to instantiate it
+        // Private prevent any other class from instantiating the DownloadManager
+
+        pageThreadQueue = new PriorityQueue<DownloadSinglePageThread>(10, new Comparator<DownloadSinglePageThread>() {
+
+            public int compare(DownloadSinglePageThread page1, DownloadSinglePageThread page2) {
+
+                return (page1.getPriority() == page2.getPriority()) ? (Integer.valueOf(page1.getPageNo()).compareTo(page2.getPageNo()))
+                        : (page1.getPriority() ? -1 : 1);
+
+            }
+        });
+
     }
 
     public static DownloadsManager getInstance() {
@@ -158,12 +181,10 @@ public class DownloadsManager {
                     mDbDownloadTableWriter.close();
 
                     if(result){
-                        processDownloadForIssue(issueToDownload);
+                        createIssueThreads(issueToDownload);
                     }
                 }
             }
-
-
 
             return true;
 
@@ -171,25 +192,56 @@ public class DownloadsManager {
             e.printStackTrace();
         }
 
-
-        // For those not downloaded, create an arraylist of threads in page order
-        // process the threads in batches.
-        // send a notification to the UI after each Thread, Page download
-        // Update the UniqueDownloadTable of the Issue after each batch
-        // On Issue download complete, recheck if further issues need to be downloaded
-
         return false;
     }
 
-    public void processDownloadForIssue(AllDownloadsIssueTracker issueToDownload){
+    private void createIssueThreads(AllDownloadsIssueTracker issueToDownload){
+
+        // get all the pages that have to be downloaded
+        SingleIssueDownloadDataSet mDbDownloadReader = new SingleIssueDownloadDataSet(BaseApp.getContext());
+        ArrayList<SingleDownloadIssueTracker> pagesForSingleDownloadTable = mDbDownloadReader.getSingleIssuePagesPendingDownload(mDbDownloadReader.getReadableDatabase(), issueToDownload.uniqueIssueDownloadTable);
+
+
+        // create threads for each of them and insert them into the priority queue
+        if(pagesForSingleDownloadTable != null){
+
+            for(int i=0; i< pagesForSingleDownloadTable.size();i++) {
+
+                DownloadSinglePageThread pageThread = new DownloadSinglePageThread(issueToDownload, pagesForSingleDownloadTable.get(i), false);
+                pageThreadQueue.add(pageThread);
+
+            }
+
+            launchQueueTask();
+
+        }
+
+
+
 
 
         // check if any process tried to interrupt Threads
         if(!interrupted){
 
-            System.out.println("<< We are ready to initiate the threads for downloads for issue "+issueToDownload.issueID +" >>");
+            // send a notification to the UI after each Thread, Page download
+            // On Issue download complete, recheck if further issues need to be downloaded
 
         }
+
+    }
+
+
+    // process the threads in batches.
+    public void launchQueueTask(){
+
+        if(queueTaskCompleted){
+            // launch the queue task again
+
+            mQueueProcessorTask = new QueueProcessorAsyncTask();
+            mQueueProcessorTask.execute((String) null);
+
+        } // else do nothing as the queue will continue to process until it is empty
+
 
     }
 
@@ -201,6 +253,97 @@ public class DownloadsManager {
     public boolean stopDownload(){
 
         return false;
+    }
+
+
+    /**
+     *
+     * Represents an asynchronous task used to process the downloads table.
+     *
+     */
+    public class QueueProcessorAsyncTask extends AsyncTask<String, String, Boolean> {
+
+        int MAX_THREADS = 5;
+        boolean runQueue = true;
+
+        QueueProcessorAsyncTask() {
+            queueTaskCompleted = false;
+        }
+
+        public void interruptQueueProcessorAsyncTask(){
+            // use later to pause, resume threads
+
+        }
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+
+            try {
+
+                queueTaskCompleted = false;
+
+                while(runQueue){
+
+                    DownloadSinglePageThread testEmpty = pageThreadQueue.peek(); // returns null if the queue is empty
+
+                    if(testEmpty == null) {
+                        runQueue = false;
+                        break;
+                    }
+
+                    ArrayList<Thread> allDownloadThreads = new ArrayList<Thread>();
+
+                    for (int i = 0; i < MAX_THREADS; i++) {
+
+                        // peek to check if the queue is empty
+                        DownloadSinglePageThread executeThread = pageThreadQueue.poll();
+
+                        if(executeThread == null) {
+                            break;
+                        }
+
+                        Thread t1 = new Thread(executeThread);
+                        allDownloadThreads.add(t1);
+                    }
+
+                    // start the threads
+                    for (Thread thread : allDownloadThreads){
+                        thread.start();
+                    }
+
+                    // wait for them to be completed
+                    try{
+
+                        for (Thread joinThread : allDownloadThreads){
+                            joinThread.join();
+                        }
+
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }
+
+                    // while loop ends
+                }
+                return true;
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+            return false;
+
+        }
+
+        protected void onPostExecute(Boolean result) {
+
+            System.out.println("<< Queue Tasks Completed >>");
+            queueTaskCompleted = true;
+        }
+
+        @Override
+        protected void onCancelled() {
+            mQueueProcessorTask = null;
+        }
     }
 
 }
