@@ -1,17 +1,12 @@
-package com.pixelmags.android.download;
+package com.pixelmags.android.pixelmagsapp.service;
 
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.widget.Toast;
 
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.datamodels.Issue;
-import com.pixelmags.android.datamodels.Magazine;
-import com.pixelmags.android.datamodels.Page;
 import com.pixelmags.android.datamodels.PageTypeImage;
-import com.pixelmags.android.storage.AllDownloadsDataSet;
 import com.pixelmags.android.util.BaseApp;
 
 import java.io.File;
@@ -19,12 +14,11 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import com.pixelmags.android.pixelmagsapp.R;
 
 /**
  * Created by austincoutinho on 17/12/15.
  */
-public class DownloadIssueThreaded implements Runnable {
+public class DownloadSingleIssue implements Runnable {
 
     // form Issues/(Magazine_number)/(issue number)/PDF/
 
@@ -37,11 +31,13 @@ public class DownloadIssueThreaded implements Runnable {
 
     private boolean isDownloaded;
 
-    DownloadIssueThreaded(String downloadUrl, int pageIndex, String pageName){
+    DownloadSingleIssue(String downloadUrl, int pageIndex, String pageName){
+
         this.url = downloadUrl;
         this.issuePageIndex = pageIndex;
         this.issuePageFileName = pageName;
         this.isDownloaded = false;
+
     }
 
     public static Issue mIssue;
@@ -50,29 +46,7 @@ public class DownloadIssueThreaded implements Runnable {
 
         mIssue = issue;
 
-        /*
-
-        AllDownloadsDataSet mDbReader = new AllDownloadsDataSet(BaseApp.getContext());
-        boolean result = mDbReader.issueDownloadPreChecksAndDownload(mDbReader.getWritableDatabase(), issue);
-        mDbReader.close();
-
-        if(result){
-            //move the issue thumbnail inside the Issue Download Thumbnail folder
-            DownloadThumbnails.copyThumbnailOfIssueDownloaded(String.valueOf(issue.issueID));
-
-            //TODO :- Remove this thumnail on delete
-        }
-
-
-        return result;
-
-        */
-
-        // This works!!!
-
-
         ArrayList<Thread> pagesDownloadThreads = new ArrayList<Thread>();
-
 
         for (int i = 0; i < mIssue.pages.size(); i++) {
 
@@ -83,7 +57,7 @@ public class DownloadIssueThreaded implements Runnable {
 
             String pageURL = pageDetails.url;
 
-            DownloadIssueThreaded downloadThread = new DownloadIssueThreaded(pageURL, i, fileName);
+            DownloadSingleIssue downloadThread = new DownloadSingleIssue(pageURL, i, fileName);
             Thread t1 = new Thread(downloadThread);
             pagesDownloadThreads.add(t1);
 
@@ -113,7 +87,7 @@ public class DownloadIssueThreaded implements Runnable {
 
             System.out.println("----- Download :: run ---- "+ issuePageIndex);
 
-            InputStream in = new java.net.URL(url).openStream();
+            InputStream in = new URL(url).openStream();
 
             if(in != null){
 
