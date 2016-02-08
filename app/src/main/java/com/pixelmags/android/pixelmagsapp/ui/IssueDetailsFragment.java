@@ -221,7 +221,7 @@ public class IssueDetailsFragment extends Fragment {
 
         @Override
         protected void onCancelled() {
-            mIssueTask = null;
+            mLoadIssueTask = null;
         }
     }
 

@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,13 +16,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.pixelmags.android.comms.Config;
-import com.pixelmags.android.datamodels.DownloadedIssue;
-import com.pixelmags.android.datamodels.Magazine;
+import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
 import com.pixelmags.android.download.DownloadThumbnails;
-import com.pixelmags.android.pixelmagsapp.MainActivity;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.storage.AllDownloadsDataSet;
-import com.pixelmags.android.storage.AllIssuesDataSet;
 import com.pixelmags.android.util.BaseApp;
 
 import java.io.File;
@@ -33,7 +29,7 @@ import java.util.ArrayList;
 
 public class AllDownloadsFragment extends Fragment {
 
-    private ArrayList<DownloadedIssue> downloadedIssuesList = null;
+    private ArrayList<AllDownloadsIssueTracker> allDownloadsIssuesListTracker = null;
     public CustomAllDownloadsGridAdapter gridDownloadAdapter;
     private GetAllDownloadedIssuesTask mGetAllDownloadedIssuesTask;
 
@@ -93,16 +89,16 @@ public class AllDownloadsFragment extends Fragment {
         @Override
         public int getCount() {
 
-            if(downloadedIssuesList == null){
+            if(allDownloadsIssuesListTracker == null){
                 return 0;
             }
 
-            return downloadedIssuesList.size();
+            return allDownloadsIssuesListTracker.size();
         }
 
         @Override
         public Object getItem(int arg0) {
-            return downloadedIssuesList.get(arg0).thumbnailBitmap;
+            return allDownloadsIssuesListTracker.get(arg0).thumbnailBitmap;
         }
 
         @Override
@@ -127,10 +123,10 @@ public class AllDownloadsFragment extends Fragment {
 
             // Set the magazine image
 
-                if(downloadedIssuesList.get(position).thumbnailBitmap != null){
+                if(allDownloadsIssuesListTracker.get(position).thumbnailBitmap != null){
 
                     ImageView imageView = (ImageView) grid.findViewById(R.id.gridDownloadedIssueImage);
-                    imageView.setImageBitmap(downloadedIssuesList.get(position).thumbnailBitmap);
+                    imageView.setImageBitmap(allDownloadsIssuesListTracker.get(position).thumbnailBitmap);
                     //imageView.setImageBitmap(bmp);
 
                     imageView.setTag(position);
@@ -145,14 +141,14 @@ public class AllDownloadsFragment extends Fragment {
                     });
                 }
 
-            if(downloadedIssuesList.get(position).issueTitle != null) {
+            if(allDownloadsIssuesListTracker.get(position).issueTitle != null) {
                 TextView issueTitleText = (TextView) grid.findViewById(R.id.gridDownloadedTitleText);
-                issueTitleText.setText(downloadedIssuesList.get(position).issueTitle);
+                issueTitleText.setText(allDownloadsIssuesListTracker.get(position).issueTitle);
             }
 
 
             Button gridDownloadStatusButton = (Button) grid.findViewById(R.id.gridDownloadStatusButton);
-                int status = downloadedIssuesList.get(position).downloadStatus;
+                int status = allDownloadsIssuesListTracker.get(position).downloadStatus;
                 String downloadStatusText = AllDownloadsDataSet.getDownloadStatusText(status);
                 gridDownloadStatusButton.setText(downloadStatusText);
 
@@ -195,20 +191,20 @@ public class AllDownloadsFragment extends Fragment {
 
             try {
 
-                downloadedIssuesList = null; // clear the list
+                allDownloadsIssuesListTracker = null; // clear the list
 
                 AllDownloadsDataSet mDbReader = new AllDownloadsDataSet(BaseApp.getContext());
-                downloadedIssuesList = mDbReader.getDownloadIssueList(mDbReader.getReadableDatabase(), Config.Magazine_Number);
+                allDownloadsIssuesListTracker = mDbReader.getDownloadIssueList(mDbReader.getReadableDatabase(), Config.Magazine_Number);
                 mDbReader.close();
 
-                if(downloadedIssuesList != null) {
+                if(allDownloadsIssuesListTracker != null) {
 
-                    for (int i = 0; i < downloadedIssuesList.size(); i++) {
+                    for (int i = 0; i < allDownloadsIssuesListTracker.size(); i++) {
 
-                        System.out.println("<< singleDownloadedIssue "+downloadedIssuesList.get(i).issueID+" >>");
-                        downloadedIssuesList.get(i).thumbnailBitmap = loadImageFromStorage(
+                        System.out.println("<< singleDownloadedIssue "+ allDownloadsIssuesListTracker.get(i).issueID+" >>");
+                        allDownloadsIssuesListTracker.get(i).thumbnailBitmap = loadImageFromStorage(
                                 DownloadThumbnails.getIssueDownloadedThumbnailStorageDirectory(
-                                        String.valueOf(downloadedIssuesList.get(i).issueID)
+                                        String.valueOf(allDownloadsIssuesListTracker.get(i).issueID)
                                 )
                         );
 

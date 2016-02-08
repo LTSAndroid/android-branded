@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 /**
  * Created by Austin Coutinho on 21/01/16.
  */
-public class DownloadedIssue
+public class AllDownloadsIssueTracker
 {
     public int magazineID;
     public int issueID;
