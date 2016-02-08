@@ -73,6 +73,17 @@ public class MainActivity extends AppCompatActivity
 
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
+  /**
+   * The service that will perform all the downloads in the background.
+   * This is started whenever the App is launched and within the MainActivity.
+   * The service should stop itself once all downloads are complete.
+   */
+
+  // Service Parameters
+    private DownloadService mDownloadService;
+    private ServiceConnection mConnection = null;
+    boolean mIsBound = false;
+
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
@@ -84,6 +95,7 @@ public class MainActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
 
+        // start the service
         startDownloadService();
 
         setContentView(R.layout.activity_main);
@@ -103,7 +115,7 @@ public class MainActivity extends AppCompatActivity
 
         Util.doPreLaunchSteps();
 
-        //
+        // This string is unique for each app
         String base64EncodedPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhE2tqqq+WSoEXHyqOdeFjKFGgWVuhapArdTe/b0wzxAJE0pdsM8FlywwyIQlLd51hj6vvDkmd8T3dRi6LX2Ww2M8+fpK7jP3ydMyTZB9efuAiRZq2tlo2GmrFmO0vTdD0MkY4OdX9ROEvY9k/cbzXX73uNH0FAcZ38ypr/qf66IS2yI+z+Oiip7c39pDrG0P4kVamJQOjs7PLTmtwU1PWc43phqISxxpLJWxj0yW/YjfZ7Knk5n84p02CpDJcoZXdsBu7X4GOc79DRURDHuLu3tgkp3roXTQeX6y4Ht9843Hu5rSRgADQ/5828+SozdhIAhQ4CT/MZ0w0NEd0/OitwIDAQAB";
         mHelper = new IabHelper(this, base64EncodedPublicKey);
 
@@ -240,6 +252,7 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
+
     @Override
     public void onNavigationDrawerItemSelected(int position)
     {
@@ -286,6 +299,8 @@ public class MainActivity extends AppCompatActivity
 
         mHelper.launchPurchaseFlow(this, sku, 10001,
                 mPurchaseFinishedListener, "bGoa+V7g/yqDXvKRqq+JTFn4uQZbPiQJo4pf9RzJ");
+
+        // 5th arg - use a randomly generated string, but for non-consumable items you should use a string that uniquely identifies the user.
     }
 
 
@@ -457,17 +472,75 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    // Service :: start download service
+    // Service :: Implementation
+
     public void startDownloadService() {
+
         startService(new Intent(getBaseContext(), DownloadService.class));
+
+        mConnection = new ServiceConnection() {
+            public void onServiceConnected(ComponentName className, IBinder service) {
+                // This is called when the connection with the service has been
+                // established, giving us the service object we can use to
+                // interact with the service.  Because we have bound to a explicit
+                // service that we know is running in our own process, we can
+                // cast its IBinder to a concrete class and directly access it.
+                mDownloadService = ((DownloadService.LocalBinder)service).getService();
+
+            }
+
+            public void onServiceDisconnected(ComponentName className) {
+                // This is called when the connection with the service has been
+                // unexpectedly disconnected -- that is, its process crashed.
+                // Because it is running in our same process, we should never
+                // see this happen.
+                mDownloadService = null;
+            }
+        };
+
+        doBindService();
+
     }
+
+
+    void doBindService() {
+        // Establish a connection with the service.  We use an explicit
+        // class name because we want a specific service implementation that
+        // we know will be running in our own process (and thus won't be
+        // supporting component replacement by other applications).
+        bindService(new Intent(MainActivity.this, DownloadService.class), mConnection, Context.BIND_AUTO_CREATE);
+        mIsBound = true;
+    }
+
+    void doUnbindService() {
+        if (mIsBound) {
+            // Detach our existing connection.
+            unbindService(mConnection);
+            mIsBound = false;
+        }
+    }
+
 
     // Service :: stop download service
     public void stopDownloadService() {
-        stopService(new Intent(getBaseContext(), DownloadService.class));
+
+        // This will stop the service
+        // stopService(new Intent(getBaseContext(), DownloadService.class));
+
+        // The service should stop self after all it's downloads are complete.
+        doUnbindService();
     }
 
+    public void notifyServiceOfNewDownload(){
 
+        if(mDownloadService != null){
+
+            System.out.println("<<NOTIFYING SERVICE OF NEW DOWNLOAD>>");
+
+            mDownloadService.newDownloadRequested();
+        }
+
+    }
 
 
 
