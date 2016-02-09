@@ -200,7 +200,7 @@ public class DownloadsManager {
         // get all the pages that have to be downloaded
         SingleIssueDownloadDataSet mDbDownloadReader = new SingleIssueDownloadDataSet(BaseApp.getContext());
         ArrayList<SingleDownloadIssueTracker> pagesForSingleDownloadTable = mDbDownloadReader.getSingleIssuePagesPendingDownload(mDbDownloadReader.getReadableDatabase(), issueToDownload.uniqueIssueDownloadTable);
-
+        mDbDownloadReader.close();
 
         // create threads for each of them and insert them into the priority queue
         if(pagesForSingleDownloadTable != null){
@@ -223,7 +223,10 @@ public class DownloadsManager {
         // check if any process tried to interrupt Threads
         if(!interrupted){
 
+            // block any other issues to be downloaded at same time
+            // prevent multiple launches of the Issue download
             // send a notification to the UI after each Thread, Page download
+            // Mark Issue as download complete
             // On Issue download complete, recheck if further issues need to be downloaded
 
         }
