@@ -38,7 +38,7 @@ public class PMService extends Service {
     DownloadsManager downloadsManager;
 
     DownloadManagerAsyncTask mDMTask;
-    boolean DMTaskCompleted = true;
+    boolean DMTaskRunning = false;
 
     public PMService() {
     }
@@ -69,8 +69,9 @@ public class PMService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         System.out.println("PMService Started");
-        initiateDownloadsProcessing();
 
+        // delay this until the app has completely loaded
+        //initiateDownloadsProcessing();
 
         return START_STICKY;
     }
@@ -89,7 +90,15 @@ public class PMService extends Service {
 
 
     public void newDownloadRequested(){
+
         System.out.println("<< NEW Download NOTIFICATION Recieved >>");
+        initiateDownloadsProcessing();
+
+    }
+
+    public void resumeDownloadsProcessing(){
+
+        System.out.println("<< Resuming Download processing  >>");
         initiateDownloadsProcessing();
 
     }
@@ -97,8 +106,9 @@ public class PMService extends Service {
     private void initiateDownloadsProcessing(){
 
         // DMTaskCompleted is used to check if the Download task is still running;
-        if(DMTaskCompleted)
+        if(!DMTaskRunning)
         {
+            DMTaskRunning = true;
             // proceed to process the downloads in the background
             mDMTask = new DownloadManagerAsyncTask();
             mDMTask.execute((String)null);
@@ -118,7 +128,7 @@ public class PMService extends Service {
     public class DownloadManagerAsyncTask extends AsyncTask<String, String, Boolean> {
 
         DownloadManagerAsyncTask() {
-            DMTaskCompleted = false;
+            DMTaskRunning = true;
         }
 
         @Override
@@ -126,7 +136,7 @@ public class PMService extends Service {
 
             try {
 
-                DMTaskCompleted = false;
+                DMTaskRunning = true;
 
                 downloadsManager = DownloadsManager.getInstance();
                 downloadsManager.processDownloadsTable();
@@ -142,7 +152,7 @@ public class PMService extends Service {
         }
 
         protected void onPostExecute(Boolean result) {
-            DMTaskCompleted = true;
+            DMTaskRunning = false;
         }
 
         @Override
