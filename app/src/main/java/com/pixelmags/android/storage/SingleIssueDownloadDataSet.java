@@ -3,6 +3,7 @@ package com.pixelmags.android.storage;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.format.Time;
 
@@ -66,7 +67,7 @@ public class SingleIssueDownloadDataSet extends BrandedSQLiteHelper {
 
     public boolean initFormationOfSingleIssueDownloadTable(SQLiteDatabase db,
                                                             AllDownloadsIssueTracker allDownloadTrackerUnit,
-                                                            ArrayList<SingleDownloadIssueTracker> newIssueDownloadTable)
+                                                            ArrayList<SingleDownloadIssueTracker> newSingleIssueDownloadTable)
     {
         try{
             // Start the transaction
@@ -78,52 +79,59 @@ public class SingleIssueDownloadDataSet extends BrandedSQLiteHelper {
 
             if(previousIssueDownloadTable == null){
                 // if no previous table exists insert the new values
+                System.out.println("<<< Unique table does not exist ... creating - "+ allDownloadTrackerUnit.uniqueIssueDownloadTable +" >>>");
 
                 // create table if not exists
                 createDownloadTableForIssue(db, allDownloadTrackerUnit.uniqueIssueDownloadTable);
 
                 // insert all the values
-                insertValuesIntoSingleDownloadTable(db, newIssueDownloadTable, allDownloadTrackerUnit.uniqueIssueDownloadTable);
+                insertValuesIntoSingleDownloadTable(db, newSingleIssueDownloadTable, allDownloadTrackerUnit.uniqueIssueDownloadTable);
 
-            }else{
-                // compare every record and replace the ones which do not match
+            }else {
+                // compare every record and
+                // replace the ones whose md5's do not match
+                // keep the old ones whose md5's match
+                // add in any new pages
 
-                if(newIssueDownloadTable.size() == previousIssueDownloadTable.size() && newIssueDownloadTable.size() != 0 ){
+                System.out.println("<<< Unique table exists ... comparing records >>>");
 
-                    for(int i=0; i< newIssueDownloadTable.size();i++) {
+                for (int i = 0; i < newSingleIssueDownloadTable.size(); i++) {
 
-                        SingleDownloadIssueTracker prev = previousIssueDownloadTable.get(i);
-                        SingleDownloadIssueTracker current = newIssueDownloadTable.get(i);
+                    SingleDownloadIssueTracker current = newSingleIssueDownloadTable.get(i);
+                    SingleDownloadIssueTracker prev = null;
 
-                        if(current.md5ChecksumLarge == prev.md5ChecksumLarge ){
-
-                            // the pages are the same so replace the values with stored values
-                            newIssueDownloadTable.set(i, prev);
-
-                        }else{
-                            // do nothing i.e. keep the new values
+                    // get the corresponding page for current
+                    for (int j = 0; j < previousIssueDownloadTable.size(); j++) {
+                        SingleDownloadIssueTracker temp = previousIssueDownloadTable.get(j);
+                        if (temp.pageNo == current.pageNo) {
+                            prev = previousIssueDownloadTable.get(j);
+                            break;
                         }
-
                     }
 
-                    // update all the values
-                    insertValuesIntoSingleDownloadTable(db, newIssueDownloadTable, allDownloadTrackerUnit.uniqueIssueDownloadTable);
+                    if (prev == null) {
+                        // there is no corresponding page, so insert it as it is i.e leave the record alone
+                       // System.out.println("<<< no corresponding page for pageNo - "+ current.pageNo +" >>>");
+                    } else {
 
+                        if (current.md5ChecksumLarge.equals(prev.md5ChecksumLarge)) {
+                            // if their md5 matches replace the page data with the one already there
+                            newSingleIssueDownloadTable.set(i, prev);
+                            //System.out.println("<<< md5 matches for page " + newSingleIssueDownloadTable.get(i).pageNo + ". downloadStatus = " + newSingleIssueDownloadTable.get(i).downloadStatusPdfLarge + ">>>");
 
-                }else {
-                    // page insertion or deletion has occurred, re download the issue
-                    dropUniqueDownloadsTable(db, allDownloadTrackerUnit.uniqueIssueDownloadTable);
+                        } else {
 
-                    // create table if not exists
-                    createDownloadTableForIssue(db, allDownloadTrackerUnit.uniqueIssueDownloadTable);
-
-                    // insert all the values
-                    insertValuesIntoSingleDownloadTable(db, newIssueDownloadTable, allDownloadTrackerUnit.uniqueIssueDownloadTable);
-
+                            //System.out.println("<<< md5 Does not match for page " + newSingleIssueDownloadTable.get(i).pageNo);
+                            // the md5 do not match so do nothing
+                        }
+                    }
                 }
+
+                // now update all the values
+                insertValuesIntoSingleDownloadTable(db, newSingleIssueDownloadTable, allDownloadTrackerUnit.uniqueIssueDownloadTable);
+
             }
-
-
+            
             //End and close the transaction
             db.setTransactionSuccessful();
             db.endTransaction();
@@ -264,6 +272,48 @@ public class SingleIssueDownloadDataSet extends BrandedSQLiteHelper {
         }
 
         return pageSingleIssueDownload;
+    }
+
+
+    public int getTotalPages(SQLiteDatabase db, String uniqueDownloadTable){
+
+        int numRows = 0;
+        try{
+            numRows = (int) DatabaseUtils.queryNumEntries(db, uniqueDownloadTable);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return numRows;
+    }
+
+
+    public int getCountOfPagesPendingDownload(SQLiteDatabase db, String uniqueDownloadTable){
+
+        // fetch count of all the issues that still are pending download i.e. status = DOWNLOAD_STATUS_PENDING
+
+        int count = -1;
+
+        try {
+
+              Cursor cursor= db.rawQuery("SELECT COUNT (*) FROM " + uniqueDownloadTable + " WHERE " + SingleIssueDownloadEntry.COLUMN_DOWNLOAD_STATUS_PDF_LARGE + "=?",
+                      new String[] {String.valueOf(DOWNLOAD_STATUS_PENDING)});
+
+              if(null != cursor)
+
+                  if(cursor.getCount() > 0){
+                      cursor.moveToFirst();
+                      count = cursor.getInt(0);
+
+                  }
+              cursor.close();
+
+        }catch (Exception e){
+                 e.printStackTrace();
+        }
+
+        return count;
+
     }
 
     public void insertValuesIntoSingleDownloadTable(SQLiteDatabase db, ArrayList<SingleDownloadIssueTracker> dIssueList, String tableName){
