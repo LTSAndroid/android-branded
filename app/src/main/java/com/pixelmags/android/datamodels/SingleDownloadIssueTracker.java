@@ -13,13 +13,16 @@ public class SingleDownloadIssueTracker {
     public String downloadedLocationPdfLarge;
     public int downloadStatusPdfLarge;
 
+    // for post download processing
+    public String uniqueTable;
+
     public SingleDownloadIssueTracker(){
         this.downloadStatusPdfLarge = SingleIssueDownloadDataSet.DOWNLOAD_STATUS_PENDING;
     }
 
-    public SingleDownloadIssueTracker(PageTypeImage.PageDetails page, int num){
+    public SingleDownloadIssueTracker(PageTypeImage.PageDetails page, int pageNo){
 
-        this.pageNo = num;
+        this.pageNo = pageNo;
         this.urlPdfLarge = page.url;
         this.md5ChecksumLarge = page.checksum_md5;
         this.downloadStatusPdfLarge = SingleIssueDownloadDataSet.DOWNLOAD_STATUS_PENDING;
