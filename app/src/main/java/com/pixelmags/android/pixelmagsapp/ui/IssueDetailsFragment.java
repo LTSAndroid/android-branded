@@ -49,6 +49,10 @@ public class IssueDetailsFragment extends Fragment {
     private String mIssueID;
     private String mMagazineID;
 
+    ImageView issueDetailsImageView;
+    TextView issueDetailsTitle;
+    TextView issueDetailsSynopsis;
+    Button issueDetailsPriceButton;
 
 
     public IssueDetailsFragment() {
@@ -92,8 +96,14 @@ public class IssueDetailsFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_issue_details, container, false);
         previewImagesLayout = (LinearLayout) rootView.findViewById(R.id.issueDetailsPreviewImageLayout);
 
- //       mLoadIssueTask = new LoadIssueAsyncTask(mMagazineID, mIssueID);
- //       mLoadIssueTask.execute((String)null);
+
+        issueDetailsImageView = (ImageView) rootView.findViewById(R.id.issueDetailsImageView);
+        issueDetailsTitle = (TextView) rootView.findViewById(R.id.issueDetailsTitle);
+        issueDetailsSynopsis = (TextView) rootView.findViewById(R.id.issueDetailsSynopsis);
+        issueDetailsPriceButton = (Button) rootView.findViewById(R.id.issueDetailsPriceButton);
+
+        mLoadIssueTask = new LoadIssueAsyncTask(mMagazineID, mIssueID);
+        mLoadIssueTask.execute((String)null);
 
         return rootView;
     }
@@ -103,8 +113,8 @@ public class IssueDetailsFragment extends Fragment {
 
         super.onActivityCreated(savedInstanceState);
 
-        mLoadIssueTask = new LoadIssueAsyncTask(mMagazineID, mIssueID);
-        mLoadIssueTask.execute((String) null);
+        // mLoadIssueTask = new LoadIssueAsyncTask(mMagazineID, mIssueID);
+        // mLoadIssueTask.execute((String) null);
 
     }
 
@@ -113,30 +123,32 @@ public class IssueDetailsFragment extends Fragment {
         if(issueData != null) {
 
             // Load all data for the issue details page here
-
-            ImageView issueDetailsImageView = (ImageView) getActivity().findViewById(R.id.issueDetailsImageView);
             if (issueData.isThumbnailDownloaded) {
-                if(issueData.thumbnailBitmap != null){
+                if(issueData.thumbnailBitmap != null && issueDetailsImageView !=null ){
                     issueDetailsImageView.setImageBitmap(issueData.thumbnailBitmap);
                 }
             }
 
-            TextView issueDetailsTitle = (TextView) getActivity().findViewById(R.id.issueDetailsTitle);
-            issueDetailsTitle.setText(issueData.title);
 
-            TextView issueDetailsSynopsis = (TextView) getActivity().findViewById(R.id.issueDetailsSynopsis);
-            issueDetailsSynopsis.setText(issueData.synopsis);
+            if(issueDetailsTitle != null) {
+                issueDetailsTitle.setText(issueData.title);
+            }
 
-            Button issueDetailsPriceButton = (Button) getActivity().findViewById(R.id.issueDetailsPriceButton);
-            issueDetailsPriceButton.setText(String.valueOf(issueData.price));
+            if(issueDetailsSynopsis != null) {
+                issueDetailsSynopsis.setText(issueData.synopsis);
+            }
 
-            issueDetailsPriceButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mIssueTask = new DownloadIssueAsyncTask(Config.Magazine_Number, "120974");
-                    mIssueTask.execute((String) null);
-                }
-            });
+            if(issueDetailsPriceButton != null){
+                issueDetailsPriceButton.setText(String.valueOf(issueData.price));
+
+                issueDetailsPriceButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mIssueTask = new DownloadIssueAsyncTask(Config.Magazine_Number, "120974");
+                        mIssueTask.execute((String) null);
+                    }
+                });
+            }
 
             loadPreviewImages();
 
