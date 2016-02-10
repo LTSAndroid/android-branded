@@ -51,8 +51,9 @@ public class DownloadsManager {
     static PriorityQueue<DownloadSinglePageThreadStatic> pageThreadQueue;
 
     // the tasks and parameters that run the task queues
-    QueueProcessorAsyncTask mQueueProcessorTask;
+    //QueueProcessorAsyncTask mQueueProcessorTask;
     static boolean queueTaskCompleted = true;
+    static int issueInQueue;
 
 
     private DownloadsManager() {
@@ -86,6 +87,15 @@ public class DownloadsManager {
     }
 
     public boolean processDownloadsTable(){
+
+
+        if(!queueTaskCompleted){
+            // queue is running, so just leave a notification and do nothing
+            // priority downloads should take a different route
+            setRequestPending();
+            return true;
+        }
+
 
         AllDownloadsIssueTracker issueToDownload = null;
 
@@ -155,9 +165,10 @@ public class DownloadsManager {
     public boolean startDownload(AllDownloadsIssueTracker issueToDownload){
 
         // start the threaded download here
-        System.out.println("<<< START DOWNLOAD NOW FOR ISSUE "+ issueToDownload.issueTitle +" >>>");
+        System.out.println("<<< START DOWNLOAD FOR ISSUE : "+ issueToDownload.issueTitle +" >>>");
 
         try{
+
             AllDownloadsDataSet mDbWriter = new AllDownloadsDataSet(BaseApp.getContext());
 
             // set the Issue as downloading within the AllDownloadTable
@@ -221,7 +232,7 @@ public class DownloadsManager {
 
             }
 
-            launchQueueTask();
+            launchQueueTask(issueToDownload.issueID);
 
         }
 
@@ -234,6 +245,7 @@ public class DownloadsManager {
 
             // block any other issues to be downloaded at same time
             // prevent multiple launches of the Issue download
+
             // send a notification to the UI after each Thread, Page download
             // Mark Issue as download complete
             // On Issue download complete, recheck if further issues need to be downloaded
@@ -244,7 +256,7 @@ public class DownloadsManager {
 
 
     // process the threads in batches.
-    public void launchQueueTask(){
+    public void launchQueueTask(int issueId){
 
         if(queueTaskCompleted){
             // launch the queue task again
@@ -256,6 +268,7 @@ public class DownloadsManager {
             Thread t1 = new Thread(qThread);
             t1.start();
 
+            issueInQueue = issueId;
 
         } // else do nothing as the queue will continue to process until it is empty
 
@@ -278,6 +291,7 @@ public class DownloadsManager {
      * Represents an asynchronous task used to process the downloads table.
      *
      */
+    /*
     public class QueueProcessorAsyncTask extends AsyncTask<String, String, Boolean> {
 
         int MAX_THREADS = 3;
@@ -363,9 +377,11 @@ public class DownloadsManager {
         }
     }
 
+    */
+
     /**
      *
-     * Represents an asynchronous task used to process the downloads table.
+     * Represents an Queue Thread used to process the downloads table.
      *
      */
     public static class QueueProcessorThread implements Runnable {
