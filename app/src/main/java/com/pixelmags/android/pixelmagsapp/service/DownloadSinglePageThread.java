@@ -113,9 +113,11 @@ public class DownloadSinglePageThread implements Runnable {
 
         try{
 
+            /* // DO not do update after every page as that locks the db out for a long time.
             SingleIssueDownloadDataSet mDbDownloadTableWriter = new SingleIssueDownloadDataSet(BaseApp.getContext());
             boolean result = mDbDownloadTableWriter.updateIssuePageEntry(mDbDownloadTableWriter.getWritableDatabase(), pageSingleDownloadTracker, issueAllDownloadsTracker.uniqueIssueDownloadTable);
             mDbDownloadTableWriter.close();
+            */
 
             System.out.println("Download Complete :: " + pageSingleDownloadTracker.pageNo);
 
