@@ -116,7 +116,6 @@ public class MySubscriptionsDataSet extends BrandedSQLiteHelper {
                 }
 
                 queryCursor.close();
-                db.close();
             }
 
 

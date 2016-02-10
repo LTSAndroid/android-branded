@@ -75,6 +75,7 @@ public class GetMySubscriptions extends WebRequest {
 
         MySubscriptionsDataSet mDbReader = new MySubscriptionsDataSet(BaseApp.getContext());
         ArrayList<MySubscription> mySubsArray = mDbReader.getMySubscriptions(mDbReader.getReadableDatabase());
+        mDbReader.close();
 
         for(int i=0; i< mySubsArray.size();i++) {
             MySubscription sub = mySubsArray.get(i);

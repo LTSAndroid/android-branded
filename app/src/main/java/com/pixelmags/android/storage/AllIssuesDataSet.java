@@ -190,12 +190,15 @@ public class AllIssuesDataSet extends BrandedSQLiteHelper{
                 }
 
                 queryCursor.close();
-                db.close();
+
+            }else{
+
+                System.out.println("NULL result in getSingleIssue()");
             }
 
 
         }catch (Exception e){
-            System.out.println(e.getStackTrace());
+            e.printStackTrace();
         }
 
         return magazinesArray;
@@ -268,12 +271,14 @@ public class AllIssuesDataSet extends BrandedSQLiteHelper{
                 }
 
                 queryCursor.close();
-                db.close();
+
+            }else{
+                System.out.println("NULL result in getSingleIssue()");
             }
 
 
         }catch (Exception e){
-            System.out.println(e.getStackTrace());
+            e.printStackTrace();
         }
 
         return mMagazine;

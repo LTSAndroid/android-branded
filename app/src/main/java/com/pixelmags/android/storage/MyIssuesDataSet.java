@@ -109,7 +109,6 @@ public class MyIssuesDataSet  extends BrandedSQLiteHelper {
                 }
 
                 queryCursor.close();
-                db.close();
             }
 
         }catch (Exception e){

@@ -74,6 +74,7 @@ public class GetMyIssues extends WebRequest
         // Test the saved output
         MyIssuesDataSet mDbReader = new MyIssuesDataSet(BaseApp.getContext());
         ArrayList<MyIssue> myIssueArray = mDbReader.getMyIssues(mDbReader.getReadableDatabase());
+        mDbReader.close();
 
         for(int i=0; i< myIssueArray.size();i++) {
             MyIssue issue = myIssueArray.get(i);
