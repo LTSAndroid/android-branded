@@ -2,6 +2,7 @@ package com.pixelmags.android.pixelmagsapp.service;
 
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 
 import com.pixelmags.android.comms.Config;
@@ -20,7 +21,9 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.PriorityQueue;
+import java.util.Queue;
 
 /**
  * Created by austincoutinho on 29/01/16.
@@ -43,17 +46,21 @@ public class DownloadsManager {
 
     private boolean mPendingRequest = false;
 
-    private static DownloadsManager instance = null;
+    private static DownloadsManager dmInstance = null;
 
     private boolean interrupted = false;
 
     // Queue will prioritise any page that has it's priority set
     static PriorityQueue<DownloadSinglePageThreadStatic> pageThreadQueue;
 
+    // Queue will hold and process all issues pages once they have completed page that has it's priority set
+    static Queue<SingleDownloadIssueTracker> pageDownloadProcessedQueue;
+
+
+
     // the tasks and parameters that run the task queues
     //QueueProcessorAsyncTask mQueueProcessorTask;
     static boolean queueTaskCompleted = true;
-    static int issueInQueue;
 
 
     private DownloadsManager() {
@@ -69,13 +76,15 @@ public class DownloadsManager {
             }
         });
 
+        pageDownloadProcessedQueue = new LinkedList<SingleDownloadIssueTracker>();
+
     }
 
     public static DownloadsManager getInstance() {
-        if(instance == null) {
-            instance = new DownloadsManager();
+        if(dmInstance == null) {
+            dmInstance = new DownloadsManager();
         }
-        return instance;
+        return dmInstance;
     }
 
     public int getDownloadManagerStatus(){
@@ -176,6 +185,7 @@ public class DownloadsManager {
             mDbWriter.close();
 
             if(issueUpdated){
+
                 // get the Issue pages
                 IssueDataSet mDbReader = new IssueDataSet(BaseApp.getContext());
                 Issue issueWithPageData = mDbReader.getIssue(mDbReader.getReadableDatabase(), String.valueOf(issueToDownload.issueID));
@@ -191,7 +201,7 @@ public class DownloadsManager {
                         PageTypeImage page = (PageTypeImage) issueWithPageData.pages.get(i);
                         PageTypeImage.PageDetails pageDetails = page.getPageDetails(PageTypeImage.MediaType.LARGE);
 
-                        SingleDownloadIssueTracker pageTracker = new SingleDownloadIssueTracker(pageDetails, i);
+                        SingleDownloadIssueTracker pageTracker = new SingleDownloadIssueTracker(pageDetails, page.getPageNo());
                         pagesForSingleDownloadTable.add(pageTracker);
                     }
 
@@ -232,7 +242,7 @@ public class DownloadsManager {
 
             }
 
-            launchQueueTask(issueToDownload.issueID);
+            launchQueueTask(issueToDownload);
 
         }
 
@@ -256,7 +266,7 @@ public class DownloadsManager {
 
 
     // process the threads in batches.
-    public void launchQueueTask(int issueId){
+    public void launchQueueTask(AllDownloadsIssueTracker issueTracker){
 
         if(queueTaskCompleted){
             // launch the queue task again
@@ -264,11 +274,9 @@ public class DownloadsManager {
             //mQueueProcessorTask = new QueueProcessorAsyncTask();
             //mQueueProcessorTask.execute((String) null);
 
-            QueueProcessorThread qThread = new QueueProcessorThread();
+            QueueProcessorThread qThread = new QueueProcessorThread(issueTracker);
             Thread t1 = new Thread(qThread);
             t1.start();
-
-            issueInQueue = issueId;
 
         } // else do nothing as the queue will continue to process until it is empty
 
@@ -379,6 +387,78 @@ public class DownloadsManager {
 
     */
 
+
+    public static void updateAllPostDownloadsTable(AllDownloadsIssueTracker issueInQueue){
+
+        processPostDownloadQueue();
+        validateDownloadedIssue(issueInQueue);
+
+    }
+
+    public static void validateDownloadedIssue(AllDownloadsIssueTracker issueInQueue){
+
+        try {
+            // check if all the downloads were processsed
+            SingleIssueDownloadDataSet mDbDownloadTableReader = new SingleIssueDownloadDataSet(BaseApp.getContext());
+            int count = mDbDownloadTableReader.getCountOfPagesPendingDownload(mDbDownloadTableReader.getReadableDatabase(), String.valueOf(issueInQueue.uniqueIssueDownloadTable));
+            mDbDownloadTableReader.close();
+
+            if (count == 0){
+                // mark download as complete
+
+
+                AllDownloadsDataSet mDbReader = new AllDownloadsDataSet(BaseApp.getContext());
+                mDbReader.setIssueToCompleted(mDbReader.getReadableDatabase(), issueInQueue);
+                mDbReader.close();
+
+                System.out.println("ISSUE DOWNLOAD IS NOW COMPLETE :- " + issueInQueue.issueID);
+
+            }
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void processPostDownloadQueue(){
+
+        try{
+
+            boolean run = true;
+
+            SingleIssueDownloadDataSet mDbDownloadTableWriter = new SingleIssueDownloadDataSet(BaseApp.getContext());
+
+            // update as transaction
+            SQLiteDatabase db = mDbDownloadTableWriter.getWritableDatabase();
+            db.beginTransaction();
+
+            while(run){
+                SingleDownloadIssueTracker page = pageDownloadProcessedQueue.poll();
+
+                if(page == null){
+                    // if queue is empty
+                    run = false;
+                    break;
+                }
+
+                boolean result = mDbDownloadTableWriter.updateIssuePageEntry(db, page, page.uniqueTable);
+
+            }
+
+            db.setTransactionSuccessful();
+            db.endTransaction();
+            db.close();
+
+            System.out.println("PROCESSED Post download Batch");
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+
+    }
+
+
     /**
      *
      * Represents an Queue Thread used to process the downloads table.
@@ -388,6 +468,13 @@ public class DownloadsManager {
 
         int MAX_THREADS = 1;
         boolean runQueue = true;
+        int POSTDOWNLOADBUFFER = 10;
+
+        AllDownloadsIssueTracker issueInQueue;
+
+        QueueProcessorThread(AllDownloadsIssueTracker issueTracker){
+            issueInQueue = issueTracker;
+        }
 
         @Override
         public void run() {
@@ -395,6 +482,8 @@ public class DownloadsManager {
             try {
 
                 queueTaskCompleted = false;
+
+                int completeCounter = 0;
 
                 while(runQueue){
 
@@ -436,6 +525,18 @@ public class DownloadsManager {
                         e.printStackTrace();
                     }
 
+
+                    // increment the download counter
+                    completeCounter++;
+
+                    // process downloads, i.e save results into db after every X downloads
+
+                    if(completeCounter >= POSTDOWNLOADBUFFER){
+                        processPostDownloadQueue();
+                        completeCounter = 0; // reset the counter
+
+                    }
+
                     // while loop ends
                 }
 
@@ -444,6 +545,13 @@ public class DownloadsManager {
             }
 
             queueTaskCompleted = true;
+
+            // update all the Issue download completion entries here
+            updateAllPostDownloadsTable(issueInQueue);
+
+
+            // continue processing table for next download
+            getInstance().processDownloadsTable();
 
         }
 
@@ -510,6 +618,7 @@ public class DownloadsManager {
                     // Create page image file, specifying the path, and the filename which we want to save the file as.
                     File pageImage = new File(folder, getPageFileName());
 
+
                     //this will be used to write the downloaded data into the file we created
                     FileOutputStream fileOutput = new FileOutputStream(pageImage);
 
@@ -525,7 +634,7 @@ public class DownloadsManager {
                     //close the output stream when done
                     fileOutput.close();
 
-                    registerDownloadAsComplete();
+                    registerDownloadAsComplete(pageImage.getAbsolutePath());
 
                 }
 
@@ -536,18 +645,22 @@ public class DownloadsManager {
         }
 
         // Update the UniqueDownloadTable of the Issue after each page download
-        private void registerDownloadAsComplete(){
+        private void registerDownloadAsComplete(String downloadPath){
 
             this.isDownloaded = true;
             pageSingleDownloadTracker.downloadStatusPdfLarge = SingleIssueDownloadDataSet.DOWNLOAD_STATUS_COMPLETED;
+            pageSingleDownloadTracker.downloadedLocationPdfLarge = downloadPath;
+
+            // for post download processing
+            pageSingleDownloadTracker.uniqueTable = issueAllDownloadsTracker.uniqueIssueDownloadTable;
+
 
             try{
 
-            /* // DO not do update after every page as that locks the db out for a long time.
-            SingleIssueDownloadDataSet mDbDownloadTableWriter = new SingleIssueDownloadDataSet(BaseApp.getContext());
-            boolean result = mDbDownloadTableWriter.updateIssuePageEntry(mDbDownloadTableWriter.getWritableDatabase(), pageSingleDownloadTracker, issueAllDownloadsTracker.uniqueIssueDownloadTable);
-            mDbDownloadTableWriter.close();
-            */
+                pageDownloadProcessedQueue.add(pageSingleDownloadTracker);
+
+                // Note : DO NOT update db after every page as that locks the db out for a long time.
+
 
                 System.out.println("Download Complete :: " + pageSingleDownloadTracker.pageNo);
 
