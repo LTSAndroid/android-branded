@@ -4,6 +4,10 @@ import android.graphics.Bitmap;
 
 /**
  * Created by Austin Coutinho on 21/01/16.
+ *
+ * This is designed to contain a single row from the AllDownloadsDataSet
+ * i.e the 'All downloads' table.
+ *
  */
 public class AllDownloadsIssueTracker
 {

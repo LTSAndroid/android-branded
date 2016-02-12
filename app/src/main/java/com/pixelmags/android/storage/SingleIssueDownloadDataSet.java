@@ -18,6 +18,10 @@ import java.util.ArrayList;
 /**
  * Created by austincoutinho on 20/01/16.
  *
+ * SingleIssueDownloadDataSet Contains all the pages of an issue and every row would contain all the information associated
+ * with a single page.
+ *
+ *
  */
 
 public class SingleIssueDownloadDataSet extends BrandedSQLiteHelper {
@@ -131,7 +135,7 @@ public class SingleIssueDownloadDataSet extends BrandedSQLiteHelper {
                 insertValuesIntoSingleDownloadTable(db, newSingleIssueDownloadTable, allDownloadTrackerUnit.uniqueIssueDownloadTable);
 
             }
-            
+
             //End and close the transaction
             db.setTransactionSuccessful();
             db.endTransaction();

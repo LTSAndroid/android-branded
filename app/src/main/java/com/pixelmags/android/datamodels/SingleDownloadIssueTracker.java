@@ -4,6 +4,12 @@ import com.pixelmags.android.storage.SingleIssueDownloadDataSet;
 
 /**
  * Created by austincoutinho on 06/02/16.
+ *
+ * This is designed to contain a single row from the SingleIssueDownloadDataSet
+ * i.e the rows from the Unique download table that is created for each issue.
+ *
+ * e.g. all the rows of 'Issue_Download_Table_120974' where 120974 is the issue id
+ *
  */
 public class SingleDownloadIssueTracker {
 

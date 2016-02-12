@@ -16,6 +16,12 @@ import java.util.ArrayList;
 /**
  * Created by austincoutinho on 20/01/16.
  *
+ * Every download requested is registered in this table. Each row contains the Issue requested
+ * and the information associted with that issue relevant to it's download.
+ *
+ * e.g. a single row is associated withan issue and all contains what the current download status
+ * of that issue is.
+ *
  */
 
 public class AllDownloadsDataSet extends BrandedSQLiteHelper {
@@ -240,6 +246,66 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
         }
 
         return allDownloadsIssueTrackers;
+    }
+
+
+    public AllDownloadsIssueTracker getAllDownloadsTrackerForIssue(SQLiteDatabase db, String issueId){
+
+        AllDownloadsIssueTracker allDownloadsTrackerForIssue = null;
+
+        try {
+
+            // Define a projection i.e specify columns to retrieve
+            String[] projection = {
+                    AllDownloadsEntry.COLUMN_ISSUE_ID,
+                    AllDownloadsEntry.COLUMN_MAGAZINE_ID,
+                    AllDownloadsEntry.COLUMN_ISSUE_TITLE,
+                    AllDownloadsEntry.COLUMN_UNIQUE_ISSUE_DOWNLOAD_TABLE,
+                    AllDownloadsEntry.COLUMN_PRIORITY,
+                    AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS
+            };
+
+
+            // Specify the sort order
+            String sortOrder = AllDownloadsEntry.COLUMN_PRIORITY + " DESC";
+
+            String whereClause = AllDownloadsEntry.COLUMN_ISSUE_ID+"=?";
+            String [] whereArgs = {issueId};
+
+            Cursor queryCursor = db.query(
+                    AllDownloadsEntry.ALL_DOWNLOADS_TABLE_NAME,    // The table to query
+                    projection,                                     // The columns to return
+                    whereClause,                                           // The columns for the WHERE clause
+                    whereArgs,                                           // The values for the WHERE clause
+                    null,
+                    null,
+                    sortOrder                                       // The sort order
+            );
+
+            if (queryCursor != null) {
+
+                //queryCursor.getCount();
+                while (queryCursor.moveToNext()) {
+
+                    allDownloadsTrackerForIssue = new AllDownloadsIssueTracker();
+
+                    allDownloadsTrackerForIssue.issueID = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_ISSUE_ID));
+                    allDownloadsTrackerForIssue.magazineID = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_MAGAZINE_ID));
+                    allDownloadsTrackerForIssue.issueTitle = queryCursor.getString(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_ISSUE_TITLE));
+                    allDownloadsTrackerForIssue.uniqueIssueDownloadTable = queryCursor.getString(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_UNIQUE_ISSUE_DOWNLOAD_TABLE));
+                    allDownloadsTrackerForIssue.priority = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_PRIORITY));
+                    allDownloadsTrackerForIssue.downloadStatus = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS));
+                }
+
+                queryCursor.close();
+            }
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return allDownloadsTrackerForIssue;
     }
 
 
