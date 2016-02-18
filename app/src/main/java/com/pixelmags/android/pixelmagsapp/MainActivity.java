@@ -16,6 +16,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -34,6 +35,7 @@ import com.pixelmags.android.pixelmagsapp.ui.NavigationDrawerFragment;
 import com.pixelmags.android.pixelmagsapp.ui.RegisterFragment;
 import com.pixelmags.android.pixelmagsapp.ui.SubscriptionsFragment;
 import com.pixelmags.android.storage.AllIssuesDataSet;
+import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.util.BaseApp;
 import com.pixelmags.android.util.IabHelper;
 import com.pixelmags.android.util.IabResult;
@@ -66,13 +68,13 @@ public class MainActivity extends AppCompatActivity
 
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
-  /**
-   * The service that will perform all the downloads in the background.
-   * This is started whenever the App is launched and within the MainActivity.
-   * The service should stop itself once all downloads are complete.
-   */
+    /**
+     * The service that will perform all the downloads in the background.
+     * This is started whenever the App is launched and within the MainActivity.
+     * The service should stop itself once all downloads are complete.
+     */
 
-  // Service Parameters
+    // Service Parameters
     private PMService mPMService;
     private ServiceConnection mConnection = null;
     boolean mIsBound = false;
@@ -189,7 +191,7 @@ public class MainActivity extends AppCompatActivity
                 {
                     SkuDetails details = inventory.getSkuDetails("com.pixelmags.androidbranded.test1");
 
-                   // String price = details.getPrice();
+                    // String price = details.getPrice();
                     magazinesList.get(i).price = "939";
                     Magazine finalMagazine = new Magazine();
 
@@ -218,7 +220,7 @@ public class MainActivity extends AppCompatActivity
             mDbHelper.insert_all_issues_data(mDbHelper.getWritableDatabase(), billingMagazinesList);
             mDbHelper.close();*/
 
-        
+
             // update the UI
             mHelper.queryInventoryAsync(mGotInventoryListener);
         }
@@ -282,7 +284,7 @@ public class MainActivity extends AppCompatActivity
                 mTitle = getString(R.string.menu_issue_view);
                 break;
             default:
-               mTitle = getString(R.string.app_name);
+                mTitle = getString(R.string.app_name);
                 break;
         }
     }
@@ -290,10 +292,12 @@ public class MainActivity extends AppCompatActivity
     public void purchaseLauncher(String sku)
     {
 
-        mHelper.launchPurchaseFlow(this, sku, 10001,
-                mPurchaseFinishedListener, "bGoa+V7g/yqDXvKRqq+JTFn4uQZbPiQJo4pf9RzJ");
-
-        // 5th arg - use a randomly generated string, but for non-consumable items you should use a string that uniquely identifies the user.
+        String userPixelMagsID = UserPrefs.getUserPixelmagsId();
+        String encodeData = "{\"user_id\": "+ userPixelMagsID +"}";
+        byte[] data = encodeData.getBytes();
+        String base64 = Base64.encodeToString(data, Base64.DEFAULT);
+        mHelper.launchPurchaseFlow(this, "com.pixelmagsandroid.newtestapp4", 1001,
+                mPurchaseFinishedListener,base64);
     }
 
 
@@ -311,35 +315,35 @@ public class MainActivity extends AppCompatActivity
             else if (purchase.getSku().equals("com.pixelmags.androidbranded.test1"))
             {
                 //true
-              //  consumeItem();
-               // buyButton.setEnabled(false);
+                //  consumeItem();
+                // buyButton.setEnabled(false);
             }
 
         }
     };
 
 
-   @Override
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-   if (requestCode == 1001) {
-      int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
-      String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
-      String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
+        if (requestCode == 1001) {
+            int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
+            String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
+            String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
 
-      if (resultCode == RESULT_OK) {
-         try {
-            JSONObject jo = new JSONObject(purchaseData);
-            String sku = jo.getString("productId");
-			String orderID = jo.getString("orderId");
-            String purchaseState = jo.getString("purchaseState");
-            String purchaseToken = jo.getString("purchaseToken");
-          }
-          catch (JSONException e) {
-             e.printStackTrace();
-          }
-      }
-   }
-}
+            if (resultCode == RESULT_OK) {
+                try {
+                    JSONObject jo = new JSONObject(purchaseData);
+                    String sku = jo.getString("productId");
+                    String orderID = jo.getString("orderId");
+                    String purchaseState = jo.getString("purchaseState");
+                    String purchaseToken = jo.getString("purchaseToken");
+                }
+                catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 
 
     public void restoreActionBar() {
@@ -359,7 +363,7 @@ public class MainActivity extends AppCompatActivity
         View v = getSupportActionBar().getCustomView();
         TextView titleTxtView = (TextView) v.findViewById(R.id.textviewactivityname);
         titleTxtView.setText(Config.Magazine_Title);
-        
+
     }
 
     @Override
@@ -398,7 +402,7 @@ public class MainActivity extends AppCompatActivity
                 return true;
 //            case R.id.action_manage_subscriptions:
 // manage subscriptions action
- //               return true;
+            //               return true;
 //            case R.id.action_sort:
 // sort action
 //            return true;
