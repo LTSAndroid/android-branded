@@ -1,17 +1,49 @@
 package com.pixelmags.android.IssueView;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
+import com.pixelmags.android.datamodels.Magazine;
+import com.pixelmags.android.datamodels.SingleDownloadIssueTracker;
 import com.pixelmags.android.pixelmagsapp.R;
+import com.pixelmags.android.storage.AllDownloadsDataSet;
+import com.pixelmags.android.storage.SingleIssueDownloadDataSet;
+import com.pixelmags.android.util.BaseApp;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.InvalidKeyException;
+import java.security.SecureRandom;
+import java.util.ArrayList;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Created by Annie on 24/01/2016.
@@ -20,8 +52,15 @@ public class NewIssueView extends FragmentActivity {
     static final int NUM_ITEMS = 8; // here number of items will be based on collection
     ImageFragmentPagerAdapter imageFragmentPagerAdapter;
     ViewPager viewPager;
-    public static final String[] IMAGE_NAME = {"magone", "magtwo", "magthree", "magfour", "magfive", "magsix","magone","magtwo"};
+    public String issueID;
+    //
+    AllDownloadsIssueTracker allDownloadsTracker;
+    AllDownloadsDataSet mDownloadReader = new AllDownloadsDataSet(BaseApp.getContext());
 
+
+    //
+    public static final String[] IMAGE_NAME = {"magone", "magtwo", "magthree", "magfour", "magfive", "magsix","magone","magtwo"};
+    public static ArrayList<Bitmap> issuePages;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,7 +68,41 @@ public class NewIssueView extends FragmentActivity {
         imageFragmentPagerAdapter = new ImageFragmentPagerAdapter(getSupportFragmentManager());
         viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(imageFragmentPagerAdapter);
+
+        //
+        String issueID = String.valueOf(120974);
+        //
+        allDownloadsTracker = mDownloadReader.getAllDownloadsTrackerForIssue(mDownloadReader.getReadableDatabase(), issueID);
+        mDownloadReader.close();
+        issuePages = new ArrayList<Bitmap>();
+        if(allDownloadsTracker != null) {
+
+            SingleIssueDownloadDataSet mDbDownloadTableReader = new SingleIssueDownloadDataSet(BaseApp.getContext());
+            ArrayList<SingleDownloadIssueTracker> allPagesOfIssue = mDbDownloadTableReader.getUniqueSingleIssueDownloadTable(mDbDownloadTableReader.getReadableDatabase(), allDownloadsTracker.uniqueIssueDownloadTable);
+            mDbDownloadTableReader.close();
+
+            if (allPagesOfIssue != null)
+            {
+                //allPagesOfIssue.size()
+                for (int i = 0; i < 20 ; i++)
+                {
+                    String finalPath = allPagesOfIssue.get(i).downloadedLocationPdfLarge;
+
+                    Bitmap loadedIssuePage =  decryptFile(finalPath);
+
+                    if(loadedIssuePage == null)
+                        System.out.println("Issue Image is Null");
+
+                    issuePages.add(loadedIssuePage);
+
+                }
+            }
+        }
+
+
     }
+
+
 
     public static class ImageFragmentPagerAdapter extends FragmentPagerAdapter {
         public ImageFragmentPagerAdapter(FragmentManager fm) {
@@ -57,8 +130,14 @@ public class NewIssueView extends FragmentActivity {
             Bundle bundle = getArguments();
             int position = bundle.getInt("position");
             String imageFileName = IMAGE_NAME[position];
-            int imgResId = getResources().getIdentifier(imageFileName, "drawable" , "com.pixelmags.android.pixelmagsapp");
-            imageView.setImageResource(imgResId);
+            int imgResId = getResources().getIdentifier(imageFileName, "drawable", "com.pixelmags.android.pixelmagsapp");
+
+            Bitmap imageForView = issuePages.get(position);
+            /*String path = getIntent().getStringExtra("imagePath");
+            Drawable image = Drawable.createFromPath(path);
+            myImageView.setImageDrawable(image);
+*/
+            imageView.setImageBitmap(imageForView);
             return swipeView;
         }
 
@@ -69,5 +148,104 @@ public class NewIssueView extends FragmentActivity {
             swipeFragment.setArguments(bundle);
             return swipeFragment;
         }
+
+
+    }
+
+    public Bitmap decryptFile( String path){
+
+        Bitmap bitmap = null;
+
+        try {
+            // Create FileInputStream to read from the encrypted image file
+            FileInputStream fis = new FileInputStream(path);
+
+            // Save the decrypted image
+            String encodedString = "1Ef95C6MaqkeDKBEuLuN49LV32FED/SkQHepcNEIUd0=";
+            byte[] bitmapdata =  decrypt( encodedString.getBytes(), fis);
+
+            fis.close();
+
+            bitmap = BitmapFactory.decodeByteArray(bitmapdata , 0, bitmapdata.length);
+        } catch (Exception e) {
+
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return bitmap;
+    }
+
+    private byte[] decrypt(byte[] skey, FileInputStream fis){
+
+
+        SecretKeySpec skeySpec = new SecretKeySpec(skey, "AES");
+        Cipher cipher;
+        byte[] decryptedData=null;
+        CipherInputStream cis=null;
+
+        try {
+
+            cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            cipher.init(Cipher.DECRYPT_MODE, skeySpec, new IvParameterSpec(getIV()));
+
+            // Create CipherInputStream to read and decrypt the image data
+            cis = new CipherInputStream(fis, cipher);
+
+            // Write encrypted image data to ByteArrayOutputStream
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+            byte[] data = new byte[2048];
+
+            while ((cis.read(data)) != -1) {
+
+                buffer.write(data);
+            }
+
+            buffer.flush();
+
+            decryptedData=buffer.toByteArray();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        finally{
+
+            try {
+                fis.close();
+
+                cis.close();
+
+            } catch (IOException e) {
+
+                // TODO Auto-generated catch block
+
+                e.printStackTrace();
+            }
+        }
+        return decryptedData;
+
+
+    }
+
+    private static byte[] getIV(){
+
+
+        SecureRandom random = new SecureRandom();
+
+
+        byte[] iv = random.generateSeed(16);
+
+
+        return iv;
+
+
+    }
+
+    public Bitmap loadImageFromStorage(String path)
+    {
+        Bitmap issuePage;
+        issuePage = BitmapFactory.decodeFile(path);
+
+        return issuePage;
+
     }
 }

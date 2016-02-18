@@ -3,6 +3,7 @@ package com.pixelmags.android.pixelmagsapp.ui;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -21,6 +22,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.pixelmags.android.IssueView.NewIssueView;
 import com.pixelmags.android.api.CreateUser;
 import com.pixelmags.android.api.GetIssues;
 import com.pixelmags.android.comms.Config;
@@ -39,10 +41,12 @@ import com.pixelmags.android.util.IabHelper;
 import com.pixelmags.android.util.IabResult;
 import com.pixelmags.android.util.Purchase;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import org.json.JSONObject;
 
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -97,8 +101,21 @@ public class AllIssuesFragment extends Fragment {
     public void gridPriceButtonClicked(int position)
     {
 
-        MainActivity myAct = (MainActivity) getActivity();
-        myAct.purchaseLauncher(magazinesList.get(position).android_store_sku);
+       /* MainActivity myAct = (MainActivity) getActivity();
+        myAct.purchaseLauncher(magazinesList.get(position).android_store_sku);*/
+
+        //check for download state before launch, prefer separate class as we need to reuse
+
+
+
+        //if check passes then start the activity
+        Intent intent = new Intent(getActivity(), NewIssueView.class);
+        intent.putExtra("ISSUE_ID", 120974);
+        startActivity(intent);
+       // startActivity(new Intent(getActivity(), NewIssueView.class));
+
+       /* NewIssueView issueViewFragment = (NewIssueView) getActivity();
+        issueViewFragment.loadIssue(magazinesList.get(position).id);*/
 
        /* AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
