@@ -45,6 +45,8 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import static java.lang.Character.digit;
+
 /**
  * Created by Annie on 24/01/2016.
  */
@@ -84,7 +86,7 @@ public class NewIssueView extends FragmentActivity {
             if (allPagesOfIssue != null)
             {
                 //allPagesOfIssue.size()
-                for (int i = 0; i < 20 ; i++)
+                for (int i = 0; i < 5 ; i++)
                 {
                     String finalPath = allPagesOfIssue.get(i).downloadedLocationPdfLarge;
 
@@ -152,6 +154,19 @@ public class NewIssueView extends FragmentActivity {
 
     }
 
+
+    private static byte[] stringToBytes(String input) {
+
+        int length = input.length();
+        byte[] output = new byte[length / 2];
+
+        for (int i = 0; i < length; i += 2) {
+            output[i / 2] = (byte) ((digit(input.charAt(i), 16) << 4) | digit(input.charAt(i+1), 16));
+        }
+        return output;
+
+    }
+
     public Bitmap decryptFile( String path){
 
         Bitmap bitmap = null;
@@ -162,11 +177,16 @@ public class NewIssueView extends FragmentActivity {
 
             // Save the decrypted image
             String encodedString = "1Ef95C6MaqkeDKBEuLuN49LV32FED/SkQHepcNEIUd0=";
-            byte[] bitmapdata =  decrypt( encodedString.getBytes(), fis);
+
+            encodedString = "C604DF8833E8CCAACAC44B51C195B1CB8CBD6AB6085FD3EC6A07E26CBCB55662";
+
+            byte[] bitmapdata =  decrypt( stringToBytes(encodedString), fis);
 
             fis.close();
 
             bitmap = BitmapFactory.decodeByteArray(bitmapdata , 0, bitmapdata.length);
+            
+
         } catch (Exception e) {
 
             // TODO Auto-generated catch block
@@ -186,7 +206,7 @@ public class NewIssueView extends FragmentActivity {
         try {
 
             cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            cipher.init(Cipher.DECRYPT_MODE, skeySpec, new IvParameterSpec(getIV()));
+            cipher.init(Cipher.DECRYPT_MODE, skeySpec);
 
             // Create CipherInputStream to read and decrypt the image data
             cis = new CipherInputStream(fis, cipher);
@@ -194,7 +214,7 @@ public class NewIssueView extends FragmentActivity {
             // Write encrypted image data to ByteArrayOutputStream
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
-            byte[] data = new byte[2048];
+            byte[] data = new byte[4096];
 
             while ((cis.read(data)) != -1) {
 
@@ -204,6 +224,7 @@ public class NewIssueView extends FragmentActivity {
             buffer.flush();
 
             decryptedData=buffer.toByteArray();
+
         }catch(Exception e){
             e.printStackTrace();
         }
