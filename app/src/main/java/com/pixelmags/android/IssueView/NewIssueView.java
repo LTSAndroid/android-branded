@@ -51,32 +51,40 @@ import static java.lang.Character.digit;
  * Created by Annie on 24/01/2016.
  */
 public class NewIssueView extends FragmentActivity {
-    static final int NUM_ITEMS = 8; // here number of items will be based on collection
+
+
     ImageFragmentPagerAdapter imageFragmentPagerAdapter;
     ViewPager viewPager;
     public String issueID;
     //
-    AllDownloadsIssueTracker allDownloadsTracker;
-    AllDownloadsDataSet mDownloadReader = new AllDownloadsDataSet(BaseApp.getContext());
 
+    AllDownloadsIssueTracker allDownloadsTracker;
 
     //
-    public static final String[] IMAGE_NAME = {"magone", "magtwo", "magthree", "magfour", "magfive", "magsix","magone","magtwo"};
-    public static ArrayList<Bitmap> issuePages;
+    //public static final String[] IMAGE_NAME = {"magone", "magtwo", "magthree", "magfour", "magfive", "magsix","magone","magtwo"};
+    private static ArrayList<String> issuePagesLocations;
+
+    // TODO : get the decrypt key and store here
+    private String decrypt_key;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_pager);
-        imageFragmentPagerAdapter = new ImageFragmentPagerAdapter(getSupportFragmentManager());
-        viewPager = (ViewPager) findViewById(R.id.pager);
-        viewPager.setAdapter(imageFragmentPagerAdapter);
 
         //
         String issueID = String.valueOf(120974);
         //
+
+
+        AllDownloadsDataSet mDownloadReader = new AllDownloadsDataSet(BaseApp.getContext());
         allDownloadsTracker = mDownloadReader.getAllDownloadsTrackerForIssue(mDownloadReader.getReadableDatabase(), issueID);
         mDownloadReader.close();
-        issuePages = new ArrayList<Bitmap>();
+
+
+        issuePagesLocations = new ArrayList<String>();
         if(allDownloadsTracker != null) {
 
             SingleIssueDownloadDataSet mDbDownloadTableReader = new SingleIssueDownloadDataSet(BaseApp.getContext());
@@ -85,65 +93,80 @@ public class NewIssueView extends FragmentActivity {
 
             if (allPagesOfIssue != null)
             {
-                //allPagesOfIssue.size()
-                for (int i = 0; i < 5 ; i++)
+                for (int i = 0; i < allPagesOfIssue.size() ; i++)
                 {
                     String finalPath = allPagesOfIssue.get(i).downloadedLocationPdfLarge;
-
-                    Bitmap loadedIssuePage =  decryptFile(finalPath);
-
-                    if(loadedIssuePage == null)
-                        System.out.println("Issue Image is Null");
-
-                    issuePages.add(loadedIssuePage);
-
+                    issuePagesLocations.add(finalPath);
                 }
             }
         }
+
+
+        imageFragmentPagerAdapter = new ImageFragmentPagerAdapter(getSupportFragmentManager());
+        viewPager = (ViewPager) findViewById(R.id.pager);
+        viewPager.setAdapter(imageFragmentPagerAdapter);
 
 
     }
 
 
 
-    public static class ImageFragmentPagerAdapter extends FragmentPagerAdapter {
+    public class ImageFragmentPagerAdapter extends FragmentPagerAdapter {
+
         public ImageFragmentPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
         @Override
         public int getCount() {
-            return NUM_ITEMS;
+            if(issuePagesLocations == null){
+                return 0;
+            }
+
+            return issuePagesLocations.size();
         }
 
         @Override
         public Fragment getItem(int position) {
             SwipeFragment fragment = new SwipeFragment();
-            return SwipeFragment.newInstance(position);
+            return fragment.newInstance(position);
         }
+
     }
 
-    public static class SwipeFragment extends Fragment {
+    public class SwipeFragment extends Fragment {
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+
             View swipeView = inflater.inflate(R.layout.swipe_fragment, container, false);
             ImageView imageView = (ImageView) swipeView.findViewById(R.id.imageView);
             Bundle bundle = getArguments();
-            int position = bundle.getInt("position");
-            String imageFileName = IMAGE_NAME[position];
-            int imgResId = getResources().getIdentifier(imageFileName, "drawable", "com.pixelmags.android.pixelmagsapp");
 
-            Bitmap imageForView = issuePages.get(position);
+            int position = bundle.getInt("position");
+
+            Bitmap imageForView = null;
+            String imageLocation = issuePagesLocations.get(position);
+            if(imageLocation != null){
+                imageForView =  decryptFile(imageLocation);
+                if(imageForView != null){
+                    imageView.setImageBitmap(imageForView);
+                }else{
+                    System.out.println("Issue Image is Null");
+                }
+            }
+
+
             /*String path = getIntent().getStringExtra("imagePath");
             Drawable image = Drawable.createFromPath(path);
             myImageView.setImageDrawable(image);
 */
-            imageView.setImageBitmap(imageForView);
+
             return swipeView;
         }
 
-        static SwipeFragment newInstance(int position) {
+        public SwipeFragment newInstance(int position) {
             SwipeFragment swipeFragment = new SwipeFragment();
             Bundle bundle = new Bundle();
             bundle.putInt("position", position);
@@ -155,7 +178,7 @@ public class NewIssueView extends FragmentActivity {
     }
 
 
-    private static byte[] stringToBytes(String input) {
+    private byte[] stringToBytes(String input) {
 
         int length = input.length();
         byte[] output = new byte[length / 2];
@@ -244,29 +267,6 @@ public class NewIssueView extends FragmentActivity {
         }
         return decryptedData;
 
-
     }
 
-    private static byte[] getIV(){
-
-
-        SecureRandom random = new SecureRandom();
-
-
-        byte[] iv = random.generateSeed(16);
-
-
-        return iv;
-
-
-    }
-
-    public Bitmap loadImageFromStorage(String path)
-    {
-        Bitmap issuePage;
-        issuePage = BitmapFactory.decodeFile(path);
-
-        return issuePage;
-
-    }
 }
