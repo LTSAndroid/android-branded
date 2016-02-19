@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Base64;
 import android.view.LayoutInflater;
@@ -111,7 +112,13 @@ public class NewIssueView extends FragmentActivity {
 
 
 
-    public class ImageFragmentPagerAdapter extends FragmentPagerAdapter {
+    public class ImageFragmentPagerAdapter extends FragmentStatePagerAdapter {
+
+        /*
+            FragmentStatePagerAdapter more useful when there are a large number of pages, working more like a list view. When pages are not visible to the user,
+            their entire fragment may be destroyed, only keeping the saved state of that fragment. This allows the pager to hold on to much less
+            memory associated with each visited page as compared to FragmentPagerAdapter at the cost of potentially more overhead when switching between pages.
+         */
 
         public ImageFragmentPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -157,12 +164,6 @@ public class NewIssueView extends FragmentActivity {
                 }
             }
 
-
-            /*String path = getIntent().getStringExtra("imagePath");
-            Drawable image = Drawable.createFromPath(path);
-            myImageView.setImageDrawable(image);
-*/
-
             return swipeView;
         }
 
@@ -173,7 +174,6 @@ public class NewIssueView extends FragmentActivity {
             swipeFragment.setArguments(bundle);
             return swipeFragment;
         }
-
 
     }
 
@@ -190,7 +190,7 @@ public class NewIssueView extends FragmentActivity {
 
     }
 
-    public Bitmap decryptFile( String path){
+    public Bitmap decryptFile(String path){
 
         Bitmap bitmap = null;
 
