@@ -2,48 +2,28 @@ package com.pixelmags.android.IssueView;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-
 import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
-import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.datamodels.SingleDownloadIssueTracker;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.storage.AllDownloadsDataSet;
 import com.pixelmags.android.storage.SingleIssueDownloadDataSet;
 import com.pixelmags.android.util.BaseApp;
-
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.InvalidKeyException;
-import java.security.SecureRandom;
 import java.util.ArrayList;
-
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import static java.lang.Character.digit;
@@ -141,7 +121,8 @@ public class NewIssueView extends FragmentActivity {
 
     }
 
-    public class SwipeFragment extends Fragment {
+    public class SwipeFragment extends Fragment
+    {
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,

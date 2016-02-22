@@ -37,7 +37,7 @@ public class QueueDownload {
                     //move the issue thumbnail inside the Issue Download Thumbnail folder
                     DownloadThumbnails.copyThumbnailOfIssueDownloaded(String.valueOf(mIssue.issueID));
 
-                    //TODO :- Remove this thumnail on delete
+                    //TODO :- Remove this thumbnail on delete
 
                 }
 

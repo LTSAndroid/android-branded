@@ -1,8 +1,10 @@
 package com.pixelmags.android.api;
 
+import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.comms.WebRequest;
 import com.pixelmags.android.json.CanPurchaseParser;
-import com.pixelmags.android.json.CreateUserParser;
+import com.pixelmags.android.pixelmagsapp.MainActivity;
+import com.pixelmags.android.storage.UserPrefs;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -14,23 +16,21 @@ import java.util.ArrayList;
  */
 public class CanPurchase extends WebRequest
 {
-    private static final String API_NAME="canPurchase";
-    private String mEmail;
-    private String mPassword;
-    private String mPaymentGateway;
-    private String mIssueID;
+    private static final String API_NAME = "canPurchase";
+
+    private int mIssue_id;
+    private String mSKU;
     CanPurchaseParser cParser;
 
-    public CanPurchase(){
+    public CanPurchase()
+    {
         super(API_NAME);
     }
-    public void init(String email, String password, String paymentGateway, String issueID)
+    public String init(String SKU , int issue_id)
     {
-        mEmail = email;
-        mPassword = password;
-        mPaymentGateway=paymentGateway;
-        mIssueID=issueID;
-
+        String success = "";
+        mIssue_id = issue_id;
+        mSKU = SKU;
         setApiNameValuePairs();
         doPostRequest();
 
@@ -38,30 +38,38 @@ public class CanPurchase extends WebRequest
             cParser = new CanPurchaseParser(getAPIResultData());
             if(cParser.initJSONParse()){
 
-                if(cParser.isSuccess()){
-                    cParser.parse();
-
-                } else{
-
+                if(cParser.isSuccess())
+                {
+                    success = "true";
+                    //cParser.parse();
+                    //launch purchase
+                   /* MainActivity mActivity= new MainActivity();
+                    mActivity.createPurchaseLauncher(mSKU,mIssue_id);*/
+                }
+                else
+                {
+                    success = "false";
                     // Add error handling code here
-
                 }
 
             }
+
         }
-
+        return success;
     }
-    private void setApiNameValuePairs(){
-
-        baseApiNameValuePairs = new ArrayList<NameValuePair>(8);
-        baseApiNameValuePairs.add(new BasicNameValuePair("email", mEmail));
-        baseApiNameValuePairs.add(new BasicNameValuePair("password", mPassword));
-        baseApiNameValuePairs.add(new BasicNameValuePair("payment_gateway", mPaymentGateway));
-        baseApiNameValuePairs.add(new BasicNameValuePair("issue_id", mIssueID));
-        baseApiNameValuePairs.add(new BasicNameValuePair("device_id", baseDeviceId));
-        baseApiNameValuePairs.add(new BasicNameValuePair("magazine_id", baseMagazineId));
-        baseApiNameValuePairs.add(new BasicNameValuePair("api_mode", baseApiMode));
-        baseApiNameValuePairs.add(new BasicNameValuePair("api_version", baseApiVersion));
+    private void setApiNameValuePairs()
+    {
+            String issueId = String.valueOf(mIssue_id);
+        baseApiNameValuePairs = new ArrayList<NameValuePair>(9);
+        baseApiNameValuePairs.add(new BasicNameValuePair("auth_email_address", UserPrefs.getUserEmail()));
+        baseApiNameValuePairs.add(new BasicNameValuePair("auth_password", UserPrefs.getUserPassword()));
+        baseApiNameValuePairs.add(new BasicNameValuePair("device_id", UserPrefs.getDeviceID()));
+        baseApiNameValuePairs.add(new BasicNameValuePair("magazine_id", Config.Magazine_Number));
+        baseApiNameValuePairs.add(new BasicNameValuePair("issue_id", issueId));
+        baseApiNameValuePairs.add(new BasicNameValuePair("payment_gateway", "google"));
+        baseApiNameValuePairs.add(new BasicNameValuePair("app_bundle_id", Config.Bundle_ID));
+        baseApiNameValuePairs.add(new BasicNameValuePair("api_mode", Config.api_mode));
+        baseApiNameValuePairs.add(new BasicNameValuePair("api_version", Config.api_version));
 
     }
     }

@@ -5,7 +5,7 @@ package com.pixelmags.android.json;
  */
 public class CreatePurchaseParser extends JSONParser {
 
-    public String missueID;
+    public String mDocumentKey;
 
 
     public CreatePurchaseParser(String Data){
@@ -19,7 +19,7 @@ public class CreatePurchaseParser extends JSONParser {
 
         try{
 
-            missueID = baseJSON.getString("issue_id");
+            mDocumentKey = baseJSON.getString("public_key");
 
         }catch(Exception e){}
 

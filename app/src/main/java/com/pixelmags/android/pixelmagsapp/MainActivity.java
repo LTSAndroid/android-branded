@@ -2,6 +2,8 @@ package com.pixelmags.android.pixelmagsapp;
 
 import android.app.Activity;
 /*<<<<<<< Updated upstream*/
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ComponentName;
 import android.content.Context;
@@ -10,6 +12,7 @@ import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
@@ -26,8 +29,11 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.TextView;
 
+import com.pixelmags.android.api.CanPurchase;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.datamodels.Magazine;
+import com.pixelmags.android.pixelmagsapp.billing.CanPurchaseTask;
+import com.pixelmags.android.pixelmagsapp.billing.CreatePurchaseTask;
 import com.pixelmags.android.pixelmagsapp.service.PMService;
 import com.pixelmags.android.pixelmagsapp.test.ResultsFragment;
 import com.pixelmags.android.pixelmagsapp.ui.LoginFragment;
@@ -59,7 +65,7 @@ public class MainActivity extends AppCompatActivity
     public IabHelper mHelper;
     private ArrayList<Magazine> magazinesList = null;
     public ArrayList<Magazine> billingMagazinesList;
-
+    public ArrayList<Purchase> userOwnedSKUList;
     public ArrayList<String> skuList;
 
     /**
@@ -83,7 +89,11 @@ public class MainActivity extends AppCompatActivity
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
-
+    public CanPurchaseTask mCanPurchaseTask = null;
+    public CreatePurchaseTask mCreatePurchaseTask = null;
+    private int purchaseIssueId;
+    private String purchaseSKU;
+    final Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -165,10 +175,7 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
-
-
     }
-
 
     IabHelper.QueryInventoryFinishedListener mQueryFinishedListener = new IabHelper.QueryInventoryFinishedListener()
     {
@@ -179,9 +186,9 @@ public class MainActivity extends AppCompatActivity
                 // handle error
                 return;
             }
-            List<String> allOwnedSKUS = inventory.getAllOwnedSkus();
 
             billingMagazinesList = new ArrayList<Magazine>();
+
 
             for (int i = 0; i < magazinesList.size(); i++)
             {
@@ -191,8 +198,8 @@ public class MainActivity extends AppCompatActivity
                 {
                     SkuDetails details = inventory.getSkuDetails("com.pixelmags.androidbranded.test1");
 
-                    // String price = details.getPrice();
-                    magazinesList.get(i).price = "939";
+                     String price = details.getPrice();
+                    magazinesList.get(i).price = details.getPrice();
                     Magazine finalMagazine = new Magazine();
 
                     finalMagazine.id = magazinesList.get(i).id;
@@ -243,6 +250,17 @@ public class MainActivity extends AppCompatActivity
                 // does the user have the premium upgrade?
                 //mIsPremium = inventory.hasPurchase(SKU_PREMIUM);
                 // update UI accordingly
+                List<String> allOwnedSKUS = inventory.getAllOwnedSkus();
+                userOwnedSKUList = new ArrayList<Purchase>();
+                for ( int i = 0; i < allOwnedSKUS.size(); i++)
+                {
+                    Purchase purchaseData = inventory.getPurchase(allOwnedSKUS.get(i));
+                    //Assign button Status here and also restore purchase if the issue is not purchased
+                    userOwnedSKUList.add(purchaseData);
+                }
+
+
+
             }
         }
     };
@@ -289,9 +307,17 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void purchaseLauncher(String sku)
+    public void  canPurchaseLauncher(String sku, int issueId)
     {
+        mCanPurchaseTask = new CanPurchaseTask(sku,issueId);
+        mCanPurchaseTask.execute((String) null);
+    }
 
+    public void createPurchaseLauncher(String sku, int issueId)
+    {
+        mCanPurchaseTask = null;
+        purchaseIssueId = issueId;
+        purchaseSKU = sku;
         String userPixelMagsID = UserPrefs.getUserPixelmagsId();
         String encodeData = "{\"user_id\": "+ userPixelMagsID +"}";
         byte[] data = encodeData.getBytes();
@@ -299,8 +325,6 @@ public class MainActivity extends AppCompatActivity
         mHelper.launchPurchaseFlow(this, "com.pixelmagsandroid.newtestapp4", 1001,
                 mPurchaseFinishedListener,base64);
     }
-
-
 
     IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener
             = new IabHelper.OnIabPurchaseFinishedListener()
@@ -312,8 +336,11 @@ public class MainActivity extends AppCompatActivity
                 // Handle error
                 return;
             }
-            else if (purchase.getSku().equals("com.pixelmags.androidbranded.test1"))
+            else if (purchase.getSku().equals(purchaseSKU))
             {
+
+                //
+
                 //true
                 //  consumeItem();
                 // buyButton.setEnabled(false);
@@ -333,10 +360,15 @@ public class MainActivity extends AppCompatActivity
             if (resultCode == RESULT_OK) {
                 try {
                     JSONObject jo = new JSONObject(purchaseData);
-                    String sku = jo.getString("productId");
-                    String orderID = jo.getString("orderId");
-                    String purchaseState = jo.getString("purchaseState");
-                    String purchaseToken = jo.getString("purchaseToken");
+
+                    String purchase_receipt=jo.getString("purchaseToken");
+                    String purchase_signature= dataSignature;
+
+                    //
+                    mCreatePurchaseTask = new CreatePurchaseTask(purchaseIssueId,purchase_receipt,purchase_signature);
+                    mCreatePurchaseTask.execute((String) null);
+
+                    //google result
                 }
                 catch (JSONException e) {
                     e.printStackTrace();
@@ -554,9 +586,76 @@ public class MainActivity extends AppCompatActivity
 
     // refresh naviagtion drawer
     public void refreshNavigationDrawer(){
-
-
     }
 
+    public class CanPurchaseTask extends AsyncTask<String, String, String> {
+
+        public int mIssue_id;
+        public String mSKU;
+        private CanPurchaseTask mCanPurchaseTask = null;
+        public String result;
+
+        public CanPurchaseTask(String SKU , int issue_id) {
+            mIssue_id = issue_id;
+            mSKU = SKU;
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String resultToDisplay = "";
+
+            try {
+                CanPurchase apiCanPurchase = new CanPurchase();
+                resultToDisplay = apiCanPurchase.init(mSKU,mIssue_id);
+
+            } catch (Exception e) {
+
+            }
+            if(resultToDisplay == "true")
+            {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+                alertDialogBuilder.setTitle("Success");
+                alertDialogBuilder
+                        .setMessage("Can Purchase Success")
+                        .setCancelable(false)
+                        .setPositiveButton("OK",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                dialog.dismiss();
+                            }
+                        });
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+
+                //Launch google purchase
+                createPurchaseLauncher(mSKU,mIssue_id);
+            }
+            else if(resultToDisplay == "false")
+            {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+                alertDialogBuilder.setTitle("Warning");
+
+                // set dialog message
+                alertDialogBuilder
+                        .setMessage("Can Purchase failed")
+                        .setCancelable(false)
+                        .setPositiveButton("OK",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                dialog.dismiss();
+                            }
+                        });
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+            }
+            return resultToDisplay;
+        }
+
+        protected void onPostExecute(String result) {
+            mCanPurchaseTask = null;
+        }
+        @Override
+        protected void onCancelled() {
+            mCanPurchaseTask = null;
+        }
+    }
 
 }

@@ -100,23 +100,18 @@ public class AllIssuesFragment extends Fragment {
 
     public void gridPriceButtonClicked(int position)
     {
-
-       /* MainActivity myAct = (MainActivity) getActivity();
-        myAct.purchaseLauncher(magazinesList.get(position).android_store_sku);*/
+        //Launch Can Purchase
+        MainActivity myAct = (MainActivity) getActivity();
+        myAct.canPurchaseLauncher(magazinesList.get(position).android_store_sku,magazinesList.get(position).id);
 
         //check for download state before launch, prefer separate class as we need to reuse
-
-
-
         //if check passes then start the activity
-        Intent intent = new Intent(getActivity(), NewIssueView.class);
+       /* Intent intent = new Intent(getActivity(), NewIssueView.class);
         intent.putExtra("ISSUE_ID", 120974);
-        startActivity(intent);
+        startActivity(intent);*/
        // startActivity(new Intent(getActivity(), NewIssueView.class));
-
        /* NewIssueView issueViewFragment = (NewIssueView) getActivity();
         issueViewFragment.loadIssue(magazinesList.get(position).id);*/
-
        /* AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         builder.setTitle(getString(R.string.allIssues_purchase_title));

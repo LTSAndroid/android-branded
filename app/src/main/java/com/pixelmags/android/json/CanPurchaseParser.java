@@ -5,7 +5,7 @@ package com.pixelmags.android.json;
  */
 public class CanPurchaseParser extends JSONParser {
 
-    public String missueID;
+    public String mSuccess;
     
 
     public CanPurchaseParser(String Data){
@@ -19,7 +19,7 @@ public class CanPurchaseParser extends JSONParser {
 
         try{
 
-            missueID = baseJSON.getString("issue_id");
+            mSuccess = baseJSON.getString("success");
 
         }catch(Exception e){}
 
