@@ -1,4 +1,4 @@
-package com.pixelmags.android.pixelmagsapp.ui;
+package com.pixelmags.android.ui;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;

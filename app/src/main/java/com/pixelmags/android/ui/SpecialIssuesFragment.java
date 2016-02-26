@@ -1,4 +1,4 @@
-package com.pixelmags.android.pixelmagsapp.ui;
+package com.pixelmags.android.ui;
 
 import android.app.Activity;
 import android.net.Uri;
@@ -7,18 +7,19 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.pixelmags.android.pixelmagsapp.R;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link ContactSupportFragment.OnFragmentInteractionListener} interface
+ * {@link SpecialIssuesFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link ContactSupportFragment#newInstance} factory method to
+ * Use the {@link SpecialIssuesFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ContactSupportFragment extends Fragment {
+public class SpecialIssuesFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -36,11 +37,11 @@ public class ContactSupportFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment ContactSupportFragment.
+     * @return A new instance of fragment SpecialIssuesFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ContactSupportFragment newInstance(String param1, String param2) {
-        ContactSupportFragment fragment = new ContactSupportFragment();
+    public static SpecialIssuesFragment newInstance(String param1, String param2) {
+        SpecialIssuesFragment fragment = new SpecialIssuesFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -48,7 +49,7 @@ public class ContactSupportFragment extends Fragment {
         return fragment;
     }
 
-    public ContactSupportFragment() {
+    public SpecialIssuesFragment() {
         // Required empty public constructor
     }
 
@@ -64,8 +65,9 @@ public class ContactSupportFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_contact_support, container, false);
+        TextView textView = new TextView(getActivity());
+        textView.setText(R.string.hello_blank_fragment);
+        return textView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

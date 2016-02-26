@@ -46,7 +46,7 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".ui.LoginActivity"
+            android:name="com.pixelmags.android.ui.LoginActivity"
             android:label="@string/title_activity_login"
             android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>

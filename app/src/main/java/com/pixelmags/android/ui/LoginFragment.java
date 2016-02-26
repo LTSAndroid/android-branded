@@ -1,11 +1,9 @@
-package com.pixelmags.android.pixelmagsapp.ui;
+package com.pixelmags.android.ui;
 
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -22,26 +20,9 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.pixelmags.android.api.ValidateUser;
-import com.pixelmags.android.comms.Config;
-import com.pixelmags.android.pixelmagsapp.LaunchActivity;
 import com.pixelmags.android.pixelmagsapp.R;
-import com.pixelmags.android.pixelmagsapp.test.ResultsFragment;
 import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.util.AccountUtil;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.ByteArrayBuffer;
-
-import java.io.BufferedInputStream;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**

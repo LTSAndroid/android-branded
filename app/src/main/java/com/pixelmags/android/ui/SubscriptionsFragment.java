@@ -1,4 +1,4 @@
-package com.pixelmags.android.pixelmagsapp.ui;
+package com.pixelmags.android.ui;
 
 import android.app.Activity;
 import android.net.Uri;
@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.pixelmags.android.datamodels.Subscription;
 import com.pixelmags.android.pixelmagsapp.R;

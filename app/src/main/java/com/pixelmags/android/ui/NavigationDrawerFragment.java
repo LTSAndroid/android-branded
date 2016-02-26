@@ -1,4 +1,4 @@
-package com.pixelmags.android.pixelmagsapp.ui;
+package com.pixelmags.android.ui;
 
 import android.content.Intent;
 import android.support.v4.app.FragmentManager;

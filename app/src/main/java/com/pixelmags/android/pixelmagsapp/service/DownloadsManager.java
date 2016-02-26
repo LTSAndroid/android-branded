@@ -247,18 +247,22 @@ public class DownloadsManager {
         }
 
 
-
-
-
         // check if any process tried to interrupt Threads
         if(!interrupted){
 
             // block any other issues to be downloaded at same time
             // prevent multiple launches of the Issue download
-
-            // send a notification to the UI after each Thread, Page download
             // Mark Issue as download complete
             // On Issue download complete, recheck if further issues need to be downloaded
+
+
+            // send a notification to the UI after each Thread, Page download
+            // restart download on launch at the right time
+            // pause download
+            // resume download
+            // delete download
+            // make issue page as priority
+
 
         }
 

@@ -32,14 +32,13 @@ import android.widget.TextView;
 import com.pixelmags.android.api.CanPurchase;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.datamodels.Magazine;
-import com.pixelmags.android.pixelmagsapp.billing.CanPurchaseTask;
 import com.pixelmags.android.pixelmagsapp.billing.CreatePurchaseTask;
 import com.pixelmags.android.pixelmagsapp.service.PMService;
 import com.pixelmags.android.pixelmagsapp.test.ResultsFragment;
-import com.pixelmags.android.pixelmagsapp.ui.LoginFragment;
-import com.pixelmags.android.pixelmagsapp.ui.NavigationDrawerFragment;
-import com.pixelmags.android.pixelmagsapp.ui.RegisterFragment;
-import com.pixelmags.android.pixelmagsapp.ui.SubscriptionsFragment;
+import com.pixelmags.android.ui.LoginFragment;
+import com.pixelmags.android.ui.NavigationDrawerFragment;
+import com.pixelmags.android.ui.RegisterFragment;
+import com.pixelmags.android.ui.SubscriptionsFragment;
 import com.pixelmags.android.storage.AllIssuesDataSet;
 import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.util.BaseApp;
@@ -158,6 +157,7 @@ public class MainActivity extends AppCompatActivity
                     AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
                     magazinesList = mDbHelper.getAllIssues(mDbHelper.getReadableDatabase());
                     mDbHelper.close();
+
                     skuList = new ArrayList<String>();
 
                     if (magazinesList != null)
@@ -487,6 +487,15 @@ public class MainActivity extends AppCompatActivity
     /* All added code here */
 
     @Override
+    public void onResume(){
+        super.onResume();
+
+        resumeServiceDownloadProcessing();
+
+    }
+
+
+    @Override
     public void onDestroy() {
 
         stopDownloadService();
@@ -559,6 +568,17 @@ public class MainActivity extends AppCompatActivity
         // The service should stop self after all it's downloads are complete.
         doUnbindService();
     }
+
+    public void resumeServiceDownloadProcessing(){
+
+        // do a resume only after the AllIssues fragment is loaded
+
+        if(mPMService != null){
+            mPMService.resumeDownloadsProcessing();
+        }
+
+    }
+
 
     public void notifyServiceOfNewDownload(){
 

@@ -1,55 +1,32 @@
-package com.pixelmags.android.pixelmagsapp.ui;
+package com.pixelmags.android.ui;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.pixelmags.android.IssueView.NewIssueView;
-import com.pixelmags.android.api.CreateUser;
-import com.pixelmags.android.api.GetIssues;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.datamodels.Magazine;
-import com.pixelmags.android.datamodels.Subscription;
-import com.pixelmags.android.json.GetIssuesParser;
-import com.pixelmags.android.json.JSONParser;
-import com.pixelmags.android.pixelmagsapp.LaunchActivity;
 import com.pixelmags.android.pixelmagsapp.MainActivity;
 import com.pixelmags.android.pixelmagsapp.R;
-import com.pixelmags.android.pixelmagsapp.test.ResultsFragment;
 import com.pixelmags.android.storage.AllIssuesDataSet;
-import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.util.BaseApp;
-import com.pixelmags.android.util.IabHelper;
-import com.pixelmags.android.util.IabResult;
-import com.pixelmags.android.util.Purchase;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import org.json.JSONObject;
 
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class AllIssuesFragment extends Fragment {
