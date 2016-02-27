@@ -92,7 +92,6 @@ public class MainActivity extends AppCompatActivity
     public CreatePurchaseTask mCreatePurchaseTask = null;
     private int purchaseIssueId;
     private String purchaseSKU;
-    final Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -608,7 +607,7 @@ public class MainActivity extends AppCompatActivity
     public void refreshNavigationDrawer(){
     }
 
-    public class CanPurchaseTask extends AsyncTask<String, String, String> {
+    public class CanPurchaseTask extends AsyncTask<String, String, Boolean> {
 
         public int mIssue_id;
         public String mSKU;
@@ -621,61 +620,63 @@ public class MainActivity extends AppCompatActivity
         }
 
         @Override
-        protected String doInBackground(String... params) {
-            String resultToDisplay = "";
+        protected Boolean doInBackground(String... params) {
+
+            Boolean resultToDisplay = false;
 
             try {
                 CanPurchase apiCanPurchase = new CanPurchase();
                 resultToDisplay = apiCanPurchase.init(mSKU,mIssue_id);
 
             } catch (Exception e) {
-
+                    e.printStackTrace();
             }
-            if(resultToDisplay == "true")
+
+            if(resultToDisplay == true)
             {
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-                alertDialogBuilder.setTitle("Success");
-                alertDialogBuilder
-                        .setMessage("Can Purchase Success")
-                        .setCancelable(false)
-                        .setPositiveButton("OK",new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,int id) {
-                                dialog.dismiss();
-                            }
-                        });
-                AlertDialog alertDialog = alertDialogBuilder.create();
-                alertDialog.show();
+                System.out.println("CAN PURCHASE .......");
 
                 //Launch google purchase
-                createPurchaseLauncher(mSKU,mIssue_id);
+                createPurchaseLauncher(mSKU, mIssue_id);
             }
-            else if(resultToDisplay == "false")
-            {
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-                alertDialogBuilder.setTitle("Warning");
 
-                // set dialog message
-                alertDialogBuilder
-                        .setMessage("Can Purchase failed")
-                        .setCancelable(false)
-                        .setPositiveButton("OK",new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,int id) {
-                                dialog.dismiss();
-                            }
-                        });
-                AlertDialog alertDialog = alertDialogBuilder.create();
-                alertDialog.show();
-            }
             return resultToDisplay;
         }
 
-        protected void onPostExecute(String result) {
+        protected void onPostExecute(Boolean result) {
+
+           if(result == false){
+
+            displayCanPurchaseFail();
+
+           }
+
             mCanPurchaseTask = null;
         }
         @Override
         protected void onCancelled() {
             mCanPurchaseTask = null;
         }
+    }
+
+
+    private void displayCanPurchaseFail(){
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle(getString(R.string.can_purchase_fail_title));
+
+        // set dialog message
+        alertDialogBuilder
+                .setMessage(getString(R.string.can_purchase_fail_message))
+                .setCancelable(false)
+                .setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int id) {
+                        dialog.dismiss();
+                    }
+                });
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+
     }
 
 }

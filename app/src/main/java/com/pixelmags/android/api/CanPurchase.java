@@ -26,9 +26,9 @@ public class CanPurchase extends WebRequest
     {
         super(API_NAME);
     }
-    public String init(String SKU , int issue_id)
+    public boolean init(String SKU , int issue_id)
     {
-        String success = "";
+        boolean success = false;
         mIssue_id = issue_id;
         mSKU = SKU;
         setApiNameValuePairs();
@@ -40,18 +40,12 @@ public class CanPurchase extends WebRequest
 
                 if(cParser.isSuccess())
                 {
-                    success = "true";
+                    success = true;
                     //cParser.parse();
                     //launch purchase
                    /* MainActivity mActivity= new MainActivity();
                     mActivity.createPurchaseLauncher(mSKU,mIssue_id);*/
                 }
-                else
-                {
-                    success = "false";
-                    // Add error handling code here
-                }
-
             }
 
         }

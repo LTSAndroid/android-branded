@@ -102,6 +102,9 @@
     <string-array name="action_account_settings">Account Settings</string-array>
     <string-array name="action_account_fragment_about">About</string-array>
 
+    <!-- CAn Purchase Fail-->
+    <string name="can_purchase_fail_title">Warning</string>
+    <string name="can_purchase_fail_message">You cannot purchase this issue.</string>
 
 
 <!-- TODO: Remove or change this placeholder text -->
