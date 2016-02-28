@@ -16,7 +16,7 @@
         android:paddingBottom="10dp"
         android:clipToPadding="true"
         android:fitsSystemWindows="true"
-        android:numColumns="auto_fit" />
+        android:numColumns="1" />
 
 </RelativeLayout>
 

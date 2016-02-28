@@ -2,9 +2,9 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:padding="14dp"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="fill_parent"
+    android:paddingBottom="15dp"
+    android:orientation="horizontal">
 
     <ImageView
         android:id="@+id/gridDownloadedIssueImage"
@@ -12,38 +12,98 @@
         android:layout_height="110dp"
         android:layout_alignParentTop="true"
         android:adjustViewBounds="true"
-        android:scaleType="fitCenter"
-        android:layout_gravity="center_horizontal" />
+        android:scaleType="fitCenter" />
 
-
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Small Text"
-        android:textAlignment="center"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentTop="true"
-        android:id="@+id/gridDownloadedTitleText"
-        android:layout_marginTop="5dp"
-        android:layout_gravity="center_horizontal" />
+        android:orientation="vertical"
+        android:id="@+id/detailsContainer">
 
-    <Button
-        android:layout_width="70dp"
-        android:layout_height="35dp"
-        android:background="@drawable/shape"
-        android:text="Status"
-        android:shadowColor="#3384ff"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="5"
-        android:id="@+id/gridDownloadStatusButton"
-        android:textColor="#ffffff"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="5dp"
-        android:layout_gravity="center_horizontal" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Medium Text"
+            android:id="@+id/gridDownloadedTitleText"
+            android:layout_gravity="center_horizontal"
+            />
 
+
+        <RelativeLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"
+            android:paddingLeft="10dp"
+            android:orientation="horizontal"
+            android:id="@+id/downloadStatusContainer">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="5dp"
+                android:paddingLeft="5dp"
+                android:layout_alignParentRight="true"
+                android:id="@+id/downloadRemoveButtonContainer">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/remove"
+                    android:id="@+id/downloadRemoveButton" />
+
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_toLeftOf="@+id/downloadRemoveButtonContainer"
+                android:id="@+id/progressBarContainer">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:textSize="10sp"
+                    android:text="Small Text"
+                    android:id="@+id/downloadStatusText" />
+
+                <ProgressBar
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/downloadStatusText"
+                    android:id="@+id/progressBar"
+                    android:layout_gravity="center_vertical"
+                    android:indeterminate="false"
+                    android:max="100" />
+
+            </RelativeLayout>
+
+
+        </RelativeLayout>
+
+
+        <Button
+            android:layout_width="100dp"
+            android:layout_height="35dp"
+            android:background="@drawable/shape"
+            android:text="Status"
+            android:shadowColor="#3384ff"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="5"
+            android:id="@+id/gridDownloadStatusButton"
+            android:textColor="#ffffff"
+            android:layout_marginTop="5dp"
+            android:layout_gravity="center_horizontal" />
+
+
+    </LinearLayout>
 
 </LinearLayout>
 

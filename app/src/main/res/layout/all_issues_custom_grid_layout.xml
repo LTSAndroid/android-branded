@@ -28,6 +28,11 @@
         android:layout_marginTop="5dp"
         android:layout_gravity="center_horizontal" />
 
+    <com.pixelmags.android.ui.uicomponents.MultiStateButton
+        android:id="@+id/gridMultiStateButton"
+        style="@style/MultiStateButtonBase"/>
+
+<!--
     <Button
         android:layout_width="70dp"
         android:layout_height="35dp"
@@ -44,6 +49,7 @@
         android:layout_marginTop="5dp"
         android:layout_gravity="center_horizontal" />
 
+-->
 
 </LinearLayout>
 
