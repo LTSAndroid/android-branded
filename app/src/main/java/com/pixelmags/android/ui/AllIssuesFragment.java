@@ -21,6 +21,7 @@ import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.pixelmagsapp.MainActivity;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.storage.AllIssuesDataSet;
+import com.pixelmags.android.ui.uicomponents.MultiStateButton;
 import com.pixelmags.android.util.BaseApp;
 
 import java.io.File;
@@ -199,10 +200,9 @@ public class AllIssuesFragment extends Fragment {
             }
 
 
-            Button issuePriceButton = (Button) grid.findViewById(R.id.gridPriceButton);
-            String price = magazinesList.get(position).price;
-            String priceConv = String.valueOf(price);
-            issuePriceButton.setText(priceConv);
+            MultiStateButton issuePriceButton = (MultiStateButton) grid.findViewById(R.id.gridMultiStateButton);
+            issuePriceButton.setAsPurchase(magazinesList.get(position).price);
+
             issuePriceButton.setTag(position); // save the gridview index
             issuePriceButton.setOnClickListener(new View.OnClickListener() {
 
