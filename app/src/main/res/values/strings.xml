@@ -88,6 +88,12 @@
     <string name="subscription_price_2">£1.99</string>
     <string name="subscription_price_3">£1.99</string>
 
+    <!--All Downloads Screen-->
+    <string name="download_menu_pause">Pause</string>
+    <string name="download_menu_resume">Resume</string>
+    <string name="download_menu_delete">Delete</string>
+
+
     <!-- Download Strings -->
     <string name="download_queued">Issue queued for download.</string>
     <string name="download_queued_fail">Error with download. Please try again.</string>

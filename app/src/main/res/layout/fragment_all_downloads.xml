@@ -1,23 +1,26 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#FFFFFF"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp"
+    android:paddingTop="15dp"
+    android:paddingBottom="15dp"
+    android:background="#ecf0f1"
+    android:id="@+id/gridContainer"
     tools:context="com.pixelmags.android.ui.AllDownloadsFragment">
 
 
     <GridView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:id="@+id/displayAllDownloadsGridView"
+        android:layout_alignParentTop="true"
         android:stretchMode="columnWidth"
-        android:gravity="center"
-        android:paddingRight="10dp"
-        android:paddingLeft="10dp"
-        android:paddingBottom="10dp"
-        android:clipToPadding="true"
-        android:fitsSystemWindows="true"
+        android:verticalSpacing="15dp"
+        android:horizontalSpacing="15dp"
         android:numColumns="1" />
 
-</RelativeLayout>
+</LinearLayout>
 
 

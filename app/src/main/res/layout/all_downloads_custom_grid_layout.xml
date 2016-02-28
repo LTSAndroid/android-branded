@@ -2,9 +2,11 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:paddingBottom="15dp"
-    android:orientation="horizontal">
+    android:layout_height="wrap_content"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:orientation="horizontal"
+    android:background="@drawable/downloaditemshape" >
 
     <ImageView
         android:id="@+id/gridDownloadedIssueImage"
@@ -21,14 +23,41 @@
         android:orientation="vertical"
         android:id="@+id/detailsContainer">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Medium Text"
-            android:id="@+id/gridDownloadedTitleText"
-            android:layout_gravity="center_horizontal"
-            />
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:paddingRight="5dp"
+            android:paddingLeft="35dp"
+            android:id="@+id/downloadTopContainer">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/moreoptionsmenu"
+                android:background="#FFFFFF"
+                android:layout_alignParentRight="true"
+                android:id="@+id/moreDownloadOptionsMenuButton" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_toLeftOf="@+id/moreDownloadOptionsMenuButton">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Issue"
+                    android:id="@+id/gridDownloadedTitleText"
+                    android:layout_gravity="center_horizontal"
+                    />
+
+            </LinearLayout>
+
+
+        </RelativeLayout>
 
 
         <RelativeLayout
@@ -41,27 +70,11 @@
             android:id="@+id/downloadStatusContainer">
 
             <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingRight="5dp"
-                android:paddingLeft="5dp"
-                android:layout_alignParentRight="true"
-                android:id="@+id/downloadRemoveButtonContainer">
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/remove"
-                    android:id="@+id/downloadRemoveButton" />
-
-            </RelativeLayout>
-
-
-            <RelativeLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_toLeftOf="@+id/downloadRemoveButtonContainer"
+                android:layout_alignParentRight="true"
+                android:paddingRight="25dp"
                 android:id="@+id/progressBarContainer">
 
                 <TextView
@@ -69,7 +82,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
                     android:textSize="10sp"
-                    android:text="Small Text"
+                    android:text="Status..."
                     android:id="@+id/downloadStatusText" />
 
                 <ProgressBar
@@ -104,6 +117,9 @@
 
 
     </LinearLayout>
+
+
+
 
 </LinearLayout>
 

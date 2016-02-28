@@ -7,12 +7,16 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.pixelmags.android.comms.Config;
@@ -162,11 +166,48 @@ public class AllDownloadsFragment extends Fragment {
                 }
             });
 
+
+            ImageView popup = (ImageView) grid.findViewById(R.id.moreDownloadOptionsMenuButton);
+            popup.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+
+                    showPopup(v);
+                }
+            });
+
             return grid;
         }
     }
 
 
+    /*
+ This is defined in the allDownloadsFragment layout xml
+*/
+    public void showPopup(View v) {
+        PopupMenu popup = new PopupMenu(getActivity(), v);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.alldownloadsoptionsmenu, popup.getMenu());
+        popup.show();
+    }
+
+
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            /*
+            case R.id.archive:
+                archive(item);
+                return true;
+            case R.id.delete:
+                delete(item);
+                return true;
+            default:
+                return false;
+              */
+        }
+        return true;
+    }
 
 
 
