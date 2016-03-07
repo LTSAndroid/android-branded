@@ -32,9 +32,13 @@ import android.widget.TextView;
 import com.pixelmags.android.api.CanPurchase;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.datamodels.Magazine;
+import com.pixelmags.android.datamodels.MyIssue;
+import com.pixelmags.android.datamodels.MySubscription;
 import com.pixelmags.android.pixelmagsapp.billing.CreatePurchaseTask;
 import com.pixelmags.android.pixelmagsapp.service.PMService;
 import com.pixelmags.android.pixelmagsapp.test.ResultsFragment;
+import com.pixelmags.android.storage.MyIssuesDataSet;
+import com.pixelmags.android.storage.MySubscriptionsDataSet;
 import com.pixelmags.android.ui.LoginFragment;
 import com.pixelmags.android.ui.NavigationDrawerFragment;
 import com.pixelmags.android.ui.RegisterFragment;
@@ -62,7 +66,7 @@ public class MainActivity extends AppCompatActivity
         SubscriptionsFragment.OnFragmentInteractionListener {
 
     public IabHelper mHelper;
-    private ArrayList<Magazine> magazinesList = null;
+    private ArrayList<Magazine> pixelmagsMagazinesList = null;
     public ArrayList<Magazine> billingMagazinesList;
     public ArrayList<Purchase> userOwnedSKUList;
     public ArrayList<String> skuList;
@@ -151,20 +155,20 @@ public class MainActivity extends AppCompatActivity
                 {
                     /*Utilities.log("Billing setup successfully");
                     isBillingSetup = true;*/
-                    magazinesList = null; // clear the list
+                    pixelmagsMagazinesList = null; // clear the list
 
                     AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
-                    magazinesList = mDbHelper.getAllIssues(mDbHelper.getReadableDatabase());
+                    pixelmagsMagazinesList = mDbHelper.getAllIssues(mDbHelper.getReadableDatabase());
                     mDbHelper.close();
 
                     skuList = new ArrayList<String>();
 
-                    if (magazinesList != null)
+                    if (pixelmagsMagazinesList != null)
                     {
 
-                        for (int i = 0; i < magazinesList.size(); i++)
+                        for (int i = 0; i < pixelmagsMagazinesList.size(); i++)
                         {
-                            skuList.add(magazinesList.get(i).android_store_sku);
+                            skuList.add(pixelmagsMagazinesList.get(i).android_store_sku);
 
                         }
                         skuList.add("com.pixelmags.androidbranded.test1");//This to confirm billing sku
@@ -185,37 +189,59 @@ public class MainActivity extends AppCompatActivity
                 // handle error
                 return;
             }
+            if(UserPrefs.getUserLoggedIn())
+            {
+                MyIssuesDataSet mDbReader = new MyIssuesDataSet(BaseApp.getContext());
+                ArrayList<MyIssue> myIssueArray = mDbReader.getMyIssues(mDbReader.getReadableDatabase());
+                mDbReader.close();
+
+                for(int i=0; i< myIssueArray.size();i++)
+                {
+                    MyIssue issue = myIssueArray.get(i);
+                }
+
+                //To Do
+                MySubscriptionsDataSet mDbSubReader = new MySubscriptionsDataSet(BaseApp.getContext());
+                ArrayList<MySubscription> mySubsArray = mDbSubReader.getMySubscriptions(mDbSubReader.getReadableDatabase());
+                mDbSubReader.close();
+
+                for(int i=0; i< mySubsArray.size();i++)
+                {
+                    MySubscription sub = mySubsArray.get(i);
+                }
+
+            }
 
             billingMagazinesList = new ArrayList<Magazine>();
 
 
-            for (int i = 0; i < magazinesList.size(); i++)
+            for (int i = 0; i < pixelmagsMagazinesList.size(); i++)
             {
-                String SKU = magazinesList.get(i).android_store_sku;
+                String SKU = pixelmagsMagazinesList.get(i).android_store_sku;
 
-                if(inventory.hasDetails("com.pixelmags.androidbranded.test1")) //yet to be changed,this is for billing test
+                if(inventory.hasDetails(SKU)) //yet to be changed,this is for billing test
                 {
-                    SkuDetails details = inventory.getSkuDetails("com.pixelmags.androidbranded.test1");
+                    SkuDetails details = inventory.getSkuDetails(SKU);
 
                      String price = details.getPrice();
-                    magazinesList.get(i).price = details.getPrice();
+                    pixelmagsMagazinesList.get(i).price = details.getPrice();
                     Magazine finalMagazine = new Magazine();
 
-                    finalMagazine.id = magazinesList.get(i).id;
+                    finalMagazine.id = pixelmagsMagazinesList.get(i).id;
                     //    magazine.magazineId = unit.getInt("ID"); // Is this different from ID field ??
-                    finalMagazine.synopsis = magazinesList.get(i).synopsis;
-                    finalMagazine.type = magazinesList.get(i).type;
-                    finalMagazine.title = magazinesList.get(i).title;
-                    finalMagazine.mediaFormat = magazinesList.get(i).mediaFormat;
-                    finalMagazine.manifest = magazinesList.get(i).manifest;
+                    finalMagazine.synopsis = pixelmagsMagazinesList.get(i).synopsis;
+                    finalMagazine.type = pixelmagsMagazinesList.get(i).type;
+                    finalMagazine.title = pixelmagsMagazinesList.get(i).title;
+                    finalMagazine.mediaFormat = pixelmagsMagazinesList.get(i).mediaFormat;
+                    finalMagazine.manifest = pixelmagsMagazinesList.get(i).manifest;
                     // magazine.lastModified = unit.getString("lastModified"); // how to get date?
-                    finalMagazine.android_store_sku = magazinesList.get(i).android_store_sku;
-                    finalMagazine.price = magazinesList.get(i).price;
-                    finalMagazine.thumbnailURL = magazinesList.get(i).thumbnailURL;
-                    finalMagazine.ageRestriction = magazinesList.get(i).ageRestriction;
-                    finalMagazine.removeFromSale = magazinesList.get(i).removeFromSale;
-                    finalMagazine.isPublished = magazinesList.get(i).isPublished;
-                    finalMagazine.exclude_from_subscription = magazinesList.get(i).exclude_from_subscription;
+                    finalMagazine.android_store_sku = pixelmagsMagazinesList.get(i).android_store_sku;
+                    finalMagazine.price = pixelmagsMagazinesList.get(i).price;
+                    finalMagazine.thumbnailURL = pixelmagsMagazinesList.get(i).thumbnailURL;
+                    finalMagazine.ageRestriction = pixelmagsMagazinesList.get(i).ageRestriction;
+                    finalMagazine.removeFromSale = pixelmagsMagazinesList.get(i).removeFromSale;
+                    finalMagazine.isPublished = pixelmagsMagazinesList.get(i).isPublished;
+                    finalMagazine.exclude_from_subscription = pixelmagsMagazinesList.get(i).exclude_from_subscription;
 
                     billingMagazinesList.add(finalMagazine);
                 }
@@ -263,7 +289,6 @@ public class MainActivity extends AppCompatActivity
             }
         }
     };
-
 
     @Override
     public void onNavigationDrawerItemSelected(int position)

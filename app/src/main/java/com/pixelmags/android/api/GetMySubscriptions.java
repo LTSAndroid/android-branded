@@ -81,11 +81,7 @@ public class GetMySubscriptions extends WebRequest {
             MySubscription sub = mySubsArray.get(i);
             System.out.println(" MySubscription CREDITS ::" + sub.creditsAvailable);
         }
-
-
         // Save the MySubscription Objects into the SQlite DB
-
-
 
     }
 

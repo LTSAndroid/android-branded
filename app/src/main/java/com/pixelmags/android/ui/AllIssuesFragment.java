@@ -1,12 +1,15 @@
 package com.pixelmags.android.ui;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +21,11 @@ import android.widget.TextView;
 
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.datamodels.Magazine;
+import com.pixelmags.android.datamodels.Page;
 import com.pixelmags.android.pixelmagsapp.MainActivity;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.storage.AllIssuesDataSet;
+import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.ui.uicomponents.MultiStateButton;
 import com.pixelmags.android.util.BaseApp;
 
@@ -78,9 +83,38 @@ public class AllIssuesFragment extends Fragment {
 
     public void gridPriceButtonClicked(int position)
     {
-        //Launch Can Purchase
-        MainActivity myAct = (MainActivity) getActivity();
-        myAct.canPurchaseLauncher(magazinesList.get(position).android_store_sku,magazinesList.get(position).id);
+        //Launch Can Purchase, if user loggedin
+        if(UserPrefs.getUserLoggedIn())
+        {
+            MainActivity myAct = (MainActivity) getActivity();
+            myAct.canPurchaseLauncher(magazinesList.get(position).android_store_sku,magazinesList.get(position).id);
+        }
+        else
+        {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+            alertDialogBuilder.setTitle(getString(R.string.purchase_initiation_fail_title));
+
+            // set dialog message
+            alertDialogBuilder
+                    .setMessage(getString(R.string.purchase_initiation_fail_message))
+                    .setCancelable(false)
+                    .setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog,int id) {
+                            dialog.dismiss();
+
+                            Fragment fragmentLogin = new LoginFragment();
+
+                            // Insert the fragment by replacing any existing fragment
+                            FragmentManager allIssuesFragmentManager = getFragmentManager();
+                            allIssuesFragmentManager.beginTransaction()
+                                    .replace(R.id.main_fragment_container, fragmentLogin)
+                                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                                    .commit();
+                        }
+                    });
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+        }
 
         //check for download state before launch, prefer separate class as we need to reuse
         //if check passes then start the activity

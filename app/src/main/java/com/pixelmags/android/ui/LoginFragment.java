@@ -19,6 +19,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.pixelmags.android.api.GetMyIssues;
+import com.pixelmags.android.api.GetMySubscriptions;
 import com.pixelmags.android.api.ValidateUser;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.storage.UserPrefs;
@@ -53,6 +55,15 @@ public class LoginFragment extends Fragment {
 
     private ProgressDialog loginProgressDialog;
 
+    /**
+    * getMyIssues() if Login success
+    */
+    private GetMyIssuesTask mGetMyIssuesTask = null;
+
+    /**
+     * getMySubscriptions api if login is susscess
+     */
+    private GetMySubscriptionsTask mGetMySubscriptionsTask = null;
 
     /**
      * Use this factory method to create a new instance of
@@ -283,6 +294,12 @@ public class LoginFragment extends Fragment {
             apiValidateUser = new ValidateUser(mEmail, mPassword);
             apiValidateUser.init();
 
+            if(apiValidateUser.isSuccess())
+            {
+                //getMyIssues API
+                callGetMyIssuesAPI();
+            }
+            //
             return resultToDisplay;
 
         }
@@ -297,11 +314,9 @@ public class LoginFragment extends Fragment {
 
                 System.out.println("LOG IN SUCCESS");
 
-                // Do post log in Tasks
-                // TODO: (getMyIssues ?)
-
                 // Navigate to issues page
                 loadAllIssuesPage();
+
 
 
             }else{
@@ -324,6 +339,58 @@ public class LoginFragment extends Fragment {
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .commit();
 
+    }
+
+    private void callGetMyIssuesAPI()
+    {
+        mGetMyIssuesTask = new GetMyIssuesTask();
+        mGetMyIssuesTask.execute((String) null);
+    }
+
+    private void callGetMySubscriptionsAPI()
+    {
+        mGetMySubscriptionsTask = new GetMySubscriptionsTask();
+        mGetMySubscriptionsTask.execute((String) null);
+    }
+    private class GetMyIssuesTask extends AsyncTask<String, String,String> {
+
+        GetMyIssues apiGetMyIssues;
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            String resultToDisplay = "";
+
+            apiGetMyIssues = new GetMyIssues();
+            apiGetMyIssues.init();
+
+            //Irrespective of getMyissues API success we will call Getmysubscriptions as we know user is loggedIn
+            callGetMySubscriptionsAPI();
+            //
+            return resultToDisplay;
+
+        }
+        protected void onPostExecute(String result) {
+        }
+    }
+
+    private class GetMySubscriptionsTask extends AsyncTask<String, String,String> {
+
+        GetMySubscriptions apiGetMySubscriptions;
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            String resultToDisplay = "";
+
+            apiGetMySubscriptions = new GetMySubscriptions();
+            apiGetMySubscriptions.init();
+            //
+            return resultToDisplay;
+
+        }
+        protected void onPostExecute(String result) {
+        }
     }
 
 }

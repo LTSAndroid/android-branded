@@ -133,4 +133,9 @@
     <string name="do_back">Back</string>
     <string name="pick_dateofbirth">PickDate</string>
 
+    <!-- Purchase initiation failed as user is not logged in -->
+    <string name="purchase_initiation_fail_title">Warning</string>
+    <string name="purchase_initiation_fail_message">login to purchase this issue.</string>
+
+
 </resources>
