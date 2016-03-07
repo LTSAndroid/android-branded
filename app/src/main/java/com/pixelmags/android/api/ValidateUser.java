@@ -1,7 +1,6 @@
 package com.pixelmags.android.api;
 
 import com.pixelmags.android.comms.WebRequest;
-import com.pixelmags.android.json.GetSubscriptionsParser;
 import com.pixelmags.android.json.ValidateUserParser;
 import com.pixelmags.android.storage.UserPrefs;
 
