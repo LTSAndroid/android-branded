@@ -1,10 +1,14 @@
 package com.pixelmags.android.ui;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +28,7 @@ import com.pixelmags.android.download.QueueDownload;
 import com.pixelmags.android.pixelmagsapp.MainActivity;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.storage.AllIssuesDataSet;
+import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.util.BaseApp;
 
 import java.io.File;
@@ -142,9 +147,43 @@ public class IssueDetailsFragment extends Fragment {
 
                 issueDetailsPriceButton.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v) {
-                        mIssueTask = new DownloadIssueAsyncTask(Config.Magazine_Number, "120974");
-                        mIssueTask.execute((String) null);
+                    public void onClick(View v)
+                    {
+                        //Launch Can Purchase, if user loggedin
+                        if(UserPrefs.getUserLoggedIn())
+                        {
+                            MainActivity myAct = (MainActivity) getActivity();
+                            myAct.canPurchaseLauncher(issueData.android_store_sku,issueData.id);
+                        }
+                        else
+                        {
+                            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+                            alertDialogBuilder.setTitle(getString(R.string.purchase_initiation_fail_title));
+
+                            // set dialog message
+                            alertDialogBuilder
+                                    .setMessage(getString(R.string.purchase_initiation_fail_message))
+                                    .setCancelable(false)
+                                    .setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog,int id) {
+                                            dialog.dismiss();
+
+                                            Fragment fragmentLogin = new LoginFragment();
+
+                                            // Insert the fragment by replacing any existing fragment
+                                            FragmentManager allIssuesFragmentManager = getFragmentManager();
+                                            allIssuesFragmentManager.beginTransaction()
+                                                    .replace(R.id.main_fragment_container, fragmentLogin)
+                                                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                                                    .commit();
+                                        }
+                                    });
+                            AlertDialog alertDialog = alertDialogBuilder.create();
+                            alertDialog.show();
+                        }
+
+                       /* mIssueTask = new DownloadIssueAsyncTask(Config.Magazine_Number, "120974");
+                        mIssueTask.execute((String) null);*/
                     }
                 });
             }
