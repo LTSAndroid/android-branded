@@ -45,6 +45,7 @@ public class AllIssuesDataSet extends BrandedSQLiteHelper{
         public static final String COLUMN_INTERNAL_SAVED_URL = "internal_saved_url";
         public static final String COLUMN_IS_THUMBNAIL_DOWNLOADED = "is_thumbnail_downloaded";
         public static final String COLUMN_MEDIA_FORMAT = "media_format";
+        public static final String COLUMN_IS_ISSUE_OWNED="is_issue_owned";
 
         public static final String CREATE_ALL_ISSUES_TABLE = "CREATE TABLE "
                 + ALL_ISSUES_TABLE_NAME
@@ -63,6 +64,7 @@ public class AllIssuesDataSet extends BrandedSQLiteHelper{
                 + COLUMN_EXCLUDE_FROM_SUBSCRIPTION + " TEXT,"
                 + COLUMN_INTERNAL_SAVED_URL + " TEXT,"
                 + COLUMN_IS_THUMBNAIL_DOWNLOADED + " INTEGER,"
+                + COLUMN_IS_ISSUE_OWNED + " INTEGER,"
                 + COLUMN_MEDIA_FORMAT + " TEXT"
                 + ")"; ;
 
@@ -104,6 +106,7 @@ public class AllIssuesDataSet extends BrandedSQLiteHelper{
                 insertValues.put(AllIssuesEntry.COLUMN_EXCLUDE_FROM_SUBSCRIPTION, mag.exclude_from_subscription);
                 insertValues.put(AllIssuesEntry.COLUMN_INTERNAL_SAVED_URL, mag.thumbnailDownloadedInternalPath);
                 insertValues.put(AllIssuesEntry.COLUMN_IS_THUMBNAIL_DOWNLOADED, (mag.isThumbnailDownloaded) ? 1 : 0 );
+                insertValues.put(AllIssuesEntry.COLUMN_IS_ISSUE_OWNED, (mag.isIssueOwnedByUser) ? 1 : 0 );
                 insertValues.put(AllIssuesEntry.COLUMN_MEDIA_FORMAT, mag.mediaFormat);
 
                 db.insert(AllIssuesEntry.ALL_ISSUES_TABLE_NAME, null, insertValues);
@@ -144,6 +147,7 @@ public class AllIssuesDataSet extends BrandedSQLiteHelper{
                     AllIssuesEntry.COLUMN_EXCLUDE_FROM_SUBSCRIPTION,
                     AllIssuesEntry.COLUMN_INTERNAL_SAVED_URL,
                     AllIssuesEntry.COLUMN_IS_THUMBNAIL_DOWNLOADED,
+                    AllIssuesEntry.COLUMN_IS_ISSUE_OWNED,
                     AllIssuesEntry.COLUMN_MEDIA_FORMAT
             };
 
@@ -183,6 +187,7 @@ public class AllIssuesDataSet extends BrandedSQLiteHelper{
                     mag.exclude_from_subscription = queryCursor.getString(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_EXCLUDE_FROM_SUBSCRIPTION));
                     mag.thumbnailDownloadedInternalPath = queryCursor.getString(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_INTERNAL_SAVED_URL));
                     mag.isThumbnailDownloaded = (queryCursor.getInt(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_IS_THUMBNAIL_DOWNLOADED)) == 1) ? true : false;
+                    mag.isIssueOwnedByUser = (queryCursor.getInt(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_IS_ISSUE_OWNED)) == 1) ? true : false;
                     mag.mediaFormat = queryCursor.getString(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_MEDIA_FORMAT));
 
                     magazinesArray.add(mag);
@@ -226,6 +231,7 @@ public class AllIssuesDataSet extends BrandedSQLiteHelper{
                     AllIssuesEntry.COLUMN_EXCLUDE_FROM_SUBSCRIPTION,
                     AllIssuesEntry.COLUMN_INTERNAL_SAVED_URL,
                     AllIssuesEntry.COLUMN_IS_THUMBNAIL_DOWNLOADED,
+                    AllIssuesEntry.COLUMN_IS_ISSUE_OWNED,
                     AllIssuesEntry.COLUMN_MEDIA_FORMAT
             };
 
@@ -266,6 +272,7 @@ public class AllIssuesDataSet extends BrandedSQLiteHelper{
                     mMagazine.exclude_from_subscription = queryCursor.getString(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_EXCLUDE_FROM_SUBSCRIPTION));
                     mMagazine.thumbnailDownloadedInternalPath = queryCursor.getString(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_INTERNAL_SAVED_URL));
                     mMagazine.isThumbnailDownloaded = (queryCursor.getInt(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_IS_THUMBNAIL_DOWNLOADED)) == 1) ? true : false;
+                    mMagazine.isIssueOwnedByUser = (queryCursor.getInt(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_IS_ISSUE_OWNED)) == 1) ? true : false;
                     mMagazine.mediaFormat = queryCursor.getString(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_MEDIA_FORMAT));
 
                 }

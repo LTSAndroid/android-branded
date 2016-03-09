@@ -20,11 +20,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.pixelmags.android.comms.Config;
+import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
 import com.pixelmags.android.datamodels.Magazine;
+import com.pixelmags.android.datamodels.MyIssue;
 import com.pixelmags.android.datamodels.Page;
 import com.pixelmags.android.pixelmagsapp.MainActivity;
 import com.pixelmags.android.pixelmagsapp.R;
+import com.pixelmags.android.storage.AllDownloadsDataSet;
 import com.pixelmags.android.storage.AllIssuesDataSet;
+import com.pixelmags.android.storage.MyIssuesDataSet;
 import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.ui.uicomponents.MultiStateButton;
 import com.pixelmags.android.util.BaseApp;
@@ -228,6 +232,7 @@ public class AllIssuesFragment extends Fragment {
 
             }
 
+
             if(magazinesList.get(position).title != null) {
                 TextView issueTitleText = (TextView) grid.findViewById(R.id.gridTitleText);
                 issueTitleText.setText(magazinesList.get(position).title);
@@ -235,7 +240,10 @@ public class AllIssuesFragment extends Fragment {
 
 
             MultiStateButton issuePriceButton = (MultiStateButton) grid.findViewById(R.id.gridMultiStateButton);
-            issuePriceButton.setAsPurchase(magazinesList.get(position).price);
+
+            // check if price
+            issuePriceButton.setButtonState(magazinesList.get(position));
+    //            issuePriceButton.setAsPurchase(magazinesList.get(position).price);
 
             issuePriceButton.setTag(position); // save the gridview index
             issuePriceButton.setOnClickListener(new View.OnClickListener() {
@@ -323,6 +331,21 @@ public class AllIssuesFragment extends Fragment {
         magazinesList = mDbHelper.getAllIssues(mDbHelper.getReadableDatabase());
         mDbHelper.close();
 
+        AllDownloadsDataSet mDbReader = new AllDownloadsDataSet(BaseApp.getContext());
+        ArrayList<AllDownloadsIssueTracker> allDownloadsTracker = mDbReader.getDownloadIssueList(mDbReader.getReadableDatabase(), Config.Magazine_Number);
+        mDbReader.close();
+
+
+        // retrieve any user issues
+        ArrayList<MyIssue> myIssueArray = null;
+        if(UserPrefs.getUserLoggedIn())
+        {
+            MyIssuesDataSet myIssuesDbReader = new MyIssuesDataSet(BaseApp.getContext());
+            myIssueArray = myIssuesDbReader.getMyIssues(myIssuesDbReader.getReadableDatabase());
+            myIssuesDbReader.close();
+        }
+
+
         if(magazinesList != null){
 
             for(int i=0; i< magazinesList.size();i++) {
@@ -332,6 +355,30 @@ public class AllIssuesFragment extends Fragment {
                {
                    magazinesList.get(i).thumbnailBitmap = loadImageFromStorage(magazinesList.get(i).thumbnailDownloadedInternalPath);
                }
+
+                // update the issue owned field
+                // check if the issue is already owned by user
+                if(myIssueArray != null){
+                    for(int issueCount=0; issueCount< myIssueArray.size(); issueCount++)
+                    {
+                        MyIssue issue = myIssueArray.get(issueCount);
+                        if(issue.issueID == magazinesList.get(i).id){
+                            magazinesList.get(i).isIssueOwnedByUser = true;
+                        }
+                    }
+                }
+
+
+
+                if(allDownloadsTracker !=null){
+                    for (int downloadCount=0; downloadCount < allDownloadsTracker.size() ; downloadCount++){
+
+                        AllDownloadsIssueTracker singleDownload = allDownloadsTracker.get(downloadCount);
+                        if(singleDownload.issueID == magazinesList.get(i).id){
+                            magazinesList.get(i).currentDownloadStatus = singleDownload.downloadStatus;
+                        }
+                    }
+                }
 
 
             /*ArrayList<String> skuList = new ArrayList<String> ();
@@ -372,43 +419,6 @@ public class AllIssuesFragment extends Fragment {
 
     }
 
-
-
-    /*private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-
-        int index;
-        //Bitmap bmImage;
-
-        public DownloadImageTask(int i) {
-            this.index = i;
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-
-            String urldisplay = magazinesList.get(index).thumbnailURL;
-            Bitmap imageBitmap = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                magazinesList.get(index).thumbnailBitmap = BitmapFactory.decodeStream(in);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return magazinesList.get(index).thumbnailBitmap;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-
-            if(result!=null){
-                System.out.println("Image downladed for Issue :: " + magazinesList.get(index).id);
-
-                displayMagazineInGrid(index);
-            }
-           // bmImage.setImageBitmap(result);
-        }
-    }
-*/
-
     public void displayMagazineInGrid(int index){
 
         // update the Grid View Adapter here
@@ -419,5 +429,5 @@ public class AllIssuesFragment extends Fragment {
 
     }
 
- // end of class
+
 }

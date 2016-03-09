@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.Button;
 
+import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.util.BaseApp;
 
@@ -19,7 +20,7 @@ public class MultiStateButton extends Button {
 
     public void setAsPurchase(String purchaseString){
 
-        setBackgroundResource(R.drawable.multibuttonviewshape);
+        setBackgroundResource(R.drawable.multibuttonbaseshape);
         setText(purchaseString);
 
     }
@@ -32,6 +33,20 @@ public class MultiStateButton extends Button {
 
         setBackgroundResource(R.drawable.multibuttonviewshape);
         setText(BaseApp.getContext().getString(R.string.view));
+
+    }
+
+    public void setButtonState(Magazine mMagazine){
+
+        if(mMagazine.isIssueOwnedByUser){
+
+            setAsView();
+
+        }else{
+
+            setAsPurchase(mMagazine.price);
+
+        }
 
     }
 

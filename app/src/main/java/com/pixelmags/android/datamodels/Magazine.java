@@ -3,6 +3,8 @@ package com.pixelmags.android.datamodels;
 import android.graphics.Bitmap;
 
 
+import com.pixelmags.android.storage.AllDownloadsDataSet;
+
 import java.lang.reflect.Array;
 import java.util.Date;
 
@@ -41,7 +43,7 @@ public class Magazine
     public String mediaFormat;
     public String thumbnailURL;
     public Boolean inAnytime;
-    public Boolean issueOwned;
+    public boolean isIssueOwnedByUser = false;
 //    public String issueId;
     public String status = Magazine.STATUS_PRICE;
 //    public Object data;
@@ -50,6 +52,8 @@ public class Magazine
     public Object sortedThumbs;
     public Array renditions;
 
+    // runtime variable to store download status
+    public int currentDownloadStatus = AllDownloadsDataSet.DOWNLOAD_STATUS_NONE;
 
     public Bitmap thumbnailBitmap; // to store temporarily once downloaded
     public String thumbnailDownloadedInternalPath;

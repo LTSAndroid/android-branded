@@ -189,20 +189,19 @@ public class MainActivity extends AppCompatActivity
                 // handle error
                 return;
             }
+
+            ArrayList<MyIssue> myIssueArray = null;
+            ArrayList<MySubscription> mySubsArray = null;
+
             if(UserPrefs.getUserLoggedIn())
             {
                 MyIssuesDataSet mDbReader = new MyIssuesDataSet(BaseApp.getContext());
-                ArrayList<MyIssue> myIssueArray = mDbReader.getMyIssues(mDbReader.getReadableDatabase());
+                myIssueArray = mDbReader.getMyIssues(mDbReader.getReadableDatabase());
                 mDbReader.close();
-
-                for(int i=0; i< myIssueArray.size();i++)
-                {
-                    MyIssue issue = myIssueArray.get(i);
-                }
 
                 //To Do
                 MySubscriptionsDataSet mDbSubReader = new MySubscriptionsDataSet(BaseApp.getContext());
-                ArrayList<MySubscription> mySubsArray = mDbSubReader.getMySubscriptions(mDbSubReader.getReadableDatabase());
+                mySubsArray = mDbSubReader.getMySubscriptions(mDbSubReader.getReadableDatabase());
                 mDbSubReader.close();
 
                 for(int i=0; i< mySubsArray.size();i++)
@@ -223,11 +222,25 @@ public class MainActivity extends AppCompatActivity
                 {
                     SkuDetails details = inventory.getSkuDetails(SKU);
 
-                     String price = details.getPrice();
                     pixelmagsMagazinesList.get(i).price = details.getPrice();
                     Magazine finalMagazine = new Magazine();
 
                     finalMagazine.id = pixelmagsMagazinesList.get(i).id;
+                    finalMagazine.isIssueOwnedByUser = false;
+
+                    // check if the issue is already owned by user
+                    if(myIssueArray != null){
+
+                        for(int issueCount=0; issueCount< myIssueArray.size(); issueCount++)
+                        {
+                            MyIssue issue = myIssueArray.get(issueCount);
+
+                            if(issue.issueID == finalMagazine.id){
+                                finalMagazine.isIssueOwnedByUser = true;
+                            }
+                        }
+                    }
+
                     //    magazine.magazineId = unit.getInt("ID"); // Is this different from ID field ??
                     finalMagazine.synopsis = pixelmagsMagazinesList.get(i).synopsis;
                     finalMagazine.type = pixelmagsMagazinesList.get(i).type;
@@ -247,10 +260,10 @@ public class MainActivity extends AppCompatActivity
                 }
             }
 
-            // Save the Subscription Objects into the SQlite DB
-            /*AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
+            // Save the Magazine Objects into the SQlite DB
+            AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
             mDbHelper.insert_all_issues_data(mDbHelper.getWritableDatabase(), billingMagazinesList);
-            mDbHelper.close();*/
+            mDbHelper.close();
 
 
             // update the UI

@@ -26,12 +26,14 @@ import java.util.ArrayList;
 
 public class AllDownloadsDataSet extends BrandedSQLiteHelper {
 
+
     public static int DOWNLOAD_STATUS_FAILED = -1;
     public static int DOWNLOAD_STATUS_COMPLETED = 0;
-    public static int DOWNLOAD_STATUS_PAUSED = 1;
-    public static int DOWNLOAD_STATUS_IN_PROGRESS = 2;
-    public static int DOWNLOAD_STATUS_STARTED = 3;
+    public static int DOWNLOAD_STATUS_IN_PROGRESS = 1;
+    public static int DOWNLOAD_STATUS_STARTED = 2;
+    public static int DOWNLOAD_STATUS_PAUSED = 3;
     public static int DOWNLOAD_STATUS_QUEUED = 4;
+    public static int DOWNLOAD_STATUS_NONE = 5; // when no download as yet has been requested
 
 
     public static String getDownloadStatusText(int status){
