@@ -8,11 +8,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-
 import com.pixelmags.android.datamodels.Subscription;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.storage.SubscriptionsDataSet;
+import com.pixelmags.android.ui.uicomponents.MultiStateButton;
 import com.pixelmags.android.util.BaseApp;
 
 import java.util.ArrayList;
@@ -85,9 +84,8 @@ public class SubscriptionsFragment extends Fragment {
         mGetSubscriptions.execute((String) null);
         //mTextView = (TextView) rootView.findViewById(R.id.subscriptions_text);
 
-      Button button1 = (Button) rootView.findViewById(R.id.subscriptions_price_1);
-
-        button1.setOnClickListener(new View.OnClickListener() {
+        MultiStateButton subscriptionButton1 = (MultiStateButton) rootView.findViewById(R.id.gridMultiStateSubscriptionButton1);
+        subscriptionButton1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -95,9 +93,8 @@ public class SubscriptionsFragment extends Fragment {
             }
         });
 
-      Button button2 = (Button) rootView.findViewById(R.id.subscriptions_price_2);
-
-        button2.setOnClickListener(new View.OnClickListener() {
+        MultiStateButton subscriptionButton2 = (MultiStateButton) rootView.findViewById(R.id.gridMultiStateSubscriptionButton2);
+        subscriptionButton2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -105,9 +102,8 @@ public class SubscriptionsFragment extends Fragment {
             }
         });
 
-        Button button3 = (Button) rootView.findViewById(R.id.subscriptions_price_3);
-
-        button3.setOnClickListener(new View.OnClickListener() {
+        MultiStateButton subscriptionButton3 = (MultiStateButton) rootView.findViewById(R.id.gridMultiStateSubscriptionButton3);
+        subscriptionButton3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -172,8 +168,6 @@ public class SubscriptionsFragment extends Fragment {
             // TODO: attempt authentication against a network service.
 
             try{
-
-
                 // No longer api get subs here - done on launch
                 //GetSubscriptions apiGetSubs = new GetSubscriptions();
                 //apiGetSubs.init();
