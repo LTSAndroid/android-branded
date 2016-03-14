@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.InputType;
+import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,10 +42,13 @@ public class UserAccountFragment extends Fragment {
         dataUserId.setText(UserPrefs.getUserPixelmagsId());
 
         dataEmail = (TextView) rootView.findViewById(R.id.dataUserEmail);
+        dataEmail.setMovementMethod(new ScrollingMovementMethod());
         dataEmail.setText(UserPrefs.getUserEmail());
 
         dataFullName = (TextView) rootView.findViewById(R.id.dataUserFullName);
         String fullName = UserPrefs.getUserFirstName() +" "+UserPrefs.getUserLastName();
+        dataFullName.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+        dataFullName.setMovementMethod(new ScrollingMovementMethod());
         dataFullName.setText(fullName);
 
 
@@ -82,4 +87,3 @@ public class UserAccountFragment extends Fragment {
 
 
 }
-
