@@ -41,7 +41,6 @@ public class MultiStateButton extends Button {
         if(mMagazine.isIssueOwnedByUser){
 
             setAsView();
-
         }else{
 
             setAsPurchase(mMagazine.price);

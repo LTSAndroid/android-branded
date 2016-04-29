@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +45,7 @@ public class AllIssuesFragment extends Fragment {
     private ArrayList<Magazine> magazinesList = null;
     private GetAllIssuesTask mGetAllIssuesTask = null;
     public CustomGridAdapter gridAdapter;
+    private String TAG = "AllIssuesFragment";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -91,6 +93,10 @@ public class AllIssuesFragment extends Fragment {
         if(UserPrefs.getUserLoggedIn())
         {
             MainActivity myAct = (MainActivity) getActivity();
+
+            Log.d(TAG,"Android store Sku is : " +magazinesList.get(position).android_store_sku);
+            Log.d(TAG,"Magazine List Id is : " +magazinesList.get(position).id);
+
             myAct.canPurchaseLauncher(magazinesList.get(position).android_store_sku,magazinesList.get(position).id);
         }
         else
@@ -331,9 +337,27 @@ public class AllIssuesFragment extends Fragment {
         magazinesList = mDbHelper.getAllIssues(mDbHelper.getReadableDatabase());
         mDbHelper.close();
 
+        for(int i=0; i<magazinesList.size(); i++){
+            Log.d(TAG,"Magazine id is : " +magazinesList.get(i).id);
+            Log.d(TAG,"Magazine Status is : " +magazinesList.get(i).status);
+            Log.d(TAG,"Magazine price is : " +magazinesList.get(i).price);
+            Log.d(TAG,"Magazine Synopsis is : " +magazinesList.get(i).synopsis);
+            Log.d(TAG,"Magazine thumbnailURL is : " +magazinesList.get(i).thumbnailURL);
+            Log.d(TAG,"Magazine thumbnailBitmap is : " +magazinesList.get(i).thumbnailBitmap);
+            Log.d(TAG,"Magazine Type is : " +magazinesList.get(i).type);
+            Log.d(TAG,"Magazine currentDownloadStatus is : " +magazinesList.get(i).currentDownloadStatus);
+            Log.d(TAG,"Magazine issueDate is : " +magazinesList.get(i).issueDate);
+            Log.d(TAG,"Magazine ageRestriction is : " +magazinesList.get(i).ageRestriction);
+            Log.d(TAG,"Magazine state is : " +magazinesList.get(i).state);
+        }
+
+
+
         AllDownloadsDataSet mDbReader = new AllDownloadsDataSet(BaseApp.getContext());
         ArrayList<AllDownloadsIssueTracker> allDownloadsTracker = mDbReader.getDownloadIssueList(mDbReader.getReadableDatabase(), Config.Magazine_Number);
         mDbReader.close();
+
+        Log.d(TAG, "allDownloadsTracker List is : " + allDownloadsTracker);
 
 
         // retrieve any user issues
@@ -345,23 +369,30 @@ public class AllIssuesFragment extends Fragment {
             myIssuesDbReader.close();
         }
 
+        Log.d(TAG, "Magazine Size is : " + magazinesList.size());
 
+        Log.d(TAG,"Magazine List is : " +magazinesList);
         if(magazinesList != null){
 
             for(int i=0; i< magazinesList.size();i++) {
                // DownloadImageTask mDownloadTask = new DownloadImageTask(i);
                // mDownloadTask.execute((String) null);
+                Log.d(TAG,"Magazine thumbnail Download : " + magazinesList.get(i).isThumbnailDownloaded);
                if( magazinesList.get(i).isThumbnailDownloaded)
                {
+                   Log.d(TAG,"Magazine thumbnail Download Internal Path is : " + magazinesList.get(i).thumbnailDownloadedInternalPath);
                    magazinesList.get(i).thumbnailBitmap = loadImageFromStorage(magazinesList.get(i).thumbnailDownloadedInternalPath);
                }
 
                 // update the issue owned field
                 // check if the issue is already owned by user
                 if(myIssueArray != null){
+                    Log.d(TAG,"My Issue size is : "+myIssueArray.size());
                     for(int issueCount=0; issueCount< myIssueArray.size(); issueCount++)
                     {
                         MyIssue issue = myIssueArray.get(issueCount);
+                        Log.d(TAG,"My Issue is : "+issue.issueID);
+                        Log.d(TAG,"Magazine List is : "+magazinesList.get(i).id);
                         if(issue.issueID == magazinesList.get(i).id){
                             magazinesList.get(i).isIssueOwnedByUser = true;
                         }
@@ -374,8 +405,11 @@ public class AllIssuesFragment extends Fragment {
                     for (int downloadCount=0; downloadCount < allDownloadsTracker.size() ; downloadCount++){
 
                         AllDownloadsIssueTracker singleDownload = allDownloadsTracker.get(downloadCount);
+                        Log.d(TAG," Single Download is : "+singleDownload);
                         if(singleDownload.issueID == magazinesList.get(i).id){
                             magazinesList.get(i).currentDownloadStatus = singleDownload.downloadStatus;
+                            Log.d(TAG," singleDownload.downloadStatus is : "+singleDownload.downloadStatus);
+                            Log.d(TAG," magazinesList.get(i).currentDownloadStatus is : "+magazinesList.get(i).currentDownloadStatus);
                         }
                     }
                 }

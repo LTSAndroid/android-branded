@@ -66,7 +66,7 @@ public class AllIssuesDataSet extends BrandedSQLiteHelper{
                 + COLUMN_IS_THUMBNAIL_DOWNLOADED + " INTEGER,"
                 + COLUMN_IS_ISSUE_OWNED + " INTEGER,"
                 + COLUMN_MEDIA_FORMAT + " TEXT"
-                + ")"; ;
+                + ")";
 
         public static final String DROP_ALL_ISSUES_TABLE = "DROP TABLE IF EXISTS " + ALL_ISSUES_TABLE_NAME;
 

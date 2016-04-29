@@ -1,5 +1,7 @@
 package com.pixelmags.android.comms;
 
+import android.util.Log;
+
 import com.pixelmags.android.storage.UserPrefs;
 
 import org.apache.http.HttpResponse;
@@ -30,6 +32,7 @@ public class WebRequest {
 
     private static final int NET_READ_TIMEOUT_MILLIS = 30000;
     private static final int NET_CONNECT_TIMEOUT_MILLIS = 30000;
+    private String TAG = "WebRequest";
 
     private String API_URL;
 
@@ -71,6 +74,9 @@ public class WebRequest {
     public String doPostRequest(){
 
         HttpClient httpclient = new DefaultHttpClient();
+
+        Log.d(TAG,"API URL is : " +API_URL);
+
         HttpPost httppost = new HttpPost(API_URL);
 
         try {
@@ -89,6 +95,8 @@ public class WebRequest {
 
             responseCode = response.getStatusLine().getStatusCode();
 
+            Log.d(TAG," Response Code is : " +responseCode);
+
             if(responseCode == 200) {
                 InputStream is = response.getEntity().getContent();
                 BufferedInputStream bis = new BufferedInputStream(is);
@@ -100,6 +108,8 @@ public class WebRequest {
 
             /* Convert the Bytes read to a String. */
                 resultData = new String(baf.toByteArray());
+
+                Log.d(TAG,"Result Data is : " +resultData);
 
 
                 is.close();

@@ -60,7 +60,7 @@ public class CanPurchase extends WebRequest
         baseApiNameValuePairs.add(new BasicNameValuePair("device_id", UserPrefs.getDeviceID()));
         baseApiNameValuePairs.add(new BasicNameValuePair("magazine_id", Config.Magazine_Number));
         baseApiNameValuePairs.add(new BasicNameValuePair("issue_id", issueId));
-        baseApiNameValuePairs.add(new BasicNameValuePair("payment_gateway", "google"));
+        baseApiNameValuePairs.add(new BasicNameValuePair("payment_gateway", "amazon"));  // Change it to google once it going to live
         baseApiNameValuePairs.add(new BasicNameValuePair("app_bundle_id", Config.Bundle_ID));
         baseApiNameValuePairs.add(new BasicNameValuePair("api_mode", Config.api_mode));
         baseApiNameValuePairs.add(new BasicNameValuePair("api_version", Config.api_version));

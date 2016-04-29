@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,18 +37,27 @@ public class LaunchActivity extends Activity {
         mPreLaunchTask.execute((String) null);
 
         // setting a sleep of 3 sec so that the splash screen is shown for at least that time.
-        Thread timerThread = new Thread(){
-            public void run(){
-                try{
-                    sleep(3000);
-                }catch(InterruptedException e){
-                    e.printStackTrace();
-                }finally{
+//        Thread timerThread = new Thread(){
+//            public void run(){
+//                try{
+//                    sleep(3000);
+//                }catch(InterruptedException e){
+//                    e.printStackTrace();
+//                }finally{
+//
+//                }
+//            }
+//        };
+//        timerThread.start();
 
-                }
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                launchMainActivity();
             }
-        };
-        timerThread.start();
+        },5000);
 
 
     }
@@ -156,7 +166,7 @@ public class LaunchActivity extends Activity {
         }
         protected void onPostExecute(String result) {
 
-            launchMainActivity();
+//            launchMainActivity();
 
         }
 
