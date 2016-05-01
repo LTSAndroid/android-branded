@@ -4,10 +4,14 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.pixelmags.android.datamodels.Issue;
+import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.datamodels.Page;
 import com.pixelmags.android.datamodels.PageTypeImage;
+import com.pixelmags.android.ui.AllIssuesFragment;
+import com.pixelmags.android.ui.uicomponents.MultiStateButton;
 
 import java.util.ArrayList;
 
@@ -15,6 +19,8 @@ import java.util.ArrayList;
  * Created by austincoutinho on 06/11/15.
  */
 public class IssueDataSet extends BrandedSQLiteHelper{
+
+    private String TAG = "IssueDataSet";
 
     public IssueDataSet(Context context) {
         super(context);
@@ -76,7 +82,7 @@ public class IssueDataSet extends BrandedSQLiteHelper{
                 + COLUMN_LAST_MODIFIED + " TEXT,"
                 + COLUMN_MEDIA_FORMAT + " TEXT,"
                 + COLUMN_PAGE_DATA_TABLE + " TEXT"
-                + ")"; ;
+                + ")";
 
         public static final String DROP_ISSUE_TABLE = "DROP TABLE IF EXISTS " + ISSUE_TABLE_NAME;
 
@@ -107,7 +113,7 @@ public class IssueDataSet extends BrandedSQLiteHelper{
                     + COLUMN_PAGE_NO + " INTEGER PRIMARY KEY ,"      // There should only be one record of an Issue
                     + COLUMN_PAGE_ID + " TEXT,"
                     + COLUMN_PAGE_JSON + " TEXT"
-                    + ")"; ;
+                    + ")";
 
             return createTable;
 
@@ -193,6 +199,7 @@ public class IssueDataSet extends BrandedSQLiteHelper{
 
             for(int i=0; i< issue.pages.size();i++) {
                 Page page = issue.pages.get(i);
+                Log.d(TAG,"Page is : " +issue.pages.get(i));
 
                 ContentValues contentValues = new ContentValues();
                 contentValues.put(PageDataEntry.COLUMN_PAGE_NO, page.getPageNo());
@@ -200,7 +207,25 @@ public class IssueDataSet extends BrandedSQLiteHelper{
                 contentValues.put(PageDataEntry.COLUMN_PAGE_JSON, page.getPageJSONData());
 
                 db.insert(PageDataEntry.getPageDataTableName(issue.issueID), null, contentValues);
+
+                // Check whether first page is downloaded and saved in db
+
+                Log.d(TAG,"Number of pages size is : " +issue.pages.size());
+
+                if(i==1){
+                    Log.d(TAG,"After first page is downloaded");
+                    AllIssuesFragment allIssuesFragment = new AllIssuesFragment();
+                    allIssuesFragment.updateButtonState();
+                }else if(i == issue.pages.size()){
+
+                    Log.d(TAG,"After completely downloaded");
+                    AllIssuesFragment allIssuesFragment = new AllIssuesFragment();
+                    allIssuesFragment.updateButtonState();
+                }
+
             }
+
+
 
         }catch(Exception e){
             e.printStackTrace();

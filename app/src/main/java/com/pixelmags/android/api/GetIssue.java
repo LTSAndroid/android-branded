@@ -1,5 +1,7 @@
 package com.pixelmags.android.api;
 
+import android.util.Log;
+
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.comms.WebRequest;
 import com.pixelmags.android.datamodels.Issue;
@@ -7,6 +9,7 @@ import com.pixelmags.android.datamodels.Page;
 import com.pixelmags.android.datamodels.PageTypeImage;
 import com.pixelmags.android.json.GetIssueParser;
 import com.pixelmags.android.json.GetMyIssuesParser;
+import com.pixelmags.android.storage.AllDownloadsDataSet;
 import com.pixelmags.android.storage.IssueDataSet;
 import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.util.BaseApp;
@@ -24,6 +27,7 @@ public class GetIssue extends WebRequest
 {
     private static final String API_NAME="getIssue";
     private String mIssueID;
+    private String TAG = "GetIssue";
 
     GetIssueParser getIssueParser;
 
@@ -77,9 +81,17 @@ public class GetIssue extends WebRequest
 
         // Save the Subscription Objects into the SQlite DB
         IssueDataSet mDbHelper = new IssueDataSet(BaseApp.getContext());
+
+        Log.d(TAG, "Get issue parser of Issue is :" + getIssueParser.mIssue.toString());
+
         mDbHelper.insertIssueData(mDbHelper.getWritableDatabase(), getIssueParser.mIssue);
         mDbHelper.close();
 
+        // Saving Object into All Download Data Set
+
+        AllDownloadsDataSet allDownloadsDataSet = new AllDownloadsDataSet(BaseApp.getContext());
+        allDownloadsDataSet.issueDownloadPreChecksAndDownload(allDownloadsDataSet.getWritableDatabase(), getIssueParser.mIssue);
+        allDownloadsDataSet.close();
     }
 
 

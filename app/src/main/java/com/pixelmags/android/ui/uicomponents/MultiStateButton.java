@@ -6,6 +6,7 @@ import android.widget.Button;
 
 import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.pixelmagsapp.R;
+import com.pixelmags.android.storage.AllDownloadsDataSet;
 import com.pixelmags.android.util.BaseApp;
 
 /**
@@ -25,9 +26,20 @@ public class MultiStateButton extends Button {
 
     }
 
-    public void updateDownloadButtonState(int state){
+    public void setAsDownload(String download){
+
+        setBackgroundResource(R.drawable.multibuttonbaseshape);
+        setText(download);
 
     }
+
+    public void updateDownloadButtonState(int state){
+
+        setBackgroundResource(R.drawable.multibuttonbaseshape);
+
+
+    }
+
 
     public void setAsView(){
 
@@ -38,13 +50,13 @@ public class MultiStateButton extends Button {
 
     public void setButtonState(Magazine mMagazine){
 
-        if(mMagazine.isIssueOwnedByUser){
-
+        if(mMagazine.isIssueOwnedByUser && mMagazine.currentDownloadStatus == AllDownloadsDataSet.DOWNLOAD_STATUS_COMPLETED
+                && mMagazine.currentDownloadStatus == AllDownloadsDataSet.DOWNLOAD_STATUS_IN_PROGRESS){
             setAsView();
+        }else if(mMagazine.isIssueOwnedByUser && mMagazine.currentDownloadStatus == AllDownloadsDataSet.DOWNLOAD_STATUS_NONE){
+            setAsDownload(mMagazine.STATUS_DOWNLOAD);
         }else{
-
             setAsPurchase(mMagazine.price);
-
         }
 
     }

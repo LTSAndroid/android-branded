@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,6 +18,7 @@ import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.pixelmags.android.comms.Config;
@@ -36,6 +38,7 @@ public class AllDownloadsFragment extends Fragment {
     private ArrayList<AllDownloadsIssueTracker> allDownloadsIssuesListTracker = null;
     public CustomAllDownloadsGridAdapter gridDownloadAdapter;
     private GetAllDownloadedIssuesTask mGetAllDownloadedIssuesTask;
+    private String TAG = "AllDownloadsFragment";
 
 
     @Override
@@ -85,6 +88,9 @@ public class AllDownloadsFragment extends Fragment {
     public class CustomAllDownloadsGridAdapter extends BaseAdapter {
 
         private Context mContext;
+        private ProgressBar progressBar;
+        private static final int PROGRESS = 0*1;
+        private int mProgressStatus = 0;
 
         public CustomAllDownloadsGridAdapter(Context c) {
             mContext = c;
@@ -127,6 +133,10 @@ public class AllDownloadsFragment extends Fragment {
 
             // Set the magazine image
 
+            Log.d(TAG," ALL Download Issue List Tracker : "+allDownloadsIssuesListTracker.get(position).thumbnailBitmap);
+            Log.d(TAG," ALL Download Issue List Tracker issue Title : "+allDownloadsIssuesListTracker.get(position).issueTitle);
+            Log.d(TAG," ALL Download Issue List Tracker download : "+allDownloadsIssuesListTracker.get(position).downloadStatus);
+
                 if(allDownloadsIssuesListTracker.get(position).thumbnailBitmap != null){
 
                     ImageView imageView = (ImageView) grid.findViewById(R.id.gridDownloadedIssueImage);
@@ -150,9 +160,37 @@ public class AllDownloadsFragment extends Fragment {
                 issueTitleText.setText(allDownloadsIssuesListTracker.get(position).issueTitle);
             }
 
+            progressBar = (ProgressBar) grid.findViewById(R.id.progressBar);
+
 
             Button gridDownloadStatusButton = (Button) grid.findViewById(R.id.gridDownloadStatusButton);
                 int status = allDownloadsIssuesListTracker.get(position).downloadStatus;
+
+            // Change the way the progress bar is handled . Status of button should not be completed when showing progress bar
+
+            if(status == 0){
+                final int totalProgressTime = 100;
+                final Thread t = new Thread() {
+                    @Override
+                    public void run() {
+                        int jumpTime = 0;
+
+                        while(jumpTime < totalProgressTime) {
+                            try {
+                                sleep(200);
+                                jumpTime += 5;
+                                progressBar.setProgress(jumpTime);
+                            }
+                            catch (InterruptedException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                };
+                t.start();
+            }
+
                 String downloadStatusText = AllDownloadsDataSet.getDownloadStatusText(status);
                 gridDownloadStatusButton.setText(downloadStatusText);
 

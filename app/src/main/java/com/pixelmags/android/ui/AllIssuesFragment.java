@@ -20,6 +20,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.pixelmags.android.api.GetIssue;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
 import com.pixelmags.android.datamodels.Magazine;
@@ -46,6 +47,7 @@ public class AllIssuesFragment extends Fragment {
     private GetAllIssuesTask mGetAllIssuesTask = null;
     public CustomGridAdapter gridAdapter;
     private String TAG = "AllIssuesFragment";
+    private MultiStateButton issuePriceButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,6 +87,12 @@ public class AllIssuesFragment extends Fragment {
 
    }
 
+    public void updateButtonState(){
+
+        gridAdapter = new CustomGridAdapter(getActivity());
+        gridAdapter.notifyDataSetChanged();
+    }
+
 
 
     public void gridPriceButtonClicked(int position)
@@ -92,6 +100,7 @@ public class AllIssuesFragment extends Fragment {
         //Launch Can Purchase, if user loggedin
         if(UserPrefs.getUserLoggedIn())
         {
+
             MainActivity myAct = (MainActivity) getActivity();
 
             Log.d(TAG,"Android store Sku is : " +magazinesList.get(position).android_store_sku);
@@ -145,6 +154,18 @@ public class AllIssuesFragment extends Fragment {
 
     }
 
+    public void downloadButtonClicked(int position){
+        if(UserPrefs.getUserLoggedIn()){
+
+            GetIssue getIssue = new GetIssue();
+            getIssue.init(String.valueOf(magazinesList.get(position).id));
+            magazinesList.get(position).status = Magazine.STATUS_VIEW;
+            gridAdapter.notifyDataSetChanged();
+
+        }
+    }
+
+
     public void gridIssueImageClicked(int position){
 
         navigateToIssueDetails(position);
@@ -165,6 +186,7 @@ public class AllIssuesFragment extends Fragment {
                 .commit();
 
     }
+
 
 /**
  *  A custom GridView to display the Magazines.
@@ -245,9 +267,9 @@ public class AllIssuesFragment extends Fragment {
             }
 
 
-            MultiStateButton issuePriceButton = (MultiStateButton) grid.findViewById(R.id.gridMultiStateButton);
+            issuePriceButton = (MultiStateButton) grid.findViewById(R.id.gridMultiStateButton);
 
-            // check if price
+            // check if price/View/Download
             issuePriceButton.setButtonState(magazinesList.get(position));
     //            issuePriceButton.setAsPurchase(magazinesList.get(position).price);
 
@@ -257,13 +279,28 @@ public class AllIssuesFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
 
-                    gridPriceButtonClicked((Integer)v.getTag());
+                    if(magazinesList.get((Integer) v.getTag()).status == Magazine.STATUS_PRICE) {
+
+                        gridPriceButtonClicked((Integer) v.getTag());
+
+                    }else if(magazinesList.get((Integer) v.getTag()).status == Magazine.STATUS_DOWNLOAD){
+
+                        downloadButtonClicked((Integer) v.getTag());
+
+                    }
 
                 }
             });
 
             return grid;
         }
+
+
+    @Override
+    public void notifyDataSetChanged(){
+        super.notifyDataSetChanged();
+    }
+
     }
 
 
@@ -395,11 +432,12 @@ public class AllIssuesFragment extends Fragment {
                         Log.d(TAG,"Magazine List is : "+magazinesList.get(i).id);
                         if(issue.issueID == magazinesList.get(i).id){
                             magazinesList.get(i).isIssueOwnedByUser = true;
+                            if(allDownloadsTracker == null){
+                                magazinesList.get(i).status = Magazine.STATUS_DOWNLOAD;
+                            }
                         }
                     }
                 }
-
-
 
                 if(allDownloadsTracker !=null){
                     for (int downloadCount=0; downloadCount < allDownloadsTracker.size() ; downloadCount++){

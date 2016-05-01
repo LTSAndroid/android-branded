@@ -505,7 +505,7 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
                 + COLUMN_UNIQUE_ISSUE_DOWNLOAD_TABLE + " TEXT,"
                 + COLUMN_PRIORITY + " INTEGER,"
                 + COLUMN_DOWNLOAD_STATUS + " INTEGER"
-                + ")"; ;
+                + ")";
 
         public static final String DROP_ALL_DOWNLOADS_TABLE = "DROP TABLE IF EXISTS " + ALL_DOWNLOADS_TABLE_NAME;
 
