@@ -159,6 +159,7 @@ public class AllIssuesFragment extends Fragment {
 
             GetIssue getIssue = new GetIssue();
             getIssue.init(String.valueOf(magazinesList.get(position).id));
+
             magazinesList.get(position).status = Magazine.STATUS_VIEW;
             gridAdapter.notifyDataSetChanged();
 
@@ -281,11 +282,18 @@ public class AllIssuesFragment extends Fragment {
 
                     if(magazinesList.get((Integer) v.getTag()).status == Magazine.STATUS_PRICE) {
 
+                        Log.d(TAG,"Price Button clicked");
+
                         gridPriceButtonClicked((Integer) v.getTag());
 
                     }else if(magazinesList.get((Integer) v.getTag()).status == Magazine.STATUS_DOWNLOAD){
 
+                        Log.d(TAG,"Download Button clicked");
+
                         downloadButtonClicked((Integer) v.getTag());
+
+                    }else if(magazinesList.get((Integer) v.getTag()).status == Magazine.STATUS_VIEW) {
+
 
                     }
 
@@ -374,6 +382,9 @@ public class AllIssuesFragment extends Fragment {
         magazinesList = mDbHelper.getAllIssues(mDbHelper.getReadableDatabase());
         mDbHelper.close();
 
+        Log.d(TAG, "Magazine List is : " + magazinesList);
+        Log.d(TAG,"Magazine List size is : " +magazinesList.size());
+
         for(int i=0; i<magazinesList.size(); i++){
             Log.d(TAG,"Magazine id is : " +magazinesList.get(i).id);
             Log.d(TAG,"Magazine Status is : " +magazinesList.get(i).status);
@@ -394,8 +405,6 @@ public class AllIssuesFragment extends Fragment {
         ArrayList<AllDownloadsIssueTracker> allDownloadsTracker = mDbReader.getDownloadIssueList(mDbReader.getReadableDatabase(), Config.Magazine_Number);
         mDbReader.close();
 
-        Log.d(TAG, "allDownloadsTracker List is : " + allDownloadsTracker);
-
 
         // retrieve any user issues
         ArrayList<MyIssue> myIssueArray = null;
@@ -404,11 +413,19 @@ public class AllIssuesFragment extends Fragment {
             MyIssuesDataSet myIssuesDbReader = new MyIssuesDataSet(BaseApp.getContext());
             myIssueArray = myIssuesDbReader.getMyIssues(myIssuesDbReader.getReadableDatabase());
             myIssuesDbReader.close();
+
+
+            Log.d(TAG, "My Magazine List is : " + myIssueArray);
+            Log.d(TAG, "My Magazine List size is : " + myIssueArray.size());
+
+            for(int i=0; i<myIssueArray.size(); i++){
+                Log.d(TAG,"My Magazine id is : " +myIssueArray.get(i).magazineID);
+                Log.d(TAG,"My Magazine Status is : " +myIssueArray.get(i).issueID);
+                Log.d(TAG,"My Magazine price is : " +myIssueArray.get(i).removeFromSale);
+            }
+
+
         }
-
-        Log.d(TAG, "Magazine Size is : " + magazinesList.size());
-
-        Log.d(TAG,"Magazine List is : " +magazinesList);
         if(magazinesList != null){
 
             for(int i=0; i< magazinesList.size();i++) {
@@ -431,9 +448,20 @@ public class AllIssuesFragment extends Fragment {
                         Log.d(TAG,"My Issue is : "+issue.issueID);
                         Log.d(TAG,"Magazine List is : "+magazinesList.get(i).id);
                         if(issue.issueID == magazinesList.get(i).id){
+                            Log.d(TAG,"Inside the first if condition matched of issue id");
                             magazinesList.get(i).isIssueOwnedByUser = true;
+                            Log.d(TAG,"Size of all downloaded issue is : " +allDownloadsTracker.size());
                             if(allDownloadsTracker == null){
                                 magazinesList.get(i).status = Magazine.STATUS_DOWNLOAD;
+                            }else{
+                                Log.d(TAG,"Inside the else condition of all download issue tracker");
+                                Log.d(TAG,"All Download Tracker size is : " +allDownloadsTracker.size());
+                                for(int k=0 ; k<allDownloadsTracker.size(); k++){
+                                    if(magazinesList.get(i).id == allDownloadsTracker.get(k).issueID){
+                                        Log.d(TAG,"Inside the if condition of all download tracker");
+                                        magazinesList.get(i).status = Magazine.STATUS_VIEW;
+                                    }
+                                }
                             }
                         }
                     }
@@ -446,8 +474,10 @@ public class AllIssuesFragment extends Fragment {
                         Log.d(TAG," Single Download is : "+singleDownload);
                         if(singleDownload.issueID == magazinesList.get(i).id){
                             magazinesList.get(i).currentDownloadStatus = singleDownload.downloadStatus;
-                            Log.d(TAG," singleDownload.downloadStatus is : "+singleDownload.downloadStatus);
-                            Log.d(TAG," magazinesList.get(i).currentDownloadStatus is : "+magazinesList.get(i).currentDownloadStatus);
+                            Log.d(TAG," singleDownload.downloadStatus is : "+magazinesList.get(i).currentDownloadStatus);
+                            if(magazinesList.get(i).currentDownloadStatus == 0){
+                                magazinesList.get(i).status = Magazine.STATUS_VIEW;
+                            }
                         }
                     }
                 }

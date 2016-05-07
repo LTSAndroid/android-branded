@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -23,9 +24,11 @@ import android.widget.TextView;
 
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
+import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.download.DownloadThumbnails;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.storage.AllDownloadsDataSet;
+import com.pixelmags.android.storage.IssueDataSet;
 import com.pixelmags.android.util.BaseApp;
 
 import java.io.File;
@@ -39,7 +42,6 @@ public class AllDownloadsFragment extends Fragment {
     public CustomAllDownloadsGridAdapter gridDownloadAdapter;
     private GetAllDownloadedIssuesTask mGetAllDownloadedIssuesTask;
     private String TAG = "AllDownloadsFragment";
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,12 +87,14 @@ public class AllDownloadsFragment extends Fragment {
  *
  */
 
-    public class CustomAllDownloadsGridAdapter extends BaseAdapter {
+    public class CustomAllDownloadsGridAdapter extends BaseAdapter implements View.OnClickListener, PopupMenu.OnMenuItemClickListener {
 
         private Context mContext;
         private ProgressBar progressBar;
         private static final int PROGRESS = 0*1;
         private int mProgressStatus = 0;
+        private int listMenuItemPosition;
+        private CardView cardView;
 
         public CustomAllDownloadsGridAdapter(Context c) {
             mContext = c;
@@ -132,10 +136,13 @@ public class AllDownloadsFragment extends Fragment {
             }
 
             // Set the magazine image
-
+            Log.d(TAG," ALL Download Issue List Tracker size is  : "+allDownloadsIssuesListTracker.size());
             Log.d(TAG," ALL Download Issue List Tracker : "+allDownloadsIssuesListTracker.get(position).thumbnailBitmap);
             Log.d(TAG," ALL Download Issue List Tracker issue Title : "+allDownloadsIssuesListTracker.get(position).issueTitle);
-            Log.d(TAG," ALL Download Issue List Tracker download : "+allDownloadsIssuesListTracker.get(position).downloadStatus);
+            Log.d(TAG, " ALL Download Issue List Tracker download status is : " + allDownloadsIssuesListTracker.get(position).downloadStatus);
+
+            cardView = (CardView) grid.findViewById(R.id.card_view);
+            cardView.setTag(position);
 
                 if(allDownloadsIssuesListTracker.get(position).thumbnailBitmap != null){
 
@@ -143,7 +150,7 @@ public class AllDownloadsFragment extends Fragment {
                     imageView.setImageBitmap(allDownloadsIssuesListTracker.get(position).thumbnailBitmap);
                     //imageView.setImageBitmap(bmp);
 
-                    imageView.setTag(position);
+                    imageView.setTag(new Integer(position));
                     imageView.setOnClickListener(new View.OnClickListener() {
 
                         @Override
@@ -164,88 +171,173 @@ public class AllDownloadsFragment extends Fragment {
 
 
             Button gridDownloadStatusButton = (Button) grid.findViewById(R.id.gridDownloadStatusButton);
-                int status = allDownloadsIssuesListTracker.get(position).downloadStatus;
+                final int status = allDownloadsIssuesListTracker.get(position).downloadStatus;
 
-            // Change the way the progress bar is handled . Status of button should not be completed when showing progress bar
+            //handle the progress bar
 
-            if(status == 0){
-                final int totalProgressTime = 100;
-                final Thread t = new Thread() {
-                    @Override
-                    public void run() {
-                        int jumpTime = 0;
+//            AllDownloadsDataSet mDbReader = new AllDownloadsDataSet(BaseApp.getContext());
+//            ArrayList<AllDownloadsIssueTracker> allDownloadsTracker = mDbReader.getDownloadIssueList(mDbReader.getReadableDatabase(), Config.Magazine_Number);
+//            mDbReader.close();
 
-                        while(jumpTime < totalProgressTime) {
-                            try {
-                                sleep(200);
-                                jumpTime += 5;
-                                progressBar.setProgress(jumpTime);
-                            }
-                            catch (InterruptedException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                };
-                t.start();
-            }
+            grid.setTag(position);
+
+            if(status == 1 || status == 2){
 
                 String downloadStatusText = AllDownloadsDataSet.getDownloadStatusText(status);
                 gridDownloadStatusButton.setText(downloadStatusText);
 
+                updateTheProgressBar(0);
+            }
+
+            if(status == 3){
+                String downloadStatusText = AllDownloadsDataSet.getDownloadStatusText(status);
+                gridDownloadStatusButton.setText(downloadStatusText);
+            }
+
+            if(status == 4){
+                String downloadStatusText = AllDownloadsDataSet.getDownloadStatusText(status);
+                gridDownloadStatusButton.setText(downloadStatusText);
+                progressBar.setProgress(0);
+            }
+
+            if(status == -1){
+                String downloadStatusText = AllDownloadsDataSet.getDownloadStatusText(status);
+                gridDownloadStatusButton.setText(downloadStatusText);
+                progressBar.setProgress(0);
+            }
+
+            if(status == 0){
+                String downloadStatusText = AllDownloadsDataSet.getDownloadStatusText(status);
+                gridDownloadStatusButton.setText(downloadStatusText);
+                progressBar.setProgress(100);
+            }
+
             gridDownloadStatusButton.setTag(position); // save the gridview index
-            gridDownloadStatusButton.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-
-                    // action based on status
-                }
-            });
-
+            gridDownloadStatusButton.setOnClickListener(this);
 
             ImageView popup = (ImageView) grid.findViewById(R.id.moreDownloadOptionsMenuButton);
-            popup.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-
-                    showPopup(v);
-                }
-            });
+            popup.setOnClickListener(this);
 
             return grid;
         }
+
+    @Override
+    public void notifyDataSetChanged(){
+        super.notifyDataSetChanged();
     }
+
+    public void updateAdapter(){
+        notifyDataSetChanged();
+    }
+
+    public void updateTheProgressBar(int jumpTime){
+
+        final int totalProgressTime = 100;
+
+        for(int i= jumpTime; i<=totalProgressTime; i++){
+            try {
+                wait(200);
+                jumpTime += 2;
+                progressBar.setProgress(jumpTime);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        updateAdapter();
+
+//        final Thread t = new Thread() {
+//            @Override
+//            public void run(){
+//                while(jumpTime <= totalProgressTime) {
+//                    try{
+//                        sleep(200);
+//                        jumpTime += 2;
+//                        progressBar.setProgress(jumpTime);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//        };
+//        t.start();
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        if(v.getId() == R.id.gridDownloadStatusButton){
+            // Based on Button status.
+        }
+
+        if(v.getId() == R.id.moreDownloadOptionsMenuButton){
+            Log.d(TAG,"Position is : " +  cardView.getTag());
+            showPopup(v, (Integer) cardView.getTag());
+        }
+
+    }
+
+
+    public void showPopup(View v, int listItemPopupPosition) {
+        listMenuItemPosition = listItemPopupPosition;
+        PopupMenu popup = new PopupMenu(getActivity(), v);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.alldownloadsoptionsmenu, popup.getMenu());
+        popup.setOnMenuItemClickListener(this);
+        popup.show();
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        Log.d(TAG,"Menu Item Clicked is : "+item.getItemId());
+
+        switch (item.getItemId()) {
+
+            case R.id.download_menu_pause:
+
+                allDownloadsIssuesListTracker.get(listMenuItemPosition).downloadStatus = AllDownloadsDataSet.DOWNLOAD_STATUS_PAUSED;
+                gridDownloadAdapter.notifyDataSetChanged();
+                break;
+
+            case R.id.download_menu_resume:
+
+                allDownloadsIssuesListTracker.get(listMenuItemPosition).downloadStatus = AllDownloadsDataSet.DOWNLOAD_STATUS_IN_PROGRESS;
+                gridDownloadAdapter.notifyDataSetChanged();
+                break;
+
+            case R.id.download_menu_delete:
+
+
+                try {
+                    AllDownloadsDataSet allDownloadsDataSet = new AllDownloadsDataSet(BaseApp.getContext());
+                    Log.d(TAG, "Menu Item List position is  : " + listMenuItemPosition);
+                    Log.d(TAG, "Menu Item List issueID is  : " + allDownloadsIssuesListTracker.get(listMenuItemPosition).issueID);
+                    allDownloadsDataSet.deleteIssueFromTable(allDownloadsDataSet.getWritableDatabase(),
+                            String.valueOf(allDownloadsIssuesListTracker.get(listMenuItemPosition).issueID));
+                    allDownloadsDataSet.close();
+
+                    allDownloadsIssuesListTracker.get(listMenuItemPosition).downloadStatus = AllDownloadsDataSet.DOWNLOAD_STATUS_FAILED;
+                    allDownloadsIssuesListTracker.remove(allDownloadsIssuesListTracker.get(listMenuItemPosition));
+
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+                gridDownloadAdapter.notifyDataSetChanged();
+                break;
+
+            default:
+                break;
+
+        }
+        return true;
+    }
+}
 
 
     /*
  This is defined in the allDownloadsFragment layout xml
 */
-    public void showPopup(View v) {
-        PopupMenu popup = new PopupMenu(getActivity(), v);
-        MenuInflater inflater = popup.getMenuInflater();
-        inflater.inflate(R.menu.alldownloadsoptionsmenu, popup.getMenu());
-        popup.show();
-    }
-
-
-    public boolean onMenuItemClick(MenuItem item) {
-        switch (item.getItemId()) {
-            /*
-            case R.id.archive:
-                archive(item);
-                return true;
-            case R.id.delete:
-                delete(item);
-                return true;
-            default:
-                return false;
-              */
-        }
-        return true;
-    }
 
 
 

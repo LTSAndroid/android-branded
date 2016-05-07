@@ -1,136 +1,143 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+
+<android.support.v7.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="10dp"
-    android:paddingBottom="10dp"
-    android:orientation="horizontal"
-    android:background="@drawable/downloaditemshape" >
-
-    <ImageView
-        android:id="@+id/gridDownloadedIssueImage"
-        android:layout_width="110dp"
-        android:layout_height="110dp"
-        android:layout_alignParentTop="true"
-        android:adjustViewBounds="true"
-        android:scaleType="fitCenter" />
+    android:id="@+id/card_view"
+   >
 
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:id="@+id/detailsContainer">
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:orientation="horizontal"
+        android:background="@drawable/downloaditemshape" >
 
+        <ImageView
+            android:id="@+id/gridDownloadedIssueImage"
+            android:layout_width="110dp"
+            android:layout_height="110dp"
+            android:layout_alignParentTop="true"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter" />
 
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:paddingRight="5dp"
-            android:paddingLeft="35dp"
-            android:id="@+id/downloadTopContainer">
-
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/moreoptionsmenu"
-                android:background="#FFFFFF"
-                android:layout_alignParentRight="true"
-                android:id="@+id/moreDownloadOptionsMenuButton" />
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_toLeftOf="@+id/moreDownloadOptionsMenuButton">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Issue"
-                    android:id="@+id/gridDownloadedTitleText"
-                    android:layout_gravity="center_horizontal"
-                    />
-
-            </LinearLayout>
-
-
-        </RelativeLayout>
-
-
-        <RelativeLayout
+        <LinearLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="5dp"
-            android:paddingLeft="10dp"
-            android:orientation="horizontal"
-            android:id="@+id/downloadStatusContainer">
+            android:orientation="vertical"
+            android:id="@+id/detailsContainer">
+
 
             <RelativeLayout
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_alignParentRight="true"
-                android:paddingRight="25dp"
-                android:id="@+id/progressBarContainer">
+                android:layout_height="fill_parent"
+                android:paddingRight="5dp"
+                android:paddingLeft="35dp"
+                android:id="@+id/downloadTopContainer">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:textSize="10sp"
-                    android:text="Status..."
-                    android:id="@+id/downloadStatusText" />
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/moreoptionsmenu"
+                    android:background="#FFFFFF"
+                    android:layout_alignParentRight="true"
+                    android:id="@+id/moreDownloadOptionsMenuButton" />
 
-                <ProgressBar
-                    style="?android:attr/progressBarStyleHorizontal"
+                <LinearLayout
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/downloadStatusText"
-                    android:id="@+id/progressBar"
-                    android:layout_gravity="center_vertical"
-                    android:indeterminate="false"
-                    android:max="100" />
+                    android:orientation="vertical"
+                    android:layout_toLeftOf="@+id/moreDownloadOptionsMenuButton">
 
-                <!--<ProgressBar-->
-                    <!--style="@android:style/Widget.ProgressBar.Horizontal"-->
-                    <!--android:layout_width="fill_parent"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_below="@+id/downloadStatusText"-->
-                    <!--android:id="@+id/progressBar"-->
-                    <!--android:layout_gravity="center_vertical"-->
-                    <!--android:indeterminate="false"-->
-                    <!--android:max="100" />-->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:text="Issue"
+                        android:id="@+id/gridDownloadedTitleText"
+                        android:layout_gravity="center_horizontal"
+                        />
+
+                </LinearLayout>
+
 
             </RelativeLayout>
 
 
-        </RelativeLayout>
+            <RelativeLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="5dp"
+                android:paddingLeft="10dp"
+                android:orientation="horizontal"
+                android:id="@+id/downloadStatusContainer">
+
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_alignParentRight="true"
+                    android:paddingRight="25dp"
+                    android:id="@+id/progressBarContainer">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:textSize="10sp"
+                        android:text="Status..."
+                        android:id="@+id/downloadStatusText" />
+
+                    <ProgressBar
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/downloadStatusText"
+                        android:id="@+id/progressBar"
+                        android:layout_gravity="center_vertical"
+                        android:indeterminate="false"
+                        android:max="100" />
+
+                    <!--<ProgressBar-->
+                        <!--style="@android:style/Widget.ProgressBar.Horizontal"-->
+                        <!--android:layout_width="fill_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_below="@+id/downloadStatusText"-->
+                        <!--android:id="@+id/progressBar"-->
+                        <!--android:layout_gravity="center_vertical"-->
+                        <!--android:indeterminate="false"-->
+                        <!--android:max="100" />-->
+
+                </RelativeLayout>
 
 
-        <Button
-            android:layout_width="100dp"
-            android:layout_height="35dp"
-            android:background="@drawable/shape"
-            android:text="Status"
-            android:shadowColor="#3384ff"
-            android:shadowDx="0"
-            android:shadowDy="0"
-            android:shadowRadius="5"
-            android:id="@+id/gridDownloadStatusButton"
-            android:textColor="#ffffff"
-            android:layout_marginTop="5dp"
-            android:layout_gravity="center_horizontal" />
+            </RelativeLayout>
 
+
+            <Button
+                android:layout_width="100dp"
+                android:layout_height="35dp"
+                android:background="@drawable/shape"
+                android:text="Status"
+                android:shadowColor="#3384ff"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="5"
+                android:id="@+id/gridDownloadStatusButton"
+                android:textColor="#ffffff"
+                android:layout_marginTop="5dp"
+                android:layout_gravity="center_horizontal" />
+
+
+        </LinearLayout>
 
     </LinearLayout>
 
-
-
-
-</LinearLayout>
+</android.support.v7.widget.CardView>
 
 

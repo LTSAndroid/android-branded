@@ -7,6 +7,7 @@ import com.pixelmags.android.comms.WebRequest;
 import com.pixelmags.android.datamodels.Issue;
 import com.pixelmags.android.datamodels.Page;
 import com.pixelmags.android.datamodels.PageTypeImage;
+import com.pixelmags.android.download.QueueDownload;
 import com.pixelmags.android.json.GetIssueParser;
 import com.pixelmags.android.json.GetMyIssuesParser;
 import com.pixelmags.android.storage.AllDownloadsDataSet;
@@ -87,11 +88,15 @@ public class GetIssue extends WebRequest
         mDbHelper.insertIssueData(mDbHelper.getWritableDatabase(), getIssueParser.mIssue);
         mDbHelper.close();
 
-        // Saving Object into All Download Data Set
+        // Saving Object into All Download Data Set . change by Likith
 
-        AllDownloadsDataSet allDownloadsDataSet = new AllDownloadsDataSet(BaseApp.getContext());
-        allDownloadsDataSet.issueDownloadPreChecksAndDownload(allDownloadsDataSet.getWritableDatabase(), getIssueParser.mIssue);
-        allDownloadsDataSet.close();
+//        AllDownloadsDataSet allDownloadsDataSet = new AllDownloadsDataSet(BaseApp.getContext());
+//        allDownloadsDataSet.issueDownloadPreChecksAndDownload(allDownloadsDataSet.getWritableDatabase(), getIssueParser.mIssue);
+//        allDownloadsDataSet.close();
+
+        QueueDownload queueDownload = new QueueDownload();
+        queueDownload.insertIssueInDownloadQueue(String.valueOf(getIssueParser.mIssue.issueID));
+
     }
 
 

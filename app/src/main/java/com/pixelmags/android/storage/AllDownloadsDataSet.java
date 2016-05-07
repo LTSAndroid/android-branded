@@ -45,9 +45,9 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
         }
         if(status == 4){
             statusText = BaseApp.getContext().getString(R.string.download_status_in_queue);
-        }if(status == 3 || status == 2){
+        }if(status == 1 || status == 2){
             statusText = BaseApp.getContext().getString(R.string.download_status_started);
-        }if(status == 1){
+        }if(status == 3){
             statusText = BaseApp.getContext().getString(R.string.download_status_paused);
         }if(status == 0){
             statusText = BaseApp.getContext().getString(R.string.download_status_completed);
@@ -97,9 +97,34 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
             return false;
         }
 
-
     }
 
+
+    // Added to delete the entry from table
+
+    public void deleteIssueFromTable(SQLiteDatabase db, String issueId){
+
+        try{
+            // Start the transaction
+            db.beginTransaction();
+
+//            // clear out any previous values by rebuilding table
+//            createTableAllDownloads(db);
+
+
+            db.delete(AllDownloadsEntry.ALL_DOWNLOADS_TABLE_NAME, AllDownloadsEntry.COLUMN_ISSUE_ID + "=?",new String[] {issueId});
+//            db.insertWithOnConflict(AllDownloadsEntry.ALL_DOWNLOADS_TABLE_NAME, null, insertValues, SQLiteDatabase.CONFLICT_REPLACE);
+
+
+            //End and close the transaction
+            db.setTransactionSuccessful();
+            db.endTransaction();
+
+        }catch (Exception e){
+            System.out.println(e.getStackTrace());
+        }
+
+    }
 
     public boolean issueDownloadPreChecksAndDownload(SQLiteDatabase db, Issue downloadIssue){
 

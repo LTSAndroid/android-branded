@@ -4,15 +4,19 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
+import android.util.Log;
 
+import com.pixelmags.android.ui.AllDownloadsFragment.CustomAllDownloadsGridAdapter;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
 import com.pixelmags.android.datamodels.Issue;
+import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.datamodels.PageTypeImage;
 import com.pixelmags.android.datamodels.SingleDownloadIssueTracker;
 import com.pixelmags.android.storage.AllDownloadsDataSet;
 import com.pixelmags.android.storage.IssueDataSet;
 import com.pixelmags.android.storage.SingleIssueDownloadDataSet;
+import com.pixelmags.android.ui.AllDownloadsFragment;
 import com.pixelmags.android.util.BaseApp;
 
 import java.io.File;
@@ -39,6 +43,7 @@ import java.util.Queue;
  */
 public class DownloadsManager {
 
+    private String TAG = "DownloadsManager";
     private static int DONE = 0;
     private static int PROCESSING = 1;
 
@@ -231,14 +236,38 @@ public class DownloadsManager {
         ArrayList<SingleDownloadIssueTracker> pagesForSingleDownloadTable = mDbDownloadReader.getSingleIssuePagesPendingDownload(mDbDownloadReader.getReadableDatabase(), issueToDownload.uniqueIssueDownloadTable);
         mDbDownloadReader.close();
 
+        Log.d(TAG,"Entered the create Issue Threads");
+
+        Magazine magazine = new Magazine();
+
         // create threads for each of them and insert them into the priority queue
         if(pagesForSingleDownloadTable != null){
 
             for(int i=0; i< pagesForSingleDownloadTable.size();i++) {
 
+                Log.d(TAG,"Downloading page " +i);
+
                 DownloadSinglePageThreadStatic pageThread = new DownloadSinglePageThreadStatic();
                 pageThread.setProcessingValues(issueToDownload, pagesForSingleDownloadTable.get(i), false);
                 pageThreadQueue.add(pageThread);
+
+                if(magazine.id == issueToDownload.issueID){
+                    magazine.state = AllDownloadsDataSet.DOWNLOAD_STATUS_IN_PROGRESS;
+                    CustomAllDownloadsGridAdapter customAllDownloadsGridAdapter =
+                            new AllDownloadsFragment().new CustomAllDownloadsGridAdapter(BaseApp.getContext());
+                    customAllDownloadsGridAdapter.updateTheProgressBar(i);
+                }
+
+
+                if(i == pagesForSingleDownloadTable.size()) {
+
+                    if (magazine.id == issueToDownload.issueID) {
+                        magazine.state = AllDownloadsDataSet.DOWNLOAD_STATUS_COMPLETED;
+                        CustomAllDownloadsGridAdapter customAllDownloadsGridAdapter =
+                                new AllDownloadsFragment().new CustomAllDownloadsGridAdapter(BaseApp.getContext());
+                        customAllDownloadsGridAdapter.updateAdapter();
+                    }
+                }
 
             }
 
@@ -267,7 +296,6 @@ public class DownloadsManager {
         }
 
     }
-
 
     // process the threads in batches.
     public void launchQueueTask(AllDownloadsIssueTracker issueTracker){
