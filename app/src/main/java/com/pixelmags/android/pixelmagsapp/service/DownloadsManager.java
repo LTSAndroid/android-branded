@@ -3,10 +3,8 @@ package com.pixelmags.android.pixelmagsapp.service;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.AsyncTask;
 import android.util.Log;
 
-import com.pixelmags.android.ui.AllDownloadsFragment.CustomAllDownloadsGridAdapter;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
 import com.pixelmags.android.datamodels.Issue;
@@ -17,6 +15,7 @@ import com.pixelmags.android.storage.AllDownloadsDataSet;
 import com.pixelmags.android.storage.IssueDataSet;
 import com.pixelmags.android.storage.SingleIssueDownloadDataSet;
 import com.pixelmags.android.ui.AllDownloadsFragment;
+import com.pixelmags.android.ui.NavigationDrawerFragment;
 import com.pixelmags.android.util.BaseApp;
 
 import java.io.File;
@@ -43,7 +42,7 @@ import java.util.Queue;
  */
 public class DownloadsManager {
 
-    private String TAG = "DownloadsManager";
+    private static String TAG = "DownloadsManager";
     private static int DONE = 0;
     private static int PROCESSING = 1;
 
@@ -60,8 +59,7 @@ public class DownloadsManager {
 
     // Queue will hold and process all issues pages once they have completed page that has it's priority set
     static Queue<SingleDownloadIssueTracker> pageDownloadProcessedQueue;
-
-
+    public static int noOfIssuePageSize;
 
     // the tasks and parameters that run the task queues
     //QueueProcessorAsyncTask mQueueProcessorTask;
@@ -238,10 +236,10 @@ public class DownloadsManager {
 
         Log.d(TAG,"Entered the create Issue Threads");
 
-        Magazine magazine = new Magazine();
-
         // create threads for each of them and insert them into the priority queue
         if(pagesForSingleDownloadTable != null){
+
+            noOfIssuePageSize = pagesForSingleDownloadTable.size();
 
             for(int i=0; i< pagesForSingleDownloadTable.size();i++) {
 
@@ -250,24 +248,6 @@ public class DownloadsManager {
                 DownloadSinglePageThreadStatic pageThread = new DownloadSinglePageThreadStatic();
                 pageThread.setProcessingValues(issueToDownload, pagesForSingleDownloadTable.get(i), false);
                 pageThreadQueue.add(pageThread);
-
-                if(magazine.id == issueToDownload.issueID){
-                    magazine.state = AllDownloadsDataSet.DOWNLOAD_STATUS_IN_PROGRESS;
-                    CustomAllDownloadsGridAdapter customAllDownloadsGridAdapter =
-                            new AllDownloadsFragment().new CustomAllDownloadsGridAdapter(BaseApp.getContext());
-                    customAllDownloadsGridAdapter.updateTheProgressBar(i);
-                }
-
-
-                if(i == pagesForSingleDownloadTable.size()) {
-
-                    if (magazine.id == issueToDownload.issueID) {
-                        magazine.state = AllDownloadsDataSet.DOWNLOAD_STATUS_COMPLETED;
-                        CustomAllDownloadsGridAdapter customAllDownloadsGridAdapter =
-                                new AllDownloadsFragment().new CustomAllDownloadsGridAdapter(BaseApp.getContext());
-                        customAllDownloadsGridAdapter.updateAdapter();
-                    }
-                }
 
             }
 
@@ -305,6 +285,8 @@ public class DownloadsManager {
 
             //mQueueProcessorTask = new QueueProcessorAsyncTask();
             //mQueueProcessorTask.execute((String) null);
+
+            Log.d(TAG,"Inside the launchQueueTask method");
 
             QueueProcessorThread qThread = new QueueProcessorThread(issueTracker);
             Thread t1 = new Thread(qThread);
@@ -434,7 +416,7 @@ public class DownloadsManager {
             SingleIssueDownloadDataSet mDbDownloadTableReader = new SingleIssueDownloadDataSet(BaseApp.getContext());
             int count = mDbDownloadTableReader.getCountOfPagesPendingDownload(mDbDownloadTableReader.getReadableDatabase(), String.valueOf(issueInQueue.uniqueIssueDownloadTable));
             mDbDownloadTableReader.close();
-
+            Magazine magazine = new Magazine();
             if (count == 0){
                 // mark download as complete
 
@@ -443,7 +425,12 @@ public class DownloadsManager {
                 mDbReader.setIssueToCompleted(mDbReader.getReadableDatabase(), issueInQueue);
                 mDbReader.close();
 
-                System.out.println("ISSUE DOWNLOAD IS NOW COMPLETE :- " + issueInQueue.issueID);
+                Log.d(TAG, "ISSUE DOWNLOAD IS NOW COMPLETE : " + issueInQueue.issueID);
+
+
+                issueInQueue.downloadStatus = AllDownloadsDataSet.DOWNLOAD_STATUS_COMPLETED;
+                AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment();
+                allDownloadsFragment.updateButtonStateFragment(issueInQueue.downloadStatus);
 
             }
 
@@ -486,10 +473,28 @@ public class DownloadsManager {
         }catch(Exception e){
             e.printStackTrace();
         }
-
-
     }
 
+    public void downLoadPaused(){
+        try {
+            QueueProcessorThread queueProcessorThread = new QueueProcessorThread();
+            if (queueProcessorThread != null)
+                queueProcessorThread.setPaused();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void downLoadResume(){
+
+        try {
+            QueueProcessorThread queueProcessorThread = new QueueProcessorThread();
+            if (queueProcessorThread != null)
+                queueProcessorThread.setResume();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 
     /**
      *
@@ -503,9 +508,19 @@ public class DownloadsManager {
         int POSTDOWNLOADBUFFER = 10;
 
         AllDownloadsIssueTracker issueInQueue;
+        public static volatile boolean mPaused;
+        public static Object mPausedLock;
+
+        QueueProcessorThread(){
+//            mPaused = false;
+//            mPausedLock = new Object();
+            Log.d(TAG,"Inside the constructor of Queue processor thread");
+        }
 
         QueueProcessorThread(AllDownloadsIssueTracker issueTracker){
             issueInQueue = issueTracker;
+            mPaused = false;
+            mPausedLock = new Object();
         }
 
         @Override
@@ -513,65 +528,80 @@ public class DownloadsManager {
 
             try {
 
-                queueTaskCompleted = false;
+                Log.d(TAG,"Inside the run method 1");
+                    queueTaskCompleted = false;
 
-                int completeCounter = 0;
+                    int completeCounter = 0;
 
-                while(runQueue){
+                    while (runQueue) {
 
-                    DownloadSinglePageThreadStatic testEmpty = pageThreadQueue.peek(); // returns null if the queue is empty
+                        DownloadSinglePageThreadStatic testEmpty = pageThreadQueue.peek(); // returns null if the queue is empty
 
-                    if(testEmpty == null) {
-                        runQueue = false;
-                        break;
-                    }
-
-                    ArrayList<Thread> allDownloadThreads = new ArrayList<Thread>();
-
-                    for (int i = 0; i < MAX_THREADS; i++) {
-
-                        // peek to check if the queue is empty
-                        DownloadSinglePageThreadStatic executeThread = pageThreadQueue.poll();
-
-                        if(executeThread == null) {
+                        if (testEmpty == null) {
+                            runQueue = false;
                             break;
                         }
 
-                        Thread t1 = new Thread(executeThread);
-                        allDownloadThreads.add(t1);
-                    }
+                        ArrayList<Thread> allDownloadThreads = new ArrayList<Thread>();
 
-                    // start the threads
-                    for (Thread thread : allDownloadThreads){
-                        thread.start();
-                    }
+                        for (int i = 0; i < MAX_THREADS; i++) {
 
-                    // wait for them to be completed
-                    try{
+                            // peek to check if the queue is empty
+                            DownloadSinglePageThreadStatic executeThread = pageThreadQueue.poll();
+                            Log.d(TAG, "Download Single Page Thread static is created ");
 
-                        for (Thread joinThread : allDownloadThreads){
-                            joinThread.join();
+                            if (executeThread == null) {
+                                break;
+                            }
+
+                            Thread t1 = new Thread(executeThread);
+                            allDownloadThreads.add(t1);
+
                         }
 
-                    }catch(Exception e){
-                        e.printStackTrace();
+                        // start the threads
+                        for (Thread thread : allDownloadThreads) {
+                            thread.start();
+                        }
+
+                        // wait for them to be completed
+                        try {
+
+                            for (Thread joinThread : allDownloadThreads) {
+                                joinThread.join();
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        // increment the download counter
+                        completeCounter++;
+
+                        // process downloads, i.e save results into db after every X downloads
+
+                        if (completeCounter >= POSTDOWNLOADBUFFER) {
+                            processPostDownloadQueue();
+                            completeCounter = 0; // reset the counter
+
+                        }
+
+                        // while loop ends
+
+                        synchronized (mPausedLock) {
+                            Log.d(TAG," MPause value is : " +mPaused);
+                            while (mPaused) {
+                                try {
+                                    mPausedLock.wait();
+                                    AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment();
+                                    allDownloadsFragment.pausedProgressBar();
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+
                     }
-
-
-                    // increment the download counter
-                    completeCounter++;
-
-                    // process downloads, i.e save results into db after every X downloads
-
-                    if(completeCounter >= POSTDOWNLOADBUFFER){
-                        processPostDownloadQueue();
-                        completeCounter = 0; // reset the counter
-
-                    }
-
-                    // while loop ends
-                }
-
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -581,12 +611,24 @@ public class DownloadsManager {
             // update all the Issue download completion entries here
             updateAllPostDownloadsTable(issueInQueue);
 
-
             // continue processing table for next download
             getInstance().processDownloadsTable();
 
         }
 
+        public void setPaused(){
+            synchronized (mPausedLock){
+                mPaused = true;
+            }
+        }
+
+        public void setResume() {
+            synchronized (mPausedLock) {
+                Log.d(TAG,"On Resume of QueueProcessorThread is triggered");
+                mPaused = false;
+                mPausedLock.notifyAll();
+            }
+        }
 
     }
 
@@ -603,6 +645,7 @@ public class DownloadsManager {
         private boolean isDownloaded;
         private AllDownloadsIssueTracker issueAllDownloadsTracker;
         private SingleDownloadIssueTracker pageSingleDownloadTracker;
+
 
         public void setProcessingValues(AllDownloadsIssueTracker allDownloadsTracker, SingleDownloadIssueTracker pageTracker, boolean setAsPriority){
 
@@ -632,49 +675,48 @@ public class DownloadsManager {
 
             try {
 
+                            System.out.println("Download :: downloading page ---- " + pageSingleDownloadTracker.pageNo);
 
-                System.out.println("Download :: downloading page ---- "+ pageSingleDownloadTracker.pageNo );
+                            InputStream in = new URL(pageSingleDownloadTracker.urlPdfLarge).openStream();
 
-                InputStream in = new URL(pageSingleDownloadTracker.urlPdfLarge).openStream();
+                            if (in != null) {
 
-                if(in != null){
+                                ContextWrapper cw = new ContextWrapper(BaseApp.getContext());
+                                File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
 
-                    ContextWrapper cw = new ContextWrapper(BaseApp.getContext());
-                    File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+                                String pageImageDir = ISSUE_DIR_PREFIX_1 + issueAllDownloadsTracker.issueID + ISSUE_DIR_PREFIX_PDF;
 
-                    String pageImageDir = ISSUE_DIR_PREFIX_1 + issueAllDownloadsTracker.issueID + ISSUE_DIR_PREFIX_PDF;
+                                File folder = new File(directory.getAbsolutePath() + pageImageDir);
+                                folder.mkdirs();
 
-                    File folder = new File(directory.getAbsolutePath() + pageImageDir);
-                    folder.mkdirs();
-
-                    // Create page image file, specifying the path, and the filename which we want to save the file as.
-                    File pageImage = new File(folder, getPageFileName());
+                                // Create page image file, specifying the path, and the filename which we want to save the file as.
+                                File pageImage = new File(folder, getPageFileName());
 
 
-                    //this will be used to write the downloaded data into the file we created
-                    FileOutputStream fileOutput = new FileOutputStream(pageImage);
+                                //this will be used to write the downloaded data into the file we created
+                                FileOutputStream fileOutput = new FileOutputStream(pageImage);
 
-                    //create a buffer
-                    byte[] buffer = new byte[1024];
-                    int bufferLength = 0; //used to store a temporary size of the buffer
+                                //create a buffer
+                                byte[] buffer = new byte[1024];
+                                int bufferLength = 0; //used to store a temporary size of the buffer
 
-                    //read through the input buffer and write the contents to the file
-                    while ( (bufferLength = in.read(buffer)) > 0 ) {
-                        //add the data in the buffer to the file in the file output stream (the file on the sd card)
-                        fileOutput.write(buffer, 0, bufferLength);
-                    }
-                    //close the output stream when done
-                    fileOutput.close();
+                                //read through the input buffer and write the contents to the file
+                                while ((bufferLength = in.read(buffer)) > 0) {
+                                    //add the data in the buffer to the file in the file output stream (the file on the sd card)
+                                    fileOutput.write(buffer, 0, bufferLength);
+                                }
+                                //close the output stream when done
+                                fileOutput.close();
 
-                    registerDownloadAsComplete(pageImage.getAbsolutePath());
-
-                }
+                                registerDownloadAsComplete(pageImage.getAbsolutePath());
+                            }
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
         }
+
 
         // Update the UniqueDownloadTable of the Issue after each page download
         private void registerDownloadAsComplete(String downloadPath){
@@ -691,8 +733,21 @@ public class DownloadsManager {
 
                 pageDownloadProcessedQueue.add(pageSingleDownloadTracker);
 
-                // Note : DO NOT update db after every page as that locks the db out for a long time.
+                if(NavigationDrawerFragment.currentPage.equalsIgnoreCase("Downloads")){
+                    // Setting the Issue to be in progress
+//                    issueToDownload.downloadStatus = AllDownloadsDataSet.DOWNLOAD_STATUS_IN_PROGRESS;
+//                    CustomAllDownloadsGridAdapter customAllDownloadsGridAdapter =
+//                            new AllDownloadsFragment().new CustomAllDownloadsGridAdapter(BaseApp.getContext());
+//                    customAllDownloadsGridAdapter.updateTheProgressBar( i,noOfIssuePageSize);
+//                    count++;
+                    Log.d(TAG, "Download Page is opened. Calling the fragment progress bar update method");
+                    AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment();
+                    allDownloadsFragment.updateProgressBarFragment();
 
+                }
+
+
+                // Note : DO NOT update db after every page as that locks the db out for a long time.
 
                 System.out.println("Download Complete :: " + pageSingleDownloadTracker.pageNo);
 

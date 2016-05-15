@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
 import com.pixelmags.android.storage.AllDownloadsDataSet;
 
@@ -27,9 +28,6 @@ Usage :
 - run a batch download of a table
 - Download via wifi only (make this setting available to the user)
 
-
-
-
  */
 
 public class PMService extends Service {
@@ -39,6 +37,7 @@ public class PMService extends Service {
 
     DownloadManagerAsyncTask mDMTask;
     boolean DMTaskRunning = false;
+    private String TAG = "PMService";
 
     public PMService() {
     }
@@ -91,14 +90,15 @@ public class PMService extends Service {
 
     public void newDownloadRequested(){
 
-        System.out.println("<< NEW Download NOTIFICATION Recieved >>");
+        Log.d(TAG, " NEW Download NOTIFICATION Received");
+
         initiateDownloadsProcessing();
 
     }
 
     public void resumeDownloadsProcessing(){
 
-        System.out.println("<< Resuming Download processing  >>");
+        Log.d(TAG, "Resuming Download processing");
         initiateDownloadsProcessing();
 
     }
@@ -108,12 +108,14 @@ public class PMService extends Service {
         // DMTaskCompleted is used to check if the Download task is still running;
         if(!DMTaskRunning)
         {
+            Log.d(TAG,"Inside the if condition of DM Task running");
             DMTaskRunning = true;
             // proceed to process the downloads in the background
             mDMTask = new DownloadManagerAsyncTask();
             mDMTask.execute((String)null);
 
         }else{
+            Log.d(TAG,"Inside the else condition of DM TASK");
             // just let the DownloadsManger know that a request is pending
             downloadsManager = DownloadsManager.getInstance();
             downloadsManager.setRequestPending();

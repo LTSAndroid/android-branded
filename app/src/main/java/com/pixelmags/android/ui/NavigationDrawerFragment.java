@@ -1,19 +1,19 @@
 package com.pixelmags.android.ui;
 
-import android.content.Intent;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.app.Activity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,7 +24,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
-
 
 import com.pixelmags.android.IssueView.NewIssueView;
 import com.pixelmags.android.comms.Config;
@@ -68,6 +67,7 @@ public class NavigationDrawerFragment extends Fragment {
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
     private CharSequence mTitle;
+    public static String currentPage;
 
     public NavigationDrawerFragment() {
     }
@@ -232,6 +232,7 @@ public class NavigationDrawerFragment extends Fragment {
         switch (position){
 
             case 0:
+                currentPage =getString(R.string.menu_title_allissues);
                 mTitle = getString(R.string.menu_title_allissues);
 
                 Fragment fragmentAllIsuues = new AllIssuesFragment();
@@ -244,7 +245,7 @@ public class NavigationDrawerFragment extends Fragment {
                         .commit();
                 break;
             case 1:
-
+                currentPage =getString(R.string.menu_title_my_account);
                 /*Intent launch = new Intent(getActivity().getBaseContext(), LaunchActivity.class);
                 startActivity(launch);*/
                 if(UserPrefs.getUserLoggedIn())
@@ -318,6 +319,7 @@ public class NavigationDrawerFragment extends Fragment {
                 break;
 */
             case 2:
+                currentPage =getString(R.string.menu_title_subscriptions);
                 mTitle = getString(R.string.menu_title_subscriptions);
                 Fragment fragmentSubscriptions = new SubscriptionsFragment();
                 // Insert the fragment by replacing any existing fragment
@@ -329,6 +331,7 @@ public class NavigationDrawerFragment extends Fragment {
                         .commit();
                 break;
             case 3:
+                currentPage =getString(R.string.menu_title_downloads);
                 mTitle = getString(R.string.menu_title_downloads);
                 Fragment fragmentAllDownloads = new AllDownloadsFragment();
                 FragmentManager downloadsFragmentManager = getFragmentManager();
@@ -338,6 +341,7 @@ public class NavigationDrawerFragment extends Fragment {
                         .commit();
                 break;
             case 4:
+                currentPage =getString(R.string.menu_title_contactsupport);
                 mTitle = getString(R.string.menu_title_contactsupport);
 
                 Intent intent = new Intent(Intent.ACTION_SEND);
@@ -352,6 +356,7 @@ public class NavigationDrawerFragment extends Fragment {
 
                 break;
             case 5:
+                currentPage =getString(R.string.menu_title_about);
                 mTitle = getString(R.string.menu_title_about);
 
                 Fragment aboutFragment = new AboutFragment();
@@ -371,12 +376,14 @@ public class NavigationDrawerFragment extends Fragment {
                 break;
 
             case 6:
+                currentPage =getString(R.string.menu_issue_view);
                 mTitle = getString(R.string.menu_issue_view);
 
                 startActivity(new Intent(getActivity(),NewIssueView.class));
                 break;
 
             default:
+                currentPage =getString(R.string.app_name);
                 mTitle = getString(R.string.app_name);
                 break;
         }

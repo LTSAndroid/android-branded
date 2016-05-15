@@ -3,6 +3,7 @@ package com.pixelmags.android.ui;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -15,17 +16,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.pixelmags.android.IssueView.NewIssueView;
 import com.pixelmags.android.api.GetIssue;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
 import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.datamodels.MyIssue;
-import com.pixelmags.android.datamodels.Page;
 import com.pixelmags.android.pixelmagsapp.MainActivity;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.storage.AllDownloadsDataSet;
@@ -37,7 +37,6 @@ import com.pixelmags.android.util.BaseApp;
 
 import java.io.File;
 import java.io.FileInputStream;
-
 import java.util.ArrayList;
 
 
@@ -48,6 +47,7 @@ public class AllIssuesFragment extends Fragment {
     public CustomGridAdapter gridAdapter;
     private String TAG = "AllIssuesFragment";
     private MultiStateButton issuePriceButton;
+    ArrayList<AllDownloadsIssueTracker> allDownloadsTracker;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -294,6 +294,18 @@ public class AllIssuesFragment extends Fragment {
 
                     }else if(magazinesList.get((Integer) v.getTag()).status == Magazine.STATUS_VIEW) {
 
+                        int pos = (int) v.getTag();
+                        String issueId = String.valueOf(magazinesList.get(pos).id);
+
+//                        NewIssueView newIssueView = new NewIssueView(issueId);
+//                        getActivity().getFragmentManager().beginTransaction()
+//                                .replace(R.id.main_fragment_container,newIssueView,"Fragment1")
+//                                .addToBackStack(null)
+//                                .commit();
+
+                        Intent intent = new Intent(getActivity(),NewIssueView.class);
+                        intent.putExtra("issueId",issueId);
+                        startActivity(intent);
 
                     }
 
@@ -324,6 +336,7 @@ public class AllIssuesFragment extends Fragment {
 
         private final String mMagazineID;
         private final String mAppBundleID;
+
 
         GetAllIssuesTask(String MagazineID, String appBundleID) {
             mMagazineID = MagazineID;
@@ -402,8 +415,10 @@ public class AllIssuesFragment extends Fragment {
 
 
         AllDownloadsDataSet mDbReader = new AllDownloadsDataSet(BaseApp.getContext());
-        ArrayList<AllDownloadsIssueTracker> allDownloadsTracker = mDbReader.getDownloadIssueList(mDbReader.getReadableDatabase(), Config.Magazine_Number);
-        mDbReader.close();
+        if(mDbReader != null) {
+            allDownloadsTracker = mDbReader.getDownloadIssueList(mDbReader.getReadableDatabase(), Config.Magazine_Number);
+            mDbReader.close();
+        }
 
 
         // retrieve any user issues

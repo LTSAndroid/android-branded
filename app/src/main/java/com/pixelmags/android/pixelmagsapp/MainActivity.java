@@ -1,32 +1,31 @@
 package com.pixelmags.android.pixelmagsapp;
 
 import android.app.Activity;
-/*<<<<<<< Updated upstream*/
 import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.ServiceConnection;
-/*>>>>>>> Stashed changes*/
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v4.widget.DrawerLayout;
 import android.widget.TextView;
 
 import com.pixelmags.android.api.CanPurchase;
@@ -37,14 +36,14 @@ import com.pixelmags.android.datamodels.MySubscription;
 import com.pixelmags.android.pixelmagsapp.billing.CreatePurchaseTask;
 import com.pixelmags.android.pixelmagsapp.service.PMService;
 import com.pixelmags.android.pixelmagsapp.test.ResultsFragment;
+import com.pixelmags.android.storage.AllIssuesDataSet;
 import com.pixelmags.android.storage.MyIssuesDataSet;
 import com.pixelmags.android.storage.MySubscriptionsDataSet;
+import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.ui.LoginFragment;
 import com.pixelmags.android.ui.NavigationDrawerFragment;
 import com.pixelmags.android.ui.RegisterFragment;
 import com.pixelmags.android.ui.SubscriptionsFragment;
-import com.pixelmags.android.storage.AllIssuesDataSet;
-import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.util.BaseApp;
 import com.pixelmags.android.util.IabHelper;
 import com.pixelmags.android.util.IabResult;
@@ -60,6 +59,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+/*<<<<<<< Updated upstream*/
+/*>>>>>>> Stashed changes*/
+
 public class MainActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, LoginFragment.OnFragmentInteractionListener ,
         RegisterFragment.OnFragmentInteractionListener, ResultsFragment.OnFragmentInteractionListener,
@@ -70,6 +72,7 @@ public class MainActivity extends AppCompatActivity
     public ArrayList<Magazine> billingMagazinesList;
     public ArrayList<Purchase> userOwnedSKUList;
     public ArrayList<String> skuList;
+    private String TAG = "MainActivity";
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -535,8 +538,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onDestroy() {
 
+        Log.d(TAG, "OnDestroy method is called");
         stopDownloadService();
-
         super.onDestroy();
 
         if (mHelper != null) {
@@ -560,8 +563,10 @@ public class MainActivity extends AppCompatActivity
                 // interact with the service.  Because we have bound to a explicit
                 // service that we know is running in our own process, we can
                 // cast its IBinder to a concrete class and directly access it.
+
                 mPMService = ((PMService.LocalBinder)service).getService();
 
+                Log.d(TAG,"M PMService value assigned is : " +mPMService);
             }
 
             public void onServiceDisconnected(ComponentName className) {
@@ -570,6 +575,7 @@ public class MainActivity extends AppCompatActivity
                 // Because it is running in our same process, we should never
                 // see this happen.
                 mPMService = null;
+                Log.d(TAG,"M PMService value assigned 222 is : " +mPMService);
             }
         };
 
@@ -588,7 +594,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     void doUnbindService() {
+
+        Log.d(TAG,"M Is Bound is : " +mIsBound);
         if (mIsBound) {
+            Log.d(TAG,"Inside the do unbind service method");
             // Detach our existing connection.
             unbindService(mConnection);
             mIsBound = false;
@@ -599,17 +608,29 @@ public class MainActivity extends AppCompatActivity
     // Service :: stop download service
     public void stopDownloadService() {
 
+
         // This will stop the service
-        // stopService(new Intent(getBaseContext(), PMService.class));
+//         stopService(new Intent(getBaseContext(), PMService.class));
 
         // The service should stop self after all it's downloads are complete.
         doUnbindService();
+        if (mHelper != null) {
+            mHelper.dispose();
+            mHelper = null;
+        }
     }
+
+    public void stopDownload(){
+        stopService(new Intent(MainActivity.this, PMService.class));
+    }
+
+
 
     public void resumeServiceDownloadProcessing(){
 
         // do a resume only after the AllIssues fragment is loaded
 
+        Log.d(TAG," Pm Service is : "+mPMService);
         if(mPMService != null){
             mPMService.resumeDownloadsProcessing();
         }
@@ -619,10 +640,11 @@ public class MainActivity extends AppCompatActivity
 
     public void notifyServiceOfNewDownload(){
 
+        Log.d(TAG, "PM Service is : " + mPMService);
+
         if(mPMService != null){
 
-            System.out.println("<<NOTIFYING SERVICE OF NEW DOWNLOAD>>");
-
+            Log.d(TAG, "NOTIFYING SERVICE OF NEW DOWNLOAD");
             mPMService.newDownloadRequested();
         }
 

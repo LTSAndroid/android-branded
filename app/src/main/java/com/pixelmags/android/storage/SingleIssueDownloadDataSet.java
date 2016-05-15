@@ -5,13 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
-import android.text.format.Time;
 
 import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
-import com.pixelmags.android.datamodels.Issue;
 import com.pixelmags.android.datamodels.SingleDownloadIssueTracker;
-import com.pixelmags.android.pixelmagsapp.R;
-import com.pixelmags.android.util.BaseApp;
 
 import java.util.ArrayList;
 
@@ -51,7 +47,7 @@ public class SingleIssueDownloadDataSet extends BrandedSQLiteHelper {
 
     }
 
-    private void dropUniqueDownloadsTable(SQLiteDatabase db, String UNIQUE_ISSUE_DOWNLOAD_TABLE){
+    public void dropUniqueDownloadsTable(SQLiteDatabase db, String UNIQUE_ISSUE_DOWNLOAD_TABLE){
 
         String DROP_ALL_DOWNLOADS_TABLE = "DROP TABLE IF EXISTS " + UNIQUE_ISSUE_DOWNLOAD_TABLE;
 

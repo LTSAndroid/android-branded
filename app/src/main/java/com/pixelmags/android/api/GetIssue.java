@@ -4,13 +4,9 @@ import android.util.Log;
 
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.comms.WebRequest;
-import com.pixelmags.android.datamodels.Issue;
-import com.pixelmags.android.datamodels.Page;
-import com.pixelmags.android.datamodels.PageTypeImage;
 import com.pixelmags.android.download.QueueDownload;
 import com.pixelmags.android.json.GetIssueParser;
-import com.pixelmags.android.json.GetMyIssuesParser;
-import com.pixelmags.android.storage.AllDownloadsDataSet;
+import com.pixelmags.android.pixelmagsapp.service.PMService;
 import com.pixelmags.android.storage.IssueDataSet;
 import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.util.BaseApp;
@@ -90,12 +86,25 @@ public class GetIssue extends WebRequest
 
         // Saving Object into All Download Data Set . change by Likith
 
-//        AllDownloadsDataSet allDownloadsDataSet = new AllDownloadsDataSet(BaseApp.getContext());
-//        allDownloadsDataSet.issueDownloadPreChecksAndDownload(allDownloadsDataSet.getWritableDatabase(), getIssueParser.mIssue);
-//        allDownloadsDataSet.close();
+//        QueueDownload queueDownload = new QueueDownload();
+//        queueDownload.insertIssueInDownloadQueue(String.valueOf(getIssueParser.mIssue.issueID));
 
-        QueueDownload queueDownload = new QueueDownload();
-        queueDownload.insertIssueInDownloadQueue(String.valueOf(getIssueParser.mIssue.issueID));
+        boolean result = startIssueDownload(String.valueOf(getIssueParser.mIssue.issueID));
+
+        Log.d(TAG,"Result of queue download insert is : "+result);
+
+        if(result){
+            Log.d(TAG,"Inside the if condition of notify service of new download");
+            PMService pmService = new PMService();
+            pmService.newDownloadRequested();
+        }
+
+    }
+
+    private boolean startIssueDownload(String issueId){
+
+        QueueDownload queueIssue = new QueueDownload();
+        return queueIssue.insertIssueInDownloadQueue(issueId);
 
     }
 

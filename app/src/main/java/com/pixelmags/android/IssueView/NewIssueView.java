@@ -8,20 +8,24 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
 import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
 import com.pixelmags.android.datamodels.SingleDownloadIssueTracker;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.storage.AllDownloadsDataSet;
 import com.pixelmags.android.storage.SingleIssueDownloadDataSet;
 import com.pixelmags.android.util.BaseApp;
+
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.spec.SecretKeySpec;
@@ -47,6 +51,7 @@ public class NewIssueView extends FragmentActivity {
 
     // TODO : get the decrypt key and store here
     private String decrypt_key;
+    private String TAG = "NewIssueView";
 
 
     @Override
@@ -55,10 +60,11 @@ public class NewIssueView extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_pager);
 
-        //
-        String issueID = String.valueOf(120974);
-        //
+//        //
+//        String issueID = String.valueOf(120974);
+//        //
 
+        issueID = getIntent().getExtras().getString("issueId");
 
         AllDownloadsDataSet mDownloadReader = new AllDownloadsDataSet(BaseApp.getContext());
         allDownloadsTracker = mDownloadReader.getAllDownloadsTrackerForIssue(mDownloadReader.getReadableDatabase(), issueID);
@@ -77,6 +83,7 @@ public class NewIssueView extends FragmentActivity {
                 for (int i = 0; i < allPagesOfIssue.size() ; i++)
                 {
                     String finalPath = allPagesOfIssue.get(i).downloadedLocationPdfLarge;
+                    Log.d(TAG,"Final Path of pdf is : "+finalPath);
                     issuePagesLocations.add(finalPath);
                 }
             }
@@ -134,10 +141,13 @@ public class NewIssueView extends FragmentActivity {
 
             int position = bundle.getInt("position");
 
+            Log.d(TAG,"Issue page locations is : " +issuePagesLocations.get(position));
+
             Bitmap imageForView = null;
             String imageLocation = issuePagesLocations.get(position);
             if(imageLocation != null){
                 imageForView =  decryptFile(imageLocation);
+                Log.d(TAG,"Image for view is : "+imageForView);
                 if(imageForView != null){
                     imageView.setImageBitmap(imageForView);
                 }else{
@@ -179,15 +189,21 @@ public class NewIssueView extends FragmentActivity {
             // Create FileInputStream to read from the encrypted image file
             FileInputStream fis = new FileInputStream(path);
 
+            Log.d(TAG,"File Input Stream is : " +fis.toString());
+
             // Save the decrypted image
             String encodedString = "1Ef95C6MaqkeDKBEuLuN49LV32FED/SkQHepcNEIUd0=";
 
-            encodedString = "C604DF8833E8CCAACAC44B51C195B1CB8CBD6AB6085FD3EC6A07E26CBCB55662";
+//            encodedString = "C604DF8833E8CCAACAC44B51C195B1CB8CBD6AB6085FD3EC6A07E26CBCB55662";
+            encodedString = "KOiRC9ojNJmrQaYQd5YN0N46jL2WduwT+UFYv0J4wUA=";
 
             byte[] bitmapdata =  decrypt( stringToBytes(encodedString), fis);
 
+            Log.d(TAG,"Bitmap Data is : " +bitmapdata);
+
             fis.close();
 
+            if(bitmapdata != null)
             bitmap = BitmapFactory.decodeByteArray(bitmapdata , 0, bitmapdata.length);
             
 
@@ -210,15 +226,26 @@ public class NewIssueView extends FragmentActivity {
         try {
 
             cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+
+            // Changed when Cipher error was coming
+//            cipher = Cipher.getInstance("AES/CFB8/NoPadding");
+            Log.d(TAG,"Cipher Instance is : " +cipher);
+            Log.d(TAG,"Byte length is : " +skey.length);
+//            IvParameterSpec ivSpeck = new IvParameterSpec(skey);
+//            cipher.init(Cipher.DECRYPT_MODE, skeySpec, ivSpeck);
+
+            //Old one
             cipher.init(Cipher.DECRYPT_MODE, skeySpec);
 
             // Create CipherInputStream to read and decrypt the image data
             cis = new CipherInputStream(fis, cipher);
-
+            Log.d(TAG,"Cipher Input Stream is : " +cis);
             // Write encrypted image data to ByteArrayOutputStream
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
             byte[] data = new byte[4096];
+
+            Log.d(TAG,"Cis Read data is : "+cis.read(data));
 
             while ((cis.read(data)) != -1) {
 
