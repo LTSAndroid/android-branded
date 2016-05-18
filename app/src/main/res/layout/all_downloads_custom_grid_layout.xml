@@ -101,7 +101,7 @@
                         android:id="@+id/progressBar"
                         android:layout_gravity="center_vertical"
                         android:indeterminate="false"
-                        android:max="100" />
+                        android:max="100"/>
 
                     <!--<ProgressBar-->
                         <!--style="@android:style/Widget.ProgressBar.Horizontal"-->

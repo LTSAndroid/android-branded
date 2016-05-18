@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,7 @@ import com.pixelmags.android.util.BaseApp;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import javax.crypto.Cipher;
@@ -197,7 +199,19 @@ public class NewIssueView extends FragmentActivity {
 //            encodedString = "C604DF8833E8CCAACAC44B51C195B1CB8CBD6AB6085FD3EC6A07E26CBCB55662";
             encodedString = "KOiRC9ojNJmrQaYQd5YN0N46jL2WduwT+UFYv0J4wUA=";
 
-            byte[] bitmapdata =  decrypt( stringToBytes(encodedString), fis);
+            byte[] data1 = Base64.decode(encodedString, Base64.DEFAULT);
+            String text1 = null;
+            try {
+                text1 = new String(data1, "UTF-8");
+                Log.d(TAG,"Test1 is : " +text1);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
+
+//            Imp : Changed to text1 from encodedString;
+
+            byte[] bitmapdata =  decrypt( stringToBytes(text1), fis);
 
             Log.d(TAG,"Bitmap Data is : " +bitmapdata);
 

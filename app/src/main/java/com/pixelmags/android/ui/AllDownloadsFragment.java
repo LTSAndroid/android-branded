@@ -44,6 +44,8 @@ public class AllDownloadsFragment extends Fragment {
     GridView gridView;
     private static View grid;
     public static boolean run = true;
+    private int totalLimit;
+    public static int jumpTime = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -83,18 +85,22 @@ public class AllDownloadsFragment extends Fragment {
    }
 
 
-    public void updateProgressBarFragment(){
+    public void updateProgressBarFragment(int issueID){
         CustomAllDownloadsGridAdapter customAllDownloadsGridAdapter = new CustomAllDownloadsGridAdapter(getActivity());
         run = true;
-        customAllDownloadsGridAdapter.updateTheProgressBar();
+        customAllDownloadsGridAdapter.updateTheProgressBar(issueID);
         customAllDownloadsGridAdapter.updateAdapter();
     }
 
-    public void pausedProgressBar(){
+    public void pausedProgressBar(int issueID){
         CustomAllDownloadsGridAdapter customAllDownloadsGridAdapter = new CustomAllDownloadsGridAdapter(getActivity());
         run = false;
-        customAllDownloadsGridAdapter.updateTheProgressBar();
+        customAllDownloadsGridAdapter.updateTheProgressBar(issueID);
         customAllDownloadsGridAdapter.updateAdapter();
+    }
+
+    public void updateIssueTotalPage(int totalPages){
+        totalLimit = totalPages;
     }
 
 
@@ -119,7 +125,6 @@ public class AllDownloadsFragment extends Fragment {
         private int mProgressStatus = 0;
         private int listMenuItemPosition;
         private CardView cardView;
-        private int jumpTime = 0;
         private int downloadStatus;
 
 
@@ -212,14 +217,14 @@ public class AllDownloadsFragment extends Fragment {
 
                 String downloadStatusText = AllDownloadsDataSet.getDownloadStatusText(status);
                 gridDownloadStatusButton.setText(downloadStatusText);
-                updateTheProgressBar();
+                updateTheProgressBar(allDownloadsIssuesListTracker.get(position).issueID);
                 notifyDataSetChanged();
             }
 
             if(status == 3){
                 String downloadStatusText = AllDownloadsDataSet.getDownloadStatusText(status);
                 gridDownloadStatusButton.setText(downloadStatusText);
-                updateTheProgressBar();
+                updateTheProgressBar(allDownloadsIssuesListTracker.get(position).issueID);
                 notifyDataSetChanged();
             }
 
@@ -271,29 +276,37 @@ public class AllDownloadsFragment extends Fragment {
         notifyDataSetChanged();
     }
 
-    public void updateTheProgressBar() {
+    public void updateTheProgressBar(int issueId) {
 
-        progressBar = (ProgressBar) grid.findViewById(R.id.progressBar);
-            final int limit = 100;
-            final Thread t = new Thread() {
-                @Override
-                public void run() {
+//        int listSize = allDownloadsIssuesListTracker.size();
+//        for(int i=0; i<listSize ; i++){
+//            if(issueId == allDownloadsIssuesListTracker.get(i).issueID){
+                progressBar = (ProgressBar) grid.findViewById(R.id.progressBar);
+//                progressBar.setMax(totalLimit);
+                final int limit = 100;
+                final Thread t = new Thread() {
+                    @Override
+                    public void run() {
                         while (run) {
-                                try {
-                                    if(jumpTime == limit){
-                                        run = false;
-                                    }
-                                    sleep(600);
-                                    jumpTime += 1;
-                                    if (progressBar != null)
-                                        progressBar.setProgress(jumpTime);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
+                            try {
+                                if(jumpTime == limit){
+                                    run = false;
                                 }
+                                sleep(600);
+                                jumpTime += 1;
+                                if (progressBar != null)
+                                    progressBar.setProgress(jumpTime);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                         }
-                }
-            };
-            t.start();
+                    }
+                };
+                t.start();
+//            }
+//        }
+
+
     }
 
 

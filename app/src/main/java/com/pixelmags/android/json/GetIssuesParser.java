@@ -1,16 +1,7 @@
 package com.pixelmags.android.json;
 
 
-import android.os.Bundle;
-
 import com.pixelmags.android.datamodels.Magazine;
-import com.pixelmags.android.datamodels.Subscription;
-import com.pixelmags.android.pixelmagsapp.LaunchActivity;
-import com.pixelmags.android.pixelmagsapp.MainActivity;
-import com.pixelmags.android.util.IabHelper;
-import com.pixelmags.android.util.IabResult;
-import com.pixelmags.android.util.Inventory;
-import com.pixelmags.android.util.Purchase;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -43,7 +34,7 @@ public class GetIssuesParser extends JSONParser {
 
 
             JSONArray arrayData = baseJSON.getJSONArray("data");
-            for(int i=0;i< 3;i++)
+            for(int i=0;i< 4;i++)
             {
                 Magazine magazine = new Magazine();
                 JSONObject unit = arrayData.getJSONObject(i);

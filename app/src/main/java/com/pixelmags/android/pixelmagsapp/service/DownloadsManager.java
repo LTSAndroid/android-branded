@@ -240,6 +240,8 @@ public class DownloadsManager {
         if(pagesForSingleDownloadTable != null){
 
             noOfIssuePageSize = pagesForSingleDownloadTable.size();
+            AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment();
+            allDownloadsFragment.updateIssueTotalPage(noOfIssuePageSize);
 
             for(int i=0; i< pagesForSingleDownloadTable.size();i++) {
 
@@ -594,7 +596,9 @@ public class DownloadsManager {
                                 try {
                                     mPausedLock.wait();
                                     AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment();
-                                    allDownloadsFragment.pausedProgressBar();
+                                    allDownloadsFragment.pausedProgressBar(issueInQueue.issueID);
+
+
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
                                 }
@@ -645,6 +649,7 @@ public class DownloadsManager {
         private boolean isDownloaded;
         private AllDownloadsIssueTracker issueAllDownloadsTracker;
         private SingleDownloadIssueTracker pageSingleDownloadTracker;
+        private int count = -1;
 
 
         public void setProcessingValues(AllDownloadsIssueTracker allDownloadsTracker, SingleDownloadIssueTracker pageTracker, boolean setAsPriority){
@@ -740,9 +745,12 @@ public class DownloadsManager {
 //                            new AllDownloadsFragment().new CustomAllDownloadsGridAdapter(BaseApp.getContext());
 //                    customAllDownloadsGridAdapter.updateTheProgressBar( i,noOfIssuePageSize);
 //                    count++;
-                    Log.d(TAG, "Download Page is opened. Calling the fragment progress bar update method");
-                    AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment();
-                    allDownloadsFragment.updateProgressBarFragment();
+                    if(count == -1) {
+                        Log.d(TAG, "Download Page is opened. Calling the fragment progress bar update method");
+                        AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment();
+                        allDownloadsFragment.updateProgressBarFragment(issueAllDownloadsTracker.issueID);
+                        count ++;
+                    }
 
                 }
 

@@ -216,58 +216,58 @@ public class MainActivity extends AppCompatActivity
 
             billingMagazinesList = new ArrayList<Magazine>();
 
+            if(pixelmagsMagazinesList != null) {
 
-            for (int i = 0; i < pixelmagsMagazinesList.size(); i++)
-            {
-                String SKU = pixelmagsMagazinesList.get(i).android_store_sku;
+                for (int i = 0; i < pixelmagsMagazinesList.size(); i++) {
+                    String SKU = pixelmagsMagazinesList.get(i).android_store_sku;
 
-                if(inventory.hasDetails(SKU)) //yet to be changed,this is for billing test
-                {
-                    SkuDetails details = inventory.getSkuDetails(SKU);
+                    if (inventory.hasDetails(SKU)) //yet to be changed,this is for billing test
+                    {
+                        SkuDetails details = inventory.getSkuDetails(SKU);
 
-                    pixelmagsMagazinesList.get(i).price = details.getPrice();
-                    Magazine finalMagazine = new Magazine();
+                        pixelmagsMagazinesList.get(i).price = details.getPrice();
+                        Magazine finalMagazine = new Magazine();
 
-                    finalMagazine.id = pixelmagsMagazinesList.get(i).id;
-                    finalMagazine.isIssueOwnedByUser = false;
+                        finalMagazine.id = pixelmagsMagazinesList.get(i).id;
+                        finalMagazine.isIssueOwnedByUser = false;
 
-                    // check if the issue is already owned by user
-                    if(myIssueArray != null){
+                        // check if the issue is already owned by user
+                        if (myIssueArray != null) {
 
-                        for(int issueCount=0; issueCount< myIssueArray.size(); issueCount++)
-                        {
-                            MyIssue issue = myIssueArray.get(issueCount);
+                            for (int issueCount = 0; issueCount < myIssueArray.size(); issueCount++) {
+                                MyIssue issue = myIssueArray.get(issueCount);
 
-                            if(issue.issueID == finalMagazine.id){
-                                finalMagazine.isIssueOwnedByUser = true;
+                                if (issue.issueID == finalMagazine.id) {
+                                    finalMagazine.isIssueOwnedByUser = true;
+                                }
                             }
                         }
+
+                        //    magazine.magazineId = unit.getInt("ID"); // Is this different from ID field ??
+                        finalMagazine.synopsis = pixelmagsMagazinesList.get(i).synopsis;
+                        finalMagazine.type = pixelmagsMagazinesList.get(i).type;
+                        finalMagazine.title = pixelmagsMagazinesList.get(i).title;
+                        finalMagazine.mediaFormat = pixelmagsMagazinesList.get(i).mediaFormat;
+                        finalMagazine.manifest = pixelmagsMagazinesList.get(i).manifest;
+                        // magazine.lastModified = unit.getString("lastModified"); // how to get date?
+                        finalMagazine.android_store_sku = pixelmagsMagazinesList.get(i).android_store_sku;
+                        finalMagazine.price = pixelmagsMagazinesList.get(i).price;
+                        finalMagazine.thumbnailURL = pixelmagsMagazinesList.get(i).thumbnailURL;
+                        finalMagazine.ageRestriction = pixelmagsMagazinesList.get(i).ageRestriction;
+                        finalMagazine.removeFromSale = pixelmagsMagazinesList.get(i).removeFromSale;
+                        finalMagazine.isPublished = pixelmagsMagazinesList.get(i).isPublished;
+                        finalMagazine.exclude_from_subscription = pixelmagsMagazinesList.get(i).exclude_from_subscription;
+
+                        billingMagazinesList.add(finalMagazine);
                     }
-
-                    //    magazine.magazineId = unit.getInt("ID"); // Is this different from ID field ??
-                    finalMagazine.synopsis = pixelmagsMagazinesList.get(i).synopsis;
-                    finalMagazine.type = pixelmagsMagazinesList.get(i).type;
-                    finalMagazine.title = pixelmagsMagazinesList.get(i).title;
-                    finalMagazine.mediaFormat = pixelmagsMagazinesList.get(i).mediaFormat;
-                    finalMagazine.manifest = pixelmagsMagazinesList.get(i).manifest;
-                    // magazine.lastModified = unit.getString("lastModified"); // how to get date?
-                    finalMagazine.android_store_sku = pixelmagsMagazinesList.get(i).android_store_sku;
-                    finalMagazine.price = pixelmagsMagazinesList.get(i).price;
-                    finalMagazine.thumbnailURL = pixelmagsMagazinesList.get(i).thumbnailURL;
-                    finalMagazine.ageRestriction = pixelmagsMagazinesList.get(i).ageRestriction;
-                    finalMagazine.removeFromSale = pixelmagsMagazinesList.get(i).removeFromSale;
-                    finalMagazine.isPublished = pixelmagsMagazinesList.get(i).isPublished;
-                    finalMagazine.exclude_from_subscription = pixelmagsMagazinesList.get(i).exclude_from_subscription;
-
-                    billingMagazinesList.add(finalMagazine);
                 }
+
+                // Save the Magazine Objects into the SQlite DB
+                AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
+                mDbHelper.insert_all_issues_data(mDbHelper.getWritableDatabase(), billingMagazinesList);
+                mDbHelper.close();
+
             }
-
-            // Save the Magazine Objects into the SQlite DB
-            AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
-            mDbHelper.insert_all_issues_data(mDbHelper.getWritableDatabase(), billingMagazinesList);
-            mDbHelper.close();
-
 
             // update the UI
             mHelper.queryInventoryAsync(mGotInventoryListener);
