@@ -146,12 +146,6 @@ public class LaunchActivity extends Activity {
                         apiGetMySubscriptions = new GetMySubscriptions();
                         apiGetMySubscriptions.init();
 
-                        // testing Get Issue and parse
-                        GetIssue issueFetch = new GetIssue();
-                        issueFetch.init("110422");
-
-
-
                     }
 
                 }
