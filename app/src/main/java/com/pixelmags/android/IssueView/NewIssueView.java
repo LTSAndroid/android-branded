@@ -66,7 +66,9 @@ public class NewIssueView extends FragmentActivity {
 //        String issueID = String.valueOf(120974);
 //        //
 
-        issueID = getIntent().getExtras().getString("issueId");
+ //       issueID = getIntent().getExtras().getString("issueId");
+
+        issueID = "120997";
 
         AllDownloadsDataSet mDownloadReader = new AllDownloadsDataSet(BaseApp.getContext());
         allDownloadsTracker = mDownloadReader.getAllDownloadsTrackerForIssue(mDownloadReader.getReadableDatabase(), issueID);
@@ -191,34 +193,21 @@ public class NewIssueView extends FragmentActivity {
             // Create FileInputStream to read from the encrypted image file
             FileInputStream fis = new FileInputStream(path);
 
-            Log.d(TAG,"File Input Stream is : " +fis.toString());
-
             // Save the decrypted image
             String encodedString = "1Ef95C6MaqkeDKBEuLuN49LV32FED/SkQHepcNEIUd0=";
 
 //            encodedString = "C604DF8833E8CCAACAC44B51C195B1CB8CBD6AB6085FD3EC6A07E26CBCB55662";
             encodedString = "KOiRC9ojNJmrQaYQd5YN0N46jL2WduwT+UFYv0J4wUA=";
 
-            byte[] data1 = Base64.decode(encodedString, Base64.DEFAULT);
-            String text1 = null;
-            try {
-                text1 = new String(data1, "UTF-8");
-                Log.d(TAG,"Test1 is : " +text1);
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+            encodedString = "A41062057BD3F7A21F7D9FA054545DDC402AC80D63B82576A5F35E6F066C59BA";
 
-
-//            Imp : Changed to text1 from encodedString;
-
-            byte[] bitmapdata =  decrypt( stringToBytes(text1), fis);
-
-            Log.d(TAG,"Bitmap Data is : " +bitmapdata);
+            byte[] bitmapdata =  decrypt( stringToBytes(encodedString), fis);
 
             fis.close();
 
-            if(bitmapdata != null)
-            bitmap = BitmapFactory.decodeByteArray(bitmapdata , 0, bitmapdata.length);
+            if(bitmapdata != null) {
+                bitmap = BitmapFactory.decodeByteArray(bitmapdata , 0, bitmapdata.length);
+            }
             
 
         } catch (Exception e) {
@@ -240,26 +229,15 @@ public class NewIssueView extends FragmentActivity {
         try {
 
             cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-
-            // Changed when Cipher error was coming
-//            cipher = Cipher.getInstance("AES/CFB8/NoPadding");
-            Log.d(TAG,"Cipher Instance is : " +cipher);
-            Log.d(TAG,"Byte length is : " +skey.length);
-//            IvParameterSpec ivSpeck = new IvParameterSpec(skey);
-//            cipher.init(Cipher.DECRYPT_MODE, skeySpec, ivSpeck);
-
-            //Old one
             cipher.init(Cipher.DECRYPT_MODE, skeySpec);
 
             // Create CipherInputStream to read and decrypt the image data
             cis = new CipherInputStream(fis, cipher);
-            Log.d(TAG,"Cipher Input Stream is : " +cis);
+
             // Write encrypted image data to ByteArrayOutputStream
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
             byte[] data = new byte[4096];
-
-            Log.d(TAG,"Cis Read data is : "+cis.read(data));
 
             while ((cis.read(data)) != -1) {
 
