@@ -465,10 +465,16 @@ public class AllIssuesFragment extends Fragment {
                         if(issue.issueID == magazinesList.get(i).id){
                             Log.d(TAG,"Inside the first if condition matched of issue id");
                             magazinesList.get(i).isIssueOwnedByUser = true;
-                            Log.d(TAG,"Size of all downloaded issue is : " +allDownloadsTracker.size());
+
                             if(allDownloadsTracker == null){
+
+                                Log.d(TAG,"Size of all downloaded issue is : NULL");
                                 magazinesList.get(i).status = Magazine.STATUS_DOWNLOAD;
+
                             }else{
+
+                                Log.d(TAG,"Size of all downloaded issue is : " +allDownloadsTracker.size());
+
                                 Log.d(TAG,"Inside the else condition of all download issue tracker");
                                 Log.d(TAG,"All Download Tracker size is : " +allDownloadsTracker.size());
                                 for(int k=0 ; k<allDownloadsTracker.size(); k++){
