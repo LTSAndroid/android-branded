@@ -15,6 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.pixelmags.android.IssueView.decode.Base64Utils;
+import com.pixelmags.android.IssueView.decode.IssueDecode;
 import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
 import com.pixelmags.android.datamodels.SingleDownloadIssueTracker;
 import com.pixelmags.android.pixelmagsapp.R;
@@ -43,6 +45,7 @@ public class NewIssueView extends FragmentActivity {
     ImageFragmentPagerAdapter imageFragmentPagerAdapter;
     ViewPager viewPager;
     public String issueID;
+    public String documentKey;
     //
 
     AllDownloadsIssueTracker allDownloadsTracker;
@@ -69,6 +72,7 @@ public class NewIssueView extends FragmentActivity {
  //       issueID = getIntent().getExtras().getString("issueId");
 
         issueID = "120997";
+        documentKey ="pBBiBXvT96IffZ+gVFRd3EAqyA1juCV2pfNebwZsWbo="; // the key for 120997
 
         AllDownloadsDataSet mDownloadReader = new AllDownloadsDataSet(BaseApp.getContext());
         allDownloadsTracker = mDownloadReader.getAllDownloadsTrackerForIssue(mDownloadReader.getReadableDatabase(), issueID);
@@ -150,7 +154,7 @@ public class NewIssueView extends FragmentActivity {
             Bitmap imageForView = null;
             String imageLocation = issuePagesLocations.get(position);
             if(imageLocation != null){
-                imageForView =  decryptFile(imageLocation);
+                imageForView =  decryptFile(imageLocation, documentKey);
                 Log.d(TAG,"Image for view is : "+imageForView);
                 if(imageForView != null){
                     imageView.setImageBitmap(imageForView);
@@ -169,23 +173,10 @@ public class NewIssueView extends FragmentActivity {
             swipeFragment.setArguments(bundle);
             return swipeFragment;
         }
-
     }
 
 
-    private byte[] stringToBytes(String input) {
-
-        int length = input.length();
-        byte[] output = new byte[length / 2];
-
-        for (int i = 0; i < length; i += 2) {
-            output[i / 2] = (byte) ((digit(input.charAt(i), 16) << 4) | digit(input.charAt(i+1), 16));
-        }
-        return output;
-
-    }
-
-    public Bitmap decryptFile(String path){
+    public Bitmap decryptFile(String path, String documentKey){
 
         Bitmap bitmap = null;
 
@@ -193,15 +184,11 @@ public class NewIssueView extends FragmentActivity {
             // Create FileInputStream to read from the encrypted image file
             FileInputStream fis = new FileInputStream(path);
 
-            // Save the decrypted image
-            String encodedString = "1Ef95C6MaqkeDKBEuLuN49LV32FED/SkQHepcNEIUd0=";
+            // Decode and Save the decrypted image
+            IssueDecode decoder = new IssueDecode();
 
-//            encodedString = "C604DF8833E8CCAACAC44B51C195B1CB8CBD6AB6085FD3EC6A07E26CBCB55662";
-            encodedString = "KOiRC9ojNJmrQaYQd5YN0N46jL2WduwT+UFYv0J4wUA=";
-
-            encodedString = "A41062057BD3F7A21F7D9FA054545DDC402AC80D63B82576A5F35E6F066C59BA";
-
-            byte[] bitmapdata =  decrypt( stringToBytes(encodedString), fis);
+//            byte[] bitmapdata =  decrypt( utils.getDocumentKeyDecryptedArray(encodedString), fis);
+            byte[] bitmapdata =  decoder.getDecodedBitMap(documentKey, fis);
 
             fis.close();
 
@@ -218,55 +205,6 @@ public class NewIssueView extends FragmentActivity {
         return bitmap;
     }
 
-    private byte[] decrypt(byte[] skey, FileInputStream fis){
 
-
-        SecretKeySpec skeySpec = new SecretKeySpec(skey, "AES");
-        Cipher cipher;
-        byte[] decryptedData=null;
-        CipherInputStream cis=null;
-
-        try {
-
-            cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            cipher.init(Cipher.DECRYPT_MODE, skeySpec);
-
-            // Create CipherInputStream to read and decrypt the image data
-            cis = new CipherInputStream(fis, cipher);
-
-            // Write encrypted image data to ByteArrayOutputStream
-            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-
-            byte[] data = new byte[4096];
-
-            while ((cis.read(data)) != -1) {
-
-                buffer.write(data);
-            }
-
-            buffer.flush();
-
-            decryptedData=buffer.toByteArray();
-
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        finally{
-
-            try {
-                fis.close();
-
-                cis.close();
-
-            } catch (IOException e) {
-
-                // TODO Auto-generated catch block
-
-                e.printStackTrace();
-            }
-        }
-        return decryptedData;
-
-    }
 
 }
