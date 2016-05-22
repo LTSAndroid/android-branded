@@ -15,8 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.pixelmags.android.IssueView.decode.Base64Utils;
-import com.pixelmags.android.IssueView.decode.IssueDecode;
 import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
 import com.pixelmags.android.datamodels.SingleDownloadIssueTracker;
 import com.pixelmags.android.pixelmagsapp.R;
@@ -32,6 +30,7 @@ import java.util.ArrayList;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import static java.lang.Character.digit;
@@ -45,7 +44,6 @@ public class NewIssueView extends FragmentActivity {
     ImageFragmentPagerAdapter imageFragmentPagerAdapter;
     ViewPager viewPager;
     public String issueID;
-    public String documentKey;
     //
 
     AllDownloadsIssueTracker allDownloadsTracker;
@@ -65,15 +63,12 @@ public class NewIssueView extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_pager);
 
+//        //
+//        String issueID = String.valueOf(120974);
+//        //
 
- //       issueID = getIntent().getExtras().getString("issueId");
-
-        /*
-        TODO : Get the Issue ID and Document Key on init of this class i.e.via intent extras
-        */
-
-        issueID = "120997";
-        documentKey ="pBBiBXvT96IffZ+gVFRd3EAqyA1juCV2pfNebwZsWbo="; // the key for 120997
+        issueID = getIntent().getExtras().getString("issueId");
+        Log.d(TAG,"Issue Id is : "+issueID);
 
         AllDownloadsDataSet mDownloadReader = new AllDownloadsDataSet(BaseApp.getContext());
         allDownloadsTracker = mDownloadReader.getAllDownloadsTrackerForIssue(mDownloadReader.getReadableDatabase(), issueID);
@@ -155,7 +150,7 @@ public class NewIssueView extends FragmentActivity {
             Bitmap imageForView = null;
             String imageLocation = issuePagesLocations.get(position);
             if(imageLocation != null){
-                imageForView =  decryptFile(imageLocation, documentKey);
+                imageForView =  decryptFile(imageLocation);
                 Log.d(TAG,"Image for view is : "+imageForView);
                 if(imageForView != null){
                     imageView.setImageBitmap(imageForView);
@@ -174,10 +169,23 @@ public class NewIssueView extends FragmentActivity {
             swipeFragment.setArguments(bundle);
             return swipeFragment;
         }
+
     }
 
 
-    public Bitmap decryptFile(String path, String documentKey){
+    private byte[] stringToBytes(String input) {
+
+        int length = input.length();
+        byte[] output = new byte[length / 2];
+
+        for (int i = 0; i < length; i += 2) {
+            output[i / 2] = (byte) ((digit(input.charAt(i), 16) << 4) | digit(input.charAt(i+1), 16));
+        }
+        return output;
+
+    }
+
+    public Bitmap decryptFile(String path){
 
         Bitmap bitmap = null;
 
@@ -185,16 +193,25 @@ public class NewIssueView extends FragmentActivity {
             // Create FileInputStream to read from the encrypted image file
             FileInputStream fis = new FileInputStream(path);
 
-            // Decode and Save the decrypted image
-            IssueDecode decoder = new IssueDecode();
+            Log.d(TAG,"File Input Stream is : " +fis);
 
-//            byte[] bitmapdata =  decrypt( utils.getDocumentKeyDecryptedArray(encodedString), fis);
-            byte[] bitmapdata =  decoder.getDecodedBitMap(documentKey, fis);
+            // Save the decrypted image
+//            String encodedString = "1Ef95C6MaqkeDKBEuLuN49LV32FED/SkQHepcNEIUd0=";
+
+//            encodedString = "C604DF8833E8CCAACAC44B51C195B1CB8CBD6AB6085FD3EC6A07E26CBCB55662";
+//            encodedString = "KOiRC9ojNJmrQaYQd5YN0N46jL2WduwT+UFYv0J4wUA=";
+
+           String encodedString = "28E8910BDA233499AB41A61077960DD0DE3A8CBD9676EC13F94158BF4278C140";
+
+            byte[] bitmapdata =  decrypt( stringToBytes(encodedString), fis);
+
+            Log.d(TAG,"Bitmap Data is : " +bitmapdata);
 
             fis.close();
 
             if(bitmapdata != null) {
-                bitmap = BitmapFactory.decodeByteArray(bitmapdata , 0, bitmapdata.length);
+                bitmap = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
+                Log.d(TAG,"Bitmap is : "+bitmap);
             }
             
 
@@ -206,6 +223,66 @@ public class NewIssueView extends FragmentActivity {
         return bitmap;
     }
 
+    private byte[] decrypt(byte[] skey, FileInputStream fis){
 
+
+        SecretKeySpec skeySpec = new SecretKeySpec(skey, "AES");
+        Cipher cipher;
+        byte[] decryptedData=null;
+        CipherInputStream cis=null;
+
+        try {
+
+            cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+
+            // Changed when Cipher error was coming
+//            cipher = Cipher.getInstance("AES/CFB8/NoPadding");
+//            Log.d(TAG,"Cipher Instance is : " +cipher);
+//            Log.d(TAG,"Byte length is : " +skey.length);
+//            IvParameterSpec ivSpeck = new IvParameterSpec(skey);
+//            cipher.init(Cipher.DECRYPT_MODE, skeySpec, ivSpeck);
+
+            //Old one
+            cipher.init(Cipher.DECRYPT_MODE, skeySpec);
+
+            // Create CipherInputStream to read and decrypt the image data
+            cis = new CipherInputStream(fis, cipher);
+            Log.d(TAG,"Cipher Input Stream is : " +cis);
+            // Write encrypted image data to ByteArrayOutputStream
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+            byte[] data = new byte[4096];
+
+            Log.d(TAG,"Cis Read data is : "+cis.read(data));
+
+            while ((cis.read(data)) != -1) {
+
+                buffer.write(data);
+            }
+
+            buffer.flush();
+
+            decryptedData=buffer.toByteArray();
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        finally{
+
+            try {
+                fis.close();
+
+                cis.close();
+
+            } catch (IOException e) {
+
+                // TODO Auto-generated catch block
+
+                e.printStackTrace();
+            }
+        }
+        return decryptedData;
+
+    }
 
 }

@@ -292,7 +292,7 @@ public class AllDownloadsFragment extends Fragment {
                                 if(jumpTime == limit){
                                     run = false;
                                 }
-                                sleep(600);
+                                sleep(6666);
                                 jumpTime += 1;
                                 if (progressBar != null)
                                     progressBar.setProgress(jumpTime);
