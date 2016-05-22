@@ -65,11 +65,12 @@ public class NewIssueView extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_pager);
 
-//        //
-//        String issueID = String.valueOf(120974);
-//        //
 
  //       issueID = getIntent().getExtras().getString("issueId");
+
+        /*
+        TODO : Get the Issue ID and Document Key on init of this class i.e.via intent extras
+        */
 
         issueID = "120997";
         documentKey ="pBBiBXvT96IffZ+gVFRd3EAqyA1juCV2pfNebwZsWbo="; // the key for 120997
