@@ -8,13 +8,13 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.pixelmags.android.IssueView.decode.IssueDecode;
 import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
 import com.pixelmags.android.datamodels.SingleDownloadIssueTracker;
 import com.pixelmags.android.pixelmagsapp.R;
@@ -25,12 +25,10 @@ import com.pixelmags.android.util.BaseApp;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
-import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import static java.lang.Character.digit;
@@ -55,6 +53,7 @@ public class NewIssueView extends FragmentActivity {
     // TODO : get the decrypt key and store here
     private String decrypt_key;
     private String TAG = "NewIssueView";
+    private String documentKey;
 
 
     @Override
@@ -68,7 +67,9 @@ public class NewIssueView extends FragmentActivity {
 //        //
 
         issueID = getIntent().getExtras().getString("issueId");
+        documentKey = getIntent().getExtras().getString("documentKey");
         Log.d(TAG,"Issue Id is : "+issueID);
+        Log.d(TAG,"Document Key is : "+documentKey);
 
         AllDownloadsDataSet mDownloadReader = new AllDownloadsDataSet(BaseApp.getContext());
         allDownloadsTracker = mDownloadReader.getAllDownloadsTrackerForIssue(mDownloadReader.getReadableDatabase(), issueID);
@@ -91,7 +92,10 @@ public class NewIssueView extends FragmentActivity {
                     issuePagesLocations.add(finalPath);
                 }
             }
+
+
         }
+
 
 
         imageFragmentPagerAdapter = new ImageFragmentPagerAdapter(getSupportFragmentManager());
@@ -150,7 +154,8 @@ public class NewIssueView extends FragmentActivity {
             Bitmap imageForView = null;
             String imageLocation = issuePagesLocations.get(position);
             if(imageLocation != null){
-                imageForView =  decryptFile(imageLocation);
+                imageForView =  decryptFile(imageLocation,documentKey);
+
                 Log.d(TAG,"Image for view is : "+imageForView);
                 if(imageForView != null){
                     imageView.setImageBitmap(imageForView);
@@ -185,15 +190,16 @@ public class NewIssueView extends FragmentActivity {
 
     }
 
-    public Bitmap decryptFile(String path){
+    public Bitmap decryptFile(String path,String documentKey){
 
         Bitmap bitmap = null;
 
         try {
             // Create FileInputStream to read from the encrypted image file
             FileInputStream fis = new FileInputStream(path);
+            IssueDecode issueDecode = new IssueDecode();
 
-            Log.d(TAG,"File Input Stream is : " +fis);
+            byte[] bitmapdata = issueDecode.getDecodedBitMap(documentKey,fis);
 
             // Save the decrypted image
 //            String encodedString = "1Ef95C6MaqkeDKBEuLuN49LV32FED/SkQHepcNEIUd0=";
@@ -201,11 +207,11 @@ public class NewIssueView extends FragmentActivity {
 //            encodedString = "C604DF8833E8CCAACAC44B51C195B1CB8CBD6AB6085FD3EC6A07E26CBCB55662";
 //            encodedString = "KOiRC9ojNJmrQaYQd5YN0N46jL2WduwT+UFYv0J4wUA=";
 
-           String encodedString = "28E8910BDA233499AB41A61077960DD0DE3A8CBD9676EC13F94158BF4278C140";
-
-            byte[] bitmapdata =  decrypt( stringToBytes(encodedString), fis);
-
-            Log.d(TAG,"Bitmap Data is : " +bitmapdata);
+//           String encodedString = "28E8910BDA233499AB41A61077960DD0DE3A8CBD9676EC13F94158BF4278C140";
+//
+//            byte[] bitmapdata =  decrypt( stringToBytes(encodedString), fis);
+//
+//            Log.d(TAG,"Bitmap Data is : " +bitmapdata);
 
             fis.close();
 

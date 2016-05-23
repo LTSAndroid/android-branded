@@ -6,6 +6,8 @@ package com.pixelmags.android.json;
 public class GetDocumentKeyParser extends JSONParser {
 
     public Object mData;
+    private String TAG = "GetDocumentKeyParser";
+    private String documentKey;
 
 
     public GetDocumentKeyParser(String Data){

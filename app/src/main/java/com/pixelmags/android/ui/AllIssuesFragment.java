@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.pixelmags.android.IssueView.NewIssueView;
+import com.pixelmags.android.api.GetDocumentKey;
 import com.pixelmags.android.api.GetIssue;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
@@ -106,7 +107,7 @@ public class AllIssuesFragment extends Fragment {
             Log.d(TAG,"Android store Sku is : " +magazinesList.get(position).android_store_sku);
             Log.d(TAG,"Magazine List Id is : " +magazinesList.get(position).id);
 
-            myAct.canPurchaseLauncher(magazinesList.get(position).android_store_sku,magazinesList.get(position).id);
+            myAct.canPurchaseLauncher(magazinesList.get(position).android_store_sku, magazinesList.get(position).id);
         }
         else
         {
@@ -197,6 +198,7 @@ public class AllIssuesFragment extends Fragment {
     public class CustomGridAdapter extends BaseAdapter {
 
         private Context mContext;
+        private String documentkey;
 
         public CustomGridAdapter(Context c) {
             mContext = c;
@@ -297,14 +299,16 @@ public class AllIssuesFragment extends Fragment {
                         int pos = (int) v.getTag();
                         String issueId = String.valueOf(magazinesList.get(pos).id);
 
-//                        NewIssueView newIssueView = new NewIssueView(issueId);
-//                        getActivity().getFragmentManager().beginTransaction()
-//                                .replace(R.id.main_fragment_container,newIssueView,"Fragment1")
-//                                .addToBackStack(null)
-//                                .commit();
+                        GetDocumentKey getDocumentKey = new GetDocumentKey();
+
+                        documentkey = getDocumentKey.init(UserPrefs.getUserEmail(), UserPrefs.getUserPassword(), UserPrefs.getDeviceID(), issueId,
+                                Config.Magazine_Number, Config.Bundle_ID);
+
+                        Log.d(TAG,"Document Key is : " +documentkey.trim());
 
                         Intent intent = new Intent(getActivity(),NewIssueView.class);
                         intent.putExtra("issueId",issueId);
+                        intent.putExtra("documentKey",documentkey.trim());
                         startActivity(intent);
 
                     }
