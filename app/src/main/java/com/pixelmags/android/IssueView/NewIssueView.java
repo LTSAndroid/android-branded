@@ -201,18 +201,6 @@ public class NewIssueView extends FragmentActivity {
 
             byte[] bitmapdata = issueDecode.getDecodedBitMap(documentKey,fis);
 
-            // Save the decrypted image
-//            String encodedString = "1Ef95C6MaqkeDKBEuLuN49LV32FED/SkQHepcNEIUd0=";
-
-//            encodedString = "C604DF8833E8CCAACAC44B51C195B1CB8CBD6AB6085FD3EC6A07E26CBCB55662";
-//            encodedString = "KOiRC9ojNJmrQaYQd5YN0N46jL2WduwT+UFYv0J4wUA=";
-
-//           String encodedString = "28E8910BDA233499AB41A61077960DD0DE3A8CBD9676EC13F94158BF4278C140";
-//
-//            byte[] bitmapdata =  decrypt( stringToBytes(encodedString), fis);
-//
-//            Log.d(TAG,"Bitmap Data is : " +bitmapdata);
-
             fis.close();
 
             if(bitmapdata != null) {
@@ -227,68 +215,6 @@ public class NewIssueView extends FragmentActivity {
             e.printStackTrace();
         }
         return bitmap;
-    }
-
-    private byte[] decrypt(byte[] skey, FileInputStream fis){
-
-
-        SecretKeySpec skeySpec = new SecretKeySpec(skey, "AES");
-        Cipher cipher;
-        byte[] decryptedData=null;
-        CipherInputStream cis=null;
-
-        try {
-
-            cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-
-            // Changed when Cipher error was coming
-//            cipher = Cipher.getInstance("AES/CFB8/NoPadding");
-//            Log.d(TAG,"Cipher Instance is : " +cipher);
-//            Log.d(TAG,"Byte length is : " +skey.length);
-//            IvParameterSpec ivSpeck = new IvParameterSpec(skey);
-//            cipher.init(Cipher.DECRYPT_MODE, skeySpec, ivSpeck);
-
-            //Old one
-            cipher.init(Cipher.DECRYPT_MODE, skeySpec);
-
-            // Create CipherInputStream to read and decrypt the image data
-            cis = new CipherInputStream(fis, cipher);
-            Log.d(TAG,"Cipher Input Stream is : " +cis);
-            // Write encrypted image data to ByteArrayOutputStream
-            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-
-            byte[] data = new byte[4096];
-
-            Log.d(TAG,"Cis Read data is : "+cis.read(data));
-
-            while ((cis.read(data)) != -1) {
-
-                buffer.write(data);
-            }
-
-            buffer.flush();
-
-            decryptedData=buffer.toByteArray();
-
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        finally{
-
-            try {
-                fis.close();
-
-                cis.close();
-
-            } catch (IOException e) {
-
-                // TODO Auto-generated catch block
-
-                e.printStackTrace();
-            }
-        }
-        return decryptedData;
-
     }
 
 }
