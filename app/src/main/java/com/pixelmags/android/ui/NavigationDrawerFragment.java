@@ -374,14 +374,6 @@ public class NavigationDrawerFragment extends Fragment {
                  //       .addToBackStack(null)
                         .commit();
                 break;
-
-            case 6:
-                currentPage =getString(R.string.menu_issue_view);
-                mTitle = getString(R.string.menu_issue_view);
-
-                startActivity(new Intent(getActivity(),NewIssueView.class));
-                break;
-
             default:
                 currentPage =getString(R.string.app_name);
                 mTitle = getString(R.string.app_name);
@@ -491,8 +483,7 @@ public class NavigationDrawerFragment extends Fragment {
                            getString(R.string.menu_title_subscriptions),
                            getString(R.string.menu_title_downloads),
                            getString(R.string.menu_title_contactsupport),
-                           getString(R.string.menu_title_about),
-                           getString(R.string.menu_issue_view)
+                           getString(R.string.menu_title_about)
                    }));
        }
 
