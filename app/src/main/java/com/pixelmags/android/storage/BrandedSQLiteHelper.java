@@ -23,6 +23,7 @@ public class BrandedSQLiteHelper extends SQLiteOpenHelper {
     public static final String TABLE_PAGE_DATA_PREFIX="Page_Data_";  // for every issue its pages are stored under the table Page_Data_(IssueId)
     public static final String TABLE_ALL_DOWNLOADS ="All_Downloads_Table";
     public static final String TABLE_UNIQUE_ISSUE_DOWNLOAD_TABLE_PREFIX ="Issue_Download_Table_";
+    public static final String TABLE_DOCUMENT_KEY="Issue_Document_key";
 
 
     public BrandedSQLiteHelper(Context context) {

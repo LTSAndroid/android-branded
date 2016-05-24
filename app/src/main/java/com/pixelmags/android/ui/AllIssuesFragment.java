@@ -1,11 +1,13 @@
 package com.pixelmags.android.ui;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -25,12 +27,14 @@ import com.pixelmags.android.api.GetDocumentKey;
 import com.pixelmags.android.api.GetIssue;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
+import com.pixelmags.android.datamodels.IssueDocumentKey;
 import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.datamodels.MyIssue;
 import com.pixelmags.android.pixelmagsapp.MainActivity;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.storage.AllDownloadsDataSet;
 import com.pixelmags.android.storage.AllIssuesDataSet;
+import com.pixelmags.android.storage.MyIssueDocumentKey;
 import com.pixelmags.android.storage.MyIssuesDataSet;
 import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.ui.uicomponents.MultiStateButton;
@@ -49,6 +53,8 @@ public class AllIssuesFragment extends Fragment {
     private String TAG = "AllIssuesFragment";
     private MultiStateButton issuePriceButton;
     ArrayList<AllDownloadsIssueTracker> allDownloadsTracker;
+    private String documentKey;
+    ProgressDialog progressBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -158,13 +164,66 @@ public class AllIssuesFragment extends Fragment {
     public void downloadButtonClicked(int position){
         if(UserPrefs.getUserLoggedIn()){
 
+            progressBar = new ProgressDialog(getActivity());
+            if (progressBar != null) {
+                progressBar.show();
+                progressBar.setCancelable(false);
+                progressBar.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                progressBar.setContentView(R.layout.progress_dialog);
+            }
+
+            String issueId = String.valueOf(magazinesList.get(position).id);
+
             GetIssue getIssue = new GetIssue();
-            getIssue.init(String.valueOf(magazinesList.get(position).id));
+            getIssue.init(issueId);
+
+            GetDocumentKey getDocumentKey = new GetDocumentKey();
+            documentKey = getDocumentKey.init(UserPrefs.getUserEmail(), UserPrefs.getUserPassword(), UserPrefs.getDeviceID(),
+                   issueId,Config.Magazine_Number, Config.Bundle_ID);
+
+            saveDocumentKey(issueId,Config.Magazine_Number,documentKey.trim());
 
             magazinesList.get(position).status = Magazine.STATUS_VIEW;
             gridAdapter.notifyDataSetChanged();
 
+            progressBar.dismiss();
+
+            new AlertDialog.Builder(getActivity())
+                    .setTitle("Issue Download!")
+                    .setMessage("You can view your Issue in download section.")
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            Fragment fragmentDownload = new AllDownloadsFragment();
+                            // Insert the fragment by replacing any existing fragment
+                            FragmentManager allIssuesFragmentManager = getFragmentManager();
+                            allIssuesFragmentManager.beginTransaction()
+                                    .replace(R.id.main_fragment_container, fragmentDownload)
+                                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                                            //       .addToBackStack(null)
+                                    .commit();
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                           dialog.dismiss();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+
+
         }
+    }
+
+    public void saveDocumentKey(String issueId, String magazineNumber, String documentKey){
+
+        // Save the Subscription Objects into the SQlite DB
+        MyIssueDocumentKey mDbHelper = new MyIssueDocumentKey(BaseApp.getContext());
+        mDbHelper.insert_my_issues_documentKey(mDbHelper.getWritableDatabase(), issueId,magazineNumber,documentKey);
+        mDbHelper.close();
+
+
+
     }
 
 
@@ -198,7 +257,8 @@ public class AllIssuesFragment extends Fragment {
     public class CustomGridAdapter extends BaseAdapter {
 
         private Context mContext;
-        private String documentkey;
+        ArrayList<IssueDocumentKey> issueDocumentKeys;
+
 
         public CustomGridAdapter(Context c) {
             mContext = c;
@@ -299,16 +359,13 @@ public class AllIssuesFragment extends Fragment {
                         int pos = (int) v.getTag();
                         String issueId = String.valueOf(magazinesList.get(pos).id);
 
-                        GetDocumentKey getDocumentKey = new GetDocumentKey();
+                        documentKey = getIssueDocumentKey(magazinesList.get(pos).id);
 
-                        documentkey = getDocumentKey.init(UserPrefs.getUserEmail(), UserPrefs.getUserPassword(), UserPrefs.getDeviceID(), issueId,
-                                Config.Magazine_Number, Config.Bundle_ID);
-
-                        Log.d(TAG,"Document Key is : " +documentkey.trim());
+                        Log.d(TAG,"Document Key is : " +documentKey);
 
                         Intent intent = new Intent(getActivity(),NewIssueView.class);
                         intent.putExtra("issueId",issueId);
-                        intent.putExtra("documentKey",documentkey.trim());
+                        intent.putExtra("documentKey",documentKey);
                         startActivity(intent);
 
                     }
@@ -323,6 +380,25 @@ public class AllIssuesFragment extends Fragment {
     @Override
     public void notifyDataSetChanged(){
         super.notifyDataSetChanged();
+    }
+
+    public String getIssueDocumentKey(int issueId){
+
+        String issueKey = null;
+
+        MyIssueDocumentKey mDbReader = new MyIssueDocumentKey(BaseApp.getContext());
+        if(mDbReader != null) {
+            issueDocumentKeys = mDbReader.getMyIssuesDocumentKey(mDbReader.getReadableDatabase());
+            mDbReader.close();
+        }
+
+        for(int i=0; i<issueDocumentKeys.size(); i++){
+            if(issueId == issueDocumentKeys.get(i).issueID){
+                issueKey = issueDocumentKeys.get(i).documentKey;
+            }
+        }
+
+        return issueKey;
     }
 
     }
@@ -348,6 +424,25 @@ public class AllIssuesFragment extends Fragment {
         }
 
         @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            try {
+                progressBar = new ProgressDialog(getActivity());
+                if (progressBar != null) {
+                    progressBar.show();
+                    progressBar.setCancelable(false);
+                    progressBar.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                    progressBar.setContentView(R.layout.progress_dialog);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+        }
+
+
+        @Override
         protected String doInBackground(String... params) {
             // TODO: attempt authentication against a network service.
 
@@ -367,9 +462,11 @@ public class AllIssuesFragment extends Fragment {
 
         }
 
+        @Override
         protected void onPostExecute(String result) {
-
+        super.onPostExecute(result);
             mGetAllIssuesTask = null;
+            progressBar.dismiss();
 
            /* for(int i=0; i< issuessArray.size();i++) {
 

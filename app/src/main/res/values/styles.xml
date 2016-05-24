@@ -11,7 +11,7 @@
     <style name="MultiStateButtonBase">
         <item name="android:background">@drawable/multibuttonbaseshape</item>
         <item name="android:shadowColor">#3384ff</item>
-        <item name="android:layout_width">70dp</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">35dp</item>
         <item name="android:shadowDx">0</item>
         <item name="android:shadowDy">0</item>

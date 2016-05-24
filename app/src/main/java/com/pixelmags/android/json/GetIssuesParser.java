@@ -34,7 +34,7 @@ public class GetIssuesParser extends JSONParser {
 
 
             JSONArray arrayData = baseJSON.getJSONArray("data");
-            for(int i=0;i< 4;i++)
+            for(int i=0;i< 5;i++)
             {
                 Magazine magazine = new Magazine();
                 JSONObject unit = arrayData.getJSONObject(i);

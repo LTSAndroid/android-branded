@@ -11,10 +11,9 @@
         android:id="@+id/displayIssuesGridView"
         android:stretchMode="columnWidth"
         android:gravity="center"
-        android:paddingRight="10dp"
-        android:paddingLeft="10dp"
-        android:paddingBottom="10dp"
+        android:padding="5dp"
         android:clipToPadding="true"
+        android:horizontalSpacing="5dp"
         android:numColumns="auto_fit" />
 
 </RelativeLayout>

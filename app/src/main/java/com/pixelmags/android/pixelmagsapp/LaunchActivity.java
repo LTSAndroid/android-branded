@@ -1,29 +1,19 @@
 package com.pixelmags.android.pixelmagsapp;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.Window;
 
-import com.pixelmags.android.api.GetIssue;
 import com.pixelmags.android.api.GetIssues;
 import com.pixelmags.android.api.GetMyIssues;
 import com.pixelmags.android.api.GetMySubscriptions;
 import com.pixelmags.android.api.GetSubscriptions;
 import com.pixelmags.android.api.ValidateUser;
 import com.pixelmags.android.comms.Config;
-import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.storage.UserPrefs;
-import com.pixelmags.android.util.IabHelper;
-import com.pixelmags.android.util.IabResult;
 
 public class LaunchActivity extends Activity {
 
@@ -96,6 +86,11 @@ public class LaunchActivity extends Activity {
 
         }
 
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+        }
 
         @Override
         protected String doInBackground(String... params) {
@@ -158,9 +153,10 @@ public class LaunchActivity extends Activity {
             return resultToDisplay;
 
         }
-        protected void onPostExecute(String result) {
 
-//            launchMainActivity();
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPreExecute();
 
         }
 
