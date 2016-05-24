@@ -110,6 +110,15 @@ public class AllDownloadsFragment extends Fragment {
         customAllDownloadsGridAdapter.updateAdapter();
     }
 
+    public void updateButtonView(String status){
+        CustomAllDownloadsGridAdapter customAllDownloadsGridAdapter = new CustomAllDownloadsGridAdapter(getActivity());
+        customAllDownloadsGridAdapter.updateButtonViewAdapter(status);
+        customAllDownloadsGridAdapter.updateAdapter();
+    }
+
+
+
+
 
 
 /**
@@ -272,8 +281,14 @@ public class AllDownloadsFragment extends Fragment {
         Button gridDownloadStatusButton = (Button) grid.findViewById(R.id.gridDownloadStatusButton);
         String downloadStatusText = AllDownloadsDataSet.getDownloadStatusText(buttonState);
         gridDownloadStatusButton.setText(downloadStatusText);
+        gridDownloadAdapter.notifyDataSetChanged();
+    }
 
-        notifyDataSetChanged();
+    public void updateButtonViewAdapter(String buttonState){
+
+        Button gridDownloadStatusButton = (Button) grid.findViewById(R.id.gridDownloadStatusButton);
+        gridDownloadStatusButton.setText(buttonState);
+        gridDownloadAdapter.notifyDataSetChanged();
     }
 
     public void updateTheProgressBar(int issueId) {
@@ -346,7 +361,12 @@ public class AllDownloadsFragment extends Fragment {
                 DownloadsManager.getInstance().downLoadPaused();
 
                 allDownloadsIssuesListTracker.get(listMenuItemPosition).downloadStatus = AllDownloadsDataSet.DOWNLOAD_STATUS_PAUSED;
-//                gridDownloadAdapter.notifyDataSetChanged();
+                Button gridDownloadStatusButton1 = (Button) grid.findViewById(R.id.gridDownloadStatusButton);
+                String downloadStatusText1 = AllDownloadsDataSet.getDownloadStatusText(AllDownloadsDataSet.DOWNLOAD_STATUS_PAUSED);
+                gridDownloadStatusButton1.setText(downloadStatusText1);
+
+                notifyDataSetChanged();
+                gridDownloadAdapter.notifyDataSetChanged();
 
                 break;
 
@@ -354,7 +374,12 @@ public class AllDownloadsFragment extends Fragment {
 
                 DownloadsManager.getInstance().downLoadResume();
                 allDownloadsIssuesListTracker.get(listMenuItemPosition).downloadStatus = AllDownloadsDataSet.DOWNLOAD_STATUS_IN_PROGRESS;
-//                gridDownloadAdapter.notifyDataSetChanged();
+                Button gridDownloadStatusButton = (Button) grid.findViewById(R.id.gridDownloadStatusButton);
+                String downloadStatusText = AllDownloadsDataSet.getDownloadStatusText(AllDownloadsDataSet.DOWNLOAD_STATUS_IN_PROGRESS);
+                gridDownloadStatusButton.setText(downloadStatusText);
+
+                notifyDataSetChanged();
+                gridDownloadAdapter.notifyDataSetChanged();
 
                 break;
 
@@ -366,7 +391,7 @@ public class AllDownloadsFragment extends Fragment {
                     // Deleting Thumbnail Images
                     Log.d(TAG, "Thumb nail image before delete is : " + DownloadThumbnails.getIssueDownloadedThumbnailStorageDirectory
                             (String.valueOf(allDownloadsIssuesListTracker.get(listMenuItemPosition).issueID)));
-
+                    DownloadsManager.getInstance().downLoadPaused();
                     deleteThumbnail(DownloadThumbnails.getIssueDownloadedThumbnailStorageDirectory
                             (String.valueOf(allDownloadsIssuesListTracker.get(listMenuItemPosition).issueID)));
 

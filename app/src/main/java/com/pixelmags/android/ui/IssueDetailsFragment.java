@@ -1,34 +1,46 @@
 package com.pixelmags.android.ui;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.pixelmags.android.IssueView.NewIssueView;
+import com.pixelmags.android.api.GetDocumentKey;
 import com.pixelmags.android.api.GetIssue;
 import com.pixelmags.android.api.GetPreviewImages;
 import com.pixelmags.android.comms.Config;
+import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
+import com.pixelmags.android.datamodels.IssueDocumentKey;
 import com.pixelmags.android.datamodels.Magazine;
+import com.pixelmags.android.datamodels.MyIssue;
 import com.pixelmags.android.datamodels.PreviewImage;
 import com.pixelmags.android.download.DownloadPreviewImages;
 import com.pixelmags.android.download.QueueDownload;
 import com.pixelmags.android.pixelmagsapp.MainActivity;
 import com.pixelmags.android.pixelmagsapp.R;
+import com.pixelmags.android.storage.AllDownloadsDataSet;
 import com.pixelmags.android.storage.AllIssuesDataSet;
+import com.pixelmags.android.storage.MyIssueDocumentKey;
+import com.pixelmags.android.storage.MyIssuesDataSet;
 import com.pixelmags.android.storage.UserPrefs;
+import com.pixelmags.android.ui.uicomponents.MultiStateButton;
 import com.pixelmags.android.util.BaseApp;
 
 import java.io.File;
@@ -56,7 +68,12 @@ public class IssueDetailsFragment extends Fragment {
     ImageView issueDetailsImageView;
     TextView issueDetailsTitle;
     TextView issueDetailsSynopsis;
-    Button issueDetailsPriceButton;
+    MultiStateButton issueDetailsPriceButton;
+    private String TAG = "IssueDetailFragments";
+    private String documentKey;
+    ProgressDialog progressBar;
+    ArrayList<IssueDocumentKey> issueDocumentKeys;
+    ArrayList<AllDownloadsIssueTracker> allDownloadsTracker;
 
 
     public IssueDetailsFragment() {
@@ -104,10 +121,10 @@ public class IssueDetailsFragment extends Fragment {
         issueDetailsImageView = (ImageView) rootView.findViewById(R.id.issueDetailsImageView);
         issueDetailsTitle = (TextView) rootView.findViewById(R.id.issueDetailsTitle);
         issueDetailsSynopsis = (TextView) rootView.findViewById(R.id.issueDetailsSynopsis);
-        issueDetailsPriceButton = (Button) rootView.findViewById(R.id.issueDetailsPriceButton);
+        issueDetailsPriceButton = (MultiStateButton) rootView.findViewById(R.id.issueDetailsPriceButton);
 
         mLoadIssueTask = new LoadIssueAsyncTask(mMagazineID, mIssueID);
-        mLoadIssueTask.execute((String)null);
+        mLoadIssueTask.execute((String) null);
 
         return rootView;
     }
@@ -143,49 +160,92 @@ public class IssueDetailsFragment extends Fragment {
             }
 
             if(issueDetailsPriceButton != null){
-                issueDetailsPriceButton.setText(String.valueOf(issueData.price));
 
+
+//                issueDetailsPriceButton.setText(String.valueOf(issueData.price));
+//
+//                issueDetailsPriceButton.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v)
+//                    {
+//                        //Launch Can Purchase, if user loggedin
+//                        if(UserPrefs.getUserLoggedIn())
+//                        {
+//                            MainActivity myAct = (MainActivity) getActivity();
+//                            myAct.canPurchaseLauncher(issueData.android_store_sku,issueData.id);
+//                        }
+//                        else
+//                        {
+//                            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+//                            alertDialogBuilder.setTitle(getString(R.string.purchase_initiation_fail_title));
+//
+//                            // set dialog message
+//                            alertDialogBuilder
+//                                    .setMessage(getString(R.string.purchase_initiation_fail_message))
+//                                    .setCancelable(false)
+//                                    .setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener() {
+//                                        public void onClick(DialogInterface dialog,int id) {
+//                                            dialog.dismiss();
+//
+//                                            Fragment fragmentLogin = new LoginFragment();
+//
+//                                            // Insert the fragment by replacing any existing fragment
+//                                            FragmentManager allIssuesFragmentManager = getFragmentManager();
+//                                            allIssuesFragmentManager.beginTransaction()
+//                                                    .replace(R.id.main_fragment_container, fragmentLogin)
+//                                                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+//                                                    .commit();
+//                                        }
+//                                    });
+//                            AlertDialog alertDialog = alertDialogBuilder.create();
+//                            alertDialog.show();
+//                        }
+//
+//                       /* mIssueTask = new DownloadIssueAsyncTask(Config.Magazine_Number, "120974");
+//                        mIssueTask.execute((String) null);*/
+//                    }
+//                });
+
+                Log.d(TAG," Issue Data is : " +issueData.status);
+                issueDetailsPriceButton.setButtonState(issueData);
                 issueDetailsPriceButton.setOnClickListener(new View.OnClickListener() {
+
                     @Override
-                    public void onClick(View v)
-                    {
-                        //Launch Can Purchase, if user loggedin
-                        if(UserPrefs.getUserLoggedIn())
-                        {
-                            MainActivity myAct = (MainActivity) getActivity();
-                            myAct.canPurchaseLauncher(issueData.android_store_sku,issueData.id);
-                        }
-                        else
-                        {
-                            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-                            alertDialogBuilder.setTitle(getString(R.string.purchase_initiation_fail_title));
+                    public void onClick(View v) {
 
-                            // set dialog message
-                            alertDialogBuilder
-                                    .setMessage(getString(R.string.purchase_initiation_fail_message))
-                                    .setCancelable(false)
-                                    .setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog,int id) {
-                                            dialog.dismiss();
+                        if(issueData.status == Magazine.STATUS_PRICE) {
 
-                                            Fragment fragmentLogin = new LoginFragment();
+                            Log.d(TAG, "Price Button clicked");
 
-                                            // Insert the fragment by replacing any existing fragment
-                                            FragmentManager allIssuesFragmentManager = getFragmentManager();
-                                            allIssuesFragmentManager.beginTransaction()
-                                                    .replace(R.id.main_fragment_container, fragmentLogin)
-                                                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                                                    .commit();
-                                        }
-                                    });
-                            AlertDialog alertDialog = alertDialogBuilder.create();
-                            alertDialog.show();
+                            priceButtonClicked();
+
+                        }else if(issueData.status == Magazine.STATUS_DOWNLOAD){
+
+                            Log.d(TAG,"Download Button clicked");
+
+                            downloadButtonClicked();
+
+                        }else if(issueData.status == Magazine.STATUS_VIEW) {
+
+                            int pos = (int) v.getTag();
+                            String issueId = String.valueOf(issueData.id);
+
+                            documentKey = getIssueDocumentKey(issueData.id);
+
+                            Log.d(TAG,"Document Key is : " +documentKey);
+
+                            Intent intent = new Intent(getActivity(),NewIssueView.class);
+                            intent.putExtra("issueId",issueId);
+                            intent.putExtra("documentKey",documentKey);
+                            startActivity(intent);
+
                         }
 
-                       /* mIssueTask = new DownloadIssueAsyncTask(Config.Magazine_Number, "120974");
-                        mIssueTask.execute((String) null);*/
                     }
                 });
+
+
+
             }
 
             loadPreviewImages();
@@ -194,6 +254,132 @@ public class IssueDetailsFragment extends Fragment {
 
 
     }
+
+    public String getIssueDocumentKey(int issueId){
+
+        String issueKey = null;
+
+        MyIssueDocumentKey mDbReader = new MyIssueDocumentKey(BaseApp.getContext());
+        if(mDbReader != null) {
+            issueDocumentKeys = mDbReader.getMyIssuesDocumentKey(mDbReader.getReadableDatabase());
+            mDbReader.close();
+        }
+
+        for(int i=0; i<issueDocumentKeys.size(); i++){
+            if(issueId == issueDocumentKeys.get(i).issueID){
+                issueKey = issueDocumentKeys.get(i).documentKey;
+            }
+        }
+
+        return issueKey;
+    }
+
+    public void priceButtonClicked()
+    {
+        //Launch Can Purchase, if user loggedin
+        if(UserPrefs.getUserLoggedIn())
+        {
+
+            MainActivity myAct = (MainActivity) getActivity();
+
+            Log.d(TAG,"Magazine List Id is : " +issueData.id);
+
+            myAct.canPurchaseLauncher(issueData.android_store_sku, issueData.id);
+        }
+        else
+        {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+            alertDialogBuilder.setTitle(getString(R.string.purchase_initiation_fail_title));
+
+            // set dialog message
+            alertDialogBuilder
+                    .setMessage(getString(R.string.purchase_initiation_fail_message))
+                    .setCancelable(false)
+                    .setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog,int id) {
+                            dialog.dismiss();
+
+                            Fragment fragmentLogin = new LoginFragment();
+
+                            // Insert the fragment by replacing any existing fragment
+                            FragmentManager allIssuesFragmentManager = getFragmentManager();
+                            allIssuesFragmentManager.beginTransaction()
+                                    .replace(R.id.main_fragment_container, fragmentLogin)
+                                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                                    .commit();
+                        }
+                    });
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+        }
+
+    }
+
+    public void downloadButtonClicked(){
+        if(UserPrefs.getUserLoggedIn()){
+
+            progressBar = new ProgressDialog(getActivity());
+            if (progressBar != null) {
+                progressBar.show();
+                progressBar.setCancelable(false);
+                progressBar.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                progressBar.setContentView(R.layout.progress_dialog);
+            }
+
+            String issueId = String.valueOf(issueData.id);
+
+            GetIssue getIssue = new GetIssue();
+            getIssue.init(issueId);
+
+            GetDocumentKey getDocumentKey = new GetDocumentKey();
+            documentKey = getDocumentKey.init(UserPrefs.getUserEmail(), UserPrefs.getUserPassword(), UserPrefs.getDeviceID(),
+                    issueId,Config.Magazine_Number, Config.Bundle_ID);
+
+            saveDocumentKey(issueId,Config.Magazine_Number,documentKey.trim());
+
+            issueData.status = Magazine.STATUS_VIEW;
+            issueDetailsPriceButton.setText(BaseApp.getContext().getString(R.string.view));
+
+            progressBar.dismiss();
+
+            new AlertDialog.Builder(getActivity())
+                    .setTitle("Issue Download!")
+                    .setMessage("You can view your Issue in download section.")
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            Fragment fragmentDownload = new AllDownloadsFragment();
+                            // Insert the fragment by replacing any existing fragment
+                            FragmentManager allIssuesFragmentManager = getFragmentManager();
+                            allIssuesFragmentManager.beginTransaction()
+                                    .replace(R.id.main_fragment_container, fragmentDownload)
+                                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                                            //       .addToBackStack(null)
+                                    .commit();
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+
+
+        }
+    }
+
+    public void saveDocumentKey(String issueId, String magazineNumber, String documentKey){
+
+        // Save the Subscription Objects into the SQlite DB
+        MyIssueDocumentKey mDbHelper = new MyIssueDocumentKey(BaseApp.getContext());
+        mDbHelper.insert_my_issues_documentKey(mDbHelper.getWritableDatabase(), issueId,magazineNumber,documentKey);
+        mDbHelper.close();
+
+
+
+    }
+
 
     public void loadPreviewImages(){
 
@@ -240,6 +426,8 @@ public class IssueDetailsFragment extends Fragment {
                 issueData = mDbHelper.getSingleIssue(mDbHelper.getReadableDatabase(),mIssueID);
                 mDbHelper.close();
 
+                loadMyIssue();
+
 
                 if(issueData != null) {
 
@@ -274,6 +462,81 @@ public class IssueDetailsFragment extends Fragment {
             mLoadIssueTask = null;
         }
     }
+
+    public void loadMyIssue(){
+
+        AllDownloadsDataSet mDbReader = new AllDownloadsDataSet(BaseApp.getContext());
+        if(mDbReader != null) {
+            allDownloadsTracker = mDbReader.getDownloadIssueList(mDbReader.getReadableDatabase(), Config.Magazine_Number);
+            mDbReader.close();
+        }
+
+        // retrieve any user issues
+        ArrayList<MyIssue> myIssueArray = null;
+        if(UserPrefs.getUserLoggedIn())
+        {
+            MyIssuesDataSet myIssuesDbReader = new MyIssuesDataSet(BaseApp.getContext());
+            myIssueArray = myIssuesDbReader.getMyIssues(myIssuesDbReader.getReadableDatabase());
+            myIssuesDbReader.close();
+
+        }
+
+        if(issueData != null){
+
+            // update the issue owned field
+            // check if the issue is already owned by user
+            if (myIssueArray != null) {
+                Log.d(TAG, "My Issue size is : " + myIssueArray.size());
+                for (int issueCount = 0; issueCount < myIssueArray.size(); issueCount++) {
+                    MyIssue issue = myIssueArray.get(issueCount);
+                    if (issue.issueID == issueData.id) {
+                        Log.d(TAG, "Inside the first if condition matched of issue id");
+                        issueData.isIssueOwnedByUser = true;
+
+                        if (allDownloadsTracker == null) {
+
+                            Log.d(TAG, "Size of all downloaded issue is : NULL");
+                            issueData.status = Magazine.STATUS_DOWNLOAD;
+
+                        } else {
+
+                            Log.d(TAG, "Size of all downloaded issue is : " + allDownloadsTracker.size());
+
+                            Log.d(TAG, "Inside the else condition of all download issue tracker");
+                            Log.d(TAG, "All Download Tracker size is : " + allDownloadsTracker.size());
+                            for (int k = 0; k < allDownloadsTracker.size(); k++) {
+                                if (issueData.id == allDownloadsTracker.get(k).issueID) {
+                                    Log.d(TAG, "Inside the if condition of all download tracker");
+                                    issueData.status = Magazine.STATUS_VIEW;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (allDownloadsTracker != null) {
+                for (int downloadCount = 0; downloadCount < allDownloadsTracker.size(); downloadCount++) {
+
+                    AllDownloadsIssueTracker singleDownload = allDownloadsTracker.get(downloadCount);
+                    Log.d(TAG, " Single Download is : " + singleDownload);
+                    if (singleDownload.issueID == issueData.id) {
+                        issueData.currentDownloadStatus = singleDownload.downloadStatus;
+                        Log.d(TAG, " singleDownload.downloadStatus is : " + issueData.currentDownloadStatus);
+                        if (issueData.currentDownloadStatus == 0) {
+                            issueData.status = Magazine.STATUS_VIEW;
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+    }
+
+
+
 
 
 

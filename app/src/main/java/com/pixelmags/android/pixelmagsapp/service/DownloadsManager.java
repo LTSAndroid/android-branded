@@ -649,7 +649,6 @@ public class DownloadsManager {
         private boolean isDownloaded;
         private AllDownloadsIssueTracker issueAllDownloadsTracker;
         private SingleDownloadIssueTracker pageSingleDownloadTracker;
-        private int count = -1;
 
 
         public void setProcessingValues(AllDownloadsIssueTracker allDownloadsTracker, SingleDownloadIssueTracker pageTracker, boolean setAsPriority){
@@ -681,6 +680,16 @@ public class DownloadsManager {
             try {
 
                             System.out.println("Download :: downloading page ---- " + pageSingleDownloadTracker.pageNo);
+
+                            if(pageSingleDownloadTracker.pageNo == 1){
+                                AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment();
+                                allDownloadsFragment.updateProgressBarFragment(issueAllDownloadsTracker.issueID);
+                            }
+
+                            if(pageSingleDownloadTracker.pageNo == 3){
+                                AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment();
+                                allDownloadsFragment.updateButtonView(Magazine.STATUS_VIEW);
+                            }
 
                             InputStream in = new URL(pageSingleDownloadTracker.urlPdfLarge).openStream();
 
@@ -745,12 +754,6 @@ public class DownloadsManager {
 //                            new AllDownloadsFragment().new CustomAllDownloadsGridAdapter(BaseApp.getContext());
 //                    customAllDownloadsGridAdapter.updateTheProgressBar( i,noOfIssuePageSize);
 //                    count++;
-                    if(count == -1) {
-                        Log.d(TAG, "Download Page is opened. Calling the fragment progress bar update method");
-                        AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment();
-                        allDownloadsFragment.updateProgressBarFragment(issueAllDownloadsTracker.issueID);
-                        count ++;
-                    }
 
                 }
 

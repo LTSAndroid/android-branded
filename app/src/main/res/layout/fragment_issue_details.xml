@@ -37,7 +37,7 @@
         android:gravity="center_horizontal|center_vertical"
         android:layout_marginTop="5dp" />
 
-    <Button
+    <com.pixelmags.android.ui.uicomponents.MultiStateButton
         android:layout_width="145dp"
         android:layout_height="35dp"
         android:text="Issue Price"
