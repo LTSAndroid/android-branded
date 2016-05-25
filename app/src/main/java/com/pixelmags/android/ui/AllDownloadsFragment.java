@@ -293,11 +293,7 @@ public class AllDownloadsFragment extends Fragment {
 
     public void updateTheProgressBar(int issueId) {
 
-//        int listSize = allDownloadsIssuesListTracker.size();
-//        for(int i=0; i<listSize ; i++){
-//            if(issueId == allDownloadsIssuesListTracker.get(i).issueID){
                 progressBar = (ProgressBar) grid.findViewById(R.id.progressBar);
-//                progressBar.setMax(totalLimit);
                 final int limit = 100;
                 final Thread t = new Thread() {
                     @Override
@@ -318,10 +314,6 @@ public class AllDownloadsFragment extends Fragment {
                     }
                 };
                 t.start();
-//            }
-//        }
-
-
     }
 
 

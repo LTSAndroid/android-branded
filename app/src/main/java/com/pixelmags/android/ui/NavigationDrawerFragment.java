@@ -1,7 +1,6 @@
 package com.pixelmags.android.ui;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -25,8 +24,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.pixelmags.android.IssueView.NewIssueView;
-import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.util.Util;
@@ -344,15 +341,22 @@ public class NavigationDrawerFragment extends Fragment {
                 currentPage =getString(R.string.menu_title_contactsupport);
                 mTitle = getString(R.string.menu_title_contactsupport);
 
-                Intent intent = new Intent(Intent.ACTION_SEND);
-                intent.setType("message/rfc822");
-                intent.putExtra(Intent.EXTRA_SUBJECT, "Contact PixelMags");
-                intent.putExtra(Intent.EXTRA_TEXT, "Title: "+ Config.Magazine_Title +", Bundle ID: "+ Config.Bundle_ID +", App Version: "+Config.Version);
-                intent.putExtra(Intent.EXTRA_EMAIL, new String[]{Config.Support_EMail});
+//                Intent intent = new Intent(Intent.ACTION_SEND);
+//                intent.setType("message/rfc822");
+//                intent.putExtra(Intent.EXTRA_SUBJECT, "Contact PixelMags");
+//                intent.putExtra(Intent.EXTRA_TEXT, "Title: "+ Config.Magazine_Title +", Bundle ID: "+ Config.Bundle_ID +", App Version: "+Config.Version);
+//                intent.putExtra(Intent.EXTRA_EMAIL, new String[]{Config.Support_EMail});
+//
+//                Intent mailer = Intent.createChooser(intent, null);
+//                getActivity().startActivity(mailer);
 
-                Intent mailer = Intent.createChooser(intent, null);
-                getActivity().startActivity(mailer);
 
+                Fragment fragmentContact = new ContactSupportFragment();
+                FragmentManager contactFragmentManager = getFragmentManager();
+                contactFragmentManager.beginTransaction()
+                        .replace(R.id.main_fragment_container, fragmentContact)
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .commit();
 
                 break;
             case 5:

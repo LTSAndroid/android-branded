@@ -3,6 +3,7 @@
     android:layout_height="fill_parent"
     tools:context="com.pixelmags.android.ui.UserAccountFragment"
     android:padding="15dp"
+    android:background="#FFFFFF"
     android:id="@+id/fragment_useraccount">
 
     <TextView
@@ -98,7 +99,7 @@
         android:layout_marginTop="8dip"
         android:onClick="onButtonClick"
         android:background="@drawable/shape"
-        android:text="@string/log_out"
+        android:text=   "@string/log_out"
         android:textColor="#ffffff"
         android:layout_below="@+id/dataUserFullName"
         android:layout_centerVertical="true"

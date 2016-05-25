@@ -22,14 +22,8 @@ import com.pixelmags.android.storage.AllDownloadsDataSet;
 import com.pixelmags.android.storage.SingleIssueDownloadDataSet;
 import com.pixelmags.android.util.BaseApp;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
-
-import javax.crypto.Cipher;
-import javax.crypto.CipherInputStream;
-import javax.crypto.spec.SecretKeySpec;
 
 import static java.lang.Character.digit;
 
@@ -151,6 +145,7 @@ public class NewIssueView extends FragmentActivity {
 
             Log.d(TAG,"Issue page locations is : " +issuePagesLocations.get(position));
 
+
             Bitmap imageForView = null;
             String imageLocation = issuePagesLocations.get(position);
             if(imageLocation != null){
@@ -160,8 +155,11 @@ public class NewIssueView extends FragmentActivity {
                 if(imageForView != null){
                     imageView.setImageBitmap(imageForView);
                 }else{
+
                     System.out.println("Issue Image is Null");
                 }
+            }else{
+                imageView.setBackgroundResource(R.drawable.placeholder);
             }
 
             return swipeView;

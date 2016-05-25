@@ -55,6 +55,7 @@ public class AllIssuesFragment extends Fragment {
     ArrayList<AllDownloadsIssueTracker> allDownloadsTracker;
     private String documentKey;
     ProgressDialog progressBar;
+    public static String currentPage;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -193,6 +194,9 @@ public class AllIssuesFragment extends Fragment {
                     .setMessage("You can view your Issue in download section.")
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
+
+                            currentPage =getString(R.string.menu_title_downloads);
+
                             Fragment fragmentDownload = new AllDownloadsFragment();
                             // Insert the fragment by replacing any existing fragment
                             FragmentManager allIssuesFragmentManager = getFragmentManager();

@@ -15,6 +15,7 @@ import com.pixelmags.android.storage.AllDownloadsDataSet;
 import com.pixelmags.android.storage.IssueDataSet;
 import com.pixelmags.android.storage.SingleIssueDownloadDataSet;
 import com.pixelmags.android.ui.AllDownloadsFragment;
+import com.pixelmags.android.ui.AllIssuesFragment;
 import com.pixelmags.android.ui.NavigationDrawerFragment;
 import com.pixelmags.android.util.BaseApp;
 
@@ -64,6 +65,7 @@ public class DownloadsManager {
     // the tasks and parameters that run the task queues
     //QueueProcessorAsyncTask mQueueProcessorTask;
     static boolean queueTaskCompleted = true;
+
 
 
     private DownloadsManager() {
@@ -186,6 +188,8 @@ public class DownloadsManager {
             // set the Issue as downloading within the AllDownloadTable
             boolean issueUpdated = mDbWriter.setIssueToInProgress(mDbWriter.getWritableDatabase(), issueToDownload);
             mDbWriter.close();
+
+
 
             if(issueUpdated){
 
@@ -649,6 +653,7 @@ public class DownloadsManager {
         private boolean isDownloaded;
         private AllDownloadsIssueTracker issueAllDownloadsTracker;
         private SingleDownloadIssueTracker pageSingleDownloadTracker;
+        private int progressCount = -1;
 
 
         public void setProcessingValues(AllDownloadsIssueTracker allDownloadsTracker, SingleDownloadIssueTracker pageTracker, boolean setAsPriority){
@@ -680,11 +685,6 @@ public class DownloadsManager {
             try {
 
                             System.out.println("Download :: downloading page ---- " + pageSingleDownloadTracker.pageNo);
-
-                            if(pageSingleDownloadTracker.pageNo == 1){
-                                AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment();
-                                allDownloadsFragment.updateProgressBarFragment(issueAllDownloadsTracker.issueID);
-                            }
 
                             if(pageSingleDownloadTracker.pageNo == 3){
                                 AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment();
@@ -755,6 +755,20 @@ public class DownloadsManager {
 //                    customAllDownloadsGridAdapter.updateTheProgressBar( i,noOfIssuePageSize);
 //                    count++;
 
+                    if(progressCount == -1) {
+                        Log.d(TAG, "Download Page is opened. Calling the fragment progress bar update method");
+                        AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment();
+                        allDownloadsFragment.updateProgressBarFragment(issueAllDownloadsTracker.issueID);
+                        progressCount ++;
+                    }
+
+                }else if(AllIssuesFragment.currentPage.equalsIgnoreCase("Downloads")){
+                    if(progressCount == -1) {
+                        Log.d(TAG, "Download Page is opened. Calling the fragment progress bar update method");
+                        AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment();
+                        allDownloadsFragment.updateProgressBarFragment(issueAllDownloadsTracker.issueID);
+                        progressCount ++;
+                    }
                 }
 
 
