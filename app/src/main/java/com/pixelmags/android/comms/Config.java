@@ -7,9 +7,9 @@ public class Config
 {
     public static final String API_BASE_URL = "https://api.pixelmags.com";
     public static final String Support_EMail = "support.kindle@pixelmags.com";
-    public static final String Magazine_Number = "1959";
-    public static final String Magazine_Title = "Now";
-    public static final String Bundle_ID = "com.pixelmags.reader.managed.android-amazon.ipc-media-now";
+    public static final String Magazine_Number = "3499";
+    public static final String Magazine_Title = "San Diego PREMIER";
+    public static final String Bundle_ID = "com.pixelmags.reader.managed.android-amazon.sandiego-premier";
     public static final String Version = "1.0";
     public static final String api_mode = "dedicated";
     public static final String api_version = "2";
