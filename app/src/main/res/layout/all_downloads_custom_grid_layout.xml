@@ -118,20 +118,25 @@
 
             </RelativeLayout>
 
+            <com.pixelmags.android.ui.uicomponents.MultiStateButton
+                android:id="@+id/gridMultiStateButton"
+                android:layout_width="150dp"
+                style="@style/MultiStateButtonBase"/>
 
-            <Button
-                android:layout_width="100dp"
-                android:layout_height="35dp"
-                android:background="@drawable/shape"
-                android:text="Status"
-                android:shadowColor="#3384ff"
-                android:shadowDx="0"
-                android:shadowDy="0"
-                android:shadowRadius="5"
-                android:id="@+id/gridDownloadStatusButton"
-                android:textColor="#ffffff"
-                android:layout_marginTop="5dp"
-                android:layout_gravity="center_horizontal" />
+
+            <!--<Button-->
+                <!--android:layout_width="100dp"-->
+                <!--android:layout_height="35dp"-->
+                <!--android:background="@drawable/shape"-->
+                <!--android:text="Status"-->
+                <!--android:shadowColor="#3384ff"-->
+                <!--android:shadowDx="0"-->
+                <!--android:shadowDy="0"-->
+                <!--android:shadowRadius="5"-->
+                <!--android:id="@+id/gridDownloadStatusButton"-->
+                <!--android:textColor="#ffffff"-->
+                <!--android:layout_marginTop="5dp"-->
+                <!--android:layout_gravity="center_horizontal" />-->
 
 
         </LinearLayout>

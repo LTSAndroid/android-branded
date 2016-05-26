@@ -48,6 +48,7 @@ public class MultiStateButton extends Button {
 
     }
 
+
     public void setButtonState(Magazine mMagazine){
 
         if(mMagazine.isIssueOwnedByUser && mMagazine.currentDownloadStatus == AllDownloadsDataSet.DOWNLOAD_STATUS_COMPLETED
@@ -62,6 +63,12 @@ public class MultiStateButton extends Button {
             setAsPurchase(mMagazine.price);
         }
 
+    }
+
+    public void setButtonState(String status){
+        if(status == Magazine.STATUS_VIEW){
+            setAsView();
+        }
     }
 
 

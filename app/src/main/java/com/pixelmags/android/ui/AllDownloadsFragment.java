@@ -15,7 +15,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
@@ -33,6 +32,7 @@ import com.pixelmags.android.pixelmagsapp.service.DownloadsManager;
 import com.pixelmags.android.storage.AllDownloadsDataSet;
 import com.pixelmags.android.storage.MyIssueDocumentKey;
 import com.pixelmags.android.storage.SingleIssueDownloadDataSet;
+import com.pixelmags.android.ui.uicomponents.MultiStateButton;
 import com.pixelmags.android.util.BaseApp;
 
 import java.io.File;
@@ -43,12 +43,11 @@ import java.util.ArrayList;
 public class AllDownloadsFragment extends Fragment {
 
     private ArrayList<AllDownloadsIssueTracker> allDownloadsIssuesListTracker = null;
-    public CustomAllDownloadsGridAdapter gridDownloadAdapter;
+    public static CustomAllDownloadsGridAdapter gridDownloadAdapter;
     private GetAllDownloadedIssuesTask mGetAllDownloadedIssuesTask;
     private String TAG = "AllDownloadsFragment";
     GridView gridView;
     private static View grid;
-    public static boolean run = true;
     private int totalLimit;
     public static int jumpTime = 0;
 
@@ -92,14 +91,12 @@ public class AllDownloadsFragment extends Fragment {
 
     public void updateProgressBarFragment(int issueID){
         CustomAllDownloadsGridAdapter customAllDownloadsGridAdapter = new CustomAllDownloadsGridAdapter(getActivity());
-        run = true;
         customAllDownloadsGridAdapter.updateTheProgressBar(issueID);
         customAllDownloadsGridAdapter.updateAdapter();
     }
 
     public void pausedProgressBar(int issueID){
         CustomAllDownloadsGridAdapter customAllDownloadsGridAdapter = new CustomAllDownloadsGridAdapter(getActivity());
-        run = false;
         customAllDownloadsGridAdapter.updateTheProgressBar(issueID);
         customAllDownloadsGridAdapter.updateAdapter();
     }
@@ -142,11 +139,13 @@ public class AllDownloadsFragment extends Fragment {
         private int downloadStatus;
         private String documentKey;
         ArrayList<IssueDocumentKey> issueDocumentKeys;
+        private boolean run;
 
 
 
         public CustomAllDownloadsGridAdapter(Context c) {
             mContext = c;
+            run = true;
         }
 
         @Override
@@ -216,10 +215,9 @@ public class AllDownloadsFragment extends Fragment {
 
             progressBar = (ProgressBar) grid.findViewById(R.id.progressBar);
 
-
-            Button gridDownloadStatusButton = (Button) grid.findViewById(R.id.gridDownloadStatusButton);
-                final int status = allDownloadsIssuesListTracker.get(position).downloadStatus;
-                downloadStatus = status;
+            MultiStateButton gridDownloadStatusButton = (MultiStateButton) grid.findViewById(R.id.gridMultiStateButton);
+            final int status = allDownloadsIssuesListTracker.get(position).downloadStatus;
+            downloadStatus = status;
 
             //handle the progress bar
 
@@ -257,8 +255,8 @@ public class AllDownloadsFragment extends Fragment {
             }
 
             if(status == 0){
-                String downloadStatusText = AllDownloadsDataSet.getDownloadStatusText(status);
-                gridDownloadStatusButton.setText(downloadStatusText);
+                String downloadStatusText = Magazine.STATUS_VIEW;
+                gridDownloadStatusButton.setButtonState(downloadStatusText);
                 progressBar.setProgress(100);
             }
 
@@ -286,18 +284,19 @@ public class AllDownloadsFragment extends Fragment {
             progressBar.setProgress(100);
         }
 
-        Button gridDownloadStatusButton = (Button) grid.findViewById(R.id.gridDownloadStatusButton);
+        MultiStateButton gridDownloadStatusButton = (MultiStateButton) grid.findViewById(R.id.gridMultiStateButton);
         if(buttonState == 0){
             String downloadStatusText = Magazine.STATUS_VIEW;
-            gridDownloadStatusButton.setText(downloadStatusText);
+            gridDownloadStatusButton.setButtonState(downloadStatusText);
         }
         gridDownloadAdapter.notifyDataSetChanged();
     }
 
     public void updateButtonViewAdapter(String buttonState){
 
-        Button gridDownloadStatusButton = (Button) grid.findViewById(R.id.gridDownloadStatusButton);
-        gridDownloadStatusButton.setText(buttonState);
+        MultiStateButton gridDownloadStatusButton = (MultiStateButton) grid.findViewById(R.id.gridMultiStateButton);
+        gridDownloadStatusButton.setButtonState(buttonState);
+
         gridDownloadAdapter.notifyDataSetChanged();
     }
 
@@ -310,13 +309,24 @@ public class AllDownloadsFragment extends Fragment {
                     public void run() {
                         while (run) {
                             try {
-                                if(jumpTime == limit){
-                                    run = false;
+
+                                synchronized (this) {
+                                    wait(66666);
+
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (jumpTime == limit) {
+                                                run = false;
+                                            }
+                                            jumpTime += 1;
+                                            if (progressBar != null)
+                                                progressBar.setProgress(jumpTime);
+                                        }
+                                    });
+
                                 }
-                                sleep(66666);
-                                jumpTime += 1;
-                                if (progressBar != null)
-                                    progressBar.setProgress(jumpTime);
+
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
@@ -330,7 +340,7 @@ public class AllDownloadsFragment extends Fragment {
     @Override
     public void onClick(View v) {
 
-        if(v.getId() == R.id.gridDownloadStatusButton){
+        if(v.getId() == R.id.gridMultiStateButton){
             // Based on Button status.
             int pos = (int) cardView.getTag();
 
@@ -396,7 +406,7 @@ public class AllDownloadsFragment extends Fragment {
                 DownloadsManager.getInstance().downLoadPaused();
 
                 allDownloadsIssuesListTracker.get(listMenuItemPosition).downloadStatus = AllDownloadsDataSet.DOWNLOAD_STATUS_PAUSED;
-                Button gridDownloadStatusButton1 = (Button) grid.findViewById(R.id.gridDownloadStatusButton);
+                MultiStateButton gridDownloadStatusButton1 = (MultiStateButton) grid.findViewById(R.id.gridMultiStateButton);
                 String downloadStatusText1 = AllDownloadsDataSet.getDownloadStatusText(AllDownloadsDataSet.DOWNLOAD_STATUS_PAUSED);
                 gridDownloadStatusButton1.setText(downloadStatusText1);
 
@@ -409,7 +419,7 @@ public class AllDownloadsFragment extends Fragment {
 
                 DownloadsManager.getInstance().downLoadResume();
                 allDownloadsIssuesListTracker.get(listMenuItemPosition).downloadStatus = AllDownloadsDataSet.DOWNLOAD_STATUS_IN_PROGRESS;
-                Button gridDownloadStatusButton = (Button) grid.findViewById(R.id.gridDownloadStatusButton);
+                MultiStateButton gridDownloadStatusButton = (MultiStateButton) grid.findViewById(R.id.gridMultiStateButton);
                 String downloadStatusText = AllDownloadsDataSet.getDownloadStatusText(AllDownloadsDataSet.DOWNLOAD_STATUS_IN_PROGRESS);
                 gridDownloadStatusButton.setText(downloadStatusText);
 
