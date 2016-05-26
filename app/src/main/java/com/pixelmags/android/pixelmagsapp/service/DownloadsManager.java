@@ -686,7 +686,7 @@ public class DownloadsManager {
 
                             System.out.println("Download :: downloading page ---- " + pageSingleDownloadTracker.pageNo);
 
-                            if(pageSingleDownloadTracker.pageNo == 3){
+                            if(pageSingleDownloadTracker.pageNo >= 3){
                                 AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment();
                                 allDownloadsFragment.updateButtonView(Magazine.STATUS_VIEW);
                             }

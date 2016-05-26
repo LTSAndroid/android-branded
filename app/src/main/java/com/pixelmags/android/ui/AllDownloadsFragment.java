@@ -1,6 +1,7 @@
 package com.pixelmags.android.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -21,12 +22,16 @@ import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.pixelmags.android.IssueView.NewIssueView;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
+import com.pixelmags.android.datamodels.IssueDocumentKey;
+import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.download.DownloadThumbnails;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.pixelmagsapp.service.DownloadsManager;
 import com.pixelmags.android.storage.AllDownloadsDataSet;
+import com.pixelmags.android.storage.MyIssueDocumentKey;
 import com.pixelmags.android.storage.SingleIssueDownloadDataSet;
 import com.pixelmags.android.util.BaseApp;
 
@@ -135,6 +140,8 @@ public class AllDownloadsFragment extends Fragment {
         private int listMenuItemPosition;
         private CardView cardView;
         private int downloadStatus;
+        private String documentKey;
+        ArrayList<IssueDocumentKey> issueDocumentKeys;
 
 
 
@@ -278,9 +285,12 @@ public class AllDownloadsFragment extends Fragment {
             progressBar = (ProgressBar) grid.findViewById(R.id.progressBar);
             progressBar.setProgress(100);
         }
+
         Button gridDownloadStatusButton = (Button) grid.findViewById(R.id.gridDownloadStatusButton);
-        String downloadStatusText = AllDownloadsDataSet.getDownloadStatusText(buttonState);
-        gridDownloadStatusButton.setText(downloadStatusText);
+        if(buttonState == 0){
+            String downloadStatusText = Magazine.STATUS_VIEW;
+            gridDownloadStatusButton.setText(downloadStatusText);
+        }
         gridDownloadAdapter.notifyDataSetChanged();
     }
 
@@ -322,12 +332,45 @@ public class AllDownloadsFragment extends Fragment {
 
         if(v.getId() == R.id.gridDownloadStatusButton){
             // Based on Button status.
+            int pos = (int) cardView.getTag();
+
+            String issueId = String.valueOf(allDownloadsIssuesListTracker.get(pos).issueID);
+
+            documentKey = getIssueDocumentKey(allDownloadsIssuesListTracker.get(pos).issueID);
+
+            Log.d(TAG,"Document Key is : " +documentKey);
+
+            Intent intent = new Intent(getActivity(),NewIssueView.class);
+            intent.putExtra("issueId",issueId);
+            intent.putExtra("documentKey",documentKey);
+            startActivity(intent);
+
+
         }
 
         if(v.getId() == R.id.moreDownloadOptionsMenuButton){
             showPopup(v, (Integer) cardView.getTag());
         }
 
+    }
+
+    public String getIssueDocumentKey(int issueId){
+
+        String issueKey = null;
+
+        MyIssueDocumentKey mDbReader = new MyIssueDocumentKey(BaseApp.getContext());
+        if(mDbReader != null) {
+            issueDocumentKeys = mDbReader.getMyIssuesDocumentKey(mDbReader.getReadableDatabase());
+            mDbReader.close();
+        }
+
+        for(int i=0; i<issueDocumentKeys.size(); i++){
+            if(issueId == issueDocumentKeys.get(i).issueID){
+                issueKey = issueDocumentKeys.get(i).documentKey;
+            }
+        }
+
+        return issueKey;
     }
 
 

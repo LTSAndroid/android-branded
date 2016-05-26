@@ -227,7 +227,6 @@ public class IssueDetailsFragment extends Fragment {
 
                         }else if(issueData.status == Magazine.STATUS_VIEW) {
 
-                            int pos = (int) v.getTag();
                             String issueId = String.valueOf(issueData.id);
 
                             documentKey = getIssueDocumentKey(issueData.id);

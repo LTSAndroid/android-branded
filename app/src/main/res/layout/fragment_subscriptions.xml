@@ -1,21 +1,21 @@
 <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:background="#FFFFFF"
     tools:context="com.pixelmags.android.ui.SubscriptionsFragment"
     android:useDefaultMargins="true"
     android:alignmentMode="alignBounds"
-    android:columnOrderPreserved="false"
+    android:fitsSystemWindows="true"
     android:columnCount="2">
 
     <!-- TODO: Update blank fragment layout -->
 
 
     <TextView
-        android:layout_width="225dp"
+        android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:paddingLeft="30dip"
+        android:paddingLeft="20dip"
         android:textSize="17dp"
         android:id="@+id/subscriptionsBuyNowButton"
         android:text="1 Month Subscription"
@@ -27,12 +27,14 @@
     <com.pixelmags.android.ui.uicomponents.MultiStateButton
         android:id="@+id/gridMultiStateSubscriptionButton1"
         android:text="£1.99"
+        android:layout_width="100dp"
+        android:layout_marginRight="20dp"
         style="@style/MultiStateButtonBase"/>
 
     <TextView
-        android:layout_width="225dp"
+        android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:paddingLeft="30dip"
+        android:paddingLeft="20dip"
         android:textStyle="bold"
         android:textSize="17dp"
         android:id="@+id/subscriptions6MonthsText"
@@ -43,12 +45,14 @@
     <com.pixelmags.android.ui.uicomponents.MultiStateButton
         android:id="@+id/gridMultiStateSubscriptionButton2"
         android:text="£1.99"
+        android:layout_width="100dp"
+        android:layout_marginRight="20dp"
         style="@style/MultiStateButtonBase"/>
 
     <TextView
-        android:layout_width="225dp"
+        android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:paddingLeft="30dip"
+        android:paddingLeft="20dip"
         android:textSize="17dp"
         android:textStyle="bold"
         android:id="@+id/subscriptions3MonthsText"
@@ -58,6 +62,8 @@
     <com.pixelmags.android.ui.uicomponents.MultiStateButton
         android:id="@+id/gridMultiStateSubscriptionButton3"
         android:text="£1.99"
+        android:layout_width="100dp"
+        android:layout_marginRight="20dp"
         style="@style/MultiStateButtonBase"/>
 
 
