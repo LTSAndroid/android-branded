@@ -313,6 +313,9 @@ public class AllDownloadsFragment extends Fragment {
                                 synchronized (this) {
                                     wait(66666);
 
+                                    if(getActivity() == null)
+                                        return;
+
                                     getActivity().runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
