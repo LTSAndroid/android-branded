@@ -82,7 +82,6 @@ public class NewIssueView extends FragmentActivity {
                 for (int i = 0; i < allPagesOfIssue.size() ; i++)
                 {
                     String finalPath = allPagesOfIssue.get(i).downloadedLocationPdfLarge;
-                    Log.d(TAG,"Final Path of pdf is : "+finalPath);
                     issuePagesLocations.add(finalPath);
                 }
             }
