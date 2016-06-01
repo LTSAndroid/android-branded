@@ -58,6 +58,8 @@ public class MultiStateButton extends Button {
         }else if(mMagazine.isIssueOwnedByUser && mMagazine.currentDownloadStatus == AllDownloadsDataSet.DOWNLOAD_STATUS_NONE){
             mMagazine.status = Magazine.STATUS_DOWNLOAD;
             setAsDownload(mMagazine.STATUS_DOWNLOAD);
+        }else if(mMagazine.status == Magazine.STATUS_DOWNLOAD){
+            setAsDownload(mMagazine.STATUS_DOWNLOAD);
         }else{
             mMagazine.status = Magazine.STATUS_PRICE;
             setAsPurchase(mMagazine.price);

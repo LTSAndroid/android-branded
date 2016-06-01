@@ -1,6 +1,8 @@
 package com.pixelmags.android.json;
 
 
+import android.util.Log;
+
 import com.pixelmags.android.datamodels.Magazine;
 
 import org.json.JSONArray;
@@ -15,6 +17,7 @@ public class GetIssuesParser extends JSONParser {
 
     public Object mData;
     public ArrayList<Magazine> allIssuesList;
+    private String TAG = "GetIssueParser";
 
 
 
@@ -54,6 +57,8 @@ public class GetIssuesParser extends JSONParser {
                 magazine.removeFromSale = unit.getBoolean("remove_from_sale");
                 magazine.isPublished = unit.getBoolean("isPublished");
                 magazine.exclude_from_subscription = unit.getString("exclude_from_subscription");
+                magazine.paymentProvider = unit.getString("paymentProvider");
+                Log.d(TAG,"Payment Provider is : " +magazine.paymentProvider);
 
                 allIssuesList.add(magazine);
 

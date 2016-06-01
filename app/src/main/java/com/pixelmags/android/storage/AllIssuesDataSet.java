@@ -46,6 +46,7 @@ public class AllIssuesDataSet extends BrandedSQLiteHelper{
         public static final String COLUMN_IS_THUMBNAIL_DOWNLOADED = "is_thumbnail_downloaded";
         public static final String COLUMN_MEDIA_FORMAT = "media_format";
         public static final String COLUMN_IS_ISSUE_OWNED="is_issue_owned";
+        public static final String COLUMN_PAYMENT_PROVIDER="payment";
 
         public static final String CREATE_ALL_ISSUES_TABLE = "CREATE TABLE "
                 + ALL_ISSUES_TABLE_NAME
@@ -65,7 +66,8 @@ public class AllIssuesDataSet extends BrandedSQLiteHelper{
                 + COLUMN_INTERNAL_SAVED_URL + " TEXT,"
                 + COLUMN_IS_THUMBNAIL_DOWNLOADED + " INTEGER,"
                 + COLUMN_IS_ISSUE_OWNED + " INTEGER,"
-                + COLUMN_MEDIA_FORMAT + " TEXT"
+                + COLUMN_MEDIA_FORMAT + " TEXT,"
+                + COLUMN_PAYMENT_PROVIDER+ " TEXT"
                 + ")";
 
         public static final String DROP_ALL_ISSUES_TABLE = "DROP TABLE IF EXISTS " + ALL_ISSUES_TABLE_NAME;
@@ -108,6 +110,7 @@ public class AllIssuesDataSet extends BrandedSQLiteHelper{
                 insertValues.put(AllIssuesEntry.COLUMN_IS_THUMBNAIL_DOWNLOADED, (mag.isThumbnailDownloaded) ? 1 : 0 );
                 insertValues.put(AllIssuesEntry.COLUMN_IS_ISSUE_OWNED, (mag.isIssueOwnedByUser) ? 1 : 0 );
                 insertValues.put(AllIssuesEntry.COLUMN_MEDIA_FORMAT, mag.mediaFormat);
+                insertValues.put(AllIssuesEntry.COLUMN_PAYMENT_PROVIDER, mag.paymentProvider);
 
                 db.insert(AllIssuesEntry.ALL_ISSUES_TABLE_NAME, null, insertValues);
 
@@ -148,7 +151,8 @@ public class AllIssuesDataSet extends BrandedSQLiteHelper{
                     AllIssuesEntry.COLUMN_INTERNAL_SAVED_URL,
                     AllIssuesEntry.COLUMN_IS_THUMBNAIL_DOWNLOADED,
                     AllIssuesEntry.COLUMN_IS_ISSUE_OWNED,
-                    AllIssuesEntry.COLUMN_MEDIA_FORMAT
+                    AllIssuesEntry.COLUMN_MEDIA_FORMAT,
+                    AllIssuesEntry.COLUMN_PAYMENT_PROVIDER
             };
 
             // Specify the sort order
@@ -189,6 +193,7 @@ public class AllIssuesDataSet extends BrandedSQLiteHelper{
                     mag.isThumbnailDownloaded = (queryCursor.getInt(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_IS_THUMBNAIL_DOWNLOADED)) == 1) ? true : false;
                     mag.isIssueOwnedByUser = (queryCursor.getInt(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_IS_ISSUE_OWNED)) == 1) ? true : false;
                     mag.mediaFormat = queryCursor.getString(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_MEDIA_FORMAT));
+                    mag.paymentProvider = queryCursor.getString(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_PAYMENT_PROVIDER));
 
                     magazinesArray.add(mag);
 
@@ -232,7 +237,8 @@ public class AllIssuesDataSet extends BrandedSQLiteHelper{
                     AllIssuesEntry.COLUMN_INTERNAL_SAVED_URL,
                     AllIssuesEntry.COLUMN_IS_THUMBNAIL_DOWNLOADED,
                     AllIssuesEntry.COLUMN_IS_ISSUE_OWNED,
-                    AllIssuesEntry.COLUMN_MEDIA_FORMAT
+                    AllIssuesEntry.COLUMN_MEDIA_FORMAT,
+                    AllIssuesEntry.COLUMN_PAYMENT_PROVIDER
             };
 
             // Specify the sort order
@@ -274,6 +280,7 @@ public class AllIssuesDataSet extends BrandedSQLiteHelper{
                     mMagazine.isThumbnailDownloaded = (queryCursor.getInt(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_IS_THUMBNAIL_DOWNLOADED)) == 1) ? true : false;
                     mMagazine.isIssueOwnedByUser = (queryCursor.getInt(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_IS_ISSUE_OWNED)) == 1) ? true : false;
                     mMagazine.mediaFormat = queryCursor.getString(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_MEDIA_FORMAT));
+                    mMagazine.paymentProvider = queryCursor.getString(queryCursor.getColumnIndex(AllIssuesEntry.COLUMN_PAYMENT_PROVIDER));
 
                 }
 

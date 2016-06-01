@@ -34,6 +34,7 @@ import com.pixelmags.android.pixelmagsapp.MainActivity;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.storage.AllDownloadsDataSet;
 import com.pixelmags.android.storage.AllIssuesDataSet;
+import com.pixelmags.android.storage.BrandedSQLiteHelper;
 import com.pixelmags.android.storage.MyIssueDocumentKey;
 import com.pixelmags.android.storage.MyIssuesDataSet;
 import com.pixelmags.android.storage.UserPrefs;
@@ -216,6 +217,30 @@ public class AllIssuesFragment extends Fragment {
                     .show();
 
 
+        }else{
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+            alertDialogBuilder.setTitle(getString(R.string.purchase_initiation_fail_title));
+
+            // set dialog message
+            alertDialogBuilder
+                    .setMessage(getString(R.string.purchase_initiation_fail_message))
+                    .setCancelable(false)
+                    .setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog,int id) {
+                            dialog.dismiss();
+
+                            Fragment fragmentLogin = new LoginFragment();
+
+                            // Insert the fragment by replacing any existing fragment
+                            FragmentManager allIssuesFragmentManager = getFragmentManager();
+                            allIssuesFragmentManager.beginTransaction()
+                                    .replace(R.id.main_fragment_container, fragmentLogin)
+                                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                                    .commit();
+                        }
+                    });
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
         }
     }
 
@@ -515,14 +540,23 @@ public class AllIssuesFragment extends Fragment {
             Log.d(TAG,"Magazine issueDate is : " +magazinesList.get(i).issueDate);
             Log.d(TAG,"Magazine ageRestriction is : " +magazinesList.get(i).ageRestriction);
             Log.d(TAG,"Magazine state is : " +magazinesList.get(i).state);
+            if(magazinesList.get(i).paymentProvider.trim().equalsIgnoreCase("free")){
+                Log.d(TAG,"Entered the magazine List Payment Provider condition");
+                magazinesList.get(i).status = Magazine.STATUS_DOWNLOAD;
+            }
         }
 
 
 
         AllDownloadsDataSet mDbReader = new AllDownloadsDataSet(BaseApp.getContext());
         if(mDbReader != null) {
-            allDownloadsTracker = mDbReader.getDownloadIssueList(mDbReader.getReadableDatabase(), Config.Magazine_Number);
-            mDbReader.close();
+
+            boolean isExists = mDbReader.isTableExists(mDbReader.getReadableDatabase(), BrandedSQLiteHelper.TABLE_ALL_DOWNLOADS);
+            Log.d(TAG,"All Download Table exists is : "+isExists);
+            if(isExists) {
+                allDownloadsTracker = mDbReader.getDownloadIssueList(mDbReader.getReadableDatabase(), Config.Magazine_Number);
+                mDbReader.close();
+            }
         }
 
 
@@ -546,6 +580,8 @@ public class AllIssuesFragment extends Fragment {
 
 
         }
+
+
         if(magazinesList != null){
 
             for(int i=0; i< magazinesList.size();i++) {

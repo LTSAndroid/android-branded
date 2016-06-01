@@ -2,7 +2,6 @@ package com.pixelmags.android.datamodels;
 
 import android.graphics.Bitmap;
 
-
 import com.pixelmags.android.storage.AllDownloadsDataSet;
 
 import java.lang.reflect.Array;
@@ -37,6 +36,7 @@ public class Magazine
     public boolean removeFromSale;
     public String ageRestriction;
     public String exclude_from_subscription;
+    public String paymentProvider;
 
     public int state;
     public String region;

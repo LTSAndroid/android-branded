@@ -12,6 +12,7 @@ import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.datamodels.PageTypeImage;
 import com.pixelmags.android.datamodels.SingleDownloadIssueTracker;
 import com.pixelmags.android.storage.AllDownloadsDataSet;
+import com.pixelmags.android.storage.BrandedSQLiteHelper;
 import com.pixelmags.android.storage.IssueDataSet;
 import com.pixelmags.android.storage.SingleIssueDownloadDataSet;
 import com.pixelmags.android.ui.AllDownloadsFragment;
@@ -142,8 +143,12 @@ public class DownloadsManager {
             }
 
             AllDownloadsDataSet mDbReader = new AllDownloadsDataSet(BaseApp.getContext());
-            issueToDownload = mDbReader.getNextIssueInQueue(mDbReader.getReadableDatabase(), Config.Magazine_Number);
-            mDbReader.close();
+            boolean isExists = mDbReader.isTableExists(mDbReader.getReadableDatabase(), BrandedSQLiteHelper.TABLE_ALL_DOWNLOADS);
+            Log.d(TAG, "All Download Table exists is : " + isExists);
+            if(isExists) {
+                issueToDownload = mDbReader.getNextIssueInQueue(mDbReader.getReadableDatabase(), Config.Magazine_Number);
+                mDbReader.close();
+            }
 
             if(issueToDownload != null){
                 System.out.println("<<< NEXT ISSUE TO DOWNLOAD "+ issueToDownload.issueTitle +" >>>");
@@ -165,8 +170,12 @@ public class DownloadsManager {
 
         try{
             AllDownloadsDataSet mDbReader = new AllDownloadsDataSet(BaseApp.getContext());
-            issueDownloadInProgress = mDbReader.getIssueDownloadInProgress(mDbReader.getReadableDatabase(), Config.Magazine_Number);
-            mDbReader.close();
+            boolean isExists = mDbReader.isTableExists(mDbReader.getReadableDatabase(), BrandedSQLiteHelper.TABLE_ALL_DOWNLOADS);
+            Log.d(TAG,"All Download Table exists is : "+isExists);
+            if(isExists) {
+                issueDownloadInProgress = mDbReader.getIssueDownloadInProgress(mDbReader.getReadableDatabase(), Config.Magazine_Number);
+                mDbReader.close();
+            }
 
         }catch(Exception e){
             e.printStackTrace();

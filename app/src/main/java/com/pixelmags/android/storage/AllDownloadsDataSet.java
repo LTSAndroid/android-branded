@@ -8,8 +8,8 @@ import android.text.format.Time;
 
 import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
 import com.pixelmags.android.datamodels.Issue;
-import com.pixelmags.android.util.BaseApp;
 import com.pixelmags.android.pixelmagsapp.R;
+import com.pixelmags.android.util.BaseApp;
 
 import java.util.ArrayList;
 
@@ -210,7 +210,24 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
         return false;
     }
 
+    public boolean isTableExists(SQLiteDatabase db, String tableName)
+    {
+        if (tableName == null || db == null || !db.isOpen())
+        {
+            return false;
+        }
+        Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM sqlite_master WHERE type = ? AND name = ?", new String[] {"table", tableName});
+        if (!cursor.moveToFirst())
+        {
+            return false;
+        }
+        int count = cursor.getInt(0);
+        cursor.close();
+        return count > 0;
+    }
+
     public ArrayList<AllDownloadsIssueTracker> getDownloadIssueList(SQLiteDatabase db, String magazineID){
+
 
         ArrayList<AllDownloadsIssueTracker> allDownloadsIssueTrackers = null;
 
