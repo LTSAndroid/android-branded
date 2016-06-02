@@ -556,6 +556,8 @@ public class AllIssuesFragment extends Fragment {
             if(isExists) {
                 allDownloadsTracker = mDbReader.getDownloadIssueList(mDbReader.getReadableDatabase(), Config.Magazine_Number);
                 mDbReader.close();
+            }else{
+                mDbReader.close();
             }
         }
 

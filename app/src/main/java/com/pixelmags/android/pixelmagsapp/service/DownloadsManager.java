@@ -148,6 +148,8 @@ public class DownloadsManager {
             if(isExists) {
                 issueToDownload = mDbReader.getNextIssueInQueue(mDbReader.getReadableDatabase(), Config.Magazine_Number);
                 mDbReader.close();
+            }else{
+                mDbReader.close();
             }
 
             if(issueToDownload != null){
@@ -174,6 +176,8 @@ public class DownloadsManager {
             Log.d(TAG,"All Download Table exists is : "+isExists);
             if(isExists) {
                 issueDownloadInProgress = mDbReader.getIssueDownloadInProgress(mDbReader.getReadableDatabase(), Config.Magazine_Number);
+                mDbReader.close();
+            }else{
                 mDbReader.close();
             }
 
