@@ -137,5 +137,7 @@
     <string name="purchase_initiation_fail_title">Warning</string>
     <string name="purchase_initiation_fail_message">login to purchase this issue.</string>
 
+    <string name="download_initiation_fail_title">Warning</string>
+    <string name="download_initiation_fail_message">login to download this issue.</string>
 
 </resources>

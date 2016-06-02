@@ -124,7 +124,7 @@ public class AllIssuesFragment extends Fragment {
 
             // set dialog message
             alertDialogBuilder
-                    .setMessage(getString(R.string.purchase_initiation_fail_message))
+                    .setMessage(getString(R.string.download_initiation_fail_message))
                     .setCancelable(false)
                     .setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog,int id) {
