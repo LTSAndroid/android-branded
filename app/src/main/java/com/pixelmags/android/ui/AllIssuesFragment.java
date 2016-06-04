@@ -183,6 +183,7 @@ public class AllIssuesFragment extends Fragment {
             documentKey = getDocumentKey.init(UserPrefs.getUserEmail(), UserPrefs.getUserPassword(), UserPrefs.getDeviceID(),
                    issueId,Config.Magazine_Number, Config.Bundle_ID);
 
+            if(documentKey != null)
             saveDocumentKey(issueId,Config.Magazine_Number,documentKey.trim());
 
             magazinesList.get(position).status = Magazine.STATUS_VIEW;
@@ -525,8 +526,8 @@ public class AllIssuesFragment extends Fragment {
         magazinesList = mDbHelper.getAllIssues(mDbHelper.getReadableDatabase());
         mDbHelper.close();
 
-        Log.d(TAG, "Magazine List is : " + magazinesList);
-        Log.d(TAG,"Magazine List size is : " +magazinesList.size());
+        Log.d(TAG, "All Issue Magazine List is : " + magazinesList);
+        Log.d(TAG,"All Issue Magazine List size is : " +magazinesList.size());
 
         for(int i=0; i<magazinesList.size(); i++){
             Log.d(TAG,"Magazine id is : " +magazinesList.get(i).id);

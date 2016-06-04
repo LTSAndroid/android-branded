@@ -162,6 +162,9 @@ public class MainActivity extends AppCompatActivity
 
                     AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
                     pixelmagsMagazinesList = mDbHelper.getAllIssues(mDbHelper.getReadableDatabase());
+
+                    Log.d(TAG,"Pixel Image Magazine List is : " +pixelmagsMagazinesList);
+
                     mDbHelper.close();
 
                     skuList = new ArrayList<String>();
@@ -263,6 +266,9 @@ public class MainActivity extends AppCompatActivity
                 }
 
                 // Save the Magazine Objects into the SQlite DB
+
+                Log.d(TAG,"On Launch getting all the issue data is : "+billingMagazinesList);
+
                 AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
                 mDbHelper.insert_all_issues_data(mDbHelper.getWritableDatabase(), billingMagazinesList);
                 mDbHelper.close();
@@ -632,6 +638,7 @@ public class MainActivity extends AppCompatActivity
 
         Log.d(TAG," Pm Service is : "+mPMService);
         if(mPMService != null){
+            Log.d(TAG,"Inside the if condition of mPMService");
             mPMService.resumeDownloadsProcessing();
         }
 

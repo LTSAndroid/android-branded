@@ -103,6 +103,7 @@
     <string name="download_status_paused">Paused</string>
     <string name="download_status_completed">Complete</string>
     <string name="download_status_failed">Error</string>
+    <string name="download_status_view">View</string>
     <!-- Post App Strings -->
 
     <string name="action_settings">Settings</string>

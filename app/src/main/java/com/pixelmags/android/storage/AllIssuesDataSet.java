@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.pixelmags.android.datamodels.Magazine;
 
@@ -17,6 +18,7 @@ public class AllIssuesDataSet extends BrandedSQLiteHelper{
     public AllIssuesDataSet(Context context) {
         super(context);
     }
+    private String TAG="AllIssueDateSet";
 
     public void createTableAllIssues(SQLiteDatabase db){
         db.execSQL(AllIssuesEntry.CREATE_ALL_ISSUES_TABLE);
@@ -88,11 +90,12 @@ public class AllIssuesDataSet extends BrandedSQLiteHelper{
             dropAllIssuesTable(db);
             createTableAllIssues(db);
 
-
+            Log.d(TAG, "Magazine array is : " + magazinesArray);
+            Log.d(TAG,"Magazine array size is : " +magazinesArray.size());
             for(int i=0; i< magazinesArray.size();i++){
 
                 Magazine mag = magazinesArray.get(i);
-
+                Log.d(TAG,"Magazine Object is : " +mag.id);
                 ContentValues insertValues = new ContentValues();
                 insertValues.put(AllIssuesEntry.COLUMN_ID, mag.id);
                 insertValues.put(AllIssuesEntry.COLUMN_TITLE, mag.title);

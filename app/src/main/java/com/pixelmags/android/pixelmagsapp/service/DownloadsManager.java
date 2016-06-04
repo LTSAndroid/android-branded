@@ -66,6 +66,7 @@ public class DownloadsManager {
     // the tasks and parameters that run the task queues
     //QueueProcessorAsyncTask mQueueProcessorTask;
     static boolean queueTaskCompleted = true;
+    public static int totalPages;
 
 
 
@@ -153,7 +154,7 @@ public class DownloadsManager {
             }
 
             if(issueToDownload != null){
-                System.out.println("<<< NEXT ISSUE TO DOWNLOAD "+ issueToDownload.issueTitle +" >>>");
+                System.out.println("<<< NEXT ISSUE TO DOWNLOAD " + issueToDownload.issueTitle + " >>>");
             }
 
 
@@ -216,6 +217,8 @@ public class DownloadsManager {
 
                     ArrayList<SingleDownloadIssueTracker> pagesForSingleDownloadTable = new ArrayList<SingleDownloadIssueTracker>();
 
+                    totalPages = issueWithPageData.pages.size();
+
                     for(int i=0; i< issueWithPageData.pages.size();i++) {
 
                         PageTypeImage page = (PageTypeImage) issueWithPageData.pages.get(i);
@@ -257,8 +260,8 @@ public class DownloadsManager {
         if(pagesForSingleDownloadTable != null){
 
             noOfIssuePageSize = pagesForSingleDownloadTable.size();
-            AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment();
-            allDownloadsFragment.updateIssueTotalPage(noOfIssuePageSize);
+//            AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment(); // Commented for new changes
+//            allDownloadsFragment.updateIssueTotalPage(noOfIssuePageSize);
 
             for(int i=0; i< pagesForSingleDownloadTable.size();i++) {
 
@@ -531,8 +534,6 @@ public class DownloadsManager {
         public static Object mPausedLock;
 
         QueueProcessorThread(){
-//            mPaused = false;
-//            mPausedLock = new Object();
             Log.d(TAG,"Inside the constructor of Queue processor thread");
         }
 
@@ -612,8 +613,8 @@ public class DownloadsManager {
                             while (mPaused) {
                                 try {
                                     mPausedLock.wait();
-                                    AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment();
-                                    allDownloadsFragment.pausedProgressBar(issueInQueue.issueID);
+//                                    AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment(); //commented for new changes
+//                                    allDownloadsFragment.pausedProgressBar(issueInQueue.issueID);
 
 
                                 } catch (InterruptedException e) {
@@ -699,10 +700,6 @@ public class DownloadsManager {
 
                             System.out.println("Download :: downloading page ---- " + pageSingleDownloadTracker.pageNo);
 
-                            if(pageSingleDownloadTracker.pageNo >= 3){
-                                AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment();
-                                allDownloadsFragment.updateButtonView(Magazine.STATUS_VIEW);
-                            }
 
                             InputStream in = new URL(pageSingleDownloadTracker.urlPdfLarge).openStream();
 
@@ -773,7 +770,7 @@ public class DownloadsManager {
                         AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment();
                         allDownloadsFragment.updateProgressBarFragment(issueAllDownloadsTracker.issueID);
                         progressCount ++;
-                    }
+                    } // commented for new changes
 
                 }else if(AllIssuesFragment.currentPage.equalsIgnoreCase("Downloads")){
                     if(progressCount == -1) {
@@ -781,7 +778,7 @@ public class DownloadsManager {
                         AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment();
                         allDownloadsFragment.updateProgressBarFragment(issueAllDownloadsTracker.issueID);
                         progressCount ++;
-                    }
+                    }  // Commented for new changes
                 }
 
 

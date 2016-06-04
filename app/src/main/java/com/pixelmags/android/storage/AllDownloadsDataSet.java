@@ -33,7 +33,8 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
     public static int DOWNLOAD_STATUS_STARTED = 2;
     public static int DOWNLOAD_STATUS_PAUSED = 3;
     public static int DOWNLOAD_STATUS_QUEUED = 4;
-    public static int DOWNLOAD_STATUS_NONE = 5; // when no download as yet has been requested
+    public static int DOWNLOAD_STATUS_NONE = 5;// when no download as yet has been requested
+    public static int DOWNLOAD_STATUS_VIEW = 6;
 
 
     public static String getDownloadStatusText(int status){
@@ -51,6 +52,10 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
             statusText = BaseApp.getContext().getString(R.string.download_status_paused);
         }if(status == 0){
             statusText = BaseApp.getContext().getString(R.string.download_status_completed);
+        }
+
+        if(status == 6){
+            statusText = BaseApp.getContext().getString(R.string.download_status_view);
         }
 
 
@@ -227,7 +232,6 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
     }
 
     public ArrayList<AllDownloadsIssueTracker> getDownloadIssueList(SQLiteDatabase db, String magazineID){
-
 
         ArrayList<AllDownloadsIssueTracker> allDownloadsIssueTrackers = null;
 
@@ -483,6 +487,12 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
     public boolean setIssueToPaused(SQLiteDatabase db, AllDownloadsIssueTracker dIssue){
 
         return updateDownloadStatusOfIssue(db, dIssue, DOWNLOAD_STATUS_PAUSED);
+
+    }
+
+    public boolean setIssueToView(SQLiteDatabase db, AllDownloadsIssueTracker dIssue){
+
+        return updateDownloadStatusOfIssue(db, dIssue, DOWNLOAD_STATUS_VIEW);
 
     }
 
