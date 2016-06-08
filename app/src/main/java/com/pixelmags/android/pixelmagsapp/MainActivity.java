@@ -269,9 +269,11 @@ public class MainActivity extends AppCompatActivity
 
                 Log.d(TAG,"On Launch getting all the issue data is : "+billingMagazinesList);
 
-                AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
-                mDbHelper.insert_all_issues_data(mDbHelper.getWritableDatabase(), billingMagazinesList);
-                mDbHelper.close();
+                if(billingMagazinesList.size() != 0) {
+                    AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
+                    mDbHelper.insert_all_issues_data(mDbHelper.getWritableDatabase(), billingMagazinesList);
+                    mDbHelper.close();
+                }
 
             }
 

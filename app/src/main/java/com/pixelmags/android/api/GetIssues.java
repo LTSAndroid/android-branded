@@ -3,7 +3,6 @@ package com.pixelmags.android.api;
 import android.util.Log;
 
 import com.pixelmags.android.comms.WebRequest;
-import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.download.DownloadThumbnails;
 import com.pixelmags.android.json.GetIssuesParser;
 import com.pixelmags.android.storage.AllIssuesDataSet;
@@ -11,6 +10,7 @@ import com.pixelmags.android.util.BaseApp;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+
 import java.util.ArrayList;
 
 /**
@@ -80,6 +80,7 @@ public class GetIssues extends WebRequest {
 
         Log.d(API_NAME,"MDbHelper Writable Database : " +mDbHelper.getWritableDatabase() +
                 " All Issue list is :" +getIssuesParserParser.allIssuesList.toString());
+
 
         mDbHelper.insert_all_issues_data(mDbHelper.getWritableDatabase(), getIssuesParserParser.allIssuesList);
         mDbHelper.close();

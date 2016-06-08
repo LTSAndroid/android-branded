@@ -363,6 +363,8 @@ public class AllIssuesFragment extends Fragment {
             issuePriceButton = (MultiStateButton) grid.findViewById(R.id.gridMultiStateButton);
 
             // check if price/View/Download
+            Log.d(TAG," Issue Object issue Id is : "+magazinesList.get(position).id+" and current download status is : " +magazinesList.get(position).currentDownloadStatus);
+            Log.d(TAG," Issue Object issue Id : "+magazinesList.get(position).id+" status is : " +magazinesList.get(position).status);
             issuePriceButton.setButtonState(magazinesList.get(position));
     //            issuePriceButton.setAsPurchase(magazinesList.get(position).price);
 
@@ -377,6 +379,34 @@ public class AllIssuesFragment extends Fragment {
                         Log.d(TAG,"Price Button clicked");
 
                         gridPriceButtonClicked((Integer) v.getTag());
+
+                    }else if(magazinesList.get((Integer) v.getTag()).status == Magazine.STATUS_QUEUE){
+
+                        new AlertDialog.Builder(getActivity())
+                                .setTitle("Issue download is in queue!")
+                                .setMessage("You can view your Issue once download start.")
+                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                        currentPage =getString(R.string.menu_title_downloads);
+
+                                        Fragment fragmentDownload = new AllDownloadsFragment();
+                                        // Insert the fragment by replacing any existing fragment
+                                        FragmentManager allIssuesFragmentManager = getFragmentManager();
+                                        allIssuesFragmentManager.beginTransaction()
+                                                .replace(R.id.main_fragment_container, fragmentDownload)
+                                                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                                                        //       .addToBackStack(null)
+                                                .commit();
+                                    }
+                                })
+                                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
 
                     }else if(magazinesList.get((Integer) v.getTag()).status == Magazine.STATUS_DOWNLOAD){
 
@@ -556,6 +586,20 @@ public class AllIssuesFragment extends Fragment {
             Log.d(TAG,"All Download Table exists is : "+isExists);
             if(isExists) {
                 allDownloadsTracker = mDbReader.getDownloadIssueList(mDbReader.getReadableDatabase(), Config.Magazine_Number);
+
+                for(int j=0; j<magazinesList.size(); j++){
+                    for(int k=0; k<allDownloadsTracker.size(); k++){
+                        if(allDownloadsTracker.get(k).issueID == magazinesList.get(j).id){
+
+                            Log.d(TAG,"Download status of download table is : "+allDownloadsTracker.get(k).downloadStatus);
+
+                            if(allDownloadsTracker.get(k).downloadStatus == AllDownloadsDataSet.DOWNLOAD_STATUS_QUEUED){
+                                magazinesList.get(j).status = Magazine.STATUS_QUEUE;
+                            }
+                        }
+                    }
+                }
+
                 mDbReader.close();
             }else{
                 mDbReader.close();
@@ -579,6 +623,7 @@ public class AllIssuesFragment extends Fragment {
                 Log.d(TAG,"My Magazine id is : " +myIssueArray.get(i).magazineID);
                 Log.d(TAG,"My Magazine Status is : " +myIssueArray.get(i).issueID);
                 Log.d(TAG,"My Magazine price is : " +myIssueArray.get(i).removeFromSale);
+
             }
 
 
@@ -621,10 +666,17 @@ public class AllIssuesFragment extends Fragment {
 
                                 Log.d(TAG,"Inside the else condition of all download issue tracker");
                                 Log.d(TAG,"All Download Tracker size is : " +allDownloadsTracker.size());
-                                for(int k=0 ; k<allDownloadsTracker.size(); k++){
-                                    if(magazinesList.get(i).id == allDownloadsTracker.get(k).issueID){
-                                        Log.d(TAG,"Inside the if condition of all download tracker");
-                                        magazinesList.get(i).status = Magazine.STATUS_VIEW;
+
+                                for(int j=0; j<magazinesList.size(); j++){
+                                    for(int k=0; k<allDownloadsTracker.size(); k++){
+                                        if(allDownloadsTracker.get(k).issueID == magazinesList.get(j).id){
+                                            Log.d(TAG,"AllDownload Tracker download status is : "+allDownloadsTracker.get(k).downloadStatus);
+                                            if(allDownloadsTracker.get(k).downloadStatus == AllDownloadsDataSet.DOWNLOAD_STATUS_QUEUED){
+                                                magazinesList.get(j).status = Magazine.STATUS_QUEUE;
+                                            }else if(allDownloadsTracker.get(k).downloadStatus == AllDownloadsDataSet.DOWNLOAD_STATUS_VIEW){
+                                                magazinesList.get(j).status = Magazine.STATUS_VIEW;
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -639,9 +691,13 @@ public class AllIssuesFragment extends Fragment {
                         Log.d(TAG," Single Download is : "+singleDownload);
                         if(singleDownload.issueID == magazinesList.get(i).id){
                             magazinesList.get(i).currentDownloadStatus = singleDownload.downloadStatus;
-                            Log.d(TAG," singleDownload.downloadStatus is : "+magazinesList.get(i).currentDownloadStatus);
+                            Log.d(TAG,"Current Download Status is : "+magazinesList.get(i).currentDownloadStatus);
                             if(magazinesList.get(i).currentDownloadStatus == 0){
                                 magazinesList.get(i).status = Magazine.STATUS_VIEW;
+                            }else if(magazinesList.get(i).currentDownloadStatus == 4){
+                                magazinesList.get(i).status = Magazine.STATUS_QUEUE;
+                            }else if(magazinesList.get(i).currentDownloadStatus == 1){
+                                magazinesList.get(i).status = String.valueOf(AllDownloadsDataSet.DOWNLOAD_STATUS_IN_PROGRESS);
                             }
                         }
                     }

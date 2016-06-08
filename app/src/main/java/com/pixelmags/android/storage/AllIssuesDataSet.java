@@ -90,8 +90,8 @@ public class AllIssuesDataSet extends BrandedSQLiteHelper{
             dropAllIssuesTable(db);
             createTableAllIssues(db);
 
-            Log.d(TAG, "Magazine array is : " + magazinesArray);
-            Log.d(TAG,"Magazine array size is : " +magazinesArray.size());
+            Log.d(TAG, "Magazine array is inside the insert method : " + magazinesArray);
+            Log.d(TAG,"Magazine array size is inside the insert method : " +magazinesArray.size());
             for(int i=0; i< magazinesArray.size();i++){
 
                 Magazine mag = magazinesArray.get(i);

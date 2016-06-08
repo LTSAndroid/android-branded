@@ -2,6 +2,7 @@ package com.pixelmags.android.ui.uicomponents;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.Button;
 
 import com.pixelmags.android.datamodels.Magazine;
@@ -12,6 +13,8 @@ import com.pixelmags.android.storage.AllDownloadsDataSet;
  * Created by austincoutinho on 26/02/16.
  */
 public class MultiStateButton extends Button {
+
+    private String TAG = "MultiStateButton";
 
 
     public MultiStateButton(Context context, AttributeSet attrs) {
@@ -29,6 +32,13 @@ public class MultiStateButton extends Button {
 
         setBackgroundResource(R.drawable.multibuttonbaseshape);
         setText(download);
+
+    }
+
+    public void setAsQueue(String queue){
+
+        setBackgroundResource(R.drawable.multibuttonbaseshape);
+        setText(queue);
 
     }
 
@@ -51,6 +61,9 @@ public class MultiStateButton extends Button {
 
     public void setButtonState(Magazine mMagazine){
 
+        Log.d(TAG,"Current Download status is : "+mMagazine.currentDownloadStatus);
+        Log.d(TAG,"Status of the issue is : "+mMagazine.status);
+
         if(mMagazine.isIssueOwnedByUser && mMagazine.currentDownloadStatus == AllDownloadsDataSet.DOWNLOAD_STATUS_COMPLETED
                 || mMagazine.currentDownloadStatus == AllDownloadsDataSet.DOWNLOAD_STATUS_IN_PROGRESS){
             mMagazine.status = Magazine.STATUS_VIEW;
@@ -60,9 +73,13 @@ public class MultiStateButton extends Button {
             setAsDownload(mMagazine.STATUS_DOWNLOAD);
         }else if(mMagazine.status == Magazine.STATUS_DOWNLOAD){
             setAsDownload(mMagazine.STATUS_DOWNLOAD);
+        }else if(mMagazine.status.equalsIgnoreCase(Magazine.STATUS_QUEUE) || mMagazine.currentDownloadStatus == AllDownloadsDataSet.DOWNLOAD_STATUS_QUEUED){
+            Log.d(TAG,"Setting button to be in queue");
+            mMagazine.status = Magazine.STATUS_QUEUE;
+            setAsQueue(mMagazine.status);
         }else if(mMagazine.paymentProvider.trim().equalsIgnoreCase("free")){
-            mMagazine.status = Magazine.STATUS_VIEW;
-            setAsView(Magazine.STATUS_VIEW);
+            mMagazine.status = Magazine.STATUS_DOWNLOAD;
+            setAsDownload(mMagazine.STATUS_DOWNLOAD);
         }else{
             mMagazine.status = Magazine.STATUS_PRICE;
             setAsPurchase(mMagazine.price);
