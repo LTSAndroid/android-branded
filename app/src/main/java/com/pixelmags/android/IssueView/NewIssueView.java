@@ -74,6 +74,8 @@ public class NewIssueView extends FragmentActivity {
         if(allDownloadsTracker != null) {
 
             SingleIssueDownloadDataSet mDbDownloadTableReader = new SingleIssueDownloadDataSet(BaseApp.getContext());
+
+
             ArrayList<SingleDownloadIssueTracker> allPagesOfIssue = mDbDownloadTableReader.getUniqueSingleIssueDownloadTable(mDbDownloadTableReader.getReadableDatabase(), allDownloadsTracker.uniqueIssueDownloadTable);
             mDbDownloadTableReader.close();
 

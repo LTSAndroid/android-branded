@@ -183,6 +183,8 @@ public class AllIssuesFragment extends Fragment {
             documentKey = getDocumentKey.init(UserPrefs.getUserEmail(), UserPrefs.getUserPassword(), UserPrefs.getDeviceID(),
                    issueId,Config.Magazine_Number, Config.Bundle_ID);
 
+            Log.d(TAG,"Document key from the API response is : "+documentKey);
+
             if(documentKey != null)
             saveDocumentKey(issueId,Config.Magazine_Number,documentKey.trim());
 
@@ -249,8 +251,16 @@ public class AllIssuesFragment extends Fragment {
 
         // Save the Subscription Objects into the SQlite DB
         MyIssueDocumentKey mDbHelper = new MyIssueDocumentKey(BaseApp.getContext());
-        mDbHelper.insert_my_issues_documentKey(mDbHelper.getWritableDatabase(), issueId,magazineNumber,documentKey);
-        mDbHelper.close();
+        if(mDbHelper != null) {
+
+            boolean isExists = mDbHelper.isTableExists(mDbHelper.getReadableDatabase(), BrandedSQLiteHelper.TABLE_DOCUMENT_KEY);
+            Log.d(TAG, "Document Table exists is : " + isExists);
+            mDbHelper.insert_my_issues_documentKey(mDbHelper.getWritableDatabase(), issueId,magazineNumber,documentKey,isExists);
+            mDbHelper.close();
+        }
+
+
+
 
 
 
@@ -452,6 +462,7 @@ public class AllIssuesFragment extends Fragment {
             mDbReader.close();
         }
 
+        Log.d(TAG,"Issue Document key size is : "+issueDocumentKeys.size());
         for(int i=0; i<issueDocumentKeys.size(); i++){
             if(issueId == issueDocumentKeys.get(i).issueID){
                 issueKey = issueDocumentKeys.get(i).documentKey;

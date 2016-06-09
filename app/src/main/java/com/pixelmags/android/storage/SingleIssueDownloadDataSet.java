@@ -147,7 +147,6 @@ public class SingleIssueDownloadDataSet extends BrandedSQLiteHelper {
 
     }
 
-
     public ArrayList<SingleDownloadIssueTracker> getUniqueSingleIssueDownloadTable(SQLiteDatabase db, String uniqueDownloadTable){
 
         ArrayList<SingleDownloadIssueTracker> currentSingleIssueDownload = null;

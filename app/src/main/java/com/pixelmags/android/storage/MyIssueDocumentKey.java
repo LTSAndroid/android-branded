@@ -14,6 +14,8 @@ import java.util.ArrayList;
  */
 public class MyIssueDocumentKey  extends BrandedSQLiteHelper {
 
+    private String TAG = "MyIssueDocumentKey";
+
     public MyIssueDocumentKey(Context context) {
         super(context);
     }
@@ -27,7 +29,7 @@ public class MyIssueDocumentKey  extends BrandedSQLiteHelper {
     }
 
 
-    public void insert_my_issues_documentKey(SQLiteDatabase db, String issueId, String magazineId, String documentKey){
+    public void insert_my_issues_documentKey(SQLiteDatabase db, String issueId, String magazineId, String documentKey, boolean tableExists){
 
         // Do batch inserts using Transcations. This is to vastly increase the speed of DB writes
 
@@ -36,8 +38,11 @@ public class MyIssueDocumentKey  extends BrandedSQLiteHelper {
             db.beginTransaction();
 
             // clear out any previous values by rebuilding table
-            dropMyIssuesDocumentKeyTable(db);
-            createTableMyIssuesDocumentKey(db);
+//            dropMyIssuesDocumentKeyTable(db);
+
+            if(!tableExists){
+                createTableMyIssuesDocumentKey(db);
+            }
 
                 ContentValues insertValues = new ContentValues();
                 insertValues.put(MyIssuesDocumentKeyEntry.COLUMN_ISSUE_ID, issueId);
@@ -55,6 +60,22 @@ public class MyIssueDocumentKey  extends BrandedSQLiteHelper {
             System.out.println(e.getStackTrace());
         }
 
+    }
+
+    public boolean isTableExists(SQLiteDatabase db, String tableName)
+    {
+        if (tableName == null || db == null || !db.isOpen())
+        {
+            return false;
+        }
+        Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM sqlite_master WHERE type = ? AND name = ?", new String[] {"table", tableName});
+        if (!cursor.moveToFirst())
+        {
+            return false;
+        }
+        int count = cursor.getInt(0);
+        cursor.close();
+        return count > 0;
     }
 
 

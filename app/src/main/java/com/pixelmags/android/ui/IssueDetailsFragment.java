@@ -37,6 +37,7 @@ import com.pixelmags.android.pixelmagsapp.MainActivity;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.storage.AllDownloadsDataSet;
 import com.pixelmags.android.storage.AllIssuesDataSet;
+import com.pixelmags.android.storage.BrandedSQLiteHelper;
 import com.pixelmags.android.storage.MyIssueDocumentKey;
 import com.pixelmags.android.storage.MyIssuesDataSet;
 import com.pixelmags.android.storage.UserPrefs;
@@ -372,11 +373,13 @@ public class IssueDetailsFragment extends Fragment {
 
         // Save the Subscription Objects into the SQlite DB
         MyIssueDocumentKey mDbHelper = new MyIssueDocumentKey(BaseApp.getContext());
-        mDbHelper.insert_my_issues_documentKey(mDbHelper.getWritableDatabase(), issueId,magazineNumber,documentKey);
-        mDbHelper.close();
+        if(mDbHelper != null) {
 
-
-
+            boolean isExists = mDbHelper.isTableExists(mDbHelper.getReadableDatabase(), BrandedSQLiteHelper.TABLE_DOCUMENT_KEY);
+            Log.d(TAG, "Document Table exists is : " + isExists);
+            mDbHelper.insert_my_issues_documentKey(mDbHelper.getWritableDatabase(), issueId,magazineNumber,documentKey,isExists);
+            mDbHelper.close();
+        }
     }
 
 
