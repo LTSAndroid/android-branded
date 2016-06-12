@@ -1,6 +1,8 @@
 package com.pixelmags.android.ui;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -255,6 +257,7 @@ public class AllDownloadsFragment extends Fragment {
             gridDownloadStatusButton.setOnClickListener(this);
 
             ImageView popup = (ImageView) grid.findViewById(R.id.moreDownloadOptionsMenuButton);
+            popup.setTag(position);
             popup.setOnClickListener(this);
 
             return grid;
@@ -339,25 +342,86 @@ public class AllDownloadsFragment extends Fragment {
     public void onClick(View v) {
 
         if(v.getId() == R.id.gridMultiStateButton){
+
             // Based on Button status.
-            int pos = (int) cardView.getTag();
+            int pos = (int) v.getTag();
 
-            String issueId = String.valueOf(allDownloadsIssuesListTracker.get(pos).issueID);
+            Log.d(TAG,"Position of the button click is : " +pos);
 
-            documentKey = getIssueDocumentKey(allDownloadsIssuesListTracker.get(pos).issueID);
+            Log.d(TAG,"All Downloads Issue List Tracker Download status is : "+allDownloadsIssuesListTracker.get(pos).downloadStatus);
+            final int status = allDownloadsIssuesListTracker.get(pos).downloadStatus;
 
-            Log.d(TAG,"Document Key is : " +documentKey);
+            if(status == 4){
 
-            Intent intent = new Intent(getActivity(),NewIssueView.class);
-            intent.putExtra("issueId",issueId);
-            intent.putExtra("documentKey",documentKey);
-            startActivity(intent);
+                new AlertDialog.Builder(getActivity())
+                        .setTitle("Issue download is in queue!")
+                        .setMessage("You can view your Issue once download start.")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+
+            }else if(status == 6){
+
+                String issueId = String.valueOf(allDownloadsIssuesListTracker.get(pos).issueID);
+
+                documentKey = getIssueDocumentKey(allDownloadsIssuesListTracker.get(pos).issueID);
+
+                Log.d(TAG,"Document Key is : " +documentKey);
+
+                Intent intent = new Intent(getActivity(),NewIssueView.class);
+                intent.putExtra("issueId",issueId);
+                intent.putExtra("documentKey",documentKey);
+                startActivity(intent);
+            }else if(status == 0){
+
+                String issueId = String.valueOf(allDownloadsIssuesListTracker.get(pos).issueID);
+
+                documentKey = getIssueDocumentKey(allDownloadsIssuesListTracker.get(pos).issueID);
+
+                Log.d(TAG,"Document Key is : " +documentKey);
+
+                Intent intent = new Intent(getActivity(),NewIssueView.class);
+                intent.putExtra("issueId",issueId);
+                intent.putExtra("documentKey",documentKey);
+                startActivity(intent);
+            }else if(status == 1 || status == 2){
+                String issueId = String.valueOf(allDownloadsIssuesListTracker.get(pos).issueID);
+
+                documentKey = getIssueDocumentKey(allDownloadsIssuesListTracker.get(pos).issueID);
+
+                Log.d(TAG,"Document Key is : " +documentKey);
+
+                Intent intent = new Intent(getActivity(),NewIssueView.class);
+                intent.putExtra("issueId",issueId);
+                intent.putExtra("documentKey",documentKey);
+                startActivity(intent);
+            }else if(status == -1){
+                new AlertDialog.Builder(getActivity())
+                        .setTitle("Error while downloading the issue.")
+                        .setMessage("Please trying downloading once again")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+            }
 
 
         }
 
         if(v.getId() == R.id.moreDownloadOptionsMenuButton){
-            showPopup(v, (Integer) cardView.getTag());
+            int pos = (int) v.getTag();
+            Log.d(TAG,"Position of the button click is : " +pos);
+
+            showPopup(v, (int) v.getTag());
         }
 
     }
@@ -371,6 +435,10 @@ public class AllDownloadsFragment extends Fragment {
             issueDocumentKeys = mDbReader.getMyIssuesDocumentKey(mDbReader.getReadableDatabase());
             mDbReader.close();
         }
+
+        Log.d(TAG,"Issue Document Key size is : "+issueDocumentKeys.size());
+
+
 
         for(int i=0; i<issueDocumentKeys.size(); i++){
             if(issueId == issueDocumentKeys.get(i).issueID){

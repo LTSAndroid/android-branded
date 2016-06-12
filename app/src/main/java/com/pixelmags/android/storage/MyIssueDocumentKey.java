@@ -144,8 +144,8 @@ public class MyIssueDocumentKey  extends BrandedSQLiteHelper {
         public static final String CREATE_MY_ISSUES_DOCUMENT_TABLE = "CREATE TABLE "
                 + MY_ISSUES_DOCUMENT_TABLE_NAME
                 + "("
-                + COLUMN_ISSUE_ID + " TEXT,"
-                + COLUMN_MAGAZINE_ID + " TEXT,"
+                + COLUMN_ISSUE_ID + " INTEGER PRIMARY KEY ,"
+                + COLUMN_MAGAZINE_ID + " INTEGER,"
                 + COLUMN_DOCUMENT_KEY + " TEXT"
                 + ")";
 

@@ -265,6 +265,7 @@ public class IssueDetailsFragment extends Fragment {
             mDbReader.close();
         }
 
+        Log.d(TAG,"Issue Document Key size is : "+issueDocumentKeys.size());
         for(int i=0; i<issueDocumentKeys.size(); i++){
             if(issueId == issueDocumentKeys.get(i).issueID){
                 issueKey = issueDocumentKeys.get(i).documentKey;
