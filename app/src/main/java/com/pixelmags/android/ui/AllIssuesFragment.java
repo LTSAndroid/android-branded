@@ -50,13 +50,15 @@ public class AllIssuesFragment extends Fragment {
 
     private ArrayList<Magazine> magazinesList = null;
     private GetAllIssuesTask mGetAllIssuesTask = null;
+    private DownloadIssue downloadIssue = null;
     public CustomGridAdapter gridAdapter;
     private String TAG = "AllIssuesFragment";
     private MultiStateButton issuePriceButton;
     ArrayList<AllDownloadsIssueTracker> allDownloadsTracker;
     private String documentKey;
-    ProgressDialog progressBar;
+    private ProgressDialog progressBar;
     public static String currentPage;
+    ProgressDialog progressDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -166,58 +168,42 @@ public class AllIssuesFragment extends Fragment {
     public void downloadButtonClicked(int position){
         if(UserPrefs.getUserLoggedIn()){
 
-            progressBar = new ProgressDialog(getActivity());
-            if (progressBar != null) {
-                progressBar.show();
-                progressBar.setCancelable(false);
-                progressBar.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                progressBar.setContentView(R.layout.progress_dialog);
-            }
 
-            String issueId = String.valueOf(magazinesList.get(position).id);
 
-            GetIssue getIssue = new GetIssue();
-            getIssue.init(issueId);
 
-            GetDocumentKey getDocumentKey = new GetDocumentKey();
-            documentKey = getDocumentKey.init(UserPrefs.getUserEmail(), UserPrefs.getUserPassword(), UserPrefs.getDeviceID(),
-                   issueId,Config.Magazine_Number, Config.Bundle_ID);
 
-            Log.d(TAG,"Document key from the API response is : "+documentKey);
+//            new AlertDialog.Builder(getActivity())
+//                    .setTitle("Issue Download!")
+//                    .setMessage("You can view your Issue in download section.")
+//                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int which) {
+//
+//                            currentPage =getString(R.string.menu_title_downloads);
+//
+//                            Fragment fragmentDownload = new AllDownloadsFragment();
+//                            // Insert the fragment by replacing any existing fragment
+//                            FragmentManager allIssuesFragmentManager = getFragmentManager();
+//                            allIssuesFragmentManager.beginTransaction()
+//                                    .replace(R.id.main_fragment_container, fragmentDownload)
+//                                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+//                                            //       .addToBackStack(null)
+//                                    .commit();
+//                        }
+//                    })
+//                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int which) {
+//                           dialog.dismiss();
+//                        }
+//                    })
+//                    .setIcon(android.R.drawable.ic_dialog_alert)
+//                    .show();
 
-            if(documentKey != null)
-            saveDocumentKey(issueId,Config.Magazine_Number,documentKey.trim());
+
+            downloadIssue = new DownloadIssue(position);
+            downloadIssue.execute((String) null);
 
             magazinesList.get(position).status = Magazine.STATUS_VIEW;
             gridAdapter.notifyDataSetChanged();
-
-            progressBar.dismiss();
-
-            new AlertDialog.Builder(getActivity())
-                    .setTitle("Issue Download!")
-                    .setMessage("You can view your Issue in download section.")
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-
-                            currentPage =getString(R.string.menu_title_downloads);
-
-                            Fragment fragmentDownload = new AllDownloadsFragment();
-                            // Insert the fragment by replacing any existing fragment
-                            FragmentManager allIssuesFragmentManager = getFragmentManager();
-                            allIssuesFragmentManager.beginTransaction()
-                                    .replace(R.id.main_fragment_container, fragmentDownload)
-                                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                                            //       .addToBackStack(null)
-                                    .commit();
-                        }
-                    })
-                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                           dialog.dismiss();
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
 
 
         }else{
@@ -762,6 +748,106 @@ public class AllIssuesFragment extends Fragment {
         }
 
     }
+
+
+
+    public class DownloadIssue extends AsyncTask<String, String, String> {
+
+        private int position;
+
+        public DownloadIssue(int position){
+            this.position = position;
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            progressDialog = new ProgressDialog(getActivity());
+            if (progressDialog != null) {
+                progressDialog.show();
+                progressDialog.setCancelable(false);
+                progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                progressDialog.setContentView(R.layout.progress_dialog);
+            }
+
+        }
+
+
+        @Override
+        protected String doInBackground(String... params) {
+            // TODO: attempt authentication against a network service.
+
+            String resultToDisplay = "";
+
+            try {
+
+                String issueId = String.valueOf(magazinesList.get(position).id);
+
+                GetIssue getIssue = new GetIssue();
+                getIssue.init(issueId);
+
+                GetDocumentKey getDocumentKey = new GetDocumentKey();
+                documentKey = getDocumentKey.init(UserPrefs.getUserEmail(), UserPrefs.getUserPassword(), UserPrefs.getDeviceID(),
+                        issueId,Config.Magazine_Number, Config.Bundle_ID);
+
+                Log.d(TAG, "Document key from the API response is : " + documentKey);
+
+                if(documentKey != null)
+                    saveDocumentKey(issueId,Config.Magazine_Number,documentKey.trim());
+
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            return resultToDisplay;
+
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+
+            progressDialog.dismiss();
+
+            new AlertDialog.Builder(getActivity())
+                    .setTitle("Issue Download!")
+                    .setMessage("You can view your Issue in download section.")
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+
+                            currentPage =getString(R.string.menu_title_downloads);
+
+                            Fragment fragmentDownload = new AllDownloadsFragment();
+                            // Insert the fragment by replacing any existing fragment
+                            FragmentManager allIssuesFragmentManager = getFragmentManager();
+                            allIssuesFragmentManager.beginTransaction()
+                                    .replace(R.id.main_fragment_container, fragmentDownload)
+                                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                                            //       .addToBackStack(null)
+                                    .commit();
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+
+
+        }
+
+        @Override
+        protected void onCancelled() {
+            mGetAllIssuesTask = null;
+        }
+    }
+
+
 
 
 }

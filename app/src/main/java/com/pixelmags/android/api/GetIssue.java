@@ -94,6 +94,7 @@ public class GetIssue extends WebRequest
         Log.d(TAG,"Result of queue download insert is : "+result);
 
         if(result){
+
             Log.d(TAG,"Inside the if condition of notify service of new download");
             PMService pmService = new PMService();
             pmService.newDownloadRequested();
