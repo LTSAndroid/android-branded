@@ -239,6 +239,32 @@ public class IssueDetailsFragment extends Fragment {
                             intent.putExtra("documentKey",documentKey);
                             startActivity(intent);
 
+                        }else if(issueData.status == Magazine.STATUS_QUEUE){
+
+                            new AlertDialog.Builder(getActivity())
+                                    .setTitle("Issue download is in queue!")
+                                    .setMessage("You can view your Issue once download start.")
+                                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+
+                                            Fragment fragmentDownload = new AllDownloadsFragment();
+                                            // Insert the fragment by replacing any existing fragment
+                                            FragmentManager allIssuesFragmentManager = getFragmentManager();
+                                            allIssuesFragmentManager.beginTransaction()
+                                                    .replace(R.id.main_fragment_container, fragmentDownload)
+                                                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                                                            //       .addToBackStack(null)
+                                                    .commit();
+                                        }
+                                    })
+                                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.dismiss();
+                                        }
+                                    })
+                                    .setIcon(android.R.drawable.ic_dialog_alert)
+                                    .show();
+
                         }
 
                     }
