@@ -46,8 +46,8 @@ public class NewIssueView extends FragmentActivity {
 
     // TODO : get the decrypt key and store here
     private String decrypt_key;
-    private String TAG = "NewIssueView";
-    private String documentKey;
+    private static String TAG = "NewIssueView";
+    private static String documentKey;
 
 
     @Override
@@ -131,7 +131,7 @@ public class NewIssueView extends FragmentActivity {
 
     }
 
-    public class SwipeFragment extends Fragment
+    public static class SwipeFragment extends Fragment
     {
 
         @Override
@@ -189,7 +189,7 @@ public class NewIssueView extends FragmentActivity {
 
     }
 
-    public Bitmap decryptFile(String path,String documentKey){
+    public static Bitmap decryptFile(String path, String documentKey){
 
         Bitmap bitmap = null;
 
