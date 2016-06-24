@@ -119,6 +119,7 @@ public class MainActivity extends AppCompatActivity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
+
         // setting STRICT DEVELOPER MODE (Disable this for live apps)
         PMStrictMode.setStrictMode(Config.DEVELOPER_MODE);
 
@@ -313,6 +314,8 @@ public class MainActivity extends AppCompatActivity
             }
         }
     };
+
+
 
     @Override
     public void onNavigationDrawerItemSelected(int position)

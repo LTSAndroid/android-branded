@@ -4,7 +4,9 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="android:typeface">serif</item>
-    </style>
+        <item name="android:homeAsUpIndicator">@drawable/menu_icon</item>
+    </style>)
+
 
 
     <!-- The base state of the multi state button-->
