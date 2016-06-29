@@ -124,9 +124,10 @@ public class AllIssuesFragment extends Fragment {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
             alertDialogBuilder.setTitle(getString(R.string.purchase_initiation_fail_title));
 
+
             // set dialog message
             alertDialogBuilder
-                    .setMessage(getString(R.string.download_initiation_fail_message))
+                    .setMessage(getString(R.string.purchase_initiation_fail_message))
                     .setCancelable(false)
                     .setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog,int id) {
@@ -144,6 +145,7 @@ public class AllIssuesFragment extends Fragment {
                     });
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialog.show();
+
         }
 
         //check for download state before launch, prefer separate class as we need to reuse
@@ -168,37 +170,6 @@ public class AllIssuesFragment extends Fragment {
     public void downloadButtonClicked(int position){
         if(UserPrefs.getUserLoggedIn()){
 
-
-
-
-
-//            new AlertDialog.Builder(getActivity())
-//                    .setTitle("Issue Download!")
-//                    .setMessage("You can view your Issue in download section.")
-//                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialog, int which) {
-//
-//                            currentPage =getString(R.string.menu_title_downloads);
-//
-//                            Fragment fragmentDownload = new AllDownloadsFragment();
-//                            // Insert the fragment by replacing any existing fragment
-//                            FragmentManager allIssuesFragmentManager = getFragmentManager();
-//                            allIssuesFragmentManager.beginTransaction()
-//                                    .replace(R.id.main_fragment_container, fragmentDownload)
-//                                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-//                                            //       .addToBackStack(null)
-//                                    .commit();
-//                        }
-//                    })
-//                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialog, int which) {
-//                           dialog.dismiss();
-//                        }
-//                    })
-//                    .setIcon(android.R.drawable.ic_dialog_alert)
-//                    .show();
-
-
             downloadIssue = new DownloadIssue(position);
             downloadIssue.execute((String) null);
 
@@ -212,7 +183,7 @@ public class AllIssuesFragment extends Fragment {
 
             // set dialog message
             alertDialogBuilder
-                    .setMessage(getString(R.string.purchase_initiation_fail_message))
+                    .setMessage(getString(R.string.download_initiation_fail_message))
                     .setCancelable(false)
                     .setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog,int id) {
