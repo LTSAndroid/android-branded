@@ -40,6 +40,7 @@ import com.pixelmags.android.storage.MyIssuesDataSet;
 import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.ui.uicomponents.MultiStateButton;
 import com.pixelmags.android.util.BaseApp;
+import com.pixelmags.android.util.GetInternetStatus;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -170,8 +171,16 @@ public class AllIssuesFragment extends Fragment {
     public void downloadButtonClicked(int position){
         if(UserPrefs.getUserLoggedIn()){
 
-            downloadIssue = new DownloadIssue(position);
-            downloadIssue.execute((String) null);
+            GetInternetStatus getInternetStatus = new GetInternetStatus(getActivity());
+            if(getInternetStatus.isNetworkAvailable()){
+                downloadIssue = new DownloadIssue(position);
+                downloadIssue.execute((String) null);
+
+            }else{
+                getInternetStatus.showAlertDialog();
+            }
+
+
 
             magazinesList.get(position).status = Magazine.STATUS_VIEW;
             gridAdapter.notifyDataSetChanged();
@@ -303,7 +312,9 @@ public class AllIssuesFragment extends Fragment {
 
                 if(magazinesList.get(position).thumbnailBitmap != null){
                     ImageView imageView = (ImageView) grid.findViewById(R.id.gridImage);
+                    imageView.setImageDrawable(getResources().getDrawable(R.drawable.placeholder));
                     imageView.setImageBitmap(magazinesList.get(position).thumbnailBitmap);
+
                     //imageView.setImageBitmap(bmp);
 
                     imageView.setTag(position);

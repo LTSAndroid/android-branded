@@ -31,14 +31,9 @@ public class MyIssueDocumentKey  extends BrandedSQLiteHelper {
 
     public void insert_my_issues_documentKey(SQLiteDatabase db, String issueId, String magazineId, String documentKey, boolean tableExists){
 
-        // Do batch inserts using Transcations. This is to vastly increase the speed of DB writes
-
         try{
             // Start the transaction
             db.beginTransaction();
-
-            // clear out any previous values by rebuilding table
-//            dropMyIssuesDocumentKeyTable(db);
 
             if(!tableExists){
                 createTableMyIssuesDocumentKey(db);
@@ -47,7 +42,7 @@ public class MyIssueDocumentKey  extends BrandedSQLiteHelper {
                 ContentValues insertValues = new ContentValues();
                 insertValues.put(MyIssuesDocumentKeyEntry.COLUMN_ISSUE_ID, issueId);
                 insertValues.put(MyIssuesDocumentKeyEntry.COLUMN_MAGAZINE_ID, magazineId);
-                insertValues.put(MyIssuesDocumentKeyEntry.COLUMN_DOCUMENT_KEY, documentKey );  // SQLite does not support boolean so convert to int
+                insertValues.put(MyIssuesDocumentKeyEntry.COLUMN_DOCUMENT_KEY, documentKey );
 
                 db.insert(MyIssuesDocumentKeyEntry.MY_ISSUES_DOCUMENT_TABLE_NAME, null, insertValues);
 

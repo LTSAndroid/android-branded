@@ -548,8 +548,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onDestroy() {
-
-        Log.d(TAG, "OnDestroy method is called");
         stopDownloadService();
         super.onDestroy();
 
@@ -576,8 +574,6 @@ public class MainActivity extends AppCompatActivity
                 // cast its IBinder to a concrete class and directly access it.
 
                 mPMService = ((PMService.LocalBinder)service).getService();
-
-                Log.d(TAG,"M PMService value assigned is : " +mPMService);
             }
 
             public void onServiceDisconnected(ComponentName className) {
@@ -586,7 +582,6 @@ public class MainActivity extends AppCompatActivity
                 // Because it is running in our same process, we should never
                 // see this happen.
                 mPMService = null;
-                Log.d(TAG,"M PMService value assigned 222 is : " +mPMService);
             }
         };
 
@@ -606,9 +601,7 @@ public class MainActivity extends AppCompatActivity
 
     void doUnbindService() {
 
-        Log.d(TAG,"M Is Bound is : " +mIsBound);
         if (mIsBound) {
-            Log.d(TAG,"Inside the do unbind service method");
             // Detach our existing connection.
             unbindService(mConnection);
             mIsBound = false;
@@ -641,9 +634,7 @@ public class MainActivity extends AppCompatActivity
 
         // do a resume only after the AllIssues fragment is loaded
 
-        Log.d(TAG," Pm Service is : "+mPMService);
         if(mPMService != null){
-            Log.d(TAG,"Inside the if condition of mPMService");
             mPMService.resumeDownloadsProcessing();
         }
 
@@ -652,11 +643,7 @@ public class MainActivity extends AppCompatActivity
 
     public void notifyServiceOfNewDownload(){
 
-        Log.d(TAG, "PM Service is : " + mPMService);
-
         if(mPMService != null){
-
-            Log.d(TAG, "NOTIFYING SERVICE OF NEW DOWNLOAD");
             mPMService.newDownloadRequested();
         }
 

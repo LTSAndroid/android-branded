@@ -67,6 +67,7 @@ public class DownloadsManager {
     //QueueProcessorAsyncTask mQueueProcessorTask;
     static boolean queueTaskCompleted = true;
     public static int totalPages;
+    public static int progressCount = -1;
 
 
 
@@ -667,7 +668,7 @@ public class DownloadsManager {
         private boolean isDownloaded;
         private AllDownloadsIssueTracker issueAllDownloadsTracker;
         private SingleDownloadIssueTracker pageSingleDownloadTracker;
-        private int progressCount = -1;
+
 
 
         public void setProcessingValues(AllDownloadsIssueTracker allDownloadsTracker, SingleDownloadIssueTracker pageTracker, boolean setAsPriority){
@@ -757,28 +758,15 @@ public class DownloadsManager {
 
                 pageDownloadProcessedQueue.add(pageSingleDownloadTracker);
 
-                if(NavigationDrawerFragment.currentPage.equalsIgnoreCase("Downloads")){
-                    // Setting the Issue to be in progress
-//                    issueToDownload.downloadStatus = AllDownloadsDataSet.DOWNLOAD_STATUS_IN_PROGRESS;
-//                    CustomAllDownloadsGridAdapter customAllDownloadsGridAdapter =
-//                            new AllDownloadsFragment().new CustomAllDownloadsGridAdapter(BaseApp.getContext());
-//                    customAllDownloadsGridAdapter.updateTheProgressBar( i,noOfIssuePageSize);
-//                    count++;
+                if(NavigationDrawerFragment.currentPage.equalsIgnoreCase("Downloads") || AllIssuesFragment.currentPage.equalsIgnoreCase("Downloads")){
 
-                    if(progressCount == -1) {
-                        Log.d(TAG, "Download Page is opened. Calling the fragment progress bar update method");
-                        AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment();
-                        allDownloadsFragment.updateProgressBarFragment(issueAllDownloadsTracker.issueID);
-                        progressCount ++;
-                    } // commented for new changes
+//                    if(progressCount == -1) {
+//                        Log.d(TAG, "Download Page is opened. Calling the fragment progress bar update method");
+//                        AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment();
+//                        allDownloadsFragment.updateProgressBarFragment(issueAllDownloadsTracker.issueID);
+//                        progressCount ++;
+//                    }
 
-                }else if(AllIssuesFragment.currentPage.equalsIgnoreCase("Downloads")){
-                    if(progressCount == -1) {
-                        Log.d(TAG, "Download Page is opened. Calling the fragment progress bar update method");
-                        AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment();
-                        allDownloadsFragment.updateProgressBarFragment(issueAllDownloadsTracker.issueID);
-                        progressCount ++;
-                    }  // Commented for new changes
                 }
 
 

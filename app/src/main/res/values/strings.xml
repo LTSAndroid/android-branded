@@ -141,4 +141,8 @@
     <string name="download_initiation_fail_title">Warning</string>
     <string name="download_initiation_fail_message">login to download this issue.</string>
 
+    <string name="queue_initiation_title">Issue download is in queue!</string>
+    <string name="queue_initiation_message">You can view your Issue once download start.</string>
+
+    <string name="no_internet">Uh oh! \n\nLooks like you don\'t have an internet connection. Please connect to  network and try again.</string>
 </resources>

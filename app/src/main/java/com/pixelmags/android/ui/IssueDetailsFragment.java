@@ -43,6 +43,7 @@ import com.pixelmags.android.storage.MyIssuesDataSet;
 import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.ui.uicomponents.MultiStateButton;
 import com.pixelmags.android.util.BaseApp;
+import com.pixelmags.android.util.GetInternetStatus;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -207,7 +208,6 @@ public class IssueDetailsFragment extends Fragment {
 //                    }
 //                });
 
-                Log.d(TAG," Issue Data is : " +issueData.status);
                 issueDetailsPriceButton.setButtonState(issueData);
                 issueDetailsPriceButton.setOnClickListener(new View.OnClickListener() {
 
@@ -215,14 +215,9 @@ public class IssueDetailsFragment extends Fragment {
                     public void onClick(View v) {
 
                         if(issueData.status == Magazine.STATUS_PRICE) {
-
-                            Log.d(TAG, "Price Button clicked");
-
                             priceButtonClicked();
 
                         }else if(issueData.status == Magazine.STATUS_DOWNLOAD){
-
-                            Log.d(TAG,"Download Button clicked");
 
                             downloadButtonClicked();
 
@@ -232,8 +227,6 @@ public class IssueDetailsFragment extends Fragment {
 
                             documentKey = getIssueDocumentKey(issueData.id);
 
-                            Log.d(TAG,"Document Key is : " +documentKey);
-
                             Intent intent = new Intent(getActivity(),NewIssueView.class);
                             intent.putExtra("issueId",issueId);
                             intent.putExtra("documentKey",documentKey);
@@ -242,8 +235,8 @@ public class IssueDetailsFragment extends Fragment {
                         }else if(issueData.status == Magazine.STATUS_QUEUE){
 
                             new AlertDialog.Builder(getActivity())
-                                    .setTitle("Issue download is in queue!")
-                                    .setMessage("You can view your Issue once download start.")
+                                    .setTitle(getActivity().getResources().getString(R.string.queue_initiation_title))
+                                    .setMessage(getActivity().getResources().getString(R.string.queue_initiation_message))
                                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int which) {
 
@@ -269,8 +262,6 @@ public class IssueDetailsFragment extends Fragment {
 
                     }
                 });
-
-
 
             }
 
@@ -322,8 +313,8 @@ public class IssueDetailsFragment extends Fragment {
             alertDialogBuilder
                     .setMessage(getString(R.string.purchase_initiation_fail_message))
                     .setCancelable(false)
-                    .setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog,int id) {
+                    .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
                             dialog.dismiss();
 
                             Fragment fragmentLogin = new LoginFragment();
@@ -355,8 +346,15 @@ public class IssueDetailsFragment extends Fragment {
 
             String issueId = String.valueOf(issueData.id);
 
-            GetIssue getIssue = new GetIssue();
-            getIssue.init(issueId);
+            GetInternetStatus getInternetStatus = new GetInternetStatus(getActivity());
+
+            if(getInternetStatus.isNetworkAvailable()){
+                GetIssue getIssue = new GetIssue();
+                getIssue.init(issueId);
+
+            }else{
+                getInternetStatus.showAlertDialog();
+            }
 
             GetDocumentKey getDocumentKey = new GetDocumentKey();
             documentKey = getDocumentKey.init(UserPrefs.getUserEmail(), UserPrefs.getUserPassword(), UserPrefs.getDeviceID(),
@@ -393,6 +391,30 @@ public class IssueDetailsFragment extends Fragment {
                     .show();
 
 
+        }else{
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+            alertDialogBuilder.setTitle(getString(R.string.purchase_initiation_fail_title));
+
+            // set dialog message
+            alertDialogBuilder
+                    .setMessage(getString(R.string.download_initiation_fail_message))
+                    .setCancelable(false)
+                    .setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog,int id) {
+                            dialog.dismiss();
+
+                            Fragment fragmentLogin = new LoginFragment();
+
+                            // Insert the fragment by replacing any existing fragment
+                            FragmentManager allIssuesFragmentManager = getFragmentManager();
+                            allIssuesFragmentManager.beginTransaction()
+                                    .replace(R.id.main_fragment_container, fragmentLogin)
+                                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                                    .commit();
+                        }
+                    });
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
         }
     }
 

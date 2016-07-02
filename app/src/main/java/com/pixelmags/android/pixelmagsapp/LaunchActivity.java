@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.Window;
 
 import com.pixelmags.android.api.GetIssues;
@@ -25,30 +24,6 @@ public class LaunchActivity extends Activity {
         setContentView(R.layout.activity_launch);
         PreLaunchAppTask mPreLaunchTask = new PreLaunchAppTask();
         mPreLaunchTask.execute((String) null);
-
-        // setting a sleep of 3 sec so that the splash screen is shown for at least that time.
-//        Thread timerThread = new Thread(){
-//            public void run(){
-//                try{
-//                    sleep(3000);
-//                }catch(InterruptedException e){
-//                    e.printStackTrace();
-//                }finally{
-//
-//                }
-//            }
-//        };
-//        timerThread.start();
-
-
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                launchMainActivity();
-            }
-        },5000);
-
 
     }
 
@@ -96,10 +71,6 @@ public class LaunchActivity extends Activity {
         protected String doInBackground(String... params) {
 
             String resultToDisplay = "";
-
-
-            //System.out.println("USER LOGGED IN :"+ UserPrefs.getUserLoggedIn());
-            //System.out.println("USER Email STORED:" + UserPrefs.getUserEmail());
 
             //Phase 1 - Get All issues and Subs for app
             try {
@@ -157,7 +128,7 @@ public class LaunchActivity extends Activity {
         @Override
         protected void onPostExecute(String result) {
             super.onPreExecute();
-
+            launchMainActivity();
         }
 
     }
