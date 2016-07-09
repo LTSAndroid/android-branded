@@ -1,99 +1,126 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="fill_parent"
     tools:context="com.pixelmags.android.ui.UserAccountFragment"
     android:padding="15dp"
     android:background="#FFFFFF"
+    android:orientation="vertical"
     android:id="@+id/fragment_useraccount">
 
-    <TextView
-        android:layout_width="115dp"
-        android:layout_height="50dp"
-        android:id="@+id/labelUserId"
-        android:paddingLeft="1dip"
-        android:layout_marginTop="64dp"
-        android:textColor="#000000"
-        android:textSize="18dp"
-        android:text="@string/account_user_id"
-        android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/accountLogout"
-        android:layout_toStartOf="@+id/accountLogout" />
 
-    <TextView
-        android:layout_width="200dp"
-        android:layout_height="40dp"
-        android:id="@+id/dataUserId"
-        android:paddingLeft="10dip"
-        android:textColor="#000000"
-        android:text="Pixelmags User ID"
-        android:textSize="18dp"
-        android:layout_alignTop="@+id/labelUserId"
-        android:layout_toRightOf="@+id/labelUserId"
-        android:layout_toEndOf="@+id/labelUserId" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp">
 
-    <TextView
-        android:layout_width="115dp"
-        android:layout_height="50dp"
-        android:id="@+id/labelUserEmail"
-        android:textColor="#000000"
-        android:paddingLeft="1dip"
-        android:paddingTop="5dp"
-        android:text="@string/account_user_email"
-        android:textSize="18dp"
-        android:layout_below="@+id/dataUserId"
-        android:layout_alignLeft="@+id/labelUserId"
-        android:layout_alignStart="@+id/labelUserId" />
+        <TextView
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/labelUserId"
+            android:textColor="#000000"
+            android:textSize="18sp"
+            android:text="@string/account_user_id" />
 
-    <TextView
-        android:layout_width="380dp"
-        android:layout_height="40dp"
-        android:inputType="textEmailAddress"
-        android:id="@+id/dataUserEmail"
-        android:paddingLeft="10dip"
-        android:paddingTop="5dp"
-        android:scrollbars = "vertical"
-        android:text="user email address"
-        android:textColor="#000000"
-        android:hint="user@email.com"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:singleLine="true"
-        android:ems="10"
-        android:textSize="18dp"
-        android:layout_alignTop="@+id/labelUserEmail"
-        android:layout_alignLeft="@+id/dataUserId"
-        android:layout_alignStart="@+id/dataUserId" />
+        <TextView
+            android:layout_width="20dp"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text=":"/>
 
-    <TextView
-        android:layout_width="115dp"
-        android:layout_height="50dp"
-        android:id="@+id/labelUserName"
-        android:textColor="#000000"
-        android:paddingLeft="1dip"
-        android:textSize="18dp"
-        android:text="@string/account_user_full_name"
-        android:layout_below="@+id/labelUserEmail"
-        android:layout_alignLeft="@+id/labelUserEmail"
-        android:layout_alignStart="@+id/labelUserEmail"
-        android:layout_toLeftOf="@+id/dataUserEmail"
-        android:layout_toStartOf="@+id/dataUserEmail" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/dataUserId"
+            android:textColor="#000000"
+            android:text="Pixelmags User ID"
+            android:textSize="18dp"
+            android:layout_alignTop="@+id/labelUserId"
+            android:layout_toRightOf="@+id/labelUserId"
+            android:layout_toEndOf="@+id/labelUserId" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:id="@+id/dataUserFullName"
-        android:textColor="#000000"
-        android:scrollbars = "vertical"
-        android:paddingLeft="10dip"
-        android:text="Full Name"
-        android:textSize="18dp"
-        android:inputType="textCapWords|textCapSentences"
-        android:layout_below="@+id/labelUserEmail"
-        android:layout_toRightOf="@+id/labelUserName"
-        android:layout_toEndOf="@+id/labelUserName" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp">
+
+        <TextView
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/labelUserEmail"
+            android:textColor="#000000"
+            android:text="@string/account_user_email"
+            android:textSize="18dp" />
+
+        <TextView
+            android:layout_width="20dp"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text=":"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress|textMultiLine"
+            android:id="@+id/dataUserEmail"
+            android:text="user email address"
+            android:textColor="#000000"
+            android:hint="user@email.com"
+            android:textSize="18dp" />
+
+
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp">
+
+        <TextView
+            android:layout_width="80dp"
+            android:layout_height="50dp"
+            android:id="@+id/labelUserName"
+            android:textColor="#000000"
+            android:textSize="18dp"
+            android:text="@string/account_user_full_name" />
+
+        <TextView
+            android:layout_width="20dp"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text=":"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/dataUserFullName"
+            android:textColor="#000000"
+            android:scrollbars = "vertical"
+            android:text="Full Name"
+            android:textSize="18dp"
+            android:inputType="textCapWords|textCapSentences"/>
+
+
+    </LinearLayout>
+
+
 
     <Button
-        android:layout_width="100dp"
+        android:layout_width="fill_parent"
         android:layout_height="40dp"
         android:id="@+id/accountLogout"
         android:layout_marginTop="8dip"
@@ -101,9 +128,9 @@
         android:background="@drawable/shape"
         android:text=   "@string/log_out"
         android:textColor="#ffffff"
-        android:layout_below="@+id/dataUserFullName"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_gravity="center_horizontal"/>
 
 
-</RelativeLayout>
+</LinearLayout>

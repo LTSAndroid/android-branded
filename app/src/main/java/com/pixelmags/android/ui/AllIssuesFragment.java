@@ -41,6 +41,7 @@ import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.ui.uicomponents.MultiStateButton;
 import com.pixelmags.android.util.BaseApp;
 import com.pixelmags.android.util.GetInternetStatus;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -114,10 +115,6 @@ public class AllIssuesFragment extends Fragment {
         {
 
             MainActivity myAct = (MainActivity) getActivity();
-
-            Log.d(TAG,"Android store Sku is : " +magazinesList.get(position).android_store_sku);
-            Log.d(TAG,"Magazine List Id is : " +magazinesList.get(position).id);
-
             myAct.canPurchaseLauncher(magazinesList.get(position).android_store_sku, magazinesList.get(position).id);
         }
         else
@@ -220,7 +217,6 @@ public class AllIssuesFragment extends Fragment {
         if(mDbHelper != null) {
 
             boolean isExists = mDbHelper.isTableExists(mDbHelper.getReadableDatabase(), BrandedSQLiteHelper.TABLE_DOCUMENT_KEY);
-            Log.d(TAG, "Document Table exists is : " + isExists);
             mDbHelper.insert_my_issues_documentKey(mDbHelper.getWritableDatabase(), issueId,magazineNumber,documentKey,isExists);
             mDbHelper.close();
         }
@@ -264,6 +260,8 @@ public class AllIssuesFragment extends Fragment {
 
         private Context mContext;
         ArrayList<IssueDocumentKey> issueDocumentKeys;
+        private LayoutInflater inflater;
+        private ImageView imageView;
 
 
         public CustomGridAdapter(Context c) {
@@ -293,29 +291,30 @@ public class AllIssuesFragment extends Fragment {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
 
-            View grid;
-
-            if(convertView==null){
-
-                grid = new View(mContext);
-                LayoutInflater inflater = getActivity().getLayoutInflater();
-                grid=inflater.inflate(R.layout.all_issues_custom_grid_layout, parent, false);
+            View v;
+            if(convertView==null) {
+//                LayoutInflater inflater = getActivity().getLayoutInflater();
+                LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                v = inflater.inflate(R.layout.all_issues_custom_grid_layout, parent, false);
 
             }else{
-                grid = (View)convertView;
+                v = convertView;
             }
 
             // Set the magazine image
             if(magazinesList.get(position).isThumbnailDownloaded) {
 
+                imageView = (ImageView) v.findViewById(R.id.gridImage);
+                Log.d(TAG,"Thumbnail Download is : "+magazinesList.get(position).isThumbnailDownloaded);
                // Bitmap bmp = loadImageFromStorage(magazinesList.get(position).thumbnailDownloadedInternalPath);
 
-                if(magazinesList.get(position).thumbnailBitmap != null){
-                    ImageView imageView = (ImageView) grid.findViewById(R.id.gridImage);
-                    imageView.setImageDrawable(getResources().getDrawable(R.drawable.placeholder));
-                    imageView.setImageBitmap(magazinesList.get(position).thumbnailBitmap);
+                if(magazinesList.get(position).thumbnailURL != null){
 
-                    //imageView.setImageBitmap(bmp);
+                        Picasso.with(mContext)
+                                .load(magazinesList.get(position).thumbnailURL)
+                                .placeholder(R.drawable.placeholder)
+                                .error(R.drawable.placeholder)
+                                .into(imageView);
 
                     imageView.setTag(position);
                     imageView.setOnClickListener(new View.OnClickListener() {
@@ -333,16 +332,14 @@ public class AllIssuesFragment extends Fragment {
 
 
             if(magazinesList.get(position).title != null) {
-                TextView issueTitleText = (TextView) grid.findViewById(R.id.gridTitleText);
+                TextView issueTitleText = (TextView) v.findViewById(R.id.gridTitleText);
                 issueTitleText.setText(magazinesList.get(position).title);
             }
 
 
-            issuePriceButton = (MultiStateButton) grid.findViewById(R.id.gridMultiStateButton);
+            issuePriceButton = (MultiStateButton) v.findViewById(R.id.gridMultiStateButton);
 
             // check if price/View/Download
-            Log.d(TAG," Issue Object issue Id is : "+magazinesList.get(position).id+" and current download status is : " +magazinesList.get(position).currentDownloadStatus);
-            Log.d(TAG," Issue Object issue Id : "+magazinesList.get(position).id+" status is : " +magazinesList.get(position).status);
             issuePriceButton.setButtonState(magazinesList.get(position));
     //            issuePriceButton.setAsPurchase(magazinesList.get(position).price);
 
@@ -353,8 +350,6 @@ public class AllIssuesFragment extends Fragment {
                 public void onClick(View v) {
 
                     if(magazinesList.get((Integer) v.getTag()).status == Magazine.STATUS_PRICE) {
-
-                        Log.d(TAG,"Price Button clicked");
 
                         gridPriceButtonClicked((Integer) v.getTag());
 
@@ -388,8 +383,6 @@ public class AllIssuesFragment extends Fragment {
 
                     }else if(magazinesList.get((Integer) v.getTag()).status == Magazine.STATUS_DOWNLOAD){
 
-                        Log.d(TAG,"Download Button clicked");
-
                         downloadButtonClicked((Integer) v.getTag());
 
                     }else if(magazinesList.get((Integer) v.getTag()).status == Magazine.STATUS_VIEW) {
@@ -398,8 +391,6 @@ public class AllIssuesFragment extends Fragment {
                         String issueId = String.valueOf(magazinesList.get(pos).id);
 
                         documentKey = getIssueDocumentKey(magazinesList.get(pos).id);
-
-                        Log.d(TAG,"Document Key is : " +documentKey);
 
                         Intent intent = new Intent(getActivity(),NewIssueView.class);
                         intent.putExtra("issueId",issueId);
@@ -411,7 +402,7 @@ public class AllIssuesFragment extends Fragment {
                 }
             });
 
-            return grid;
+            return v;
         }
 
 
@@ -430,7 +421,6 @@ public class AllIssuesFragment extends Fragment {
             mDbReader.close();
         }
 
-        Log.d(TAG,"Issue Document key size is : "+issueDocumentKeys.size());
         for(int i=0; i<issueDocumentKeys.size(); i++){
             if(issueId == issueDocumentKeys.get(i).issueID){
                 issueKey = issueDocumentKeys.get(i).documentKey;
@@ -535,23 +525,10 @@ public class AllIssuesFragment extends Fragment {
         magazinesList = mDbHelper.getAllIssues(mDbHelper.getReadableDatabase());
         mDbHelper.close();
 
-        Log.d(TAG, "All Issue Magazine List is : " + magazinesList);
-        Log.d(TAG,"All Issue Magazine List size is : " +magazinesList.size());
-
         for(int i=0; i<magazinesList.size(); i++){
-            Log.d(TAG,"Magazine id is : " +magazinesList.get(i).id);
-            Log.d(TAG,"Magazine Status is : " +magazinesList.get(i).status);
-            Log.d(TAG,"Magazine price is : " +magazinesList.get(i).price);
-            Log.d(TAG,"Magazine Synopsis is : " +magazinesList.get(i).synopsis);
             Log.d(TAG,"Magazine thumbnailURL is : " +magazinesList.get(i).thumbnailURL);
             Log.d(TAG,"Magazine thumbnailBitmap is : " +magazinesList.get(i).thumbnailBitmap);
-            Log.d(TAG,"Magazine Type is : " +magazinesList.get(i).type);
-            Log.d(TAG,"Magazine currentDownloadStatus is : " +magazinesList.get(i).currentDownloadStatus);
-            Log.d(TAG,"Magazine issueDate is : " +magazinesList.get(i).issueDate);
-            Log.d(TAG,"Magazine ageRestriction is : " +magazinesList.get(i).ageRestriction);
-            Log.d(TAG,"Magazine state is : " +magazinesList.get(i).state);
             if(magazinesList.get(i).paymentProvider.trim().equalsIgnoreCase("free")){
-                Log.d(TAG,"Entered the magazine List Payment Provider condition");
                 magazinesList.get(i).status = Magazine.STATUS_DOWNLOAD;
             }
         }
@@ -562,15 +539,12 @@ public class AllIssuesFragment extends Fragment {
         if(mDbReader != null) {
 
             boolean isExists = mDbReader.isTableExists(mDbReader.getReadableDatabase(), BrandedSQLiteHelper.TABLE_ALL_DOWNLOADS);
-            Log.d(TAG,"All Download Table exists is : "+isExists);
             if(isExists) {
                 allDownloadsTracker = mDbReader.getDownloadIssueList(mDbReader.getReadableDatabase(), Config.Magazine_Number);
 
                 for(int j=0; j<magazinesList.size(); j++){
                     for(int k=0; k<allDownloadsTracker.size(); k++){
                         if(allDownloadsTracker.get(k).issueID == magazinesList.get(j).id){
-
-                            Log.d(TAG,"Download status of download table is : "+allDownloadsTracker.get(k).downloadStatus);
 
                             if(allDownloadsTracker.get(k).downloadStatus == AllDownloadsDataSet.DOWNLOAD_STATUS_QUEUED){
                                 magazinesList.get(j).status = Magazine.STATUS_QUEUE;
@@ -594,18 +568,6 @@ public class AllIssuesFragment extends Fragment {
             myIssueArray = myIssuesDbReader.getMyIssues(myIssuesDbReader.getReadableDatabase());
             myIssuesDbReader.close();
 
-
-            Log.d(TAG, "My Magazine List is : " + myIssueArray);
-            Log.d(TAG, "My Magazine List size is : " + myIssueArray.size());
-
-            for(int i=0; i<myIssueArray.size(); i++){
-                Log.d(TAG,"My Magazine id is : " +myIssueArray.get(i).magazineID);
-                Log.d(TAG,"My Magazine Status is : " +myIssueArray.get(i).issueID);
-                Log.d(TAG,"My Magazine price is : " +myIssueArray.get(i).removeFromSale);
-
-            }
-
-
         }
 
 
@@ -614,42 +576,32 @@ public class AllIssuesFragment extends Fragment {
             for(int i=0; i< magazinesList.size();i++) {
                // DownloadImageTask mDownloadTask = new DownloadImageTask(i);
                // mDownloadTask.execute((String) null);
+
                 Log.d(TAG,"Magazine thumbnail Download : " + magazinesList.get(i).isThumbnailDownloaded);
                if( magazinesList.get(i).isThumbnailDownloaded)
                {
                    Log.d(TAG,"Magazine thumbnail Download Internal Path is : " + magazinesList.get(i).thumbnailDownloadedInternalPath);
                    magazinesList.get(i).thumbnailBitmap = loadImageFromStorage(magazinesList.get(i).thumbnailDownloadedInternalPath);
+
                }
 
                 // update the issue owned field
                 // check if the issue is already owned by user
                 if(myIssueArray != null){
-                    Log.d(TAG,"My Issue size is : "+myIssueArray.size());
                     for(int issueCount=0; issueCount< myIssueArray.size(); issueCount++)
                     {
                         MyIssue issue = myIssueArray.get(issueCount);
-                        Log.d(TAG,"My Issue is : "+issue.issueID);
-                        Log.d(TAG,"Magazine List is : "+magazinesList.get(i).id);
                         if(issue.issueID == magazinesList.get(i).id){
-                            Log.d(TAG,"Inside the first if condition matched of issue id");
                             magazinesList.get(i).isIssueOwnedByUser = true;
 
                             if(allDownloadsTracker == null){
-
-                                Log.d(TAG,"Size of all downloaded issue is : NULL");
                                 magazinesList.get(i).status = Magazine.STATUS_DOWNLOAD;
 
                             }else{
 
-                                Log.d(TAG,"Size of all downloaded issue is : " +allDownloadsTracker.size());
-
-                                Log.d(TAG,"Inside the else condition of all download issue tracker");
-                                Log.d(TAG,"All Download Tracker size is : " +allDownloadsTracker.size());
-
                                 for(int j=0; j<magazinesList.size(); j++){
                                     for(int k=0; k<allDownloadsTracker.size(); k++){
                                         if(allDownloadsTracker.get(k).issueID == magazinesList.get(j).id){
-                                            Log.d(TAG,"AllDownload Tracker download status is : "+allDownloadsTracker.get(k).downloadStatus);
                                             if(allDownloadsTracker.get(k).downloadStatus == AllDownloadsDataSet.DOWNLOAD_STATUS_QUEUED){
                                                 magazinesList.get(j).status = Magazine.STATUS_QUEUE;
                                             }else if(allDownloadsTracker.get(k).downloadStatus == AllDownloadsDataSet.DOWNLOAD_STATUS_VIEW){
@@ -667,10 +619,8 @@ public class AllIssuesFragment extends Fragment {
                     for (int downloadCount=0; downloadCount < allDownloadsTracker.size() ; downloadCount++){
 
                         AllDownloadsIssueTracker singleDownload = allDownloadsTracker.get(downloadCount);
-                        Log.d(TAG," Single Download is : "+singleDownload);
                         if(singleDownload.issueID == magazinesList.get(i).id){
                             magazinesList.get(i).currentDownloadStatus = singleDownload.downloadStatus;
-                            Log.d(TAG,"Current Download Status is : "+magazinesList.get(i).currentDownloadStatus);
                             if(magazinesList.get(i).currentDownloadStatus == 0){
                                 magazinesList.get(i).status = Magazine.STATUS_VIEW;
                             }else if(magazinesList.get(i).currentDownloadStatus == 4){
@@ -773,8 +723,6 @@ public class AllIssuesFragment extends Fragment {
                 GetDocumentKey getDocumentKey = new GetDocumentKey();
                 documentKey = getDocumentKey.init(UserPrefs.getUserEmail(), UserPrefs.getUserPassword(), UserPrefs.getDeviceID(),
                         issueId,Config.Magazine_Number, Config.Bundle_ID);
-
-                Log.d(TAG, "Document key from the API response is : " + documentKey);
 
                 if(documentKey != null)
                     saveDocumentKey(issueId,Config.Magazine_Number,documentKey.trim());

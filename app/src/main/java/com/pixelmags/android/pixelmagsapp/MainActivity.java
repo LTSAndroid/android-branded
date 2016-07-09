@@ -268,8 +268,6 @@ public class MainActivity extends AppCompatActivity
 
                 // Save the Magazine Objects into the SQlite DB
 
-                Log.d(TAG,"On Launch getting all the issue data is : "+billingMagazinesList);
-
                 if(billingMagazinesList.size() != 0) {
                     AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
                     mDbHelper.insert_all_issues_data(mDbHelper.getWritableDatabase(), billingMagazinesList);
@@ -337,19 +335,19 @@ public class MainActivity extends AppCompatActivity
                 break;
             case 1:
                 mTitle = Util.getLoginOrMyAccount();
+//            case 2:
+//                mTitle = getString(R.string.menu_title_subscriptions);
+//                break;
             case 2:
-                mTitle = getString(R.string.menu_title_subscriptions);
-                break;
-            case 3:
                 mTitle = getString(R.string.menu_title_downloads);
                 break;
-            case 4:
+            case 3:
                 mTitle = getString(R.string.menu_title_contactsupport);
                 break;
-            case 5:
+            case 4:
                 mTitle = getString(R.string.menu_title_about);
                 break;
-            case 6:
+            case 5:
                 mTitle = getString(R.string.menu_issue_view);
                 break;
             default:

@@ -17,7 +17,7 @@
     <string name="menu_title_my_account">My Account</string>
     <string name="menu_title_login">Log in</string>
     <string name="menu_title_register">Register</string>
-    <string name="menu_title_subscriptions">Subscriptions</string>
+    <!--<string name="menu_title_subscriptions">Subscriptions</string>-->
     <!-- <string name="menu_title_specialissues">Special Issues</string> -->
     <string name="menu_title_downloads">Downloads</string>
     <string name="menu_title_contactsupport">Contact Support</string>
@@ -69,9 +69,9 @@
 
 
     <!-- Account Screen -->
-    <string name="account_user_id">Account :</string>
-    <string name="account_user_email">Email :</string>
-    <string name="account_user_full_name">Name :</string>
+    <string name="account_user_id">Account</string>
+    <string name="account_user_email">Email</string>
+    <string name="account_user_full_name">Name</string>
 
 
     <!-- About Screen -->
@@ -144,5 +144,6 @@
     <string name="queue_initiation_title">Issue download is in queue!</string>
     <string name="queue_initiation_message">You can view your Issue once download start.</string>
 
+    <string name="termsCondition">View Terms &amp; Condition\n<a href="http://www.pixelmags.com/t+c/current/">http://www.pixelmags.com/t+c/current/</a></string>
     <string name="no_internet">Uh oh! \n\nLooks like you don\'t have an internet connection. Please connect to  network and try again.</string>
 </resources>

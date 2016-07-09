@@ -2,6 +2,7 @@ package com.pixelmags.android.ui;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,13 +13,13 @@ import com.pixelmags.android.pixelmagsapp.R;
 /**
  * Created by Annie on 29/09/15.
  */
-public class AboutFragment extends Fragment
-{
+public class AboutFragment extends Fragment{
     private TextView Version;
     private TextView Copyright;
     private TextView Url;
     private TextView Url1;
-
+    private String TAG = "AboutFragment";
+    private Spanned Text;
 
 
 
@@ -39,8 +40,15 @@ public class AboutFragment extends Fragment
         Copyright = (TextView) rootView.findViewById(R.id.copyright);
         Url = (TextView) rootView.findViewById(R.id.ourwebsite);
         Url1 = (TextView) rootView.findViewById(R.id.ourconditions);
+//
+//        Text = Html.fromHtml("View Terms &amp; Conditions<br />" +
+//                "<a href='http://www.pixelmags.com/t+c/current/'>http://www.pixelmags.com/t+c/current/</a>");
+//        Url1.setMovementMethod(LinkMovementMethod.getInstance());
+//        Url1.setText(Text);
+
         return rootView;
 
     }
+
 }
 

@@ -285,7 +285,7 @@ public class AllDownloadsFragment extends Fragment {
                                     }
                                 }
                             });
-                            wait(66666);
+                            wait(6000);
                         }
 
                     } catch (InterruptedException e) {

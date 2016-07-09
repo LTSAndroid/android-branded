@@ -120,7 +120,7 @@ public class NavigationDrawerFragment extends Fragment {
                 new String[]{
                         getString(R.string.menu_title_allissues),
                         Util.getLoginOrMyAccount(),
-                        getString(R.string.menu_title_subscriptions),
+//                        getString(R.string.menu_title_subscriptions),
                         getString(R.string.menu_title_downloads),
                         getString(R.string.menu_title_contactsupport),
                         getString(R.string.menu_title_about),
@@ -315,19 +315,23 @@ public class NavigationDrawerFragment extends Fragment {
                         .commit();
                 break;
 */
+
+
+//            case 2:
+//                currentPage =getString(R.string.menu_title_subscriptions);
+//                mTitle = getString(R.string.menu_title_subscriptions);
+//                Fragment fragmentSubscriptions = new SubscriptionsFragment();
+//                // Insert the fragment by replacing any existing fragment
+//                FragmentManager subscriptionsFragmentManager = getFragmentManager();
+//                subscriptionsFragmentManager.beginTransaction()
+//                        .replace(R.id.main_fragment_container, fragmentSubscriptions)
+//                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+//                 //       .addToBackStack(null)
+//                        .commit();
+//                break;
+
+
             case 2:
-                currentPage =getString(R.string.menu_title_subscriptions);
-                mTitle = getString(R.string.menu_title_subscriptions);
-                Fragment fragmentSubscriptions = new SubscriptionsFragment();
-                // Insert the fragment by replacing any existing fragment
-                FragmentManager subscriptionsFragmentManager = getFragmentManager();
-                subscriptionsFragmentManager.beginTransaction()
-                        .replace(R.id.main_fragment_container, fragmentSubscriptions)
-                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                 //       .addToBackStack(null)
-                        .commit();
-                break;
-            case 3:
                 currentPage =getString(R.string.menu_title_downloads);
                 mTitle = getString(R.string.menu_title_downloads);
                 Fragment fragmentAllDownloads = new AllDownloadsFragment();
@@ -337,7 +341,7 @@ public class NavigationDrawerFragment extends Fragment {
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                         .commit();
                 break;
-            case 4:
+            case 3:
                 currentPage =getString(R.string.menu_title_contactsupport);
                 mTitle = getString(R.string.menu_title_contactsupport);
 
@@ -359,7 +363,7 @@ public class NavigationDrawerFragment extends Fragment {
                         .commit();
 
                 break;
-            case 5:
+            case 4:
                 currentPage =getString(R.string.menu_title_about);
                 mTitle = getString(R.string.menu_title_about);
 
@@ -484,7 +488,7 @@ public class NavigationDrawerFragment extends Fragment {
                    new String[]{
                            getString(R.string.menu_title_allissues),
                            Util.getLoginOrMyAccount(),
-                           getString(R.string.menu_title_subscriptions),
+//                           getString(R.string.menu_title_subscriptions),
                            getString(R.string.menu_title_downloads),
                            getString(R.string.menu_title_contactsupport),
                            getString(R.string.menu_title_about)
