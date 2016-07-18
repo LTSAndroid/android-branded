@@ -1,11 +1,10 @@
 package com.pixelmags.android.ui;
 
 
-
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,7 +12,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -116,7 +114,7 @@ public class RegisterFragment extends Fragment {
        // mDOBView = (TextView) rootView.findViewById(R.id.dateOfBirthregister);
         mtemsconditionsView = (CheckBox) rootView.findViewById(R.id.registerAcceptTermsConditions);
         calendar = Calendar.getInstance(TimeZone.getDefault());
-     //   mDOBView= (TextView) rootView.findViewById(R.id.registerDateOfBirthText);
+        mDOBView= (TextView) rootView.findViewById(R.id.registerDateOfBirth);
 
         Button button = (Button) rootView.findViewById(R.id.registerDoRegister);
         button.setOnClickListener(new View.OnClickListener() {

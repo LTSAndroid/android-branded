@@ -65,7 +65,7 @@ public class MultiStateButton extends Button {
         Log.d(TAG,"Status of the issue is : "+mMagazine.status);
 
         if(mMagazine.isIssueOwnedByUser && mMagazine.currentDownloadStatus == AllDownloadsDataSet.DOWNLOAD_STATUS_COMPLETED
-                || mMagazine.currentDownloadStatus == AllDownloadsDataSet.DOWNLOAD_STATUS_IN_PROGRESS){
+                || mMagazine.currentDownloadStatus == AllDownloadsDataSet.DOWNLOAD_STATUS_IN_PROGRESS || mMagazine.currentDownloadStatus == AllDownloadsDataSet.DOWNLOAD_STATUS_PAUSED){
             mMagazine.status = Magazine.STATUS_VIEW;
             setAsView(Magazine.STATUS_VIEW);
         }else if(mMagazine.isIssueOwnedByUser && mMagazine.currentDownloadStatus == AllDownloadsDataSet.DOWNLOAD_STATUS_NONE){
@@ -74,10 +74,9 @@ public class MultiStateButton extends Button {
         }else if(mMagazine.status == Magazine.STATUS_DOWNLOAD){
             setAsDownload(mMagazine.STATUS_DOWNLOAD);
         }else if(mMagazine.status.equalsIgnoreCase(Magazine.STATUS_QUEUE) || mMagazine.currentDownloadStatus == AllDownloadsDataSet.DOWNLOAD_STATUS_QUEUED){
-            Log.d(TAG,"Setting button to be in queue");
             mMagazine.status = Magazine.STATUS_QUEUE;
             setAsQueue(mMagazine.status);
-        }else if(mMagazine.paymentProvider.trim().equalsIgnoreCase("free")){
+        }else if(mMagazine.paymentProvider.trim().equalsIgnoreCase("free")) {
             mMagazine.status = Magazine.STATUS_DOWNLOAD;
             setAsDownload(mMagazine.STATUS_DOWNLOAD);
         }else{

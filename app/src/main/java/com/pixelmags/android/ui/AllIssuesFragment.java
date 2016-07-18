@@ -61,6 +61,7 @@ public class AllIssuesFragment extends Fragment {
     private ProgressDialog progressBar;
     public static String currentPage;
     ProgressDialog progressDialog;
+    ArrayList<IssueDocumentKey> issueDocumentKeys;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -217,15 +218,38 @@ public class AllIssuesFragment extends Fragment {
         if(mDbHelper != null) {
 
             boolean isExists = mDbHelper.isTableExists(mDbHelper.getReadableDatabase(), BrandedSQLiteHelper.TABLE_DOCUMENT_KEY);
-            mDbHelper.insert_my_issues_documentKey(mDbHelper.getWritableDatabase(), issueId,magazineNumber,documentKey,isExists);
-            mDbHelper.close();
+
+            String issueKeyFromTable = getIssueDocumentKey(Integer.parseInt(issueId));
+
+            if(issueKeyFromTable == null){
+                mDbHelper.insert_my_issues_documentKey(mDbHelper.getWritableDatabase(), issueId, magazineNumber, documentKey, isExists);
+                mDbHelper.close();
+            }else{
+                mDbHelper.close();
+            }
         }
 
 
+    }
 
 
+    public String getIssueDocumentKey(int issueId){
 
+        String issueKey = null;
 
+        MyIssueDocumentKey mDbReader = new MyIssueDocumentKey(BaseApp.getContext());
+        if(mDbReader != null) {
+            issueDocumentKeys = mDbReader.getMyIssuesDocumentKey(mDbReader.getReadableDatabase());
+            mDbReader.close();
+        }
+
+        for(int i=0; i<issueDocumentKeys.size(); i++){
+            if(issueId == issueDocumentKeys.get(i).issueID){
+                issueKey = issueDocumentKeys.get(i).documentKey;
+            }
+        }
+
+        return issueKey;
     }
 
 
@@ -380,6 +404,9 @@ public class AllIssuesFragment extends Fragment {
                                 })
                                 .setIcon(android.R.drawable.ic_dialog_alert)
                                 .show();
+
+                    }else if(magazinesList.get((Integer) v.getTag()).status == Magazine.STATUS_PAUSED){
+
 
                     }else if(magazinesList.get((Integer) v.getTag()).status == Magazine.STATUS_DOWNLOAD){
 
@@ -548,6 +575,8 @@ public class AllIssuesFragment extends Fragment {
 
                             if(allDownloadsTracker.get(k).downloadStatus == AllDownloadsDataSet.DOWNLOAD_STATUS_QUEUED){
                                 magazinesList.get(j).status = Magazine.STATUS_QUEUE;
+                            }else if(allDownloadsTracker.get(k).downloadStatus == AllDownloadsDataSet.DOWNLOAD_STATUS_PAUSED){
+                                magazinesList.get(j).status = Magazine.STATUS_VIEW;
                             }
                         }
                     }
@@ -606,6 +635,8 @@ public class AllIssuesFragment extends Fragment {
                                                 magazinesList.get(j).status = Magazine.STATUS_QUEUE;
                                             }else if(allDownloadsTracker.get(k).downloadStatus == AllDownloadsDataSet.DOWNLOAD_STATUS_VIEW){
                                                 magazinesList.get(j).status = Magazine.STATUS_VIEW;
+                                            }else if(allDownloadsTracker.get(k).downloadStatus == AllDownloadsDataSet.DOWNLOAD_STATUS_VIEW){
+                                                magazinesList.get(j).status = Magazine.STATUS_VIEW;
                                             }
                                         }
                                     }
@@ -627,6 +658,8 @@ public class AllIssuesFragment extends Fragment {
                                 magazinesList.get(i).status = Magazine.STATUS_QUEUE;
                             }else if(magazinesList.get(i).currentDownloadStatus == 1){
                                 magazinesList.get(i).status = String.valueOf(AllDownloadsDataSet.DOWNLOAD_STATUS_IN_PROGRESS);
+                            }else if(magazinesList.get(i).currentDownloadStatus == 3){
+                                magazinesList.get(i).status = Magazine.STATUS_VIEW;
                             }
                         }
                     }

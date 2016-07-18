@@ -76,28 +76,34 @@ public class GetIssue extends WebRequest
 
     private void saveIssueToApp(){
 
-        // Save the Subscription Objects into the SQlite DB
-        IssueDataSet mDbHelper = new IssueDataSet(BaseApp.getContext());
 
-        Log.d(TAG, "Get issue parser of Issue is :" + getIssueParser.mIssue.toString());
+        try {
+            // Save the Subscription Objects into the SQlite DB
+            IssueDataSet mDbHelper = new IssueDataSet(BaseApp.getContext());
 
-        mDbHelper.insertIssueData(mDbHelper.getWritableDatabase(), getIssueParser.mIssue);
-        mDbHelper.close();
+            Log.d(TAG, "Get issue parser of Issue is :" + getIssueParser.mIssue.toString());
 
-        // Saving Object into All Download Data Set . change by Likith
+            mDbHelper.insertIssueData(mDbHelper.getWritableDatabase(), getIssueParser.mIssue);
+            mDbHelper.close();
+
+            // Saving Object into All Download Data Set . change by Likith
 
 //        QueueDownload queueDownload = new QueueDownload();
 //        queueDownload.insertIssueInDownloadQueue(String.valueOf(getIssueParser.mIssue.issueID));
 
-        boolean result = startIssueDownload(String.valueOf(getIssueParser.mIssue.issueID));
+            boolean result = startIssueDownload(String.valueOf(getIssueParser.mIssue.issueID));
 
-        Log.d(TAG,"Result of queue download insert is : "+result);
+            Log.d(TAG, "Result of queue download insert is : " + result);
 
-        if(result){
+            if (result) {
 
-            Log.d(TAG,"Inside the if condition of notify service of new download");
-            PMService pmService = new PMService();
-            pmService.newDownloadRequested();
+                Log.d(TAG, "Inside the if condition of notify service of new download");
+                PMService pmService = new PMService();
+                pmService.newDownloadRequested();
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
         }
 
     }

@@ -22,6 +22,7 @@ public class Magazine
     public static String STATUS_PRICE = "price";
     public static String STATUS_FREE="free";
     public static String STATUS_QUEUE = "In Queue";
+    public static String STATUS_PAUSED = "Paused";
     //
     public int id;
     public String title;

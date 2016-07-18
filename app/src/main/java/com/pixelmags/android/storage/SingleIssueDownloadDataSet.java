@@ -47,6 +47,7 @@ public class SingleIssueDownloadDataSet extends BrandedSQLiteHelper {
 
     }
 
+
     public void dropUniqueDownloadsTable(SQLiteDatabase db, String UNIQUE_ISSUE_DOWNLOAD_TABLE){
 
         String DROP_ALL_DOWNLOADS_TABLE = "DROP TABLE IF EXISTS " + UNIQUE_ISSUE_DOWNLOAD_TABLE;

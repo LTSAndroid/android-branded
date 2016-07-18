@@ -113,13 +113,7 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
             // Start the transaction
             db.beginTransaction();
 
-//            // clear out any previous values by rebuilding table
-//            createTableAllDownloads(db);
-
-
             db.delete(AllDownloadsEntry.ALL_DOWNLOADS_TABLE_NAME, AllDownloadsEntry.COLUMN_ISSUE_ID + "=?",new String[] {issueId});
-//            db.insertWithOnConflict(AllDownloadsEntry.ALL_DOWNLOADS_TABLE_NAME, null, insertValues, SQLiteDatabase.CONFLICT_REPLACE);
-
 
             //End and close the transaction
             db.setTransactionSuccessful();

@@ -144,6 +144,6 @@
     <string name="queue_initiation_title">Issue download is in queue!</string>
     <string name="queue_initiation_message">You can view your Issue once download start.</string>
 
-    <string name="termsCondition">View Terms &amp; Condition\n<a href="http://www.pixelmags.com/t+c/current/">http://www.pixelmags.com/t+c/current/</a></string>
+    <string name="termsCondition"><a href="http://www.pixelmags.com/t+c/current/">View Terms &amp; Condition</a></string>
     <string name="no_internet">Uh oh! \n\nLooks like you don\'t have an internet connection. Please connect to  network and try again.</string>
 </resources>

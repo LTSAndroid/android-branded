@@ -11,13 +11,12 @@ import com.pixelmags.android.datamodels.Issue;
 import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.datamodels.PageTypeImage;
 import com.pixelmags.android.datamodels.SingleDownloadIssueTracker;
+import com.pixelmags.android.pixelmagsapp.adapter.CustomAllDownloadsGridAdapter;
 import com.pixelmags.android.storage.AllDownloadsDataSet;
 import com.pixelmags.android.storage.BrandedSQLiteHelper;
 import com.pixelmags.android.storage.IssueDataSet;
 import com.pixelmags.android.storage.SingleIssueDownloadDataSet;
 import com.pixelmags.android.ui.AllDownloadsFragment;
-import com.pixelmags.android.ui.AllIssuesFragment;
-import com.pixelmags.android.ui.NavigationDrawerFragment;
 import com.pixelmags.android.util.BaseApp;
 
 import java.io.File;
@@ -60,14 +59,17 @@ public class DownloadsManager {
     static PriorityQueue<DownloadSinglePageThreadStatic> pageThreadQueue;
 
     // Queue will hold and process all issues pages once they have completed page that has it's priority set
-    static Queue<SingleDownloadIssueTracker> pageDownloadProcessedQueue;
+    public static Queue<SingleDownloadIssueTracker> pageDownloadProcessedQueue;
     public static int noOfIssuePageSize;
 
     // the tasks and parameters that run the task queues
     //QueueProcessorAsyncTask mQueueProcessorTask;
     static boolean queueTaskCompleted = true;
+    static boolean queueTaskPaused = false;
+    static boolean queueTaskResumed = false;
     public static int totalPages;
     public static int progressCount = -1;
+    private ArrayList<AllDownloadsIssueTracker> allDownloadsIssuesListTracker = null;
 
 
 
@@ -105,8 +107,9 @@ public class DownloadsManager {
 
     public boolean processDownloadsTable(){
 
-
-        if(!queueTaskCompleted){
+        Log.d(TAG,"Process Download Table : "+queueTaskCompleted);
+        Log.d(TAG,"Process Download Table queueTaskPaused :"+queueTaskPaused);
+        if(!queueTaskCompleted && !queueTaskPaused){
             // queue is running, so just leave a notification and do nothing
             // priority downloads should take a different route
             setRequestPending();
@@ -118,6 +121,7 @@ public class DownloadsManager {
 
         try{
             issueToDownload = nextIssueInQueue();
+            Log.d(TAG,"Next Issue in queue is : "+issueToDownload);
             if(issueToDownload != null)
             {
                 return startDownload(issueToDownload);
@@ -194,7 +198,8 @@ public class DownloadsManager {
     public boolean startDownload(AllDownloadsIssueTracker issueToDownload){
 
         // start the threaded download here
-        System.out.println("<<< START DOWNLOAD FOR ISSUE : "+ issueToDownload.issueTitle +" >>>");
+        System.out.println("<<< START DOWNLOAD FOR ISSUE : " + issueToDownload.issueTitle + " >>>");
+
 
         try{
 
@@ -230,6 +235,7 @@ public class DownloadsManager {
                     }
 
                     SingleIssueDownloadDataSet mDbDownloadTableWriter = new SingleIssueDownloadDataSet(BaseApp.getContext());
+
                     boolean result = mDbDownloadTableWriter.initFormationOfSingleIssueDownloadTable(mDbDownloadTableWriter.getWritableDatabase(), issueToDownload, pagesForSingleDownloadTable);
                     mDbDownloadTableWriter.close();
 
@@ -303,13 +309,24 @@ public class DownloadsManager {
     // process the threads in batches.
     public void launchQueueTask(AllDownloadsIssueTracker issueTracker){
 
-        if(queueTaskCompleted){
+        if(queueTaskCompleted  || queueTaskPaused){
             // launch the queue task again
 
             //mQueueProcessorTask = new QueueProcessorAsyncTask();
             //mQueueProcessorTask.execute((String) null);
 
-            Log.d(TAG,"Inside the launchQueueTask method");
+            Log.d(TAG,"Inside the launchQueueTask method" +issueTracker);
+
+            // Setting new Issue in Progress
+
+            AllDownloadsDataSet mDbReader = new AllDownloadsDataSet(BaseApp.getContext());
+            mDbReader.setIssueToInProgress(mDbReader.getReadableDatabase(), issueTracker);
+            allDownloadsIssuesListTracker = mDbReader.getDownloadIssueList(mDbReader.getReadableDatabase(), Config.Magazine_Number);
+            mDbReader.close();
+
+            CustomAllDownloadsGridAdapter customAllDownloadsGridAdapter = new CustomAllDownloadsGridAdapter(allDownloadsIssuesListTracker);
+            customAllDownloadsGridAdapter.refreshArrayList(allDownloadsIssuesListTracker);
+
 
             QueueProcessorThread qThread = new QueueProcessorThread(issueTracker);
             Thread t1 = new Thread(qThread);
@@ -611,13 +628,27 @@ public class DownloadsManager {
 
                         synchronized (mPausedLock) {
                             Log.d(TAG," MPause value is : " +mPaused);
+
                             while (mPaused) {
+
+                                Log.d(TAG,"Inside the while loop");
+
                                 try {
+
+                                    queueTaskPaused = true;
+                                    AllDownloadsDataSet mDbWriter = new AllDownloadsDataSet(BaseApp.getContext());
+
+                                    // set the Issue as Pause within the AllDownloadTable
+                                    Log.d(TAG,"Issue which is paused is : "+issueInQueue);
+                                    mDbWriter.setIssueToPaused(mDbWriter.getWritableDatabase(), issueInQueue);
+                                    mDbWriter.close();
+
+                                    // continue processing table for next download
+                                    getInstance().processDownloadsTable();  // Added to check if any Issue is there in queue to start downloading
+
                                     mPausedLock.wait();
 //                                    AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment(); //commented for new changes
 //                                    allDownloadsFragment.pausedProgressBar(issueInQueue.issueID);
-
-
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
                                 }
@@ -642,6 +673,16 @@ public class DownloadsManager {
         public void setPaused(){
             synchronized (mPausedLock){
                 mPaused = true;
+//                AllDownloadsDataSet mDbWriter = new AllDownloadsDataSet(BaseApp.getContext());
+//
+//                // set the Issue as Pause within the AllDownloadTable
+//                Log.d(TAG,"Issue which is paused is : "+issueInQueue);
+//                mDbWriter.setIssueToPaused(mDbWriter.getWritableDatabase(), issueInQueue);
+//                mDbWriter.close();
+//
+//                // continue processing table for next download
+//                getInstance().processDownloadsTable();  // Added to check if any Issue is there in queue to start downloading
+
             }
         }
 
@@ -649,6 +690,11 @@ public class DownloadsManager {
             synchronized (mPausedLock) {
                 Log.d(TAG,"On Resume of QueueProcessorThread is triggered");
                 mPaused = false;
+                AllDownloadsDataSet mDbWriter = new AllDownloadsDataSet(BaseApp.getContext());
+
+                // set the Issue as Pause within the AllDownloadTable
+                mDbWriter.setIssueToInProgress(mDbWriter.getWritableDatabase(), issueInQueue);
+                mDbWriter.close();
                 mPausedLock.notifyAll();
             }
         }
@@ -656,7 +702,7 @@ public class DownloadsManager {
     }
 
 
-    public static class DownloadSinglePageThreadStatic implements Runnable {
+    public class DownloadSinglePageThreadStatic implements Runnable {
 
         // form Issues/(Magazine_number)/(issue number)/PDF/
 
@@ -732,6 +778,7 @@ public class DownloadsManager {
                                 }
                                 //close the output stream when done
                                 fileOutput.close();
+                                in.close();
 
                                 registerDownloadAsComplete(pageImage.getAbsolutePath());
                             }
@@ -757,18 +804,6 @@ public class DownloadsManager {
             try{
 
                 pageDownloadProcessedQueue.add(pageSingleDownloadTracker);
-
-                if(NavigationDrawerFragment.currentPage.equalsIgnoreCase("Downloads") || AllIssuesFragment.currentPage.equalsIgnoreCase("Downloads")){
-
-//                    if(progressCount == -1) {
-//                        Log.d(TAG, "Download Page is opened. Calling the fragment progress bar update method");
-//                        AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment();
-//                        allDownloadsFragment.updateProgressBarFragment(issueAllDownloadsTracker.issueID);
-//                        progressCount ++;
-//                    }
-
-                }
-
 
                 // Note : DO NOT update db after every page as that locks the db out for a long time.
 

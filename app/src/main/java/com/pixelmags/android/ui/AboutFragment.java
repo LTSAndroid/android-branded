@@ -1,5 +1,7 @@
 package com.pixelmags.android.ui;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Spanned;
@@ -13,7 +15,7 @@ import com.pixelmags.android.pixelmagsapp.R;
 /**
  * Created by Annie on 29/09/15.
  */
-public class AboutFragment extends Fragment{
+public class AboutFragment extends Fragment implements View.OnClickListener {
     private TextView Version;
     private TextView Copyright;
     private TextView Url;
@@ -40,6 +42,7 @@ public class AboutFragment extends Fragment{
         Copyright = (TextView) rootView.findViewById(R.id.copyright);
         Url = (TextView) rootView.findViewById(R.id.ourwebsite);
         Url1 = (TextView) rootView.findViewById(R.id.ourconditions);
+        Url1.setOnClickListener(this);
 //
 //        Text = Html.fromHtml("View Terms &amp; Conditions<br />" +
 //                "<a href='http://www.pixelmags.com/t+c/current/'>http://www.pixelmags.com/t+c/current/</a>");
@@ -50,5 +53,12 @@ public class AboutFragment extends Fragment{
 
     }
 
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == R.id.ourconditions){
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.pixelmags.com/t+c/current/"));
+            startActivity(browserIntent);
+        }
+    }
 }
 
