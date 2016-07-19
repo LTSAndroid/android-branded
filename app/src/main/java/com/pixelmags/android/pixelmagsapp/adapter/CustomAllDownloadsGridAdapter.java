@@ -41,6 +41,8 @@ import com.pixelmags.android.util.BaseApp;
 import java.io.File;
 import java.util.ArrayList;
 
+import static com.google.android.gms.internal.zzhl.runOnUiThread;
+
 /**
  *  A custom GridView to display the Downloaded Issues.
  *
@@ -154,7 +156,9 @@ public class CustomAllDownloadsGridAdapter extends BaseAdapter implements View.O
         if(status == 3){
             String pausedStatusText = AllDownloadsDataSet.getDownloadStatusText(status);
             gridDownloadStatusButton.setAsDownload(pausedStatusText);
-            progressBar.setProgress(jumpTime);
+            if(progressBar.getTag() == listMenuItemPosition) {
+                progressBar.setProgress(jumpTime);
+            }
         }
 
         if(status == 4 || status == -1){
@@ -182,7 +186,11 @@ public class CustomAllDownloadsGridAdapter extends BaseAdapter implements View.O
         Log.d(TAG,"Inside the refresh method");
         this.allDownloadsIssuesListTracker.clear();
         this.allDownloadsIssuesListTracker.addAll(allDownloadsIssuesListTracker);
-        notifyDataSetChanged();
+        runOnUiThread(new Runnable() {
+            public void run() {
+                notifyDataSetChanged();
+            }
+        });
     }
 
 
@@ -400,9 +408,13 @@ public class CustomAllDownloadsGridAdapter extends BaseAdapter implements View.O
                 MultiStateButton gridDownloadStatusButton1 = (MultiStateButton) grid.findViewById(R.id.gridMultiStateButton);
                 String pausedStatusText1 = AllDownloadsDataSet.getDownloadStatusText(AllDownloadsDataSet.DOWNLOAD_STATUS_PAUSED);
                 gridDownloadStatusButton1.setAsDownload(pausedStatusText1);
-                Log.d(TAG,"Jump Time is : " +jumpTime);
-                progressBar.setProgress(jumpTime);
-                run = false;
+                Log.d(TAG, "Jump Time is : " + jumpTime);
+                Log.d(TAG,"List Menu Item position : "+listMenuItemPosition);
+                Log.d(TAG,"Position of progress bar which need to be paused : "+progressBar.getTag());
+                if(progressBar.getTag() == listMenuItemPosition) {
+                    progressBar.setProgress(jumpTime);
+                    run = false;
+                }
 
                 notifyDataSetChanged();
 

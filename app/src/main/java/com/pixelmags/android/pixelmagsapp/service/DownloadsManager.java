@@ -29,6 +29,8 @@ import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
+import static com.google.android.gms.internal.zzhl.runOnUiThread;
+
 /**
  * Created by austincoutinho on 29/01/16.
  *
@@ -324,8 +326,16 @@ public class DownloadsManager {
             allDownloadsIssuesListTracker = mDbReader.getDownloadIssueList(mDbReader.getReadableDatabase(), Config.Magazine_Number);
             mDbReader.close();
 
-            CustomAllDownloadsGridAdapter customAllDownloadsGridAdapter = new CustomAllDownloadsGridAdapter(allDownloadsIssuesListTracker);
-            customAllDownloadsGridAdapter.refreshArrayList(allDownloadsIssuesListTracker);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    CustomAllDownloadsGridAdapter customAllDownloadsGridAdapter = new CustomAllDownloadsGridAdapter(allDownloadsIssuesListTracker);
+                    customAllDownloadsGridAdapter.refreshArrayList(allDownloadsIssuesListTracker);
+                    customAllDownloadsGridAdapter.notifyDataSetChanged();
+                }
+            });
+
+
 
 
             QueueProcessorThread qThread = new QueueProcessorThread(issueTracker);
@@ -635,14 +645,6 @@ public class DownloadsManager {
 
                                 try {
 
-                                    queueTaskPaused = true;
-                                    AllDownloadsDataSet mDbWriter = new AllDownloadsDataSet(BaseApp.getContext());
-
-                                    // set the Issue as Pause within the AllDownloadTable
-                                    Log.d(TAG,"Issue which is paused is : "+issueInQueue);
-                                    mDbWriter.setIssueToPaused(mDbWriter.getWritableDatabase(), issueInQueue);
-                                    mDbWriter.close();
-
                                     // continue processing table for next download
                                     getInstance().processDownloadsTable();  // Added to check if any Issue is there in queue to start downloading
 
@@ -673,15 +675,14 @@ public class DownloadsManager {
         public void setPaused(){
             synchronized (mPausedLock){
                 mPaused = true;
-//                AllDownloadsDataSet mDbWriter = new AllDownloadsDataSet(BaseApp.getContext());
-//
-//                // set the Issue as Pause within the AllDownloadTable
-//                Log.d(TAG,"Issue which is paused is : "+issueInQueue);
-//                mDbWriter.setIssueToPaused(mDbWriter.getWritableDatabase(), issueInQueue);
-//                mDbWriter.close();
-//
-//                // continue processing table for next download
-//                getInstance().processDownloadsTable();  // Added to check if any Issue is there in queue to start downloading
+
+                queueTaskPaused = true;
+                AllDownloadsDataSet mDbWriter = new AllDownloadsDataSet(BaseApp.getContext());
+
+                // set the Issue as Pause within the AllDownloadTable
+                Log.d(TAG,"Issue which is paused is : "+issueInQueue);
+                mDbWriter.setIssueToPaused(mDbWriter.getWritableDatabase(), issueInQueue);
+                mDbWriter.close();
 
             }
         }
@@ -690,6 +691,7 @@ public class DownloadsManager {
             synchronized (mPausedLock) {
                 Log.d(TAG,"On Resume of QueueProcessorThread is triggered");
                 mPaused = false;
+                queueTaskPaused = false;
                 AllDownloadsDataSet mDbWriter = new AllDownloadsDataSet(BaseApp.getContext());
 
                 // set the Issue as Pause within the AllDownloadTable
