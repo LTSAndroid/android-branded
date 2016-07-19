@@ -18,6 +18,7 @@ import java.util.ArrayList;
 public class SubscriptionsDataSet extends BrandedSQLiteHelper{
 
 
+
     public SubscriptionsDataSet(Context context) {
         super(context);
     }

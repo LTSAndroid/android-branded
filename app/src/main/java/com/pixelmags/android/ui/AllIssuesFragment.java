@@ -213,20 +213,27 @@ public class AllIssuesFragment extends Fragment {
 
     public void saveDocumentKey(String issueId, String magazineNumber, String documentKey){
 
-        // Save the Subscription Objects into the SQlite DB
-        MyIssueDocumentKey mDbHelper = new MyIssueDocumentKey(BaseApp.getContext());
-        if(mDbHelper != null) {
+        try {
+            // Save the Subscription Objects into the SQlite DB
+            MyIssueDocumentKey mDbHelper = new MyIssueDocumentKey(BaseApp.getContext());
+            if (mDbHelper != null) {
 
-            boolean isExists = mDbHelper.isTableExists(mDbHelper.getReadableDatabase(), BrandedSQLiteHelper.TABLE_DOCUMENT_KEY);
+                boolean isExists = mDbHelper.isTableExists(mDbHelper.getReadableDatabase(), BrandedSQLiteHelper.TABLE_DOCUMENT_KEY);
 
-            String issueKeyFromTable = getIssueDocumentKey(Integer.parseInt(issueId));
+                String issueKeyFromTable = getIssueDocumentKey(Integer.parseInt(issueId));
 
-            if(issueKeyFromTable == null){
-                mDbHelper.insert_my_issues_documentKey(mDbHelper.getWritableDatabase(), issueId, magazineNumber, documentKey, isExists);
-                mDbHelper.close();
+                if (issueKeyFromTable == null) {
+                    mDbHelper.insert_my_issues_documentKey(mDbHelper.getWritableDatabase(), issueId, magazineNumber, documentKey, isExists);
+                    mDbHelper.close();
+                } else {
+                    mDbHelper.close();
+                }
             }else{
                 mDbHelper.close();
             }
+
+        }catch (Exception e){
+            e.printStackTrace();
         }
 
 
@@ -240,6 +247,8 @@ public class AllIssuesFragment extends Fragment {
         MyIssueDocumentKey mDbReader = new MyIssueDocumentKey(BaseApp.getContext());
         if(mDbReader != null) {
             issueDocumentKeys = mDbReader.getMyIssuesDocumentKey(mDbReader.getReadableDatabase());
+            mDbReader.close();
+        }else{
             mDbReader.close();
         }
 
@@ -719,6 +728,7 @@ public class AllIssuesFragment extends Fragment {
     public class DownloadIssue extends AsyncTask<String, String, String> {
 
         private int position;
+        private String issueId;
 
         public DownloadIssue(int position){
             this.position = position;
@@ -748,7 +758,7 @@ public class AllIssuesFragment extends Fragment {
 
             try {
 
-                String issueId = String.valueOf(magazinesList.get(position).id);
+                issueId = String.valueOf(magazinesList.get(position).id);
 
                 GetIssue getIssue = new GetIssue();
                 getIssue.init(issueId);
@@ -756,9 +766,6 @@ public class AllIssuesFragment extends Fragment {
                 GetDocumentKey getDocumentKey = new GetDocumentKey();
                 documentKey = getDocumentKey.init(UserPrefs.getUserEmail(), UserPrefs.getUserPassword(), UserPrefs.getDeviceID(),
                         issueId,Config.Magazine_Number, Config.Bundle_ID);
-
-                if(documentKey != null)
-                    saveDocumentKey(issueId,Config.Magazine_Number,documentKey.trim());
 
 
             }catch (Exception e){
@@ -774,6 +781,11 @@ public class AllIssuesFragment extends Fragment {
 
 
             progressDialog.dismiss();
+
+            Log.d(TAG,"Document key is : "+documentKey);
+
+            if(documentKey != null)
+                saveDocumentKey(issueId,Config.Magazine_Number,documentKey.trim());
 
             new AlertDialog.Builder(getActivity())
                     .setTitle("Issue Download!")

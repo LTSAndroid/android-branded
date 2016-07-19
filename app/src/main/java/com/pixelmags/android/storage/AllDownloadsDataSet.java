@@ -218,9 +218,12 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
         Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM sqlite_master WHERE type = ? AND name = ?", new String[] {"table", tableName});
         if (!cursor.moveToFirst())
         {
+            db.close();
+            cursor.close();
             return false;
         }
         int count = cursor.getInt(0);
+        db.close();
         cursor.close();
         return count > 0;
     }
