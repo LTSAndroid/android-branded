@@ -216,18 +216,24 @@ public class AllIssuesFragment extends Fragment {
         try {
             // Save the Subscription Objects into the SQlite DB
             MyIssueDocumentKey mDbHelper = new MyIssueDocumentKey(BaseApp.getContext());
+            Log.d(TAG,"mDbHelper reference is : "+mDbHelper);
             if (mDbHelper != null) {
 
                 boolean isExists = mDbHelper.isTableExists(mDbHelper.getReadableDatabase(), BrandedSQLiteHelper.TABLE_DOCUMENT_KEY);
 
-                String issueKeyFromTable = getIssueDocumentKey(Integer.parseInt(issueId));
+                Log.d(TAG,"Table exists is : "+isExists);
+                String issueKeyFromTable = null;
 
-                if (issueKeyFromTable == null) {
+                if(isExists){
+                    issueKeyFromTable = getIssueDocumentKey(Integer.parseInt(issueId));
+                }
+
+                Log.d(TAG,"Issue Key from table is : "+issueKeyFromTable);
+                if(issueKeyFromTable == null) {
                     mDbHelper.insert_my_issues_documentKey(mDbHelper.getWritableDatabase(), issueId, magazineNumber, documentKey, isExists);
                     mDbHelper.close();
-                } else {
-                    mDbHelper.close();
                 }
+
             }else{
                 mDbHelper.close();
             }
@@ -325,14 +331,13 @@ public class AllIssuesFragment extends Fragment {
         public View getView(int position, View convertView, ViewGroup parent) {
 
             View v;
-            if(convertView==null) {
-//                LayoutInflater inflater = getActivity().getLayoutInflater();
+//            if(convertView==null) {
                 LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 v = inflater.inflate(R.layout.all_issues_custom_grid_layout, parent, false);
 
-            }else{
-                v = convertView;
-            }
+//            }else{
+//                v = convertView;
+//            }
 
             // Set the magazine image
             if(magazinesList.get(position).isThumbnailDownloaded) {
@@ -427,6 +432,8 @@ public class AllIssuesFragment extends Fragment {
                         String issueId = String.valueOf(magazinesList.get(pos).id);
 
                         documentKey = getIssueDocumentKey(magazinesList.get(pos).id);
+
+                        Log.d(TAG,"Document key when view button click is : "+documentKey);
 
                         Intent intent = new Intent(getActivity(),NewIssueView.class);
                         intent.putExtra("issueId",issueId);
@@ -767,6 +774,13 @@ public class AllIssuesFragment extends Fragment {
                 documentKey = getDocumentKey.init(UserPrefs.getUserEmail(), UserPrefs.getUserPassword(), UserPrefs.getDeviceID(),
                         issueId,Config.Magazine_Number, Config.Bundle_ID);
 
+                Log.d(TAG, "Document key when download button clicked is : " + documentKey);
+
+                if(documentKey != null){
+                    Log.d(TAG,"Inside the document key not null");
+                    saveDocumentKey(issueId, Config.Magazine_Number, documentKey.trim());
+                }
+
 
             }catch (Exception e){
                 e.printStackTrace();
@@ -782,10 +796,7 @@ public class AllIssuesFragment extends Fragment {
 
             progressDialog.dismiss();
 
-            Log.d(TAG,"Document key is : "+documentKey);
 
-            if(documentKey != null)
-                saveDocumentKey(issueId,Config.Magazine_Number,documentKey.trim());
 
             new AlertDialog.Builder(getActivity())
                     .setTitle("Issue Download!")

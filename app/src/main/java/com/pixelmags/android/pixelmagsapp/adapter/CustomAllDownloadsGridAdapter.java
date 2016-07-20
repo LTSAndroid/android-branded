@@ -369,6 +369,7 @@ public class CustomAllDownloadsGridAdapter extends BaseAdapter implements View.O
         MyIssueDocumentKey mDbReader = new MyIssueDocumentKey(BaseApp.getContext());
         if(mDbReader != null) {
             issueDocumentKeys = mDbReader.getMyIssuesDocumentKey(mDbReader.getReadableDatabase());
+            Log.d(TAG,"Issue Document key is 2 : "+issueDocumentKeys);
             mDbReader.close();
         }
 
