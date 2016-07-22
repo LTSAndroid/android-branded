@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
@@ -18,6 +19,8 @@ import javax.crypto.spec.SecretKeySpec;
  */
 
 public class IssueDecode {
+
+    byte[] mIv = new byte[16];
 
     public byte[] getDecodedBitMap(String documentKey, FileInputStream fis) {
 
@@ -35,8 +38,9 @@ public class IssueDecode {
 
         try {
 
-            cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            cipher.init(Cipher.DECRYPT_MODE, skeySpec);
+            cipher = Cipher.getInstance("AES/CBC/PKCS5Padding","BC");
+            IvParameterSpec ivSpec = new IvParameterSpec(mIv);
+            cipher.init(Cipher.DECRYPT_MODE, skeySpec,ivSpec);
 
             // Create CipherInputStream to read and decrypt the image data
             cis = new CipherInputStream(fis, cipher);
@@ -75,4 +79,6 @@ public class IssueDecode {
         return decryptedData;
 
     }
+
+
 }
