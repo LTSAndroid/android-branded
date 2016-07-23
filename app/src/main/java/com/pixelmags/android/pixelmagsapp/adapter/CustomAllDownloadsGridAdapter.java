@@ -41,8 +41,6 @@ import com.pixelmags.android.util.BaseApp;
 import java.io.File;
 import java.util.ArrayList;
 
-import static com.google.android.gms.internal.zzhl.runOnUiThread;
-
 /**
  *  A custom GridView to display the Downloaded Issues.
  *
@@ -147,6 +145,8 @@ public class CustomAllDownloadsGridAdapter extends BaseAdapter implements View.O
         downloadStatus = status;
         grid.setTag(position);
 
+        Log.d(TAG," Status of the button is : "+status);
+
         if(status == 1 || status == 2 || status == 6){
 
             gridDownloadStatusButton.setAsView(Magazine.STATUS_VIEW);
@@ -182,16 +182,18 @@ public class CustomAllDownloadsGridAdapter extends BaseAdapter implements View.O
         return grid;
     }
 
-    public void refreshArrayList(ArrayList<AllDownloadsIssueTracker> allDownloadsIssuesListTracker) {
-        Log.d(TAG,"Inside the refresh method");
-        this.allDownloadsIssuesListTracker.clear();
-        this.allDownloadsIssuesListTracker.addAll(allDownloadsIssuesListTracker);
-        runOnUiThread(new Runnable() {
-            public void run() {
-                notifyDataSetChanged();
-            }
-        });
-    }
+//    public void refreshArrayList(ArrayList<AllDownloadsIssueTracker> allDownloadsIssuesListTracker) {
+//        Log.d(TAG, "Inside the refresh method");
+//
+//        this.allDownloadsIssuesListTracker.clear();
+//        this.allDownloadsIssuesListTracker.addAll(allDownloadsIssuesListTracker);
+//        runOnUiThread(new Runnable() {
+//            public void run() {
+//            Log.d(TAG,"Inside the run on UI Thread method");
+//                notifyDataSetChanged();
+//            }
+//        });
+//    }
 
 
 

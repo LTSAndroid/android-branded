@@ -354,6 +354,7 @@ public class AllIssuesFragment extends Fragment {
                                 .error(R.drawable.placeholder)
                                 .into(imageView);
 
+
                     imageView.setTag(position);
                     imageView.setOnClickListener(new View.OnClickListener() {
 

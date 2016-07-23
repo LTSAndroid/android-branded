@@ -506,7 +506,7 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
     }
 
 
-    private boolean updateDownloadStatusOfIssue(SQLiteDatabase db, AllDownloadsIssueTracker dIssue, int download_status){
+    public boolean updateDownloadStatusOfIssue(SQLiteDatabase db, AllDownloadsIssueTracker dIssue, int download_status){
 
         try{
 

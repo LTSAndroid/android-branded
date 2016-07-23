@@ -11,7 +11,6 @@ import com.pixelmags.android.datamodels.Issue;
 import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.datamodels.PageTypeImage;
 import com.pixelmags.android.datamodels.SingleDownloadIssueTracker;
-import com.pixelmags.android.pixelmagsapp.adapter.CustomAllDownloadsGridAdapter;
 import com.pixelmags.android.storage.AllDownloadsDataSet;
 import com.pixelmags.android.storage.BrandedSQLiteHelper;
 import com.pixelmags.android.storage.IssueDataSet;
@@ -28,8 +27,6 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Queue;
-
-import static com.google.android.gms.internal.zzhl.runOnUiThread;
 
 /**
  * Created by austincoutinho on 29/01/16.
@@ -181,7 +178,7 @@ public class DownloadsManager {
         try{
             AllDownloadsDataSet mDbReader = new AllDownloadsDataSet(BaseApp.getContext());
             boolean isExists = mDbReader.isTableExists(mDbReader.getReadableDatabase(), BrandedSQLiteHelper.TABLE_ALL_DOWNLOADS);
-            Log.d(TAG,"All Download Table exists is : "+isExists);
+            Log.d(TAG, "All Download Table exists is : " + isExists);
             if(isExists) {
                 issueDownloadInProgress = mDbReader.getIssueDownloadInProgress(mDbReader.getReadableDatabase(), Config.Magazine_Number);
                 mDbReader.close();
@@ -317,25 +314,26 @@ public class DownloadsManager {
             //mQueueProcessorTask = new QueueProcessorAsyncTask();
             //mQueueProcessorTask.execute((String) null);
 
-            Log.d(TAG,"Inside the launchQueueTask method" +issueTracker);
+            Log.d(TAG, "Inside the launchQueueTask method" + issueTracker.issueID);
 
             // Setting new Issue in Progress
 
             AllDownloadsDataSet mDbReader = new AllDownloadsDataSet(BaseApp.getContext());
             mDbReader.setIssueToInProgress(mDbReader.getReadableDatabase(), issueTracker);
+//            boolean downloadStatusUpdated = mDbReader.setIssueToView(mDbReader.getWritableDatabase(),issueTracker);
+//            Log.d(TAG,"Download status updated : "+downloadStatusUpdated);
             allDownloadsIssuesListTracker = mDbReader.getDownloadIssueList(mDbReader.getReadableDatabase(), Config.Magazine_Number);
+            for(int i=0; i<allDownloadsIssuesListTracker.size(); i++){
+                Log.d(TAG,"All download Issue List Tracker is : "+allDownloadsIssuesListTracker.get(i).downloadStatus);
+            }
+
             mDbReader.close();
 
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    CustomAllDownloadsGridAdapter customAllDownloadsGridAdapter = new CustomAllDownloadsGridAdapter(allDownloadsIssuesListTracker);
-                    customAllDownloadsGridAdapter.refreshArrayList(allDownloadsIssuesListTracker);
-                    customAllDownloadsGridAdapter.notifyDataSetChanged();
-                }
-            });
+            AllDownloadsFragment fragment = new AllDownloadsFragment();
+            fragment.refreshGrid(allDownloadsIssuesListTracker);
 
-
+//            CustomAllDownloadsGridAdapter customAllDownloadsGridAdapter = new CustomAllDownloadsGridAdapter(allDownloadsIssuesListTracker);
+//            customAllDownloadsGridAdapter.refreshArrayList(allDownloadsIssuesListTracker);
 
 
             QueueProcessorThread qThread = new QueueProcessorThread(issueTracker);

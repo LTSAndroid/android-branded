@@ -33,6 +33,7 @@ public class AllDownloadsFragment extends Fragment {
     GridView gridView;
     private static View grid;
     public static int jumpTime = 0;
+    View rootView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,7 +45,7 @@ public class AllDownloadsFragment extends Fragment {
                              Bundle savedInstanceState) {
 
 
-        View rootView = inflater.inflate(R.layout.fragment_all_downloads, container, false);
+        rootView = inflater.inflate(R.layout.fragment_all_downloads, container, false);
 
         gridView = (GridView) rootView.findViewById(R.id.displayAllDownloadsGridView);
 
@@ -65,7 +66,7 @@ public class AllDownloadsFragment extends Fragment {
 
        // set the Grid Adapter
 
-       Log.d(TAG,"All Downloads Issue List "+allDownloadsIssuesListTracker);
+       Log.d(TAG, "All Downloads Issue List " + allDownloadsIssuesListTracker);
 
        // use rootview to fetch view (when called from onCreateView) else null returns
 //       gridView = (GridView) rootView.findViewById(R.id.displayAllDownloadsGridView);
@@ -74,6 +75,15 @@ public class AllDownloadsFragment extends Fragment {
        //   gridview.setNumColumns(4);
 
    }
+
+
+    public void refreshGrid(ArrayList<AllDownloadsIssueTracker> allDownloadsIssuesListTrackerNew){
+
+        gridView = (GridView) rootView.findViewById(R.id.displayAllDownloadsGridView);
+
+        gridDownloadAdapter = new CustomAllDownloadsGridAdapter(getActivity(),allDownloadsIssuesListTrackerNew,getFragmentManager());
+        gridView.setAdapter(gridDownloadAdapter);
+    }
 
 
     public void updateButtonStateFragment(int status){
