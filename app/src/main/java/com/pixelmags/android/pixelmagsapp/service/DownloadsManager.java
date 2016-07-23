@@ -329,8 +329,8 @@ public class DownloadsManager {
 
             mDbReader.close();
 
-            AllDownloadsFragment fragment = new AllDownloadsFragment();
-            fragment.refreshGrid(allDownloadsIssuesListTracker);
+//            AllDownloadsFragment fragment = new AllDownloadsFragment();
+//            fragment.refreshGrid(allDownloadsIssuesListTracker);
 
 //            CustomAllDownloadsGridAdapter customAllDownloadsGridAdapter = new CustomAllDownloadsGridAdapter(allDownloadsIssuesListTracker);
 //            customAllDownloadsGridAdapter.refreshArrayList(allDownloadsIssuesListTracker);
@@ -643,12 +643,19 @@ public class DownloadsManager {
 
                                 try {
 
+                                    queueTaskPaused = true;
+                                    AllDownloadsDataSet mDbWriter = new AllDownloadsDataSet(BaseApp.getContext());
+
+                                    // set the Issue as Pause within the AllDownloadTable
+                                    Log.d(TAG,"Issue which is paused is : "+issueInQueue);
+                                    mDbWriter.setIssueToPaused(mDbWriter.getWritableDatabase(), issueInQueue);
+                                    mDbWriter.close();
+
                                     // continue processing table for next download
                                     getInstance().processDownloadsTable();  // Added to check if any Issue is there in queue to start downloading
 
                                     mPausedLock.wait();
-//                                    AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment(); //commented for new changes
-//                                    allDownloadsFragment.pausedProgressBar(issueInQueue.issueID);
+
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
                                 }
@@ -673,14 +680,6 @@ public class DownloadsManager {
         public void setPaused(){
             synchronized (mPausedLock){
                 mPaused = true;
-
-                queueTaskPaused = true;
-                AllDownloadsDataSet mDbWriter = new AllDownloadsDataSet(BaseApp.getContext());
-
-                // set the Issue as Pause within the AllDownloadTable
-                Log.d(TAG,"Issue which is paused is : "+issueInQueue);
-                mDbWriter.setIssueToPaused(mDbWriter.getWritableDatabase(), issueInQueue);
-                mDbWriter.close();
 
             }
         }
