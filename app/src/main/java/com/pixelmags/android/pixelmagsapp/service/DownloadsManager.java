@@ -205,7 +205,7 @@ public class DownloadsManager {
             AllDownloadsDataSet mDbWriter = new AllDownloadsDataSet(BaseApp.getContext());
 
             // set the Issue as downloading within the AllDownloadTable
-            boolean issueUpdated = mDbWriter.setIssueToInProgress(mDbWriter.getWritableDatabase(), issueToDownload);
+            boolean issueUpdated = mDbWriter.setIssueToInProgress(mDbWriter.getWritableDatabase(), issueToDownload,0);
             mDbWriter.close();
 
 
@@ -318,16 +318,16 @@ public class DownloadsManager {
 
             // Setting new Issue in Progress
 
-            AllDownloadsDataSet mDbReader = new AllDownloadsDataSet(BaseApp.getContext());
-            mDbReader.setIssueToInProgress(mDbReader.getReadableDatabase(), issueTracker);
+//            AllDownloadsDataSet mDbReader = new AllDownloadsDataSet(BaseApp.getContext());
+//            mDbReader.setIssueToInProgress(mDbReader.getReadableDatabase(), issueTracker);
 //            boolean downloadStatusUpdated = mDbReader.setIssueToView(mDbReader.getWritableDatabase(),issueTracker);
 //            Log.d(TAG,"Download status updated : "+downloadStatusUpdated);
-            allDownloadsIssuesListTracker = mDbReader.getDownloadIssueList(mDbReader.getReadableDatabase(), Config.Magazine_Number);
-            for(int i=0; i<allDownloadsIssuesListTracker.size(); i++){
-                Log.d(TAG,"All download Issue List Tracker is : "+allDownloadsIssuesListTracker.get(i).downloadStatus);
-            }
-
-            mDbReader.close();
+//            allDownloadsIssuesListTracker = mDbReader.getDownloadIssueList(mDbReader.getReadableDatabase(), Config.Magazine_Number);
+//            for(int i=0; i<allDownloadsIssuesListTracker.size(); i++){
+//                Log.d(TAG,"All download Issue List Tracker is : "+allDownloadsIssuesListTracker.get(i).downloadStatus);
+//            }
+//
+//            mDbReader.close();
 
 //            AllDownloadsFragment fragment = new AllDownloadsFragment();
 //            fragment.refreshGrid(allDownloadsIssuesListTracker);
@@ -470,7 +470,7 @@ public class DownloadsManager {
 
 
                 AllDownloadsDataSet mDbReader = new AllDownloadsDataSet(BaseApp.getContext());
-                mDbReader.setIssueToCompleted(mDbReader.getReadableDatabase(), issueInQueue);
+                mDbReader.setIssueToCompleted(mDbReader.getReadableDatabase(), issueInQueue,100);
                 mDbReader.close();
 
                 Log.d(TAG, "ISSUE DOWNLOAD IS NOW COMPLETE : " + issueInQueue.issueID);
@@ -644,12 +644,16 @@ public class DownloadsManager {
                                 try {
 
                                     queueTaskPaused = true;
-                                    AllDownloadsDataSet mDbWriter = new AllDownloadsDataSet(BaseApp.getContext());
 
-                                    // set the Issue as Pause within the AllDownloadTable
-                                    Log.d(TAG,"Issue which is paused is : "+issueInQueue);
-                                    mDbWriter.setIssueToPaused(mDbWriter.getWritableDatabase(), issueInQueue);
-                                    mDbWriter.close();
+
+//                                    AllDownloadsDataSet mDbWriter = new AllDownloadsDataSet(BaseApp.getContext());
+//
+//                                    // set the Issue as Pause within the AllDownloadTable
+//                                    Log.d(TAG,"Issue which is paused is : "+issueInQueue);
+//                                    mDbWriter.setIssueToPaused(mDbWriter.getWritableDatabase(), issueInQueue);
+//                                    mDbWriter.close();
+
+
 
                                     // continue processing table for next download
                                     getInstance().processDownloadsTable();  // Added to check if any Issue is there in queue to start downloading
@@ -689,11 +693,15 @@ public class DownloadsManager {
                 Log.d(TAG,"On Resume of QueueProcessorThread is triggered");
                 mPaused = false;
                 queueTaskPaused = false;
-                AllDownloadsDataSet mDbWriter = new AllDownloadsDataSet(BaseApp.getContext());
 
-                // set the Issue as Pause within the AllDownloadTable
-                mDbWriter.setIssueToInProgress(mDbWriter.getWritableDatabase(), issueInQueue);
-                mDbWriter.close();
+
+//                AllDownloadsDataSet mDbWriter = new AllDownloadsDataSet(BaseApp.getContext());
+//
+//                // set the Issue as Pause within the AllDownloadTable
+//                mDbWriter.setIssueToInProgress(mDbWriter.getWritableDatabase(), issueInQueue);
+//                mDbWriter.close();
+
+
                 mPausedLock.notifyAll();
             }
         }

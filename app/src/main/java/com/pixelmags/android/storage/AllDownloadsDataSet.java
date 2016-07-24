@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.format.Time;
+import android.util.Log;
 
 import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
 import com.pixelmags.android.datamodels.Issue;
@@ -138,6 +139,7 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
 
             long priorityValue = now.toMillis(false);
             int downloadStatus = DOWNLOAD_STATUS_QUEUED;
+            int progressCount = 0;
 
 
             try {
@@ -146,7 +148,8 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
                 String[] projection = {
                         AllDownloadsEntry.COLUMN_ISSUE_ID,
                         AllDownloadsEntry.COLUMN_PRIORITY,
-                        AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS
+                        AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS,
+                        AllDownloadsEntry.COLUMN_PROGRESS_STATE
                 };
 
 
@@ -170,6 +173,7 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
 
                         priorityValue = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_PRIORITY));
                         downloadStatus = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS));
+                        progressCount = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_PROGRESS_STATE));
 
                     }
 
@@ -185,6 +189,7 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
             if(DOWNLOAD_STATUS_FAILED == -1){
                 // queue issue again for download if it had failed
                 downloadStatus = DOWNLOAD_STATUS_QUEUED;
+                progressCount = 0;
             }
 
             String uniqueIssueDownloadTable = BrandedSQLiteHelper.TABLE_UNIQUE_ISSUE_DOWNLOAD_TABLE_PREFIX + downloadIssue.issueID;
@@ -196,6 +201,7 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
             insertValues.put(AllDownloadsEntry.COLUMN_UNIQUE_ISSUE_DOWNLOAD_TABLE, uniqueIssueDownloadTable);
             insertValues.put(AllDownloadsEntry.COLUMN_PRIORITY, priorityValue);
             insertValues.put(AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS, downloadStatus);
+            insertValues.put(AllDownloadsEntry.COLUMN_PROGRESS_STATE, progressCount);
 
 
             boolean insertResult = insert_issue_for_download(db, insertValues);
@@ -241,7 +247,8 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
                         AllDownloadsEntry.COLUMN_ISSUE_TITLE,
                         AllDownloadsEntry.COLUMN_UNIQUE_ISSUE_DOWNLOAD_TABLE,
                         AllDownloadsEntry.COLUMN_PRIORITY,
-                        AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS
+                        AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS,
+                        AllDownloadsEntry.COLUMN_PROGRESS_STATE
                 };
 
 
@@ -277,6 +284,7 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
                         issue.uniqueIssueDownloadTable = queryCursor.getString(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_UNIQUE_ISSUE_DOWNLOAD_TABLE));
                         issue.priority = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_PRIORITY));
                         issue.downloadStatus = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS));
+                        issue.progressCompleted = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_PROGRESS_STATE));
 
                         allDownloadsIssueTrackers.add(issue);
 
@@ -307,7 +315,8 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
                     AllDownloadsEntry.COLUMN_ISSUE_TITLE,
                     AllDownloadsEntry.COLUMN_UNIQUE_ISSUE_DOWNLOAD_TABLE,
                     AllDownloadsEntry.COLUMN_PRIORITY,
-                    AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS
+                    AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS,
+                    AllDownloadsEntry.COLUMN_PROGRESS_STATE
             };
 
 
@@ -340,6 +349,7 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
                     allDownloadsTrackerForIssue.uniqueIssueDownloadTable = queryCursor.getString(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_UNIQUE_ISSUE_DOWNLOAD_TABLE));
                     allDownloadsTrackerForIssue.priority = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_PRIORITY));
                     allDownloadsTrackerForIssue.downloadStatus = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS));
+                    allDownloadsTrackerForIssue.progressCompleted = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_PROGRESS_STATE));
                 }
 
                 queryCursor.close();
@@ -367,7 +377,8 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
                     AllDownloadsEntry.COLUMN_ISSUE_TITLE,
                     AllDownloadsEntry.COLUMN_UNIQUE_ISSUE_DOWNLOAD_TABLE,
                     AllDownloadsEntry.COLUMN_PRIORITY,
-                    AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS
+                    AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS,
+                    AllDownloadsEntry.COLUMN_PROGRESS_STATE
             };
 
 
@@ -400,6 +411,7 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
                     issueDownloadInProgress.uniqueIssueDownloadTable = queryCursor.getString(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_UNIQUE_ISSUE_DOWNLOAD_TABLE));
                     issueDownloadInProgress.priority = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_PRIORITY));
                     issueDownloadInProgress.downloadStatus = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS));
+                    issueDownloadInProgress.progressCompleted = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_PROGRESS_STATE));
                 }
 
                 queryCursor.close();
@@ -426,7 +438,8 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
                     AllDownloadsEntry.COLUMN_ISSUE_TITLE,
                     AllDownloadsEntry.COLUMN_UNIQUE_ISSUE_DOWNLOAD_TABLE,
                     AllDownloadsEntry.COLUMN_PRIORITY,
-                    AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS
+                    AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS,
+                    AllDownloadsEntry.COLUMN_PROGRESS_STATE
             };
 
 
@@ -462,6 +475,7 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
                     issueToDownloadNext.uniqueIssueDownloadTable = queryCursor.getString(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_UNIQUE_ISSUE_DOWNLOAD_TABLE));
                     issueToDownloadNext.priority = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_PRIORITY));
                     issueToDownloadNext.downloadStatus = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS));
+                    issueToDownloadNext.progressCompleted = queryCursor.getInt(queryCursor.getColumnIndex(AllDownloadsEntry.COLUMN_PROGRESS_STATE));
                 }
 
                 queryCursor.close();
@@ -475,43 +489,45 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
         return issueToDownloadNext;
     }
 
-    public boolean setIssueToInProgress(SQLiteDatabase db, AllDownloadsIssueTracker dIssue){
+    public boolean setIssueToInProgress(SQLiteDatabase db, AllDownloadsIssueTracker dIssue, int progress){
 
-        return updateDownloadStatusOfIssue(db, dIssue, DOWNLOAD_STATUS_IN_PROGRESS);
-
-    }
-
-    public boolean setIssueToPaused(SQLiteDatabase db, AllDownloadsIssueTracker dIssue){
-
-        return updateDownloadStatusOfIssue(db, dIssue, DOWNLOAD_STATUS_PAUSED);
+        return updateDownloadStatusOfIssue(db, dIssue, DOWNLOAD_STATUS_IN_PROGRESS, progress);
 
     }
 
-    public boolean setIssueToView(SQLiteDatabase db, AllDownloadsIssueTracker dIssue){
+    public boolean setIssueToPaused(SQLiteDatabase db, AllDownloadsIssueTracker dIssue, int progress){
 
-        return updateDownloadStatusOfIssue(db, dIssue, DOWNLOAD_STATUS_VIEW);
-
-    }
-
-    public boolean setIssueToFailed(SQLiteDatabase db, AllDownloadsIssueTracker dIssue){
-
-        return updateDownloadStatusOfIssue(db, dIssue, DOWNLOAD_STATUS_FAILED);
+        return updateDownloadStatusOfIssue(db, dIssue, DOWNLOAD_STATUS_PAUSED, progress);
 
     }
 
-    public boolean setIssueToCompleted(SQLiteDatabase db, AllDownloadsIssueTracker dIssue){
+    public boolean setIssueToView(SQLiteDatabase db, AllDownloadsIssueTracker dIssue, int progress){
 
-        return updateDownloadStatusOfIssue(db, dIssue, DOWNLOAD_STATUS_COMPLETED);
+        return updateDownloadStatusOfIssue(db, dIssue, DOWNLOAD_STATUS_VIEW, progress);
+
+    }
+
+    public boolean setIssueToFailed(SQLiteDatabase db, AllDownloadsIssueTracker dIssue, int progress){
+
+        return updateDownloadStatusOfIssue(db, dIssue, DOWNLOAD_STATUS_FAILED, progress);
+
+    }
+
+    public boolean setIssueToCompleted(SQLiteDatabase db, AllDownloadsIssueTracker dIssue,int progress){
+
+        return updateDownloadStatusOfIssue(db, dIssue, DOWNLOAD_STATUS_COMPLETED, progress);
 
     }
 
 
-    public boolean updateDownloadStatusOfIssue(SQLiteDatabase db, AllDownloadsIssueTracker dIssue, int download_status){
+    public boolean updateDownloadStatusOfIssue(SQLiteDatabase db, AllDownloadsIssueTracker dIssue, int download_status, int progress){
 
         try{
 
             ContentValues updateValues = new ContentValues();
+            Log.d("AllDownloadDataSet","Progress count is : "+progress);
             updateValues.put(AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS, download_status);
+            updateValues.put(AllDownloadsEntry.COLUMN_PROGRESS_STATE, progress);
 
             String whereClause = AllDownloadsEntry.COLUMN_ISSUE_ID+"=?";
             String [] whereArgs = {String.valueOf(dIssue.issueID)};
@@ -544,6 +560,7 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
         public static final String COLUMN_UNIQUE_ISSUE_DOWNLOAD_TABLE = "issue_download_tracker_table"; // the tablename under which the issue is stored.
         public static final String COLUMN_PRIORITY = "download_priority";
         public static final String COLUMN_DOWNLOAD_STATUS = "download_status";
+        public static final String COLUMN_PROGRESS_STATE = "progress_status";
 
         public static final String CREATE_ALL_DOWNLOADS_TABLE = "CREATE TABLE IF NOT EXISTS "
                 + ALL_DOWNLOADS_TABLE_NAME
@@ -553,7 +570,8 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
                 + COLUMN_ISSUE_TITLE + " TEXT,"
                 + COLUMN_UNIQUE_ISSUE_DOWNLOAD_TABLE + " TEXT,"
                 + COLUMN_PRIORITY + " INTEGER,"
-                + COLUMN_DOWNLOAD_STATUS + " INTEGER"
+                + COLUMN_DOWNLOAD_STATUS + " INTEGER,"
+                + COLUMN_PROGRESS_STATE + " INTEGER"
                 + ")";
 
         public static final String DROP_ALL_DOWNLOADS_TABLE = "DROP TABLE IF EXISTS " + ALL_DOWNLOADS_TABLE_NAME;

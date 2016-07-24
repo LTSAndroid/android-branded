@@ -68,22 +68,27 @@ public class AllDownloadsFragment extends Fragment {
 
        Log.d(TAG, "All Downloads Issue List " + allDownloadsIssuesListTracker);
 
+
+
+
        // use rootview to fetch view (when called from onCreateView) else null returns
 //       gridView = (GridView) rootView.findViewById(R.id.displayAllDownloadsGridView);
        gridDownloadAdapter = new CustomAllDownloadsGridAdapter(getActivity(),allDownloadsIssuesListTracker,getFragmentManager());
        gridView.setAdapter(gridDownloadAdapter);
+
+
        //   gridview.setNumColumns(4);
 
    }
 
 
-    public void refreshGrid(ArrayList<AllDownloadsIssueTracker> allDownloadsIssuesListTrackerNew){
-
-        gridView = (GridView) rootView.findViewById(R.id.displayAllDownloadsGridView);
-
-        gridDownloadAdapter = new CustomAllDownloadsGridAdapter(getActivity(),allDownloadsIssuesListTrackerNew,getFragmentManager());
-        gridView.setAdapter(gridDownloadAdapter);
-    }
+//    public void refreshGrid(ArrayList<AllDownloadsIssueTracker> allDownloadsIssuesListTrackerNew){
+//
+//        gridView = (GridView) rootView.findViewById(R.id.displayAllDownloadsGridView);
+//
+//        gridDownloadAdapter = new CustomAllDownloadsGridAdapter(getActivity(),allDownloadsIssuesListTrackerNew,getFragmentManager());
+//        gridView.setAdapter(gridDownloadAdapter);
+//    }
 
 
     public void updateButtonStateFragment(int status){

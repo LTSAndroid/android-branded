@@ -2,6 +2,7 @@ package com.pixelmags.android.IssueView;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -23,6 +24,7 @@ import com.pixelmags.android.storage.SingleIssueDownloadDataSet;
 import com.pixelmags.android.util.BaseApp;
 
 import java.io.FileInputStream;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 import static java.lang.Character.digit;
@@ -134,12 +136,14 @@ public class NewIssueView extends FragmentActivity {
     public static class SwipeFragment extends Fragment
     {
 
+        private byte[] bitmap;
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
 
             View swipeView = inflater.inflate(R.layout.swipe_fragment, container, false);
-            ImageView imageView = (ImageView) swipeView.findViewById(R.id.imageView);
+            IssueImagePinchZoom imageView = (IssueImagePinchZoom) swipeView.findViewById(R.id.imageView);
             Bundle bundle = getArguments();
 
             int position = bundle.getInt("position");
@@ -150,6 +154,12 @@ public class NewIssueView extends FragmentActivity {
             Bitmap imageForView = null;
             String imageLocation = issuePagesLocations.get(position);
             if(imageLocation != null){
+
+//                bitmap =  decryptFilebyte(imageLocation, documentKey);
+//                BitmapWorkerTask bitmapWorkerTask = new BitmapWorkerTask(imageView,bitmap);
+//                bitmapWorkerTask.execute();
+
+
                 imageForView =  decryptFile(imageLocation,documentKey);
 
                 Log.d(TAG,"Image for view is : "+imageForView);
@@ -202,6 +212,10 @@ public class NewIssueView extends FragmentActivity {
 
             fis.close();
 
+            Log.d(TAG, "Bitmap data is : " + bitmapdata.toString());
+
+
+
             if(bitmapdata != null) {
                 bitmap = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
                 Log.d(TAG,"Bitmap is : "+bitmap);
@@ -215,5 +229,61 @@ public class NewIssueView extends FragmentActivity {
         }
         return bitmap;
     }
+
+    public static byte[] decryptFilebyte(String path, String documentKey){
+
+        Bitmap bitmap = null;
+        byte[] bitmapdata = new byte[0];
+
+        try {
+            // Create FileInputStream to read from the encrypted image file
+            FileInputStream fis = new FileInputStream(path);
+            IssueDecode issueDecode = new IssueDecode();
+
+            bitmapdata = issueDecode.getDecodedBitMap(documentKey,fis);
+
+            fis.close();
+
+            Log.d(TAG, "Bitmap data is : " + bitmapdata.toString());
+
+
+        } catch (Exception e) {
+
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return bitmapdata;
+    }
+
+
+    static class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
+        private final WeakReference<ImageView> imageViewReference;
+        private byte[] bitmap;
+
+        public BitmapWorkerTask(ImageView imageView,byte[] bitmap) {
+            // Use a WeakReference to ensure the ImageView can be garbage collected
+            imageViewReference = new WeakReference<ImageView>(imageView);
+            this.bitmap = bitmap;
+        }
+
+        // Decode image in background.
+        @Override
+        protected Bitmap doInBackground(Integer... params) {
+            return BitmapFactory.decodeByteArray(bitmap, 0, bitmap.length);
+        }
+
+        // Once complete, see if ImageView is still around and set bitmap.
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            if (imageViewReference != null && bitmap != null) {
+                final ImageView imageView = imageViewReference.get();
+                if (imageView != null) {
+                    Log.d(TAG,"Inside the onPost execute method");
+                    imageView.setImageBitmap(bitmap);
+                }
+            }
+        }
+    }
+
 
 }

@@ -213,6 +213,7 @@ public class AllIssuesFragment extends Fragment {
 
     public void saveDocumentKey(String issueId, String magazineNumber, String documentKey){
 
+
         try {
             // Save the Subscription Objects into the SQlite DB
             MyIssueDocumentKey mDbHelper = new MyIssueDocumentKey(BaseApp.getContext());
@@ -231,6 +232,8 @@ public class AllIssuesFragment extends Fragment {
                 Log.d(TAG,"Issue Key from table is : "+issueKeyFromTable);
                 if(issueKeyFromTable == null) {
                     mDbHelper.insert_my_issues_documentKey(mDbHelper.getWritableDatabase(), issueId, magazineNumber, documentKey, isExists);
+                    mDbHelper.close();
+                }else{
                     mDbHelper.close();
                 }
 

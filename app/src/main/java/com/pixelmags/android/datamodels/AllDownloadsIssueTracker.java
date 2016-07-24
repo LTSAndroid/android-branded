@@ -17,6 +17,7 @@ public class AllDownloadsIssueTracker
     public String uniqueIssueDownloadTable;
     public long priority;
     public int downloadStatus;
+    public int progressCompleted;
 
     public Bitmap thumbnailBitmap;
 }

@@ -29,6 +29,7 @@ public class QueueDownload {
             if(mIssue != null){
 
                 AllDownloadsDataSet mDownloadsDbReader = new AllDownloadsDataSet(BaseApp.getContext());
+
                 boolean result = mDownloadsDbReader.issueDownloadPreChecksAndDownload(mDownloadsDbReader.getWritableDatabase(), mIssue);
                 mDownloadsDbReader.close();
 

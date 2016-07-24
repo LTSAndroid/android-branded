@@ -4,14 +4,13 @@ package com.pixelmags.android.IssueView;
  * Created by Annie on 22/01/2016.
  */
 
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,11 +20,14 @@ import android.widget.RelativeLayout;
 
 import com.pixelmags.android.pixelmagsapp.R;
 
+import java.util.ArrayList;
+
 public class IssueViewAdapter  extends PagerAdapter
 {
     private Activity _activity;
     private ArrayList<String> _imagePaths;
     private LayoutInflater inflater;
+    private String TAG = "IssueViewAdapter";
 
     // constructor
     public IssueViewAdapter(Activity activity,
@@ -56,6 +58,8 @@ public class IssueViewAdapter  extends PagerAdapter
 
         imgDisplay = (ImageView) viewLayout.findViewById(R.id.imgDisplay);
         btnClose = (Button) viewLayout.findViewById(R.id.btnClose);
+
+        Log.d(TAG, "Image Path is : "+_imagePaths.get(position));
 
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
