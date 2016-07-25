@@ -160,8 +160,8 @@ public class CustomAllDownloadsGridAdapter extends BaseAdapter implements View.O
         gridDownloadStatusButton = (MultiStateButton) grid.findViewById(R.id.gridMultiStateButton);
         final int status = allDownloadsIssuesListTracker.get(position).downloadStatus;
         downloadStatus = status;
-        gridDownloadStatusButton.setTag(allDownloadsIssuesListTracker.get(position).issueID);
-        grid.setTag(allDownloadsIssuesListTracker.get(position).issueID);
+        gridDownloadStatusButton.setTag(new Integer(position));
+        grid.setTag(new Integer(position));
 
         AllDownloadsDataSet mDbReader_download = new AllDownloadsDataSet(BaseApp.getContext());
 
