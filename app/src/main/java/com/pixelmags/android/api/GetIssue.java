@@ -25,6 +25,7 @@ public class GetIssue extends WebRequest
     private static final String API_NAME="getIssue";
     private String mIssueID;
     private String TAG = "GetIssue";
+    private static boolean failure = false;
 
     GetIssueParser getIssueParser;
 
@@ -45,20 +46,30 @@ public class GetIssue extends WebRequest
             getIssueParser = new GetIssueParser(getAPIResultData());
             if(getIssueParser.initJSONParse()){
 
+                Log.d(TAG," value of is success is : "+getIssueParser.isSuccess());
+
                 if(getIssueParser.isSuccess()){
                     getIssueParser.parse();
-
+                    failure = false;
                     saveIssueToApp();
+
 
                 } else{
 
+                    Log.d(TAG,"Inside the error condition");
+
                     // Add error handling code here
+                    failure = true;
 
                 }
 
             }
         }
 
+    }
+
+    public static boolean setGetIssueFailure(){
+        return failure;
     }
 
     private void setApiNameValuePairs(){

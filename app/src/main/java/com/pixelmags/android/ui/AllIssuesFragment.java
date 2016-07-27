@@ -800,33 +800,54 @@ public class AllIssuesFragment extends Fragment {
 
             progressDialog.dismiss();
 
+            boolean status = GetIssue.setGetIssueFailure();
+
+            Log.d(TAG,"Status is : "+status);
+
+            if(status){
+
+                new AlertDialog.Builder(getActivity())
+                        .setTitle("Issue Download Failed!")
+                        .setMessage("Please contact customer care for support.")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
 
 
-            new AlertDialog.Builder(getActivity())
-                    .setTitle("Issue Download!")
-                    .setMessage("You can view your Issue in download section.")
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
+            }else{
+                new AlertDialog.Builder(getActivity())
+                        .setTitle("Issue Download!")
+                        .setMessage("You can view your Issue in download section.")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
 
-                            currentPage =getString(R.string.menu_title_downloads);
+                                currentPage =getString(R.string.menu_title_downloads);
 
-                            Fragment fragmentDownload = new AllDownloadsFragment();
-                            // Insert the fragment by replacing any existing fragment
-                            FragmentManager allIssuesFragmentManager = getFragmentManager();
-                            allIssuesFragmentManager.beginTransaction()
-                                    .replace(R.id.main_fragment_container, fragmentDownload)
-                                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                                            //       .addToBackStack(null)
-                                    .commit();
-                        }
-                    })
-                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
+                                Fragment fragmentDownload = new AllDownloadsFragment();
+                                // Insert the fragment by replacing any existing fragment
+                                FragmentManager allIssuesFragmentManager = getFragmentManager();
+                                allIssuesFragmentManager.beginTransaction()
+                                        .replace(R.id.main_fragment_container, fragmentDownload)
+                                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                                                //       .addToBackStack(null)
+                                        .commit();
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+            }
+
+
+
 
 
         }
