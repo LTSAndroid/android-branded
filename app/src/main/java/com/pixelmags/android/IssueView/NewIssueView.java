@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -23,9 +24,12 @@ import com.pixelmags.android.storage.AllDownloadsDataSet;
 import com.pixelmags.android.storage.SingleIssueDownloadDataSet;
 import com.pixelmags.android.util.BaseApp;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Random;
 
 import static java.lang.Character.digit;
 
@@ -162,7 +166,11 @@ public class NewIssueView extends FragmentActivity {
 
                 imageForView =  decryptFile(imageLocation,documentKey);
 
-                Log.d(TAG,"Image for view is : "+imageForView);
+                Log.d(TAG, "Image for view is : " + imageForView);
+
+//                saveImage(imageForView);
+
+
                 if(imageForView != null){
                     imageView.setImageBitmap(imageForView);
                 }else{
@@ -170,7 +178,7 @@ public class NewIssueView extends FragmentActivity {
                     System.out.println("Issue Image is Null");
                 }
             }else{
-                imageView.setBackgroundResource(R.drawable.placeholder);
+                imageView.setBackgroundResource(R.drawable.placeholderissueview);
             }
 
             return swipeView;
@@ -184,7 +192,47 @@ public class NewIssueView extends FragmentActivity {
             return swipeFragment;
         }
 
+        private void saveImage(Bitmap finalBitmap) {
+
+            Log.d(TAG,"Inside the save image method");
+
+            String root = Environment.getExternalStorageDirectory().toString();
+            File myDir = new File(root + "/brand_now");
+            Log.d(TAG,"File path is : "+myDir);
+            if(!myDir.exists()){
+                myDir.mkdirs();
+            }
+
+//            String stf = myDir.getAbsolutePath();
+//            File file = new File(stf +"/brand-now");
+//
+//            if(!file.exists()){
+//                file.mkdir();
+//            }
+
+
+            Random generator = new Random();
+            int n = 10000;
+            n = generator.nextInt(n);
+            String fname = "Image-"+ n +".png";
+            File file = new File (myDir, fname);
+            Log.d(TAG,"File name is : "+file);
+            if (file.exists ()) file.delete ();
+            try {
+                FileOutputStream out = new FileOutputStream(file);
+                finalBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+                out.flush();
+                out.close();
+
+            } catch (Exception e) {
+
+                e.printStackTrace();
+            }
+        }
+
     }
+
+
 
 
     private byte[] stringToBytes(String input) {
@@ -217,7 +265,15 @@ public class NewIssueView extends FragmentActivity {
 
 
             if(bitmapdata != null) {
-                bitmap = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
+//                bitmap = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
+
+                BitmapFactory.Options opts = new BitmapFactory.Options();
+                opts.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                bitmap = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length,opts);
+//                Log.d(TAG,"Source is : "+source);
+//                mask = mask.extractAlpha();
+//                source.recycle();
+
                 Log.d(TAG,"Bitmap is : "+bitmap);
             }
             

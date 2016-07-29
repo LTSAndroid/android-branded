@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
 import com.pixelmags.android.datamodels.SingleDownloadIssueTracker;
@@ -25,6 +26,7 @@ public class SingleIssueDownloadDataSet extends BrandedSQLiteHelper {
     public static int DOWNLOAD_STATUS_FAILED = -1;
     public static int DOWNLOAD_STATUS_COMPLETED = 0;
     public static int DOWNLOAD_STATUS_PENDING = 1;
+    private String TAG = "SingleIssueDownloadDataSet";
 
 
     public SingleIssueDownloadDataSet(Context context) {
@@ -321,7 +323,8 @@ public class SingleIssueDownloadDataSet extends BrandedSQLiteHelper {
         if(dIssueList != null){
             for(int i=0; i< dIssueList.size();i++) {
                 SingleDownloadIssueTracker issuePageEntry= dIssueList.get(i);
-                updateIssuePageEntry(db,issuePageEntry,tableName);
+                Log.d(TAG,"Inside the Single Download Issue Page entry : "+issuePageEntry);
+                updateIssuePageEntry(db, issuePageEntry, tableName);
             }
         }
 
@@ -331,6 +334,8 @@ public class SingleIssueDownloadDataSet extends BrandedSQLiteHelper {
     public boolean updateIssuePageEntry(SQLiteDatabase db, SingleDownloadIssueTracker dIssue, String tableName){
 
         try{
+
+            Log.d(TAG,"Downloaded Location of pdf large : "+dIssue.downloadedLocationPdfLarge);
 
             ContentValues updateValues = new ContentValues();
             updateValues.put(SingleIssueDownloadEntry.COLUMN_PAGE_NO, dIssue.pageNo);

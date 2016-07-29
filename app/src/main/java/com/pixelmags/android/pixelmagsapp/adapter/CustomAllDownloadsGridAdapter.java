@@ -236,7 +236,7 @@ public class CustomAllDownloadsGridAdapter extends BaseAdapter implements View.O
                                         if (activity == null)
                                             return;
 
-                                        activity.runOnUiThread(new Runnable() {
+                                          activity.runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
                                                 if (jumpTime == limit) {
@@ -248,7 +248,7 @@ public class CustomAllDownloadsGridAdapter extends BaseAdapter implements View.O
                                                 }
                                             }
                                         });
-                                        wait(6600);
+                                        wait(6666);
                                     }
 
                                 } catch (InterruptedException e) {

@@ -2,12 +2,9 @@ package com.pixelmags.android.pixelmagsapp.service;
 
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.graphics.Bitmap;
 
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
-import com.pixelmags.android.datamodels.Issue;
-import com.pixelmags.android.datamodels.PageTypeImage;
 import com.pixelmags.android.datamodels.SingleDownloadIssueTracker;
 import com.pixelmags.android.storage.SingleIssueDownloadDataSet;
 import com.pixelmags.android.util.BaseApp;
@@ -16,7 +13,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
 
 /**
  * Created by austincoutinho on 17/12/15.
@@ -119,7 +115,7 @@ public class DownloadSinglePageThread implements Runnable {
             mDbDownloadTableWriter.close();
             */
 
-            System.out.println("Download Complete :: " + pageSingleDownloadTracker.pageNo);
+            System.out.println("Download Complete :: " + pageSingleDownloadTracker.downloadedLocationPdfLarge);
 
         }catch(Exception e){
             e.printStackTrace();

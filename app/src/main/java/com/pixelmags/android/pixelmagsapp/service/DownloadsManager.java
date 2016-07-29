@@ -744,6 +744,7 @@ public class DownloadsManager {
         private String getPageFileName(){
 
             String fileName = String.valueOf(pageSingleDownloadTracker.pageNo)+".jpg";
+//            String fileName = String.valueOf(pageSingleDownloadTracker.pageNo)+".png";
             return fileName;
         }
 
