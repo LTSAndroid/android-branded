@@ -162,6 +162,7 @@ public class DownloadThumbnails implements Runnable {
         try {
             InputStream in = new java.net.URL(url).openStream();
             Bitmap thumbnailBitmap = BitmapFactory.decodeStream(in);
+            in.close();
 
             savedPath = saveToInternalSorage(thumbnailBitmap);
             updateIssueData(issueIndex, savedPath, isDownloaded);

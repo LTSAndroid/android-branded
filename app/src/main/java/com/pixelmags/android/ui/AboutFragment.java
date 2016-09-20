@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Spanned;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,6 +60,34 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.pixelmags.com/t+c/current/"));
             startActivity(browserIntent);
         }
+    }
+
+    @Override
+    public void onResume() {
+
+        super.onResume();
+
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK){
+
+                    // handle back button
+                    Fragment fragment = new AllIssuesFragment();
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.main_fragment_container, fragment, "HOME")
+                            .commit();
+
+                    return true;
+
+                }
+
+                return false;
+            }
+        });
     }
 }
 

@@ -519,6 +519,34 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
 
     }
 
+    public boolean updateProgressCountOfIssue(SQLiteDatabase db, AllDownloadsIssueTracker dIssue, int progress){
+
+        try{
+
+            ContentValues updateValues = new ContentValues();
+            Log.d("AllDownloadDataSet","Progress count is : "+progress);
+            updateValues.put(AllDownloadsEntry.COLUMN_PROGRESS_STATE, progress);
+
+            String whereClause = AllDownloadsEntry.COLUMN_ISSUE_ID+"=?";
+            String [] whereArgs = {String.valueOf(dIssue.issueID)};
+
+            db.update(
+                    AllDownloadsEntry.ALL_DOWNLOADS_TABLE_NAME,
+                    updateValues,
+                    whereClause,
+                    whereArgs
+            );
+
+
+            return true;
+
+        }catch(Exception e){
+
+        }
+
+        return false;
+    }
+
 
     public boolean updateDownloadStatusOfIssue(SQLiteDatabase db, AllDownloadsIssueTracker dIssue, int download_status, int progress){
 

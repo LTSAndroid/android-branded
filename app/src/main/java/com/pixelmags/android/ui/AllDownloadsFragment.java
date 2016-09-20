@@ -1,11 +1,15 @@
 package com.pixelmags.android.ui;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +18,7 @@ import android.widget.GridView;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
 import com.pixelmags.android.download.DownloadThumbnails;
+import com.pixelmags.android.pixelmagsapp.MainActivity;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.pixelmagsapp.adapter.CustomAllDownloadsGridAdapter;
 import com.pixelmags.android.storage.AllDownloadsDataSet;
@@ -73,7 +78,7 @@ public class AllDownloadsFragment extends Fragment {
 
        // use rootview to fetch view (when called from onCreateView) else null returns
 //       gridView = (GridView) rootView.findViewById(R.id.displayAllDownloadsGridView);
-       gridDownloadAdapter = new CustomAllDownloadsGridAdapter(getActivity(),allDownloadsIssuesListTracker,getFragmentManager());
+       gridDownloadAdapter = new CustomAllDownloadsGridAdapter(getActivity(),allDownloadsIssuesListTracker,getActivity().getSupportFragmentManager());
        gridView.setAdapter(gridDownloadAdapter);
 
 
@@ -93,6 +98,45 @@ public class AllDownloadsFragment extends Fragment {
 
     public void updateButtonStateFragment(int status){
         gridDownloadAdapter.updateButtonState(status);
+    }
+
+
+    @Override
+    public void onResume() {
+
+        super.onResume();
+
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK){
+
+                    gridDownloadAdapter.updateProgressCount();
+
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            // handle back button
+                            Fragment fragment = new AllIssuesFragment();
+                            getActivity().getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.main_fragment_container, fragment, "HOME")
+                                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                                    .commit();
+                        }
+                    }, 1000);
+
+
+                    return true;
+
+                }
+
+                return false;
+            }
+        });
     }
 
 //    public void gridIssueImageClicked(int position){

@@ -244,7 +244,7 @@ public class IssueDetailsFragment extends Fragment {
                                             // Insert the fragment by replacing any existing fragment
                                             FragmentManager allIssuesFragmentManager = getFragmentManager();
                                             allIssuesFragmentManager.beginTransaction()
-                                                    .replace(R.id.main_fragment_container, fragmentDownload)
+                                                    .replace(R.id.main_fragment_container, fragmentDownload,"ALLDOWNLOADFRAGMENT")
                                                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                                                             //       .addToBackStack(null)
                                                     .commit();
@@ -376,7 +376,7 @@ public class IssueDetailsFragment extends Fragment {
                             // Insert the fragment by replacing any existing fragment
                             FragmentManager allIssuesFragmentManager = getFragmentManager();
                             allIssuesFragmentManager.beginTransaction()
-                                    .replace(R.id.main_fragment_container, fragmentDownload)
+                                    .replace(R.id.main_fragment_container, fragmentDownload,"ALLDOWNLOADFRAGMENT")
                                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                                             //       .addToBackStack(null)
                                     .commit();

@@ -3,6 +3,7 @@ package com.pixelmags.android.ui;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
@@ -468,6 +470,12 @@ public class RegisterFragment extends Fragment {
             System.out.println("PRINT PREFS  :: " + UserPrefs.getUserEmail());
             System.out.println("PRINT PREFS  :: " + UserPrefs.getUserFirstName());
             System.out.println("PRINT PREFS  :: " + UserPrefs.getUserPixelmagsId());
+
+            View view = getActivity().getCurrentFocus();
+            if (view != null) {
+                InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
 
             Fragment fragment = new ResultsFragment();
             Bundle args = new Bundle();

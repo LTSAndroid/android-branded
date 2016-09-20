@@ -41,9 +41,9 @@ public class SingleIssueDownloadDataSet extends BrandedSQLiteHelper {
                 + SingleIssueDownloadEntry.COLUMN_PAGE_NO + " INTEGER PRIMARY KEY,"
                 + SingleIssueDownloadEntry.COLUMN_URL_PDF_LARGE + " TEXT,"
                 + SingleIssueDownloadEntry.COLUMN_MD5_CHECKSUM_LARGE + " TEXT,"
-                + SingleIssueDownloadEntry.COLUMN_DOWNLOADED_LOCATION_PDF_LARGE + " TEXT,"
+                    + SingleIssueDownloadEntry.COLUMN_DOWNLOADED_LOCATION_PDF_LARGE + " TEXT,"
                 + SingleIssueDownloadEntry.COLUMN_DOWNLOAD_STATUS_PDF_LARGE + " INTEGER"
-                + ")"; ;
+                + ")";
 
         db.execSQL(CREATE_UNIQUE_ISSUE_DOWNLOAD_TABLE);
 
@@ -55,6 +55,25 @@ public class SingleIssueDownloadDataSet extends BrandedSQLiteHelper {
         String DROP_ALL_DOWNLOADS_TABLE = "DROP TABLE IF EXISTS " + UNIQUE_ISSUE_DOWNLOAD_TABLE;
 
         db.execSQL(DROP_ALL_DOWNLOADS_TABLE);
+    }
+
+    public boolean isTableExists(SQLiteDatabase db, String tableName)
+    {
+        if (tableName == null || db == null || !db.isOpen())
+        {
+            return false;
+        }
+        Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM sqlite_master WHERE type = ? AND name = ?", new String[] {"table", tableName});
+        if (!cursor.moveToFirst())
+        {
+            db.close();
+            cursor.close();
+            return false;
+        }
+        int count = cursor.getInt(0);
+        db.close();
+        cursor.close();
+        return count > 0;
     }
 
     public void createDownloadTableForIssue(SQLiteDatabase db, String uniqueDownloadTable){
@@ -74,7 +93,7 @@ public class SingleIssueDownloadDataSet extends BrandedSQLiteHelper {
     {
         try{
             // Start the transaction
-            db.beginTransaction();
+                      db.beginTransaction();
 
 
             // get all the previous stored values
@@ -323,7 +342,6 @@ public class SingleIssueDownloadDataSet extends BrandedSQLiteHelper {
         if(dIssueList != null){
             for(int i=0; i< dIssueList.size();i++) {
                 SingleDownloadIssueTracker issuePageEntry= dIssueList.get(i);
-                Log.d(TAG,"Inside the Single Download Issue Page entry : "+issuePageEntry);
                 updateIssuePageEntry(db, issuePageEntry, tableName);
             }
         }
@@ -334,8 +352,6 @@ public class SingleIssueDownloadDataSet extends BrandedSQLiteHelper {
     public boolean updateIssuePageEntry(SQLiteDatabase db, SingleDownloadIssueTracker dIssue, String tableName){
 
         try{
-
-            Log.d(TAG,"Downloaded Location of pdf large : "+dIssue.downloadedLocationPdfLarge);
 
             ContentValues updateValues = new ContentValues();
             updateValues.put(SingleIssueDownloadEntry.COLUMN_PAGE_NO, dIssue.pageNo);

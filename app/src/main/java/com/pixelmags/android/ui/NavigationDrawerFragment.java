@@ -337,7 +337,7 @@ public class NavigationDrawerFragment extends Fragment {
                 Fragment fragmentAllDownloads = new AllDownloadsFragment();
                 FragmentManager downloadsFragmentManager = getFragmentManager();
                 downloadsFragmentManager.beginTransaction()
-                        .replace(R.id.main_fragment_container, fragmentAllDownloads)
+                        .replace(R.id.main_fragment_container, fragmentAllDownloads,"ALLDOWNLOADFRAGMENT")
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                         .commit();
                 break;

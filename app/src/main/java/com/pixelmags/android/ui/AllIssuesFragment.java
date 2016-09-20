@@ -9,11 +9,14 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -293,6 +296,50 @@ public class AllIssuesFragment extends Fragment {
     }
 
 
+    @Override
+    public void onResume() {
+
+        super.onResume();
+
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK){
+
+                    // handle back button
+                    new android.support.v7.app.AlertDialog.Builder(getActivity())
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .setTitle("Confirm")
+                            .setMessage("Are you sure you want to exit from Pixel Mags App?")
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                                        getActivity().finishAffinity();
+                                    } else {
+                                        ActivityCompat.finishAffinity(getActivity());
+                                    }
+
+                                    System.exit(0);
+
+
+                                }
+                            })
+                            .setNegativeButton("No", null)
+                            .show();
+
+                    return true;
+
+                }
+
+                return false;
+            }
+        });
+    }
 /**
  *  A custom GridView to display the Magazines.
  *
@@ -409,7 +456,7 @@ public class AllIssuesFragment extends Fragment {
                                         // Insert the fragment by replacing any existing fragment
                                         FragmentManager allIssuesFragmentManager = getFragmentManager();
                                         allIssuesFragmentManager.beginTransaction()
-                                                .replace(R.id.main_fragment_container, fragmentDownload)
+                                                .replace(R.id.main_fragment_container, fragmentDownload,"ALLDOWNLOADFRAGMENT")
                                                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                                                         //       .addToBackStack(null)
                                                 .commit();
@@ -588,6 +635,8 @@ public class AllIssuesFragment extends Fragment {
             boolean isExists = mDbReader.isTableExists(mDbReader.getReadableDatabase(), BrandedSQLiteHelper.TABLE_ALL_DOWNLOADS);
             if(isExists) {
                 allDownloadsTracker = mDbReader.getDownloadIssueList(mDbReader.getReadableDatabase(), Config.Magazine_Number);
+
+                Log.d(TAG,"All Download Tracker data is : "+allDownloadsTracker);
 
                 for(int j=0; j<magazinesList.size(); j++){
                     for(int k=0; k<allDownloadsTracker.size(); k++){
@@ -831,7 +880,7 @@ public class AllIssuesFragment extends Fragment {
                                 // Insert the fragment by replacing any existing fragment
                                 FragmentManager allIssuesFragmentManager = getFragmentManager();
                                 allIssuesFragmentManager.beginTransaction()
-                                        .replace(R.id.main_fragment_container, fragmentDownload)
+                                        .replace(R.id.main_fragment_container, fragmentDownload,"ALLDOWNLOADFRAGMENT")
                                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                                                 //       .addToBackStack(null)
                                         .commit();
