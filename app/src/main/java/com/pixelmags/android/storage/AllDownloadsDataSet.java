@@ -321,7 +321,7 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
 
 
             // Specify the sort order
-            String sortOrder = AllDownloadsEntry.COLUMN_PRIORITY + " DESC";
+            String sortOrder = AllDownloadsEntry.COLUMN_PRIORITY + " ASC";
 
             String whereClause = AllDownloadsEntry.COLUMN_ISSUE_ID+"=?";
             String [] whereArgs = {issueId};
@@ -489,46 +489,134 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
         return issueToDownloadNext;
     }
 
-    public boolean setIssueToInProgress(SQLiteDatabase db, AllDownloadsIssueTracker dIssue, int progress){
+//    public boolean setIssueToInProgress(SQLiteDatabase db, AllDownloadsIssueTracker dIssue, int progress){
+//
+//        return updateDownloadStatusOfIssue(db, dIssue, DOWNLOAD_STATUS_IN_PROGRESS, progress);
+//
+//    }
+//
+//    public boolean setIssueToPaused(SQLiteDatabase db, AllDownloadsIssueTracker dIssue, int progress){
+//
+//        return updateDownloadStatusOfIssue(db, dIssue, DOWNLOAD_STATUS_PAUSED, progress);
+//
+//    }
+//
+//    public boolean setIssueToView(SQLiteDatabase db, AllDownloadsIssueTracker dIssue, int progress){
+//
+//        return updateDownloadStatusOfIssue(db, dIssue, DOWNLOAD_STATUS_VIEW, progress);
+//
+//    }
+//
+//    public boolean setIssueToFailed(SQLiteDatabase db, AllDownloadsIssueTracker dIssue, int progress){
+//
+//        return updateDownloadStatusOfIssue(db, dIssue, DOWNLOAD_STATUS_FAILED, progress);
+//
+//    }
+//
+//    public boolean setIssueToCompleted(SQLiteDatabase db, AllDownloadsIssueTracker dIssue,int progress){
+//
+//        return updateDownloadStatusOfIssue(db, dIssue, DOWNLOAD_STATUS_COMPLETED, progress);
+//
+//    }
+
+
+    public boolean setIssueToInProgress(SQLiteDatabase db, String dIssue, int progress){
 
         return updateDownloadStatusOfIssue(db, dIssue, DOWNLOAD_STATUS_IN_PROGRESS, progress);
 
     }
 
-    public boolean setIssueToPaused(SQLiteDatabase db, AllDownloadsIssueTracker dIssue, int progress){
+    public boolean setIssueToPaused(SQLiteDatabase db, String dIssue, int progress){
 
         return updateDownloadStatusOfIssue(db, dIssue, DOWNLOAD_STATUS_PAUSED, progress);
 
     }
 
-    public boolean setIssueToView(SQLiteDatabase db, AllDownloadsIssueTracker dIssue, int progress){
+    public boolean setIssueToView(SQLiteDatabase db, String dIssue, int progress){
 
         return updateDownloadStatusOfIssue(db, dIssue, DOWNLOAD_STATUS_VIEW, progress);
 
     }
 
-    public boolean setIssueToFailed(SQLiteDatabase db, AllDownloadsIssueTracker dIssue, int progress){
+    public boolean setIssueToFailed(SQLiteDatabase db, String dIssue, int progress){
 
         return updateDownloadStatusOfIssue(db, dIssue, DOWNLOAD_STATUS_FAILED, progress);
 
     }
 
-    public boolean setIssueToCompleted(SQLiteDatabase db, AllDownloadsIssueTracker dIssue,int progress){
+    public boolean setIssueToCompleted(SQLiteDatabase db, String dIssue,int progress){
 
         return updateDownloadStatusOfIssue(db, dIssue, DOWNLOAD_STATUS_COMPLETED, progress);
 
     }
 
-    public boolean updateProgressCountOfIssue(SQLiteDatabase db, AllDownloadsIssueTracker dIssue, int progress){
+//    public boolean updateProgressCountOfIssue(SQLiteDatabase db, AllDownloadsIssueTracker dIssue, int progress){
+//
+//        try{
+//
+//            ContentValues updateValues = new ContentValues();
+//            updateValues.put(AllDownloadsEntry.COLUMN_PROGRESS_STATE, progress);
+//
+//            String whereClause = AllDownloadsEntry.COLUMN_ISSUE_ID+"=?";
+//            String [] whereArgs = {String.valueOf(dIssue.issueID)};
+//
+//            db.update(
+//                    AllDownloadsEntry.ALL_DOWNLOADS_TABLE_NAME,
+//                    updateValues,
+//                    whereClause,
+//                    whereArgs
+//            );
+//
+//
+//            return true;
+//
+//        }catch(Exception e){
+//
+//        }
+//
+//        return false;
+//    }
+
+
+//    public boolean updateDownloadStatusOfIssue(SQLiteDatabase db, AllDownloadsIssueTracker dIssue, int download_status, int progress){
+//
+//        try{
+//
+//            ContentValues updateValues = new ContentValues();
+//            Log.d("AllDownloadDataSet","Progress count is : "+progress);
+//            updateValues.put(AllDownloadsEntry.COLUMN_DOWNLOAD_STATUS, download_status);
+//            updateValues.put(AllDownloadsEntry.COLUMN_PROGRESS_STATE, progress);
+//
+//            String whereClause = AllDownloadsEntry.COLUMN_ISSUE_ID+"=?";
+//            String [] whereArgs = {String.valueOf(dIssue.issueID)};
+//
+//            db.update(
+//                    AllDownloadsEntry.ALL_DOWNLOADS_TABLE_NAME,
+//                    updateValues,
+//                    whereClause,
+//                    whereArgs
+//                    );
+//
+//
+//            return true;
+//
+//        }catch(Exception e){
+//
+//        }
+//
+//        return false;
+//    }
+
+
+    public boolean updateProgressCountOfIssue(SQLiteDatabase db, String dIssue, int progress){
 
         try{
 
             ContentValues updateValues = new ContentValues();
-            Log.d("AllDownloadDataSet","Progress count is : "+progress);
             updateValues.put(AllDownloadsEntry.COLUMN_PROGRESS_STATE, progress);
 
             String whereClause = AllDownloadsEntry.COLUMN_ISSUE_ID+"=?";
-            String [] whereArgs = {String.valueOf(dIssue.issueID)};
+            String [] whereArgs = {String.valueOf(dIssue)};
 
             db.update(
                     AllDownloadsEntry.ALL_DOWNLOADS_TABLE_NAME,
@@ -548,7 +636,7 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
     }
 
 
-    public boolean updateDownloadStatusOfIssue(SQLiteDatabase db, AllDownloadsIssueTracker dIssue, int download_status, int progress){
+    public boolean updateDownloadStatusOfIssue(SQLiteDatabase db, String dIssue, int download_status, int progress){
 
         try{
 
@@ -558,15 +646,14 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
             updateValues.put(AllDownloadsEntry.COLUMN_PROGRESS_STATE, progress);
 
             String whereClause = AllDownloadsEntry.COLUMN_ISSUE_ID+"=?";
-            String [] whereArgs = {String.valueOf(dIssue.issueID)};
+            String [] whereArgs = {String.valueOf(dIssue)};
 
             db.update(
                     AllDownloadsEntry.ALL_DOWNLOADS_TABLE_NAME,
                     updateValues,
                     whereClause,
                     whereArgs
-                    );
-
+            );
 
             return true;
 

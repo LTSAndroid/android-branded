@@ -71,6 +71,8 @@ public class DownloadsManager {
     public static int progressCount = -1;
     private ArrayList<AllDownloadsIssueTracker> allDownloadsIssuesListTracker = null;
     public static boolean downloading = false;
+//    public static boolean downloadIssueCompleted = false;
+//    public static int issueIdCurrent = 0;
 
 
 
@@ -208,7 +210,7 @@ public class DownloadsManager {
             AllDownloadsDataSet mDbWriter = new AllDownloadsDataSet(BaseApp.getContext());
 
             // set the Issue as downloading within the AllDownloadTable
-            boolean issueUpdated = mDbWriter.setIssueToInProgress(mDbWriter.getWritableDatabase(), issueToDownload,0);
+            boolean issueUpdated = mDbWriter.setIssueToInProgress(mDbWriter.getWritableDatabase(), String.valueOf(issueToDownload.issueID),0);
             mDbWriter.close();
 
 
@@ -469,7 +471,7 @@ public class DownloadsManager {
 
 
                 AllDownloadsDataSet mDbReader = new AllDownloadsDataSet(BaseApp.getContext());
-                mDbReader.setIssueToCompleted(mDbReader.getReadableDatabase(), issueInQueue,100);
+                mDbReader.setIssueToCompleted(mDbReader.getReadableDatabase(), String.valueOf(issueInQueue.issueID),100);
                 mDbReader.close();
 
                 downloading = false;
@@ -477,6 +479,9 @@ public class DownloadsManager {
                 issueInQueue.downloadStatus = AllDownloadsDataSet.DOWNLOAD_STATUS_COMPLETED;
                 AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment();
                 allDownloadsFragment.updateButtonStateFragment(issueInQueue.downloadStatus);
+
+//                issueIdCurrent = issueInQueue.issueID;
+//                downloadIssueCompleted = true;
 
             }
 
@@ -487,6 +492,7 @@ public class DownloadsManager {
 
     public static void processPostDownloadQueue(){
 
+        SQLiteDatabase db = null;
         try{
 
             boolean run = true;
@@ -494,7 +500,7 @@ public class DownloadsManager {
             SingleIssueDownloadDataSet mDbDownloadTableWriter = new SingleIssueDownloadDataSet(BaseApp.getContext());
 
             // update as transaction
-            SQLiteDatabase db = mDbDownloadTableWriter.getWritableDatabase();
+            db = mDbDownloadTableWriter.getWritableDatabase();
             db.beginTransaction();
 
             while(run){
@@ -518,6 +524,10 @@ public class DownloadsManager {
 
         }catch(Exception e){
             e.printStackTrace();
+        }finally {
+            if(db != null){
+                db.close();
+            }
         }
     }
 
@@ -722,6 +732,9 @@ public class DownloadsManager {
             this.pageSingleDownloadTracker = pageTracker;
             this.isPriority = setAsPriority; // this is the value that will be used in the Comparator to download the image as priority
             this.isDownloaded = false;
+
+//            issueIdCurrent = allDownloadsTracker.issueID;
+//            downloadIssueCompleted = false;
 
         }
 
