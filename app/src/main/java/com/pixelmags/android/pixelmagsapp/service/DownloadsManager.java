@@ -155,7 +155,7 @@ public class DownloadsManager {
             }
 
             AllDownloadsDataSet mDbReader = new AllDownloadsDataSet(BaseApp.getContext());
-            boolean isExists = mDbReader.isTableExists(mDbReader.getReadableDatabase(), BrandedSQLiteHelper.TABLE_ALL_DOWNLOADS);
+            boolean isExists = mDbReader.isTableExists(mDbReader.getWritableDatabase(), BrandedSQLiteHelper.TABLE_ALL_DOWNLOADS);
             if(isExists) {
                 issueToDownload = mDbReader.getNextIssueInQueue(mDbReader.getReadableDatabase(), Config.Magazine_Number);
                 mDbReader.close();

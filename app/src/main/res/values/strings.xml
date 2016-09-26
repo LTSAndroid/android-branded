@@ -48,6 +48,9 @@
     <string name="error_invalid_password">Password is too short</string>
     <string name="error_incorrect_password">Incorrect password</string>
     <string name="error_field_required">Enter details</string>
+    <string name="error_name">Enter name</string>
+    <string name="error_email">Enter Email Id</string>
+
 
     <string name="log_in_fail_title">Log in Failed</string>
     <string name="log_in_fail_message">Please check log in details and try again.</string>

@@ -2,19 +2,25 @@ package com.pixelmags.android.ui;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -23,8 +29,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.pixelmags.android.api.CreateUser;
+import com.pixelmags.android.api.GetMyIssues;
+import com.pixelmags.android.api.GetMySubscriptions;
+import com.pixelmags.android.api.ValidateUser;
 import com.pixelmags.android.pixelmagsapp.R;
-import com.pixelmags.android.pixelmagsapp.test.ResultsFragment;
 import com.pixelmags.android.storage.UserPrefs;
 
 import java.util.Calendar;
@@ -61,12 +69,16 @@ public class RegisterFragment extends Fragment {
     private int yy,mm,dd;
     private TextView pickDate;
     private Calendar calendar;
+    private String TAG = "RegisterFragment";
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private UserRegistrationTask mRegisterTask = null;
 
     private OnFragmentInteractionListener mListener;
+    private GetMyIssuesTask mGetMyIssuesTask = null;
+    private GetMySubscriptionsTask mGetMySubscriptionsTask = null;
+    private ProgressDialog progressBar;
 
     /**
      * Use this factory method to create a new instance of
@@ -94,6 +106,9 @@ public class RegisterFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -126,12 +141,12 @@ public class RegisterFragment extends Fragment {
             }
         });
 
-        Button backtologinbutton = (Button) rootView.findViewById(R.id.backtologin);
-        backtologinbutton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                navigateTobacktologinbutton();
-            }
-        });
+//        Button backtologinbutton = (Button) rootView.findViewById(R.id.backtologin);
+//        backtologinbutton.setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View v) {
+//                navigateTobacktologinbutton();
+//            }
+//        });
 
         Button datePicker = (Button) rootView.findViewById(R.id.pick_dob);
         datePicker.setOnClickListener(new View.OnClickListener() {
@@ -162,6 +177,7 @@ public class RegisterFragment extends Fragment {
             String day1 = String.valueOf(selectedDay);
 
             mDOBView.setText(day1 + "/" + month1 + "/" + year1);
+            mDOBView.setError(null);
 
         }
     };
@@ -263,6 +279,7 @@ public class RegisterFragment extends Fragment {
         String firstName = mfirstnameView.getText().toString();
         String lastName = mlastnameView.getText().toString();
         String DOB = mDOBView.getText().toString();
+        Log.d(TAG,"DOB is : "+DOB);
         Boolean termsConditions = mtemsconditionsView.isChecked();
 
         boolean cancel = false;
@@ -282,7 +299,7 @@ public class RegisterFragment extends Fragment {
         }
         //first name
         if (TextUtils.isEmpty(firstName)) {
-            mfirstnameView.setError(getString(R.string.error_field_required));
+            mfirstnameView.setError(getString(R.string.error_name));
             focusView = mfirstnameView;
             cancel = true;
         }
@@ -295,11 +312,14 @@ public class RegisterFragment extends Fragment {
         }
 
        //DOB
-       /* if (TextUtils.isEmpty(DOB)) {
+
+        Log.d(TAG,"DOB is empty : "+ TextUtils.isEmpty(DOB));
+
+       if (TextUtils.isEmpty(DOB)) {
             mDOBView.setError(getString(R.string.error_field_required));
             focusView = mDOBView;
             cancel = true;
-        }*/
+        }
 
         //Terms n Conditions
         if (!termsConditions) {
@@ -310,7 +330,7 @@ public class RegisterFragment extends Fragment {
         // Check for a valid email address.
 
         if (TextUtils.isEmpty(email)) {
-        mEmailView.setError(getString(R.string.error_field_required));
+        mEmailView.setError(getString(R.string.error_email));
         focusView = mEmailView;
         cancel = true;
     }
@@ -353,6 +373,7 @@ public class RegisterFragment extends Fragment {
         private final String mFirstName;
         private final String mLastName;
         private final String mDOB;
+        private ValidateUserTask mValidateUserTask = null;
 
         UserRegistrationTask(String email, String password,String firstName , String lastName, String DOB) {
             mEmail = email;
@@ -360,6 +381,28 @@ public class RegisterFragment extends Fragment {
             mFirstName = firstName;
             mLastName = lastName;
             mDOB = DOB;
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            try{
+
+                progressBar = new ProgressDialog(getActivity());
+                if (progressBar != null) {
+                    progressBar.show();
+                    progressBar.setCancelable(false);
+                    progressBar.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                    progressBar.setContentView(R.layout.progress_dialog);
+                }
+
+
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
 
         @Override
@@ -477,19 +520,27 @@ public class RegisterFragment extends Fragment {
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }
 
-            Fragment fragment = new ResultsFragment();
-            Bundle args = new Bundle();
-            args.putInt("Results Key", 5);
-            args.putString("DISPLAY_RESULTS", result);
-            fragment.setArguments(args);
+//            Fragment fragment = new ResultsFragment();
+//            Bundle args = new Bundle();
+//            args.putInt("Results Key", 5);
+//            args.putString("DISPLAY_RESULTS", result);
+//            fragment.setArguments(args);
 
-            FragmentManager fragmentManager = getFragmentManager();
-            // FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-            fragmentManager.beginTransaction()
-                    .replace(((ViewGroup) (getView().getParent())).getId(), fragment)
-                    .addToBackStack(null)
-                    .commit();
+
+            // perform the user register attempt.
+            mValidateUserTask = new ValidateUserTask(mEmail, mPassword);
+            mValidateUserTask.execute((String) null);
+
+
+//            Fragment fragment = new AllIssuesFragment();
+//            FragmentManager fragmentManager = getFragmentManager();
+//            // FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//
+//            fragmentManager.beginTransaction()
+//                    .replace(((ViewGroup) (getView().getParent())).getId(), fragment)
+//                    .addToBackStack(null)
+//                    .commit();
 
         }
 
@@ -498,4 +549,143 @@ public class RegisterFragment extends Fragment {
             mRegisterTask = null;
         }
     }
+
+
+
+    private class ValidateUserTask extends AsyncTask<String, String,String> {
+
+        private final String mEmail;
+        private final String mPassword;
+        ValidateUser apiValidateUser;
+
+        ValidateUserTask(String email, String password) {
+            mEmail = email;
+            mPassword = password;
+
+        }
+        @Override
+        protected String doInBackground(String... params) {
+
+            String resultToDisplay = "";
+
+            apiValidateUser = new ValidateUser(mEmail, mPassword);
+            apiValidateUser.init();
+
+            if(apiValidateUser.isSuccess())
+            {
+                //getMyIssues API
+                callGetMyIssuesAPI();
+            }
+            //
+            return resultToDisplay;
+
+        }
+        protected void onPostExecute(String result) {
+
+            if(progressBar != null)
+                progressBar.dismiss();
+
+            // successful or failed login action
+            if(UserPrefs.getUserLoggedIn()){
+
+                System.out.println("LOG IN SUCCESS");
+
+                // Navigate to issues page
+                loadAllIssuesPage();
+
+
+
+            }else{
+
+                // Display log in fail
+                displayLogInFailed();
+
+            }
+        }
+    }
+
+    public void displayLogInFailed(){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(getString(R.string.log_in_fail_title));
+        builder.setMessage(getString(R.string.log_in_fail_message));
+        builder.setPositiveButton(getString(R.string.ok), null);
+        builder.show();
+
+    }
+
+
+    public void loadAllIssuesPage(){
+
+        // Check if no view has focus:
+        View view = getActivity().getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+
+        Fragment fragmentAllIsuues = new AllIssuesFragment();
+
+        // Insert the fragment by replacing any existing fragment
+        FragmentManager allIssuesFragmentManager = getFragmentManager();
+        allIssuesFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment_container, fragmentAllIsuues)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .commit();
+
+    }
+
+    private void callGetMyIssuesAPI()
+    {
+        mGetMyIssuesTask = new GetMyIssuesTask();
+        mGetMyIssuesTask.execute((String) null);
+    }
+
+    private void callGetMySubscriptionsAPI()
+    {
+        mGetMySubscriptionsTask = new GetMySubscriptionsTask();
+        mGetMySubscriptionsTask.execute((String) null);
+    }
+    private class GetMyIssuesTask extends AsyncTask<String, String,String> {
+
+        GetMyIssues apiGetMyIssues;
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            String resultToDisplay = "";
+
+            apiGetMyIssues = new GetMyIssues();
+            apiGetMyIssues.init();
+
+            //Irrespective of getMyissues API success we will call Getmysubscriptions as we know user is loggedIn
+            callGetMySubscriptionsAPI();
+            //
+            return resultToDisplay;
+
+        }
+        protected void onPostExecute(String result) {
+        }
+    }
+
+    private class GetMySubscriptionsTask extends AsyncTask<String, String,String> {
+
+        GetMySubscriptions apiGetMySubscriptions;
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            String resultToDisplay = "";
+
+            apiGetMySubscriptions = new GetMySubscriptions();
+            apiGetMySubscriptions.init();
+            //
+            return resultToDisplay;
+
+        }
+        protected void onPostExecute(String result) {
+        }
+    }
+
+
 }

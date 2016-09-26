@@ -13,6 +13,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,7 +26,10 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.pixelmags.android.pixelmagsapp.R;
+import com.pixelmags.android.pixelmagsapp.adapter.CustomAllDownloadsGridAdapter;
+import com.pixelmags.android.storage.AllDownloadsDataSet;
 import com.pixelmags.android.storage.UserPrefs;
+import com.pixelmags.android.util.BaseApp;
 import com.pixelmags.android.util.Util;
 
 /**
@@ -65,6 +69,7 @@ public class NavigationDrawerFragment extends Fragment {
     private boolean mUserLearnedDrawer;
     private CharSequence mTitle;
     public static String currentPage;
+    private String TAG = "NavigationDrawer";
 
     public NavigationDrawerFragment() {
     }
@@ -231,7 +236,15 @@ public class NavigationDrawerFragment extends Fragment {
             case 0:
                 currentPage =getString(R.string.menu_title_allissues);
                 mTitle = getString(R.string.menu_title_allissues);
-
+                Log.d(TAG,"Inside the All Issue Download case");
+                int progressCount = CustomAllDownloadsGridAdapter.updateProgressStateMenu();
+                int issueId = CustomAllDownloadsGridAdapter.issueId();
+                if(progressCount != 0 && issueId != 0){
+                    AllDownloadsDataSet mDbReader_current = new AllDownloadsDataSet(BaseApp.getContext());
+                    mDbReader_current.updateProgressCountOfIssue(mDbReader_current.getWritableDatabase(),
+                            String.valueOf(issueId), progressCount);
+                    mDbReader_current.close();
+                }
                 Fragment fragmentAllIsuues = new AllIssuesFragment();
                 // Insert the fragment by replacing any existing fragment
                 FragmentManager allIssuesFragmentManager = getFragmentManager();
@@ -334,6 +347,7 @@ public class NavigationDrawerFragment extends Fragment {
             case 2:
                 currentPage =getString(R.string.menu_title_downloads);
                 mTitle = getString(R.string.menu_title_downloads);
+                Log.d(TAG,"Inside the All Download case");
                 Fragment fragmentAllDownloads = new AllDownloadsFragment();
                 FragmentManager downloadsFragmentManager = getFragmentManager();
                 downloadsFragmentManager.beginTransaction()
