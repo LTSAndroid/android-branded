@@ -15,6 +15,7 @@ import com.pixelmags.android.storage.AllDownloadsDataSet;
 import com.pixelmags.android.storage.BrandedSQLiteHelper;
 import com.pixelmags.android.storage.IssueDataSet;
 import com.pixelmags.android.storage.SingleIssueDownloadDataSet;
+import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.ui.AllDownloadsFragment;
 import com.pixelmags.android.util.BaseApp;
 
@@ -44,6 +45,7 @@ import java.util.Queue;
 public class DownloadsManager {
 
     private static String TAG = "DownloadsManager";
+    private String TAG1 = "CustomAllDownloadsGridAdapters";
     private static int DONE = 0;
     private static int PROCESSING = 1;
 
@@ -64,11 +66,11 @@ public class DownloadsManager {
 
     // the tasks and parameters that run the task queues
     //QueueProcessorAsyncTask mQueueProcessorTask;
-    static boolean queueTaskCompleted = true;
+    public static boolean queueTaskCompleted = true;
     static boolean queueTaskPaused = false;
     static boolean queueTaskResumed = false;
-    public static int totalPages;
-    public static int progressCount = -1;
+    private int totalPages;
+    private double jumpPages = 0;
     private ArrayList<AllDownloadsIssueTracker> allDownloadsIssuesListTracker = null;
     public static boolean downloading = false;
 //    public static boolean downloadIssueCompleted = false;
@@ -228,6 +230,16 @@ public class DownloadsManager {
                     ArrayList<SingleDownloadIssueTracker> pagesForSingleDownloadTable = new ArrayList<SingleDownloadIssueTracker>();
 
                     totalPages = issueWithPageData.pages.size();
+
+//                    Log.d(TAG1,"Total pages is : "+totalPages);
+                    jumpPages = (double) totalPages/100;
+//                    Log.d(TAG1,"Jump Pages is : "+jumpPages);
+                    jumpPages = Math.ceil(jumpPages);
+                    int totalPages = (int) jumpPages;
+//                    Log.d(TAG1,"Jump Pages with math ceil is : "+  jumpPages);
+                    UserPrefs.setIssueId(String.valueOf(issueToDownload.issueID), String.valueOf(totalPages));
+//                    updateCount = (int) jumpPages;
+//                    Log.d(TAG1,"Updated count is : "+updateCount);
 
                     for(int i=0; i< issueWithPageData.pages.size();i++) {
 
@@ -468,7 +480,7 @@ public class DownloadsManager {
             Magazine magazine = new Magazine();
             if (count == 0){
                 // mark download as complete
-
+//                downloadIssueCompleted = true;
 
                 AllDownloadsDataSet mDbReader = new AllDownloadsDataSet(BaseApp.getContext());
                 mDbReader.setIssueToCompleted(mDbReader.getReadableDatabase(), String.valueOf(issueInQueue.issueID),100);
@@ -481,7 +493,7 @@ public class DownloadsManager {
                 allDownloadsFragment.updateButtonStateFragment(issueInQueue.downloadStatus);
 
 //                issueIdCurrent = issueInQueue.issueID;
-//                downloadIssueCompleted = true;
+
 
             }
 
@@ -734,7 +746,6 @@ public class DownloadsManager {
             this.isDownloaded = false;
 
 //            issueIdCurrent = allDownloadsTracker.issueID;
-//            downloadIssueCompleted = false;
 
         }
 

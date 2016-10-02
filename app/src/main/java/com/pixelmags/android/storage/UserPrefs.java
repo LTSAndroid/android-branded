@@ -27,6 +27,8 @@ public class UserPrefs {
 
     private static final String USER_LOGIN_STATUS = "user_login_status";
 
+    private static final String ISSUE_ID = "issue_id";
+
 
     private static void setStringPref(String PrefID, String value){
 
@@ -158,6 +160,16 @@ public class UserPrefs {
         return getStringPrefs(DEVICE_ID, "UnknownDeviceId");
 
     }
+
+    public static void setIssueId(String issueId,String pageCount){
+        setStringPref(issueId, pageCount);
+    }
+
+    public static String getIssueId(String issueId) {
+
+        return getStringPrefs(issueId, "0");
+    }
+
 
     // User Log in status
 

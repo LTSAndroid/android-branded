@@ -107,6 +107,8 @@ public class IabHelper {
     // Public key for verifying signature, in base64 encoding
     String mSignatureBase64 = null;
 
+    private String TAG = "IabHelper";
+
     // Billing response codes
     public static final int BILLING_RESPONSE_RESULT_OK = 0;
     public static final int BILLING_RESPONSE_RESULT_USER_CANCELED = 1;
@@ -825,11 +827,20 @@ public class IabHelper {
     }
 
     void flagStartAsync(String operation) {
-        if (mAsyncInProgress) throw new IllegalStateException("Can't start async operation (" +
-                operation + ") because another async operation(" + mAsyncOperation + ") is in progress.");
-        mAsyncOperation = operation;
-        mAsyncInProgress = true;
-        logDebug("Starting async operation: " + operation);
+
+        try {
+            if (mAsyncInProgress) throw new IllegalStateException("Can't start async operation (" +
+                    operation + ") because another async operation(" + mAsyncOperation + ") is in progress.");
+            mAsyncOperation = operation;
+            mAsyncInProgress = true;
+            logDebug("Starting async operation: " + operation);
+        }catch (IllegalStateException e){
+
+            Log.d(TAG,"Inside the Illegal State exception");
+            mAsyncInProgress = false;
+
+        }
+
     }
 
     void flagEndAsync() {

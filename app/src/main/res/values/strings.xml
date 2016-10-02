@@ -35,8 +35,6 @@
 
     <!-- Activities/Fragment Titles -->
     <string name="fragment_title_register">Register</string>
-
-
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
@@ -45,11 +43,12 @@
     <string name="hint_password">Enter Password</string>
 
     <string name="error_invalid_email">Email invalid</string>
-    <string name="error_invalid_password">Password is too short</string>
+    <string name="error_invalid_password">Please enter minimum of 5 character.</string>
     <string name="error_incorrect_password">Incorrect password</string>
     <string name="error_field_required">Enter details</string>
     <string name="error_name">Enter name</string>
     <string name="error_email">Enter Email Id</string>
+    <string name="password_length_not_matching">Both the password is not matching.</string>
 
 
     <string name="log_in_fail_title">Log in Failed</string>

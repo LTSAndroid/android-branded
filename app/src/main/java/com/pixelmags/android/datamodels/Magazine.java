@@ -33,7 +33,7 @@ public class Magazine
     public String type;
     public String manifest;
     public Date lastModified;
-    public Date issueDate;
+    public String issueDate;
     public boolean isPublished;
     public boolean removeFromSale;
     public String ageRestriction;

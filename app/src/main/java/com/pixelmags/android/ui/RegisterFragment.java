@@ -286,17 +286,32 @@ public class RegisterFragment extends Fragment {
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+        if (TextUtils.isEmpty(password) || !isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
         }
         //for confirm password
-        if (TextUtils.isEmpty(cPassword) && !isPasswordValid(cPassword)) {
+        if (TextUtils.isEmpty(cPassword) || !isPasswordValid(cPassword)) {
             mCPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mCPasswordView;
             cancel = true;
         }
+
+        if(cPassword.length() != password.length()){
+            mPasswordView.setError(getString(R.string.password_length_not_matching));
+            mCPasswordView.setError(getString(R.string.password_length_not_matching));
+            focusView = mPasswordView;
+            cancel = true;
+        }
+
+        if(!password.equalsIgnoreCase(cPassword)){
+            mPasswordView.setError(getString(R.string.password_length_not_matching));
+            mCPasswordView.setError(getString(R.string.password_length_not_matching));
+            focusView = mCPasswordView;
+            cancel = true;
+        }
+
         //first name
         if (TextUtils.isEmpty(firstName)) {
             mfirstnameView.setError(getString(R.string.error_name));

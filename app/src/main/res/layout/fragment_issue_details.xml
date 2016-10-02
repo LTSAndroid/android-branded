@@ -12,13 +12,13 @@
         tools:context="com.pixelmags.android.ui.IssueDetailsFragment">
 
 
-        <ImageView
-            android:layout_width="fill_parent"
+        <com.pixelmags.android.util.SquareImageView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/issueDetailsImageView"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
-            android:layout_margin="30dp"
+            android:layout_margin="10dp"
             android:layout_gravity="center_horizontal"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Issue Title"
+            tools:text="Issue Title"
             android:id="@+id/issueDetailsTitle"
             android:layout_below="@+id/issueDetailsImageView"
             android:layout_centerHorizontal="true"
@@ -38,7 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Synopsis"
+            tools:text="Synopsis"
             android:id="@+id/issueDetailsSynopsis"
             android:layout_below="@+id/issueDetailsTitle"
             android:layout_centerHorizontal="true"
@@ -48,7 +48,7 @@
         <com.pixelmags.android.ui.uicomponents.MultiStateButton
             android:layout_width="fill_parent"
             android:layout_height="35dp"
-            android:text="Issue Price"
+            tools:text="Issue Price"
             android:id="@+id/issueDetailsPriceButton"
             android:background="@drawable/shape"
             android:shadowColor="#3384ff"

@@ -2,6 +2,7 @@ package com.pixelmags.android.pixelmagsapp;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -670,10 +671,30 @@ public class MainActivity extends AppCompatActivity
         public String mSKU;
         private CanPurchaseTask mCanPurchaseTask = null;
         public String result;
+        private ProgressDialog progressBar;
 
         public CanPurchaseTask(String SKU , int issue_id) {
             mIssue_id = issue_id;
             mSKU = SKU;
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            try {
+                progressBar = new ProgressDialog(MainActivity.this);
+                if (progressBar != null) {
+                    progressBar.show();
+                    progressBar.setCancelable(false);
+                    progressBar.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                    progressBar.setContentView(R.layout.progress_dialog);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
         }
 
         @Override
@@ -701,6 +722,8 @@ public class MainActivity extends AppCompatActivity
         }
 
         protected void onPostExecute(Boolean result) {
+
+            progressBar.dismiss();
 
            if(result == false){
 
