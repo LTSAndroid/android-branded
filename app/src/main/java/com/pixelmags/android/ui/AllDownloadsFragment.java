@@ -1,6 +1,5 @@
 package com.pixelmags.android.ui;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -18,7 +17,6 @@ import android.widget.GridView;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
 import com.pixelmags.android.download.DownloadThumbnails;
-import com.pixelmags.android.pixelmagsapp.MainActivity;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.pixelmagsapp.adapter.CustomAllDownloadsGridAdapter;
 import com.pixelmags.android.storage.AllDownloadsDataSet;
@@ -72,9 +70,6 @@ public class AllDownloadsFragment extends Fragment {
        // set the Grid Adapter
 
        Log.d(TAG, "All Downloads Issue List " + allDownloadsIssuesListTracker);
-
-
-
 
        // use rootview to fetch view (when called from onCreateView) else null returns
 //       gridView = (GridView) rootView.findViewById(R.id.displayAllDownloadsGridView);

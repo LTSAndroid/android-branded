@@ -103,7 +103,6 @@ public class IssueDetailsFragment extends Fragment {
 
             mIssueID = (String) getArguments().getString(ISSUE_ID_KEY);
             mMagazineID = (String) getArguments().getString(MAGAZINE_ID_KEY);
-
             //issueData = (Magazine) getArguments().getSerializable(SERIALIZABLE_MAG_KEY);
         }
         }catch(Exception e){
@@ -141,14 +140,17 @@ public class IssueDetailsFragment extends Fragment {
 
     }
 
+
     public void loadIssueData(){
 
         if(issueData != null) {
 
             // Load all data for the issue details page here
             if (issueData.isThumbnailDownloaded) {
-                if(issueData.thumbnailBitmap != null && issueDetailsImageView !=null ){
+                if(issueData.thumbnailBitmap!= null && issueDetailsImageView !=null ){
+
                     issueDetailsImageView.setImageBitmap(issueData.thumbnailBitmap);
+
                 }
             }
 

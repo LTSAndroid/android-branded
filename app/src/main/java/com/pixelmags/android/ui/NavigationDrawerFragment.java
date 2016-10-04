@@ -238,6 +238,7 @@ public class NavigationDrawerFragment extends Fragment {
                 mTitle = getString(R.string.menu_title_allissues);
                 Log.d(TAG,"Inside the All Issue Download case");
                 int progressCount = CustomAllDownloadsGridAdapter.updateProgressStateMenu();
+                Log.d(TAG,"Progress Count when pressed navigation button is : "+progressCount);
                 int issueId = CustomAllDownloadsGridAdapter.issueId();
                 if(progressCount != 0 && issueId != 0){
                     AllDownloadsDataSet mDbReader_current = new AllDownloadsDataSet(BaseApp.getContext());

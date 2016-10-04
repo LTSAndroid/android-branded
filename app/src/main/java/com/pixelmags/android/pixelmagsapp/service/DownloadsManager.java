@@ -16,7 +16,6 @@ import com.pixelmags.android.storage.BrandedSQLiteHelper;
 import com.pixelmags.android.storage.IssueDataSet;
 import com.pixelmags.android.storage.SingleIssueDownloadDataSet;
 import com.pixelmags.android.storage.UserPrefs;
-import com.pixelmags.android.ui.AllDownloadsFragment;
 import com.pixelmags.android.util.BaseApp;
 
 import java.io.File;
@@ -73,7 +72,7 @@ public class DownloadsManager {
     private double jumpPages = 0;
     private ArrayList<AllDownloadsIssueTracker> allDownloadsIssuesListTracker = null;
     public static boolean downloading = false;
-//    public static boolean downloadIssueCompleted = false;
+    public static boolean downloadIssueCompleted = false;
 //    public static int issueIdCurrent = 0;
 
 
@@ -270,7 +269,7 @@ public class DownloadsManager {
         return false;
     }
 
-    private void createIssueThreads(AllDownloadsIssueTracker issueToDownload){
+    private void createIssueThreads(final AllDownloadsIssueTracker issueToDownload){
 
         // get all the pages that have to be downloaded
         SingleIssueDownloadDataSet mDbDownloadReader = new SingleIssueDownloadDataSet(BaseApp.getContext());
@@ -479,9 +478,11 @@ public class DownloadsManager {
             mDbDownloadTableReader.close();
             Magazine magazine = new Magazine();
             if (count == 0){
-                // mark download as complete
-//                downloadIssueCompleted = true;
 
+                Log.d(TAG,"Inside the count equal to 0 method");
+                downloadIssueCompleted = true;
+
+                // mark download as complete
                 AllDownloadsDataSet mDbReader = new AllDownloadsDataSet(BaseApp.getContext());
                 mDbReader.setIssueToCompleted(mDbReader.getReadableDatabase(), String.valueOf(issueInQueue.issueID),100);
                 mDbReader.close();
@@ -489,8 +490,12 @@ public class DownloadsManager {
                 downloading = false;
 
                 issueInQueue.downloadStatus = AllDownloadsDataSet.DOWNLOAD_STATUS_COMPLETED;
-                AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment();
-                allDownloadsFragment.updateButtonStateFragment(issueInQueue.downloadStatus);
+
+                // Error cannot update the view from other thread
+//                AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment();
+//                allDownloadsFragment.updateButtonStateFragment(issueInQueue.downloadStatus);
+                // Till here
+
 
 //                issueIdCurrent = issueInQueue.issueID;
 
@@ -502,7 +507,7 @@ public class DownloadsManager {
         }
     }
 
-    public static void processPostDownloadQueue(){
+    public static void  processPostDownloadQueue(){
 
         SQLiteDatabase db = null;
         try{
