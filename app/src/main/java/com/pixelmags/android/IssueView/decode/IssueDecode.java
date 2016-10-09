@@ -1,5 +1,7 @@
 package com.pixelmags.android.IssueView.decode;
 
+import android.util.Base64;
+
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,18 +22,22 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class IssueDecode {
 
-    byte[] mIv = new byte[16];
 
     public byte[] getDecodedBitMap(String documentKey, FileInputStream fis) {
 
-        Base64Utils utils = new Base64Utils();
-        return decrypt( utils.getDocumentKeyDecryptedArray(documentKey), fis);
+        //Base64Utils utils = new Base64Utils();
+
+        return decrypt( documentKey, fis);
 
     }
 
-    private byte[] decrypt(byte[] skey, FileInputStream fis){
+    private byte[] decrypt(String documentKeyHex, FileInputStream fis){
 
-        SecretKeySpec skeySpec = new SecretKeySpec(skey, "AES");
+       // System.out.println("DOCUMENT KEY :: "+documentKeyHex);
+        byte[] decodedKey = Base64.decode(documentKeyHex, Base64.DEFAULT);
+
+
+        SecretKeySpec skeySpec = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
         Cipher cipher;
         byte[] decryptedData=null;
         CipherInputStream cis=null;
@@ -39,6 +45,8 @@ public class IssueDecode {
         try {
 
             cipher = Cipher.getInstance("AES/CBC/PKCS5Padding","BC");
+
+            byte[] mIv = new byte[16];
             IvParameterSpec ivSpec = new IvParameterSpec(mIv);
             cipher.init(Cipher.DECRYPT_MODE, skeySpec,ivSpec);
 
@@ -48,16 +56,18 @@ public class IssueDecode {
             // Write encrypted image data to ByteArrayOutputStream
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
-            byte[] data = new byte[4096];
+            byte[] data = new byte[1024];
 
-            while ((cis.read(data)) != -1) {
+            int r = 0;
+            while ((r = cis.read(data)) > 0) {
 
-                buffer.write(data);
+                buffer.write(data,0,r);
             }
 
-            buffer.flush();
+            cis.close();
 
-            decryptedData=buffer.toByteArray();
+
+            decryptedData = buffer.toByteArray();
 
         }catch(Exception e){
             e.printStackTrace();
