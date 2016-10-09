@@ -33,10 +33,11 @@ public class AllDownloadsFragment extends Fragment {
     public static CustomAllDownloadsGridAdapter gridDownloadAdapter;
     private GetAllDownloadedIssuesTask mGetAllDownloadedIssuesTask;
     private String TAG = "AllDownloadsFragment";
-    GridView gridView;
     private static View grid;
     public static int jumpTime = 0;
     View rootView;
+//    private RecyclerView recyclerView;
+    GridView gridView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,6 +51,7 @@ public class AllDownloadsFragment extends Fragment {
 
         rootView = inflater.inflate(R.layout.fragment_all_downloads, container, false);
 
+//        recyclerView = (RecyclerView) rootView.findViewById(R.id.displayAllDownloadsGridView);
         gridView = (GridView) rootView.findViewById(R.id.displayAllDownloadsGridView);
 
         // retrieving the downlaoded issues - run inside a async task as there is db access required.
@@ -73,11 +75,17 @@ public class AllDownloadsFragment extends Fragment {
 
        // use rootview to fetch view (when called from onCreateView) else null returns
 //       gridView = (GridView) rootView.findViewById(R.id.displayAllDownloadsGridView);
+
+//       FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+//       gridDownloadAdapter = new CustomAllDownloadsGridAdapter(getActivity(),
+//               allDownloadsIssuesListTracker,getActivity().getSupportFragmentManager());
+//       RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
+//       recyclerView.setLayoutManager(mLayoutManager);
+//       recyclerView.setItemAnimator(new DefaultItemAnimator());
+//       recyclerView.setAdapter(gridDownloadAdapter);
+
        gridDownloadAdapter = new CustomAllDownloadsGridAdapter(getActivity(),allDownloadsIssuesListTracker,getActivity().getSupportFragmentManager());
        gridView.setAdapter(gridDownloadAdapter);
-
-
-       //   gridview.setNumColumns(4);
 
    }
 
@@ -89,11 +97,6 @@ public class AllDownloadsFragment extends Fragment {
 //        gridDownloadAdapter = new CustomAllDownloadsGridAdapter(getActivity(),allDownloadsIssuesListTrackerNew,getFragmentManager());
 //        gridView.setAdapter(gridDownloadAdapter);
 //    }
-
-
-    public void updateButtonStateFragment(int status){
-        gridDownloadAdapter.updateButtonState(status);
-    }
 
 
     @Override

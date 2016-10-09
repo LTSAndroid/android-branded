@@ -11,6 +11,16 @@
     tools:context="com.pixelmags.android.ui.AllDownloadsFragment">
 
 
+    <!--<android.support.v7.widget.RecyclerView-->
+        <!--android:id="@+id/displayAllDownloadsGridView"-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentTop="true"-->
+        <!--android:stretchMode="columnWidth"-->
+        <!--android:verticalSpacing="15dp"-->
+        <!--android:horizontalSpacing="15dp"-->
+        <!--android:scrollbars="none"/>-->
+
     <GridView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
