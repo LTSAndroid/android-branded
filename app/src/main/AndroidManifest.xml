@@ -27,6 +27,7 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:theme="@style/AppTheme" >
         <activity
             android:name=".LaunchActivity"
@@ -39,7 +40,8 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:configChanges="orientation|keyboardHidden|screenSize">
         </activity>
 
         <meta-data
@@ -53,6 +55,7 @@
         </activity>
         <activity
             android:name="com.pixelmags.android.IssueView.NewIssueView"
+
             >
         </activity>
 
@@ -61,6 +64,13 @@
             android:enabled="true"
             android:exported="true" >
         </service>
-    </application>
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="8a2434bdb03a3d12dee93648e0e0904b07e7f715"
+        />
+
+
+</application>
 
 </manifest>

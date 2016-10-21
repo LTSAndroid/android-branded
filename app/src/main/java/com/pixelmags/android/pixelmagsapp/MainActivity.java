@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -16,6 +17,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -29,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.pixelmags.android.api.CanPurchase;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.datamodels.Magazine;
@@ -59,6 +62,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.fabric.sdk.android.Fabric;
 
 /*<<<<<<< Updated upstream*/
 /*>>>>>>> Stashed changes*/
@@ -105,7 +110,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-
+        Fabric.with(this, new Crashlytics());
         // start the service
         startDownloadService();
 
@@ -132,20 +137,20 @@ public class MainActivity extends AppCompatActivity
         mHelper = new IabHelper(this, base64EncodedPublicKey);
 
         mHelper.startSetup(new
-                                   IabHelper.OnIabSetupFinishedListener()
+                               IabHelper.OnIabSetupFinishedListener()
+                               {
+                                   public void onIabSetupFinished(IabResult result)
                                    {
-                                       public void onIabSetupFinished(IabResult result)
+                                       if (!result.isSuccess())
                                        {
-                                           if (!result.isSuccess())
-                                           {
-                                               //failed
-                                           }
-                                           else
-                                           {
-                                               //success
-                                           }
+                                           //failed
                                        }
-                                   });
+                                       else
+                                       {
+                                           //success
+                                       }
+                                   }
+                               });
 
 
         mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener()
@@ -179,8 +184,9 @@ public class MainActivity extends AppCompatActivity
                             skuList.add(pixelmagsMagazinesList.get(i).android_store_sku);
 
                         }
-                        skuList.add("com.pixelmags.androidbranded.test1");//This to confirm billing sku
-                        skuList.add("com.pixelmags.androidbranded.test2");//This is to confirm billing sku
+//                        skuList.add("com.pixelmags.androidbranded.test1");//This to confirm billing sku
+//                        skuList.add("com.pixelmags.androidbranded.test2");//This is to confirm billing sku
+//                        skuList.add("com.pixelmags.androidbranded.test3");//This is to confirm billing sku
                     }
                     mHelper.queryInventoryAsync(true, skuList, mQueryFinishedListener);
                 }
@@ -207,7 +213,7 @@ public class MainActivity extends AppCompatActivity
                 myIssueArray = mDbReader.getMyIssues(mDbReader.getReadableDatabase());
                 mDbReader.close();
 
-                //To Do
+                // TODO: 10/11/2016
                 MySubscriptionsDataSet mDbSubReader = new MySubscriptionsDataSet(BaseApp.getContext());
                 mySubsArray = mDbSubReader.getMySubscriptions(mDbSubReader.getReadableDatabase());
                 mDbSubReader.close();
@@ -223,8 +229,17 @@ public class MainActivity extends AppCompatActivity
 
             if(pixelmagsMagazinesList != null) {
 
+                // For finding the list
+                for(int i=0; i<pixelmagsMagazinesList.size(); i++){
+                    Log.d(TAG,"Sku List is : "+pixelmagsMagazinesList.get(i).android_store_sku);
+                }
+
+
+
                 for (int i = 0; i < pixelmagsMagazinesList.size(); i++) {
                     String SKU = pixelmagsMagazinesList.get(i).android_store_sku;
+                    Log.d(TAG,"Inventory sku is : "+inventory.getSkuDetails(SKU));
+                    Log.d(TAG,"Has details is : "+inventory.hasDetails(SKU));
 
                     if (inventory.hasDetails(SKU)) //yet to be changed,this is for billing test
                     {
@@ -258,9 +273,11 @@ public class MainActivity extends AppCompatActivity
                         finalMagazine.android_store_sku = pixelmagsMagazinesList.get(i).android_store_sku;
                         finalMagazine.price = pixelmagsMagazinesList.get(i).price;
                         finalMagazine.thumbnailURL = pixelmagsMagazinesList.get(i).thumbnailURL;
+                        finalMagazine.isThumbnailDownloaded = pixelmagsMagazinesList.get(i).isThumbnailDownloaded;
                         finalMagazine.ageRestriction = pixelmagsMagazinesList.get(i).ageRestriction;
                         finalMagazine.removeFromSale = pixelmagsMagazinesList.get(i).removeFromSale;
                         finalMagazine.isPublished = pixelmagsMagazinesList.get(i).isPublished;
+                        finalMagazine.paymentProvider = pixelmagsMagazinesList.get(i).paymentProvider;
                         finalMagazine.exclude_from_subscription = pixelmagsMagazinesList.get(i).exclude_from_subscription;
 
                         billingMagazinesList.add(finalMagazine);
@@ -278,6 +295,17 @@ public class MainActivity extends AppCompatActivity
             }
 
             // update the UI
+
+            Fragment currentFragment = getSupportFragmentManager().findFragmentByTag("All Issues");
+            if(currentFragment != null && currentFragment.isVisible()) {
+                FragmentTransaction fragTransaction = getSupportFragmentManager().beginTransaction();
+                fragTransaction.detach(currentFragment);
+                fragTransaction.attach(currentFragment);
+                fragTransaction.commit();
+            }
+
+
+
             mHelper.queryInventoryAsync(mGotInventoryListener);
         }
 
@@ -304,6 +332,7 @@ public class MainActivity extends AppCompatActivity
                 for ( int i = 0; i < allOwnedSKUS.size(); i++)
                 {
                     Purchase purchaseData = inventory.getPurchase(allOwnedSKUS.get(i));
+                    Log.d(TAG,"Purchase Data is : "+purchaseData);
                     //Assign button Status here and also restore purchase if the issue is not purchased
                     userOwnedSKUList.add(purchaseData);
                 }
@@ -368,11 +397,15 @@ public class MainActivity extends AppCompatActivity
         mCanPurchaseTask = null;
         purchaseIssueId = issueId;
         purchaseSKU = sku;
-        String userPixelMagsID = UserPrefs.getUserPixelmagsId();
+//        String userPixelMagsID = UserPrefs.getUserPixelmagsId();
+        String userPixelMagsID = UserPrefs.getUserEmail();
+        Log.d(TAG,"User Pixel Mags ID is : "+userPixelMagsID);
         String encodeData = "{\"user_id\": "+ userPixelMagsID +"}";
         byte[] data = encodeData.getBytes();
         String base64 = Base64.encodeToString(data, Base64.DEFAULT);
-        mHelper.launchPurchaseFlow(this, "com.pixelmagsandroid.newtestapp4", 1001,
+//        mHelper.launchPurchaseFlow(this, "com.pixelmagsandroid.newtestapp4", 1001,
+//                mPurchaseFinishedListener,base64);
+        mHelper.launchPurchaseFlow(this, sku, 1001,
                 mPurchaseFinishedListener,base64);
     }
 
@@ -383,13 +416,16 @@ public class MainActivity extends AppCompatActivity
         {
             if (result.isFailure())
             {
+                Log.d(TAG,"Inside the failure condition");
                 // Handle error
                 return;
             }
+
+
             else if (purchase.getSku().equals(purchaseSKU))
             {
 
-                //
+                Log.d(TAG,"Inside the success condition");
 
                 //true
                 //  consumeItem();
@@ -427,6 +463,10 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+    }
 
     public void restoreActionBar() {
         ViewGroup actionBarLayout = (ViewGroup) this.getLayoutInflater().inflate(R.layout.actionbar_layout, null);
@@ -437,7 +477,8 @@ public class MainActivity extends AppCompatActivity
         actionBar.setDisplayShowCustomEnabled(true);
 
         // replacing Color.DKGRAY with #FF0099CC
-        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FF0099CC")));
+//        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FF0099CC")));
+        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#1B4F72")));
         ActionBar.LayoutParams params = new
                 ActionBar.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT,
                 ActionBar.LayoutParams.MATCH_PARENT, Gravity.CENTER);

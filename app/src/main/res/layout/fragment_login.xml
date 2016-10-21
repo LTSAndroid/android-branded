@@ -4,58 +4,110 @@
     android:id="@+id/fragment_login"
     android:orientation="vertical"
     android:padding="20dp"
-    android:background="#FFFFFF"
+    android:background="@color/white"
     tools:context="com.pixelmags.android.ui.LoginFragment">
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingLeft="6dp"
+        android:paddingStart="6dp"
+        android:minHeight="50dp"
+        android:background="@color/edit_text_background"
+        android:textColorHint="@color/black"
+        android:textColor="@color/black"
+        android:layout_marginBottom="6dp"
         android:inputType="textEmailAddress"
+        android:layout_marginTop="6dp"
         android:id="@+id/loginEmail"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:hint="@string/hint_email"/>
+        android:hint="@string/hint_email"
+        android:layout_below="@+id/registerDateOfBirth"
+        android:layout_alignLeft="@+id/registerDateOfBirth"
+        android:layout_alignStart="@+id/registerDateOfBirth" />
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingLeft="6dp"
+        android:paddingStart="6dp"
+        android:minHeight="50dp"
+        android:background="@color/edit_text_background"
+        android:textColorHint="@color/black"
+        android:textColor="@color/black"
+        android:layout_marginBottom="6dp"
         android:inputType="textPassword"
+        android:digits="0,1,2,3,4,5,6,7,8,9,*,@,qwertzuiopasdfghjklyxcvbnm"
+        android:singleLine="true"
         android:id="@+id/loginPassword"
-        android:layout_centerHorizontal="true"
         android:hint="@string/hint_password"
+        android:maxLength="12"
         android:layout_below="@+id/loginEmail"/>
+
 
     <Button
         android:layout_width="180dp"
         android:layout_height="45dp"
         android:text="@string/log_in"
-        android:background="@drawable/shape"
+        android:background="@drawable/register_button_background"
         android:shadowColor="#3384ff"
+        android:textColor="#ffffff"
         android:shadowDx="0"
         android:shadowDy="0"
         android:shadowRadius="5"
-        android:id="@+id/logInButton"
-        android:textColor="#ffffff"
         android:onClick="onButtonClick"
+        android:id="@+id/logInButton"
         android:layout_below="@+id/loginPassword"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp" />
+
+    <!--<Button-->
+        <!--android:layout_width="180dp"-->
+        <!--android:layout_height="45dp"-->
+        <!--android:text="@string/log_in"-->
+        <!--android:background="@drawable/shape"-->
+        <!--android:shadowColor="#3384ff"-->
+        <!--android:shadowDx="0"-->
+        <!--android:shadowDy="0"-->
+        <!--android:shadowRadius="5"-->
+        <!--android:id="@+id/logInButton"-->
+        <!--android:textColor="#ffffff"-->
+        <!--android:onClick="onButtonClick"-->
+        <!--android:layout_below="@+id/loginPassword"-->
+        <!--android:layout_centerHorizontal="true" />-->
+
 
     <Button
         android:layout_width="180dp"
         android:layout_height="45dp"
         android:text="@string/register"
-        android:background="@drawable/shape"
+        android:background="@drawable/register_button_background"
         android:shadowColor="#3384ff"
         android:textColor="#ffffff"
         android:shadowDx="0"
         android:shadowDy="0"
         android:shadowRadius="5"
-        android:layout_marginTop="7dip"
+        android:onClick="onButtonClick"
         android:id="@+id/registerButton"
-        android:hint="@string/go_to_register"
-        android:onClick="onButtonclick"
         android:layout_below="@+id/logInButton"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp" />
+
+    <!--<Button-->
+        <!--android:layout_width="180dp"-->
+        <!--android:layout_height="45dp"-->
+        <!--android:text="@string/register"-->
+        <!--android:background="@drawable/shape"-->
+        <!--android:shadowColor="#3384ff"-->
+        <!--android:textColor="#ffffff"-->
+        <!--android:shadowDx="0"-->
+        <!--android:shadowDy="0"-->
+        <!--android:shadowRadius="5"-->
+        <!--android:layout_marginTop="7dip"-->
+        <!--android:id="@+id/registerButton"-->
+        <!--android:hint="@string/go_to_register"-->
+        <!--android:onClick="onButtonclick"-->
+        <!--android:layout_below="@+id/logInButton"-->
+        <!--android:layout_centerHorizontal="true" />-->
 
 
 </RelativeLayout>

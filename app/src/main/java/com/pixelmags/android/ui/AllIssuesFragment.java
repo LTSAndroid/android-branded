@@ -25,6 +25,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.pixelmags.android.IssueView.NewIssueView;
 import com.pixelmags.android.api.GetDocumentKey;
 import com.pixelmags.android.api.GetIssue;
@@ -50,6 +51,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 
+import io.fabric.sdk.android.Fabric;
+
 
 public class AllIssuesFragment extends Fragment {
 
@@ -69,6 +72,7 @@ public class AllIssuesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(getActivity(), new Crashlytics());
 
     }
 
@@ -119,7 +123,8 @@ public class AllIssuesFragment extends Fragment {
         {
 
             MainActivity myAct = (MainActivity) getActivity();
-            myAct.canPurchaseLauncher(magazinesList.get(position).android_store_sku, magazinesList.get(position).id);
+//            myAct.canPurchaseLauncher(magazinesList.get(position).android_store_sku, magazinesList.get(position).id);
+            myAct.canPurchaseLauncher("com.pixelmags.androidbranded.test3", magazinesList.get(position).id);
         }
         else
         {
@@ -313,7 +318,7 @@ public class AllIssuesFragment extends Fragment {
                     new android.support.v7.app.AlertDialog.Builder(getActivity())
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .setTitle("Confirm")
-                            .setMessage("Are you sure you want to exit from Pixel Mags App?")
+                            .setMessage(getActivity().getResources().getString(R.string.logout))
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -389,116 +394,118 @@ public class AllIssuesFragment extends Fragment {
 //                v = convertView;
 //            }
 
-            Log.d(TAG,"Magazine List Type is : "+magazinesList.get(position).type);
-            if(magazinesList.get(position).type.equalsIgnoreCase("issue")){
+            if(magazinesList != null ) {
 
-                // Set the magazine image
+                if (magazinesList.get(position).type.equalsIgnoreCase("issue")) {
 
-                if (magazinesList.get(position).isThumbnailDownloaded) {
+                    // Set the magazine image
 
-                    imageView = (ImageView) v.findViewById(R.id.gridImage);
-                    Log.d(TAG, "Thumbnail Download is : " + magazinesList.get(position).isThumbnailDownloaded);
-                    // Bitmap bmp = loadImageFromStorage(magazinesList.get(position).thumbnailDownloadedInternalPath);
+                    if (magazinesList.get(position).isThumbnailDownloaded) {
 
-                    if (magazinesList.get(position).thumbnailURL != null) {
+                        imageView = (ImageView) v.findViewById(R.id.gridImage);
+                        Log.d(TAG, "Thumbnail Download is : " + magazinesList.get(position).isThumbnailDownloaded);
+                        // Bitmap bmp = loadImageFromStorage(magazinesList.get(position).thumbnailDownloadedInternalPath);
 
-                        Picasso.with(mContext)
-                                .load(magazinesList.get(position).thumbnailURL)
-                                .placeholder(R.drawable.placeholder)
-                                .error(R.drawable.placeholder)
-                                .into(imageView);
+                        if (magazinesList.get(position).thumbnailURL != null) {
 
-
-                        imageView.setTag(position);
-                        imageView.setOnClickListener(new View.OnClickListener() {
-
-                            @Override
-                            public void onClick(View v) {
-
-                                gridIssueImageClicked((Integer) v.getTag());
-
-                            }
-                        });
-                    }
+                            Picasso.with(mContext)
+                                    .load(magazinesList.get(position).thumbnailURL)
+                                    .placeholder(R.drawable.placeholder)
+                                    .error(R.drawable.placeholder)
+                                    .into(imageView);
 
 
-                }
+                            imageView.setTag(position);
+                            imageView.setOnClickListener(new View.OnClickListener() {
 
-                if (magazinesList.get(position).title != null) {
-                    TextView issueTitleText = (TextView) v.findViewById(R.id.gridTitleText);
-                    issueTitleText.setText(magazinesList.get(position).title);
-                }
+                                @Override
+                                public void onClick(View v) {
 
-                issuePriceButton = (MultiStateButton) v.findViewById(R.id.gridMultiStateButton);
+                                    gridIssueImageClicked((Integer) v.getTag());
 
-                // check if price/View/Download
-                issuePriceButton.setButtonState(magazinesList.get(position));
-                //            issuePriceButton.setAsPurchase(magazinesList.get(position).price);
-
-                issuePriceButton.setTag(position); // save the gridview index
-                issuePriceButton.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-
-                        if (magazinesList.get((Integer) v.getTag()).status == Magazine.STATUS_PRICE) {
-
-                            gridPriceButtonClicked((Integer) v.getTag());
-
-                        } else if (magazinesList.get((Integer) v.getTag()).status == Magazine.STATUS_QUEUE) {
-
-                            new AlertDialog.Builder(getActivity())
-                                    .setTitle("Issue download is in queue!")
-                                    .setMessage("You can view your Issue once download start.")
-                                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-
-                                            currentPage = getString(R.string.menu_title_downloads);
-
-                                            Fragment fragmentDownload = new AllDownloadsFragment();
-                                            // Insert the fragment by replacing any existing fragment
-                                            FragmentManager allIssuesFragmentManager = getFragmentManager();
-                                            allIssuesFragmentManager.beginTransaction()
-                                                    .replace(R.id.main_fragment_container, fragmentDownload, "ALLDOWNLOADFRAGMENT")
-                                                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                                                    //       .addToBackStack(null)
-                                                    .commit();
-                                        }
-                                    })
-                                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.dismiss();
-                                        }
-                                    })
-                                    .setIcon(android.R.drawable.ic_dialog_alert)
-                                    .show();
-
-                        } else if (magazinesList.get((Integer) v.getTag()).status == Magazine.STATUS_PAUSED) {
-
-
-                        } else if (magazinesList.get((Integer) v.getTag()).status == Magazine.STATUS_DOWNLOAD) {
-
-                            downloadButtonClicked((Integer) v.getTag());
-
-                        } else if (magazinesList.get((Integer) v.getTag()).status == Magazine.STATUS_VIEW) {
-
-                            int pos = (int) v.getTag();
-                            String issueId = String.valueOf(magazinesList.get(pos).id);
-
-                            documentKey = getIssueDocumentKey(magazinesList.get(pos).id);
-
-                            Log.d(TAG, "Document key when view button click is : " + documentKey);
-
-                            Intent intent = new Intent(getActivity(), NewIssueView.class);
-                            intent.putExtra("issueId", issueId);
-                            intent.putExtra("documentKey", documentKey);
-                            startActivity(intent);
-
+                                }
+                            });
                         }
 
-                    }
-                });
 
+                    }
+
+                    if (magazinesList.get(position).title != null) {
+                        TextView issueTitleText = (TextView) v.findViewById(R.id.gridTitleText);
+                        issueTitleText.setText(magazinesList.get(position).title);
+                    }
+
+                    issuePriceButton = (MultiStateButton) v.findViewById(R.id.gridMultiStateButton);
+
+                    // check if price/View/Download
+                    issuePriceButton.setButtonState(magazinesList.get(position));
+                    //            issuePriceButton.setAsPurchase(magazinesList.get(position).price);
+
+                    issuePriceButton.setTag(position); // save the gridview index
+                    issuePriceButton.setOnClickListener(new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View v) {
+
+                            if (magazinesList.get((Integer) v.getTag()).status == Magazine.STATUS_PRICE) {
+
+                                gridPriceButtonClicked((Integer) v.getTag());
+
+                            } else if (magazinesList.get((Integer) v.getTag()).status == Magazine.STATUS_QUEUE) {
+
+                                new AlertDialog.Builder(getActivity())
+                                        .setTitle("Issue download is in queue!")
+                                        .setMessage("You can view your Issue once download start.")
+                                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+
+                                                currentPage = getString(R.string.menu_title_downloads);
+
+                                                Fragment fragmentDownload = new AllDownloadsFragment();
+                                                // Insert the fragment by replacing any existing fragment
+                                                FragmentManager allIssuesFragmentManager = getFragmentManager();
+                                                allIssuesFragmentManager.beginTransaction()
+                                                        .replace(R.id.main_fragment_container, fragmentDownload, "ALLDOWNLOADFRAGMENT")
+                                                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                                                        //       .addToBackStack(null)
+                                                        .commit();
+                                            }
+                                        })
+                                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                            }
+                                        })
+                                        .setIcon(android.R.drawable.ic_dialog_alert)
+                                        .show();
+
+                            } else if (magazinesList.get((Integer) v.getTag()).status == Magazine.STATUS_PAUSED) {
+
+
+                            } else if (magazinesList.get((Integer) v.getTag()).status == Magazine.STATUS_DOWNLOAD) {
+
+                                downloadButtonClicked((Integer) v.getTag());
+
+                            } else if (magazinesList.get((Integer) v.getTag()).status == Magazine.STATUS_VIEW) {
+
+                                int pos = (int) v.getTag();
+                                String issueId = String.valueOf(magazinesList.get(pos).id);
+
+                                documentKey = getIssueDocumentKey(magazinesList.get(pos).id);
+
+                                Log.d(TAG, "Document key when view button click is : " + documentKey);
+
+                                Intent intent = new Intent(getActivity(), NewIssueView.class);
+                                intent.putExtra("issueId", issueId);
+                                intent.putExtra("documentKey", documentKey);
+                                startActivity(intent);
+
+                            }
+
+                        }
+                    });
+
+                }
             }
 
 
@@ -603,6 +610,7 @@ public class AllIssuesFragment extends Fragment {
 
             }*/
 
+
             if(gridAdapter!=null){
                 gridAdapter.notifyDataSetChanged();
             }
@@ -627,23 +635,16 @@ public class AllIssuesFragment extends Fragment {
 
         for(int i=0; i<magazinesList.size(); i++){
 
-            Log.d(TAG,"Magazine type is : "+magazinesList.get(i).type);
+            if (magazinesList.get(i).paymentProvider != null &&
+                    magazinesList.get(i).paymentProvider.trim().equalsIgnoreCase("free")) {
+                magazinesList.get(i).status = Magazine.STATUS_DOWNLOAD;
+            }
+
             if(magazinesList.get(i).type.trim().equalsIgnoreCase("subscription")){
-                Log.d(TAG,"Removing from the list");
                 magazinesList.remove(magazinesList.get(i));
             }
 
         }
-
-
-            for (int i = 0; i < magazinesList.size(); i++) {
-
-                if (magazinesList.get(i).paymentProvider.trim().equalsIgnoreCase("free")) {
-                    magazinesList.get(i).status = Magazine.STATUS_DOWNLOAD;
-                }
-
-            }
-
 
             AllDownloadsDataSet mDbReader = new AllDownloadsDataSet(BaseApp.getContext());
             if (mDbReader != null) {

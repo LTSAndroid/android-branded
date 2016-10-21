@@ -3,7 +3,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.pixelmags.android.ui.AboutFragment"
-    android:background="#FFFFFF"
+    android:background="@color/white"
     android:id="@+id/fragment_about">
 
     <TextView
@@ -13,6 +13,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"
         android:text="PixelMags Version 1.0"
+        android:textColor="@color/black"
         android:textAppearance="?android:textAppearanceLarge"
         android:textSize="20dp" />
 
@@ -20,6 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/copyright"
+        android:textColor="@color/black"
         android:layout_marginTop="10dp"
         android:layout_centerHorizontal="true"
         android:text="Copyright PixelMags, Inc."
@@ -34,27 +36,31 @@
         android:onClick="onClick"
         android:text="www.pixelmags.com"
         android:textSize="20dp"
+        android:textColor="@color/blue"
+        android:textColorLink="@color/blue"
+        android:textStyle="bold"
         android:autoLink="web"
         android:layout_marginTop="10dp"
         android:linksClickable="true"
         android:layout_below="@+id/copyright"
-        android:layout_centerHorizontal="true"
-        android:textAppearance="@color/wallet_holo_blue_light" />
+        android:layout_centerHorizontal="true" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/ourconditions"
+        android:textColor="@color/blue"
         android:textSize="20sp"
         android:autoLink="web"
         android:linksClickable="true"
         android:text="@string/termsCondition"
+        android:textColorLink="@color/blue"
+        android:textStyle="bold"
         android:clickable="true"
         android:gravity="center_horizontal"
         android:layout_marginTop="10dp"
         android:layout_below="@+id/ourwebsite"
-        android:layout_centerHorizontal="true"
-        android:textAppearance="@color/wallet_holo_blue_light" />
+        android:layout_centerHorizontal="true" />
 
 
 </RelativeLayout>

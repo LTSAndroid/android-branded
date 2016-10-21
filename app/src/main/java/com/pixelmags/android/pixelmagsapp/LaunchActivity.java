@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Window;
 
+import com.crashlytics.android.Crashlytics;
 import com.pixelmags.android.api.GetIssues;
 import com.pixelmags.android.api.GetMyIssues;
 import com.pixelmags.android.api.GetMySubscriptions;
@@ -14,12 +15,15 @@ import com.pixelmags.android.api.ValidateUser;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.storage.UserPrefs;
 
+import io.fabric.sdk.android.Fabric;
+
 public class LaunchActivity extends Activity {
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_launch);
         PreLaunchAppTask mPreLaunchTask = new PreLaunchAppTask();

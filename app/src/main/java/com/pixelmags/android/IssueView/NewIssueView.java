@@ -1,5 +1,6 @@
 package com.pixelmags.android.IssueView;
 
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.crashlytics.android.Crashlytics;
 import com.pixelmags.android.IssueView.decode.IssueDecode;
 import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
 import com.pixelmags.android.datamodels.SingleDownloadIssueTracker;
@@ -30,6 +32,8 @@ import java.io.FileOutputStream;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Random;
+
+import io.fabric.sdk.android.Fabric;
 
 import static java.lang.Character.digit;
 
@@ -61,6 +65,7 @@ public class NewIssueView extends FragmentActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_pager);
+        Fabric.with(this, new Crashlytics());
 
 //        //
 //        String issueID = String.valueOf(120974);
@@ -98,10 +103,27 @@ public class NewIssueView extends FragmentActivity {
         }
 
 
+        boolean tabletSize = getResources().getBoolean(R.bool.isTablet);
+        if (tabletSize) {
+            if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+                imageFragmentPagerAdapter = new ImageFragmentPagerAdapter(getSupportFragmentManager());
+                viewPager = (ViewPager) findViewById(R.id.pager);
+                viewPager.setAdapter(imageFragmentPagerAdapter);
+                viewPager.setOffscreenPageLimit(6);
+            }else{
+                imageFragmentPagerAdapter = new ImageFragmentPagerAdapter(getSupportFragmentManager());
+                viewPager = (ViewPager) findViewById(R.id.pager);
+                viewPager.setAdapter(imageFragmentPagerAdapter);
+            }
 
-        imageFragmentPagerAdapter = new ImageFragmentPagerAdapter(getSupportFragmentManager());
-        viewPager = (ViewPager) findViewById(R.id.pager);
-        viewPager.setAdapter(imageFragmentPagerAdapter);
+        } else {
+
+                imageFragmentPagerAdapter = new ImageFragmentPagerAdapter(getSupportFragmentManager());
+                viewPager = (ViewPager) findViewById(R.id.pager);
+                viewPager.setAdapter(imageFragmentPagerAdapter);
+        }
+
+
 
 
     }
@@ -135,25 +157,42 @@ public class NewIssueView extends FragmentActivity {
             return fragment.newInstance(position);
         }
 
+        @Override
+        public float getPageWidth(int position) {
+            boolean tabletSize = getResources().getBoolean(R.bool.isTablet);
+            if (tabletSize) {
+                if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+                    return(1f/2f);
+                }else{
+                    return(1f/1f);
+                }
+
+            } else {
+                    return(1f/1f);
+            }
+
+
+        }
+
     }
 
     public static class SwipeFragment extends Fragment
     {
 
         private byte[] bitmap;
+        IssueImagePinchZoom imageView;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
 
             View swipeView = inflater.inflate(R.layout.swipe_fragment, container, false);
-            IssueImagePinchZoom imageView = (IssueImagePinchZoom) swipeView.findViewById(R.id.imageView);
+            imageView = (IssueImagePinchZoom) swipeView.findViewById(R.id.imageView);
             Bundle bundle = getArguments();
 
             int position = bundle.getInt("position");
 
             Log.d(TAG,"Issue page locations is : " +issuePagesLocations.get(position));
-
 
             Bitmap imageForView = null;
             String imageLocation = issuePagesLocations.get(position);

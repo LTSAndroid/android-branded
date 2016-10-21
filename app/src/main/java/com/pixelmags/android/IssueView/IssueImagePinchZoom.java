@@ -1,45 +1,50 @@
 package com.pixelmags.android.IssueView;
 
 /**
- * Created by Annie on 28/01/2016.
+ * Created by Likith on 17/10/2016.
  */
+
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.PointF;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 public class IssueImagePinchZoom extends ImageView {
-
-    Matrix matrix;
+    Matrix matrix = new Matrix();
 
     // We can be in one of these 3 states
     static final int NONE = 0;
     static final int DRAG = 1;
     static final int ZOOM = 2;
     int mode = NONE;
-
-    // Remember some things for zooming
+    //static  NonSwipeableViewPager PagerLeft;
+// Remember some things for zooming
     PointF last = new PointF();
     PointF start = new PointF();
     float minScale = 1f;
     float maxScale = 3f;
     float[] m;
+    static boolean b =false, c= false;
+    float redundantXSpace, redundantYSpace;
 
-    int viewWidth, viewHeight;
+    float width, height;
     static final int CLICK = 3;
     float saveScale = 1f;
-    protected float origWidth, origHeight;
-    int oldMeasuredWidth, oldMeasuredHeight;
+    float right, bottom, origWidth, origHeight, bmWidth, bmHeight;
 
     ScaleGestureDetector mScaleDetector;
 
     Context context;
+    ViewGroup vp;
 
     public IssueImagePinchZoom(Context context) {
         super(context);
@@ -51,62 +56,143 @@ public class IssueImagePinchZoom extends ImageView {
         sharedConstructing(context);
     }
 
+    public void setChild(ViewGroup vp) {
+        this.vp = vp;
+    }
+
     private void sharedConstructing(Context context) {
         super.setClickable(true);
         this.context = context;
         mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
-        matrix = new Matrix();
+        matrix.setTranslate(1f, 1f);
         m = new float[9];
         setImageMatrix(matrix);
         setScaleType(ScaleType.MATRIX);
-
         setOnTouchListener(new OnTouchListener() {
-
+            @SuppressWarnings("deprecation")
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 mScaleDetector.onTouchEvent(event);
+                matrix.getValues(m);
+                float x = m[Matrix.MTRANS_X];
+                float y = m[Matrix.MTRANS_Y];
+            /*Log.v("log_tag",  event.getX()+" matrix "
+                    + x);*/
                 PointF curr = new PointF(event.getX(), event.getY());
-
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        last.set(curr);
+                        IssueImagePinchZoom.b = false;
+                        Log.v("event","ACTION_DOWN");
+                        last.set(event.getX(), event.getY());
                         start.set(last);
                         mode = DRAG;
                         break;
-
                     case MotionEvent.ACTION_MOVE:
                         if (mode == DRAG) {
                             float deltaX = curr.x - last.x;
                             float deltaY = curr.y - last.y;
-                            float fixTransX = getFixDragTrans(deltaX, viewWidth,
-                                    origWidth * saveScale);
-                            float fixTransY = getFixDragTrans(deltaY, viewHeight,
-                                    origHeight * saveScale);
-                            matrix.postTranslate(fixTransX, fixTransY);
-                            fixTrans();
+                            float scaleWidth = Math.round(origWidth * saveScale);
+                            float scaleHeight = Math.round(origHeight * saveScale);
+                            if (scaleWidth < width) {
+                                deltaX = 0;
+                                if (y + deltaY > 0){
+                                    IssueImagePinchZoom.b = true;
+                                    Log.v("event","ACTION_MOVE  scaleWidth < width   y + deltaY > 0");
+                                    deltaY = -y;
+                                }
+                                else if (y + deltaY < -bottom){
+                                    IssueImagePinchZoom.b = false;
+                                    Log.v("event","else ACTION_MOVE  scaleWidth < width   y + deltaY < -bottom");
+                                    deltaY = -(y + bottom);
+                                }else{
+                                    IssueImagePinchZoom.b = false;
+                                }
+                            } else if (scaleHeight < height) {
+                                deltaY = 0;
+                                if (x + deltaX > 0){
+                                    IssueImagePinchZoom.b = true;
+                                    Log.v("event","ACTION_MOVE  scaleWidth < height x + deltaX > 0");
+                                    deltaX = -x;
+                                }
+                                else if (x + deltaX < -right){
+                                    IssueImagePinchZoom.b = true;
+                                    Log.v("event","ACTION_MOVE  scaleWidth < height x + deltaX < -right");
+                                    deltaX = -(x + right);
+                                }else{
+                                    IssueImagePinchZoom.b = false;
+                                }
+                            }else {
+                                if (x + deltaX > 0){
+                                    IssueImagePinchZoom.b = true;
+                                    Log.v("event","scaleWidth > width");
+                                    deltaX = -x;
+                                }
+                                else if (x + deltaX < -right){
+                                    IssueImagePinchZoom.b = true;
+                                    Log.v("event","else scaleWidth > width");
+                                    deltaX = -(x + right);
+                                }
+                                else{
+                                    IssueImagePinchZoom.b = true;
+                                }
+                                if (y + deltaY > 0){
+                                    IssueImagePinchZoom.b = true;
+                                    Log.v("event","y + deltaY");
+                                    deltaY = -y;
+                                }
+                                else if (y + deltaY < -bottom){
+                                    IssueImagePinchZoom.b = true;
+                                    Log.v("event","y + deltaY < -bottom");
+                                    deltaY = -(y + bottom);
+                                }else{
+                                    IssueImagePinchZoom.b = false;
+                                }
+                            }
+                    /*Log.v("log_tag",height + " matrix "
+                            + (int) getHeightFromMatrix(matrix, TouchImageView.this));*/
+                            matrix.postTranslate(deltaX, deltaY);
                             last.set(curr.x, curr.y);
                         }
                         break;
 
                     case MotionEvent.ACTION_UP:
+                        Log.v("event","ACTION_UP");
+                        IssueImagePinchZoom.b = true;
                         mode = NONE;
                         int xDiff = (int) Math.abs(curr.x - start.x);
                         int yDiff = (int) Math.abs(curr.y - start.y);
-                        if (xDiff < CLICK && yDiff < CLICK)
+                        if (xDiff < CLICK && yDiff < CLICK){
+                            Log.v("event","ACTION_UP  xDiff < CLICK && yDiff < CLICK");
                             performClick();
+                        }
                         break;
 
                     case MotionEvent.ACTION_POINTER_UP:
+                        //TouchImageView.b = false;
+                        Log.v("event","ACTION_POINTER_UP");
                         mode = NONE;
                         break;
+                    case MotionEvent.ACTION_POINTER_3_DOWN:
+                        Log.v("event","ACTION_HOVER_MOVE");
+                        break;
                 }
-
+            /*getLayoutParams().height = (int) getWidthFromMatrix(matrix,
+                    TouchImageView.this);
+            getLayoutParams().width = (int) getHeightFromMatrix(matrix,
+                    TouchImageView.this);*/
                 setImageMatrix(matrix);
                 invalidate();
-                return true; // indicate event was handled
+                return true;
             }
-
         });
+    }
+    @Override
+    public void setImageBitmap(Bitmap bm) {
+        super.setImageBitmap(bm);
+        if (bm != null) {
+            bmWidth = bm.getWidth();
+            bmHeight = bm.getHeight();
+        }
     }
 
     public void setMaxZoom(float x) {
@@ -121,9 +207,12 @@ public class IssueImagePinchZoom extends ImageView {
             return true;
         }
 
+        @SuppressLint("NewApi")
+        @TargetApi(8)
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
-            float mScaleFactor = detector.getScaleFactor();
+            float mScaleFactor = (float) Math.min(
+                    Math.max(.95f, detector.getScaleFactor()), 1.05);
             float origScale = saveScale;
             saveScale *= mScaleFactor;
             if (saveScale > maxScale) {
@@ -133,105 +222,87 @@ public class IssueImagePinchZoom extends ImageView {
                 saveScale = minScale;
                 mScaleFactor = minScale / origScale;
             }
-
-            if (origWidth * saveScale <= viewWidth
-                    || origHeight * saveScale <= viewHeight)
-                matrix.postScale(mScaleFactor, mScaleFactor, viewWidth / 2,
-                        viewHeight / 2);
-            else
+            right = width * saveScale - width
+                    - (2 * redundantXSpace * saveScale);
+            bottom = height * saveScale - height
+                    - (2 * redundantYSpace * saveScale);
+            if (origWidth * saveScale <= width
+                    || origHeight * saveScale <= height) {
+                matrix.postScale(mScaleFactor, mScaleFactor, width / 2,
+                        height / 2);
+                if (mScaleFactor < 1) {
+                    matrix.getValues(m);
+                    float x = m[Matrix.MTRANS_X];
+                    float y = m[Matrix.MTRANS_Y];
+                    if (mScaleFactor < 1) {
+                        if (Math.round(origWidth * saveScale) < width) {
+                            if (y < -bottom)
+                                matrix.postTranslate(0, -(y + bottom));
+                            else if (y > 0)
+                                matrix.postTranslate(0, -y);
+                        } else {
+                            if (x < -right)
+                                matrix.postTranslate(-(x + right), 0);
+                            else if (x > 0)
+                                matrix.postTranslate(-x, 0);
+                        }
+                    }
+                }
+            } else {
                 matrix.postScale(mScaleFactor, mScaleFactor,
                         detector.getFocusX(), detector.getFocusY());
-
-            fixTrans();
+                matrix.getValues(m);
+                float x = m[Matrix.MTRANS_X];
+                float y = m[Matrix.MTRANS_Y];
+                if (mScaleFactor < 1) {
+                    if (x < -right)
+                        matrix.postTranslate(-(x + right), 0);
+                    else if (x > 0)
+                        matrix.postTranslate(-x, 0);
+                    if (y < -bottom)
+                        matrix.postTranslate(0, -(y + bottom));
+                    else if (y > 0)
+                        matrix.postTranslate(0, -y);
+                }
+            }
             return true;
         }
-    }
-
-    void fixTrans() {
-        matrix.getValues(m);
-        float transX = m[Matrix.MTRANS_X];
-        float transY = m[Matrix.MTRANS_Y];
-
-        float fixTransX = getFixTrans(transX, viewWidth, origWidth * saveScale);
-        float fixTransY = getFixTrans(transY, viewHeight, origHeight
-                * saveScale);
-
-        if (fixTransX != 0 || fixTransY != 0)
-            matrix.postTranslate(fixTransX, fixTransY);
-    }
-
-    float getFixTrans(float trans, float viewSize, float contentSize) {
-        float minTrans, maxTrans;
-
-        if (contentSize <= viewSize) {
-            minTrans = 0;
-            maxTrans = viewSize - contentSize;
-        } else {
-            minTrans = viewSize - contentSize;
-            maxTrans = 0;
-        }
-
-        if (trans < minTrans)
-            return -trans + minTrans;
-        if (trans > maxTrans)
-            return -trans + maxTrans;
-        return 0;
-    }
-
-    float getFixDragTrans(float delta, float viewSize, float contentSize) {
-        if (contentSize <= viewSize) {
-            return 0;
-        }
-        return delta;
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        viewWidth = MeasureSpec.getSize(widthMeasureSpec);
-        viewHeight = MeasureSpec.getSize(heightMeasureSpec);
+        width = MeasureSpec.getSize(widthMeasureSpec);
+        height = MeasureSpec.getSize(heightMeasureSpec);
+        // Fit to screen.
+        float scale;
+        float scaleX = (float) width / (float) bmWidth;
+        float scaleY = (float) height / (float) bmHeight;
+        scale = Math.min(scaleX, scaleY);
+        matrix.setScale(scale, scale);
+        setImageMatrix(matrix);
+        saveScale = 1f;
 
-        //
-        // Rescales image on rotation
-        //
-        if (oldMeasuredHeight == viewWidth && oldMeasuredHeight == viewHeight
-                || viewWidth == 0 || viewHeight == 0)
-            return;
-        oldMeasuredHeight = viewHeight;
-        oldMeasuredWidth = viewWidth;
+        // Center the image
+        redundantYSpace = (float) height - (scale * (float) bmHeight);
+        redundantXSpace = (float) width - (scale * (float) bmWidth);
+        redundantYSpace /= (float) 2;
+        redundantXSpace /= (float) 2;
 
-        if (saveScale == 1) {
-            // Fit to screen.
-            float scale;
+        matrix.postTranslate(redundantXSpace, redundantYSpace);
 
-            Drawable drawable = getDrawable();
-            if (drawable == null || drawable.getIntrinsicWidth() == 0
-                    || drawable.getIntrinsicHeight() == 0)
-                return;
-            int bmWidth = drawable.getIntrinsicWidth();
-            int bmHeight = drawable.getIntrinsicHeight();
-
-            Log.d("bmSize", "bmWidth: " + bmWidth + " bmHeight : " + bmHeight);
-
-            float scaleX = (float) viewWidth / (float) bmWidth;
-            float scaleY = (float) viewHeight / (float) bmHeight;
-            scale = Math.min(scaleX, scaleY);
-            matrix.setScale(scale, scale);
-
-            // Center the image
-            float redundantYSpace = (float) viewHeight
-                    - (scale * (float) bmHeight);
-            float redundantXSpace = (float) viewWidth
-                    - (scale * (float) bmWidth);
-            redundantYSpace /= (float) 2;
-            redundantXSpace /= (float) 2;
-
-            matrix.postTranslate(redundantXSpace, redundantYSpace);
-
-            origWidth = viewWidth - 2 * redundantXSpace;
-            origHeight = viewHeight - 2 * redundantYSpace;
-            setImageMatrix(matrix);
-        }
-        fixTrans();
+        origWidth = width - 2 * redundantXSpace;
+        origHeight = height - 2 * redundantYSpace;
+        right = width * saveScale - width - (2 * redundantXSpace * saveScale);
+        bottom = height * saveScale - height
+                - (2 * redundantYSpace * saveScale);
+        setImageMatrix(matrix);
     }
+
+/*public static void setPager(NonSwipeableViewPager pagerLeft) {
+    PagerLeft = pagerLeft;
+}*/
+
+
+
 }

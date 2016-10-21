@@ -6,7 +6,7 @@
     android:paddingRight="15dp"
     android:paddingTop="15dp"
     android:paddingBottom="15dp"
-    android:background="#ecf0f1"
+    android:background="@color/white"
     android:id="@+id/gridContainer"
     tools:context="com.pixelmags.android.ui.AllDownloadsFragment">
 

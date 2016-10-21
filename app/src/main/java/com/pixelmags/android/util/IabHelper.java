@@ -483,8 +483,10 @@ public class IabHelper {
 
             Purchase purchase = null;
             try {
+                Log.d(TAG,"Purchase Data is : "+purchaseData);
                 purchase = new Purchase(mPurchasingItemType, purchaseData, dataSignature);
                 String sku = purchase.getSku();
+
 
                 // Verify signature
                 if (!Security.verifyPurchase(mSignatureBase64, purchaseData, dataSignature)) {

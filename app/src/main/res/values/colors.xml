@@ -14,5 +14,10 @@
     <color name="darkorange" type="color">#FFFF8800</color>
     <color name="darkred"    type="color">#FFCC0000</color>
     <color name="black"     type="color">#000000</color>
+
+    <color name="edit_text_background">#80214D71</color>
+    <color name="white">#FFFFFF</color>
+    <color name="register_button_color">#8013456D</color>
+    <color name="action_bar_color">#1B4F72</color>
 </resources>
 

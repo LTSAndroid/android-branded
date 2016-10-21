@@ -250,7 +250,7 @@ public class NavigationDrawerFragment extends Fragment {
                 // Insert the fragment by replacing any existing fragment
                 FragmentManager allIssuesFragmentManager = getFragmentManager();
                 allIssuesFragmentManager.beginTransaction()
-                        .replace(R.id.main_fragment_container, fragmentAllIsuues)
+                        .replace(R.id.main_fragment_container, fragmentAllIsuues,"All Issues")
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                  //       .addToBackStack(null)
                         .commit();
@@ -274,7 +274,7 @@ public class NavigationDrawerFragment extends Fragment {
                     // Insert the fragment by replacing any existing fragment
                     FragmentManager userFragmentManager = getFragmentManager();
                     userFragmentManager.beginTransaction()
-                            .replace(R.id.main_fragment_container, userFragment)
+                            .replace(R.id.main_fragment_container, userFragment,"MY ACCOUNT")
                             .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 //            .addToBackStack(null)
                             .commit();
@@ -286,7 +286,7 @@ public class NavigationDrawerFragment extends Fragment {
                     Fragment fragmentLogin = new LoginFragment();
                     FragmentManager loginFragmentManager = getFragmentManager();
                     loginFragmentManager.beginTransaction()
-                            .replace(R.id.main_fragment_container, fragmentLogin)
+                            .replace(R.id.main_fragment_container, fragmentLogin,"LOGIN")
                             .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                  //           .addToBackStack(null)
                             .commit();
@@ -355,6 +355,7 @@ public class NavigationDrawerFragment extends Fragment {
                         .replace(R.id.main_fragment_container, fragmentAllDownloads,"ALLDOWNLOADFRAGMENT")
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                         .commit();
+
                 break;
             case 3:
                 currentPage =getString(R.string.menu_title_contactsupport);
@@ -373,7 +374,7 @@ public class NavigationDrawerFragment extends Fragment {
                 Fragment fragmentContact = new ContactSupportFragment();
                 FragmentManager contactFragmentManager = getFragmentManager();
                 contactFragmentManager.beginTransaction()
-                        .replace(R.id.main_fragment_container, fragmentContact)
+                        .replace(R.id.main_fragment_container, fragmentContact,"CONTACT")
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                         .commit();
 
@@ -392,7 +393,7 @@ public class NavigationDrawerFragment extends Fragment {
                 // Insert the fragment by replacing any existing fragment
                 FragmentManager aboutFragmentManager = getFragmentManager();
                 aboutFragmentManager.beginTransaction()
-                        .replace(R.id.main_fragment_container, aboutFragment)
+                        .replace(R.id.main_fragment_container, aboutFragment,"ABOUT")
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                  //       .addToBackStack(null)
                         .commit();

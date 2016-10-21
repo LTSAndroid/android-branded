@@ -6,8 +6,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 
+import com.crashlytics.android.Crashlytics;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.util.IssueViewUtils;
+
+import io.fabric.sdk.android.Fabric;
 
 public class IssueViewActivity extends Activity{
 
@@ -18,6 +21,7 @@ public class IssueViewActivity extends Activity{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Fabric.with(this, new Crashlytics());
 		setContentView(R.layout.activity_fullscreen);
 
 		viewPager = (ViewPager) findViewById(R.id.pager);

@@ -1,7 +1,8 @@
 <resources>
 
     <!-- App Name -->
-    <string name="app_name">PixelMags app</string>
+    <!--<string name="app_name">PixelMags app</string>-->
+    <string name="app_name">San Diego PREMIER</string>
 
     <!-- Generic - to re-use -->
     <string name="ok">OK</string>
@@ -145,6 +146,8 @@
 
     <string name="queue_initiation_title">Issue download is in queue!</string>
     <string name="queue_initiation_message">You can view your Issue once download start.</string>
+
+    <string name="logout">Are you sure you want to exit from San Diego PREMIER?</string>
 
     <string name="termsCondition"><a href="http://www.pixelmags.com/t+c/current/">View Terms &amp; Condition</a></string>
     <string name="no_internet">Uh oh! \n\nLooks like you don\'t have an internet connection. Please connect to  network and try again.</string>

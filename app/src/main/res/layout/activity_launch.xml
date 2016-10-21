@@ -1,11 +1,20 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:background="@drawable/splash_android_portrait"
+    android:background="@color/black"
     tools:context="com.pixelmags.android.pixelmagsapp.LaunchActivity">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center|center_vertical"
+        android:padding="6dp"
+        android:src="@drawable/splash_android_portrait"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
 <!--
 <ImageView android:layout_width="fill_parent"
@@ -13,4 +22,4 @@
         android:src="@drawable/splash_android_portrait" />
 -->
 
-</LinearLayout>
+</RelativeLayout>

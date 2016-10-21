@@ -27,6 +27,7 @@
         android:layout_alignParentTop="true"
         android:id="@+id/gridTitleText"
         android:layout_marginTop="5dp"
+        android:textColor="@color/black"
         android:layout_gravity="center_horizontal" />
 
     <com.pixelmags.android.ui.uicomponents.MultiStateButton

@@ -76,7 +76,8 @@ public class MultiStateButton extends Button {
         }else if(mMagazine.status.equalsIgnoreCase(Magazine.STATUS_QUEUE) || mMagazine.currentDownloadStatus == AllDownloadsDataSet.DOWNLOAD_STATUS_QUEUED){
             mMagazine.status = Magazine.STATUS_QUEUE;
             setAsQueue(mMagazine.status);
-        }else if(mMagazine.paymentProvider.trim().equalsIgnoreCase("free")) {
+        }else if(mMagazine.paymentProvider != null &&
+                mMagazine.paymentProvider.trim().equalsIgnoreCase("free")) {
             mMagazine.status = Magazine.STATUS_DOWNLOAD;
             setAsDownload(mMagazine.STATUS_DOWNLOAD);
         }else{

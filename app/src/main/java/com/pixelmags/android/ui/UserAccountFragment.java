@@ -102,7 +102,7 @@ public class UserAccountFragment extends Fragment {
                     // handle back button
                     Fragment fragment = new AllIssuesFragment();
                     getActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.main_fragment_container, fragment, "HOME")
+                            .replace(R.id.main_fragment_container, fragment, "All Issues")
                             .commit();
 
                     return true;

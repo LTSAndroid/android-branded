@@ -3,14 +3,12 @@
     <corners
         android:radius="7dp"
         />
-
-    <!--android:centerColor="#807BC342"-->
     <gradient
         android:angle="45"
         android:centerX="35%"
-        android:centerColor="#90006400"
-        android:startColor="#90006400"
-        android:endColor="#90006400"
+        android:centerColor="#214D71"
+        android:startColor="@color/register_button_color"
+        android:endColor="@color/register_button_color"
         android:type="linear"
         />
     <padding
@@ -30,4 +28,4 @@
 </shape>
 
 
-<!-- Green color code #7BC342 -->
+    <!-- Green color code #7BC342 -->

@@ -3,7 +3,6 @@ package com.pixelmags.android.api;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.comms.WebRequest;
 import com.pixelmags.android.json.CanPurchaseParser;
-import com.pixelmags.android.pixelmagsapp.MainActivity;
 import com.pixelmags.android.storage.UserPrefs;
 
 import org.apache.http.NameValuePair;
@@ -41,6 +40,8 @@ public class CanPurchase extends WebRequest
                 if(cParser.isSuccess())
                 {
                     success = true;
+                    // Enable these when going live
+
                     //cParser.parse();
                     //launch purchase
                    /* MainActivity mActivity= new MainActivity();

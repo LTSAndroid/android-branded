@@ -383,7 +383,7 @@ public class CustomAllDownloadsGridAdapter extends BaseAdapter implements View.O
                                             }
                                         }
                                     });
-                                    wait(6666);
+                                    wait(8888);
                                 }
 
                             } catch (InterruptedException e) {
@@ -677,12 +677,15 @@ public class CustomAllDownloadsGridAdapter extends BaseAdapter implements View.O
                         allDownloadsIssuesListTracker.get(currentIssueDownloadingPosition).progressCompleted = jumpTime;
 
                         for(int i=0; i<allDownloadsIssuesListTracker.size(); i++){
-                            int progressBarTag = (int) progressBarCurrent.getTag();
-                            if(progressBarTag == currentIssueDownloadingPosition){
-                                progressBarCurrent.setProgress(jumpTime);
+                            if(progressBarCurrent != null){
+                                int progressBarTag = (int) progressBarCurrent.getTag();
+                                if(progressBarTag == currentIssueDownloadingPosition){
+                                    progressBarCurrent.setProgress(jumpTime);
 //                                progressPercentageCurrent.setText(String.valueOf(jumpTime));
-                                run = false;
+                                    run = false;
+                                }
                             }
+
                         }
 
                         count =0;

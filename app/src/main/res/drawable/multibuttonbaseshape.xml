@@ -3,12 +3,21 @@
     <corners
         android:radius="7dp"
         />
+    <!--<gradient-->
+        <!--android:angle="45"-->
+        <!--android:centerX="35%"-->
+        <!--android:centerColor="#3384ff"-->
+        <!--android:startColor="#3384ff"-->
+        <!--android:endColor="#3384ff"-->
+        <!--android:type="linear"-->
+        <!--/>-->
+
     <gradient
         android:angle="45"
         android:centerX="35%"
-        android:centerColor="#3384ff"
-        android:startColor="#3384ff"
-        android:endColor="#3384ff"
+        android:centerColor="#214D71"
+        android:startColor="@color/register_button_color"
+        android:endColor="@color/register_button_color"
         android:type="linear"
         />
     <padding
