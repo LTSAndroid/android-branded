@@ -3,8 +3,10 @@ package com.pixelmags.android.api;
 import com.pixelmags.android.comms.WebRequest;
 import com.pixelmags.android.datamodels.PreviewImage;
 import com.pixelmags.android.json.GetPreviewImagesParser;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+
 import java.util.ArrayList;
 
 /**
@@ -13,9 +15,9 @@ import java.util.ArrayList;
 public class GetPreviewImages extends WebRequest
 {
     private static final String API_NAME="getPreviewImages";
+    GetPreviewImagesParser getPreviewImagesParser;
     private String mIssueID;
     private String mAppBundleID;
-    GetPreviewImagesParser getPreviewImagesParser;
 
     public GetPreviewImages(){
         super(API_NAME);

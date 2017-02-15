@@ -5,17 +5,17 @@
         />
     <gradient
         android:angle="45"
-        android:centerX="35%"
         android:centerColor="#3384ff"
-        android:startColor="#3384ff"
+        android:centerX="35%"
         android:endColor="#3384ff"
+        android:startColor="#3384ff"
         android:type="linear"
         />
     <padding
-        android:left="0dp"
-        android:top="0dp"
-        android:right="0dp"
         android:bottom="0dp"
+        android:left="0dp"
+        android:right="0dp"
+        android:top="0dp"
         />
     <size
         android:width="270dp"

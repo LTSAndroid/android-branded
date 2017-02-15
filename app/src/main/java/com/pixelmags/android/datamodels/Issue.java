@@ -1,7 +1,6 @@
 package com.pixelmags.android.datamodels;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Created by austincoutinho on 04/11/15.

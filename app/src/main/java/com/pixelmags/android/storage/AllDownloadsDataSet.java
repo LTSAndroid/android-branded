@@ -38,6 +38,10 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
     public static int DOWNLOAD_STATUS_VIEW = 6;
 
 
+    public AllDownloadsDataSet(Context context) {
+        super(context);
+    }
+
     public static String getDownloadStatusText(int status){
 
         String statusText = " ";
@@ -61,10 +65,6 @@ public class AllDownloadsDataSet extends BrandedSQLiteHelper {
 
 
         return statusText;
-    }
-
-    public AllDownloadsDataSet(Context context) {
-        super(context);
     }
 
     public void createTableAllDownloads(SQLiteDatabase db){

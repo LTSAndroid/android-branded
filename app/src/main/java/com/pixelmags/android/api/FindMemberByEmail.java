@@ -1,7 +1,6 @@
 package com.pixelmags.android.api;
 
 import com.pixelmags.android.comms.WebRequest;
-import com.pixelmags.android.json.CanPurchaseParser;
 import com.pixelmags.android.json.FindMemberByEmailParser;
 
 import org.apache.http.NameValuePair;
@@ -15,8 +14,8 @@ import java.util.ArrayList;
 public class FindMemberByEmail extends WebRequest
 {
     private static final String API_NAME="findMemberByEmail";
-    private String mEmail;
     FindMemberByEmailParser fParser;
+    private String mEmail;
 
     public FindMemberByEmail(){
         super(API_NAME);

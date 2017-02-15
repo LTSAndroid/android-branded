@@ -13,54 +13,54 @@
 
 
         <com.pixelmags.android.util.SquareImageView
+            android:id="@+id/issueDetailsImageView"
             android:layout_width="200dp"
             android:layout_height="200dp"
-            android:id="@+id/issueDetailsImageView"
-            android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
-            android:layout_margin="10dp"
-            android:layout_gravity="center_horizontal"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"/>
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="10dp"
+            android:layout_marginTop="10dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"/>
 
         <TextView
+            android:id="@+id/issueDetailsTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            tools:text="Issue Title"
-            android:id="@+id/issueDetailsTitle"
             android:layout_below="@+id/issueDetailsImageView"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="5dp" />
+            android:layout_marginTop="5dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            tools:text="Issue Title" />
 
         <TextView
+            android:id="@+id/issueDetailsSynopsis"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            tools:text="Synopsis"
-            android:id="@+id/issueDetailsSynopsis"
             android:layout_below="@+id/issueDetailsTitle"
             android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
             android:gravity="center_horizontal|center_vertical"
-            android:layout_marginTop="5dp" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            tools:text="Synopsis" />
 
         <com.pixelmags.android.ui.uicomponents.MultiStateButton
+            android:id="@+id/issueDetailsPriceButton"
             android:layout_width="fill_parent"
             android:layout_height="35dp"
-            tools:text="Issue Price"
-            android:id="@+id/issueDetailsPriceButton"
+            android:layout_below="@+id/issueDetailsSynopsis"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginTop="10dp"
             android:background="@drawable/shape"
             android:shadowColor="#3384ff"
-            android:textColor="#ffffff"
             android:shadowDx="0"
             android:shadowDy="0"
             android:shadowRadius="5"
-            android:layout_marginRight="40dp"
-            android:layout_marginLeft="40dp"
-            android:layout_below="@+id/issueDetailsSynopsis"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"/>
+            android:textColor="#ffffff"
+            tools:text="Issue Price"/>
 
         <!--
         <Button
@@ -80,9 +80,9 @@
     -->
 
         <HorizontalScrollView
+            android:id="@+id/issueDetailsHorizontalScrollView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/issueDetailsHorizontalScrollView"
             android:layout_below="@+id/issueDetailsPriceButton"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp">

@@ -25,10 +25,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.pixelmags.android.bean.DataTransferInterface;
 import com.pixelmags.android.pixelmagsapp.R;
-import com.pixelmags.android.pixelmagsapp.adapter.CustomAllDownloadsGridAdapter;
+import com.pixelmags.android.pixelmagsapp.adapter.DownloadAdapter;
 import com.pixelmags.android.storage.AllDownloadsDataSet;
 import com.pixelmags.android.storage.UserPrefs;
+import com.pixelmags.android.ui.uicomponents.DownloadFragment;
 import com.pixelmags.android.util.BaseApp;
 import com.pixelmags.android.util.Util;
 
@@ -49,26 +51,22 @@ public class NavigationDrawerFragment extends Fragment {
      * expands it. This shared preference tracks this.
      */
     private static final String PREF_USER_LEARNED_DRAWER = "navigation_drawer_learned";
-
+    public static String currentPage;
     /**
      * A pointer to the current callbacks instance (the Activity).
      */
     private NavigationDrawerCallbacks mCallbacks;
-
     /**
      * Helper component that ties the action bar to the navigation drawer.
      */
     private ActionBarDrawerToggle mDrawerToggle;
-
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerListView;
     private View mFragmentContainerView;
-
     private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
     private CharSequence mTitle;
-    public static String currentPage;
     private String TAG = "NavigationDrawer";
 
     public NavigationDrawerFragment() {
@@ -236,16 +234,14 @@ public class NavigationDrawerFragment extends Fragment {
             case 0:
                 currentPage =getString(R.string.menu_title_allissues);
                 mTitle = getString(R.string.menu_title_allissues);
-                Log.d(TAG,"Inside the All Issue Download case");
-                int progressCount = CustomAllDownloadsGridAdapter.updateProgressStateMenu();
-                Log.d(TAG,"Progress Count when pressed navigation button is : "+progressCount);
-                int issueId = CustomAllDownloadsGridAdapter.issueId();
-                if(progressCount != 0 && issueId != 0){
-                    AllDownloadsDataSet mDbReader_current = new AllDownloadsDataSet(BaseApp.getContext());
-                    mDbReader_current.updateProgressCountOfIssue(mDbReader_current.getWritableDatabase(),
-                            String.valueOf(issueId), progressCount);
-                    mDbReader_current.close();
-                }
+
+                Log.d("PauseState","Progress Count when nav is : "+DataTransferInterface.count);
+                Log.d("PauseState","Issue Id when nav is : "+DataTransferInterface.issueId);
+
+                SaveToDB(DataTransferInterface.count,DataTransferInterface.issueId);
+                DownloadAdapter.stopTimer();
+
+
                 Fragment fragmentAllIsuues = new AllIssuesFragment();
                 // Insert the fragment by replacing any existing fragment
                 FragmentManager allIssuesFragmentManager = getFragmentManager();
@@ -259,6 +255,14 @@ public class NavigationDrawerFragment extends Fragment {
                 currentPage =getString(R.string.menu_title_my_account);
                 /*Intent launch = new Intent(getActivity().getBaseContext(), LaunchActivity.class);
                 startActivity(launch);*/
+
+                Log.d("PauseState","Progress Count when nav is : "+DataTransferInterface.count);
+                Log.d("PauseState","Issue Id when nav is : "+DataTransferInterface.issueId);
+
+                SaveToDB(DataTransferInterface.count,DataTransferInterface.issueId);
+                DownloadAdapter.stopTimer();
+
+
                 if(UserPrefs.getUserLoggedIn())
                {
 
@@ -349,11 +353,28 @@ public class NavigationDrawerFragment extends Fragment {
                 currentPage =getString(R.string.menu_title_downloads);
                 mTitle = getString(R.string.menu_title_downloads);
                 Log.d(TAG,"Inside the All Download case");
-                Fragment fragmentAllDownloads = new AllDownloadsFragment();
+//                Fragment fragmentAllDownloads = new AllDownloadsFragment();
+//                FragmentManager downloadsFragmentManager = getFragmentManager();
+//                downloadsFragmentManager.beginTransaction()
+//                        .replace(R.id.main_fragment_container, fragmentAllDownloads,"ALLDOWNLOADFRAGMENT")
+//                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+//                        .commit();
+
+
+//                progressCount = DownloadAdapter.stopTimer();
+//                issueId = DownloadAdapter.issueId();
+//                if(progressCount != 0 && issueId != 0){
+//                    SaveToDB(progressCount,issueId);
+//                }
+
+
+                Fragment fragmentDownload = new DownloadFragment();
+                // Insert the fragment by replacing any existing fragment
                 FragmentManager downloadsFragmentManager = getFragmentManager();
                 downloadsFragmentManager.beginTransaction()
-                        .replace(R.id.main_fragment_container, fragmentAllDownloads,"ALLDOWNLOADFRAGMENT")
+                        .replace(R.id.main_fragment_container, fragmentDownload,"DownloadFragment")
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        //       .addToBackStack(null)
                         .commit();
 
                 break;
@@ -370,6 +391,11 @@ public class NavigationDrawerFragment extends Fragment {
 //                Intent mailer = Intent.createChooser(intent, null);
 //                getActivity().startActivity(mailer);
 
+                Log.d("PauseState","Progress Count when nav is : "+DataTransferInterface.count);
+                Log.d("PauseState","Issue Id when nav is : "+DataTransferInterface.issueId);
+
+                SaveToDB(DataTransferInterface.count,DataTransferInterface.issueId);
+                DownloadAdapter.stopTimer();
 
                 Fragment fragmentContact = new ContactSupportFragment();
                 FragmentManager contactFragmentManager = getFragmentManager();
@@ -382,6 +408,12 @@ public class NavigationDrawerFragment extends Fragment {
             case 4:
                 currentPage =getString(R.string.menu_title_about);
                 mTitle = getString(R.string.menu_title_about);
+
+                Log.d("PauseState","Progress Count when nav is : "+DataTransferInterface.count);
+                Log.d("PauseState","Issue Id when nav is : "+DataTransferInterface.issueId);
+
+                SaveToDB(DataTransferInterface.count,DataTransferInterface.issueId);
+                DownloadAdapter.stopTimer();
 
                 Fragment aboutFragment = new AboutFragment();
                 Bundle args1 = new Bundle();
@@ -482,17 +514,6 @@ public class NavigationDrawerFragment extends Fragment {
         return ((AppCompatActivity) getActivity()).getSupportActionBar();
     }
 
-    /**
-     * Callbacks interface that all activities using this fragment must implement.
-     */
-    public static interface NavigationDrawerCallbacks {
-        /**
-         * Called when an item in the navigation drawer is selected.
-         */
-        void onNavigationDrawerItemSelected(int position);
-    }
-
-
     public void refreshNavigationDrawer(){
 
        if(mDrawerListView != null){
@@ -511,5 +532,25 @@ public class NavigationDrawerFragment extends Fragment {
                    }));
        }
 
+    }
+
+    public void SaveToDB(int count, int issue) {
+
+        AllDownloadsDataSet mDbReader_current = new AllDownloadsDataSet(BaseApp.getContext());
+        mDbReader_current.updateProgressCountOfIssue(mDbReader_current.getWritableDatabase(),
+                String.valueOf(issue), count);
+        mDbReader_current.close();
+
+    }
+
+
+    /**
+     * Callbacks interface that all activities using this fragment must implement.
+     */
+    public static interface NavigationDrawerCallbacks {
+        /**
+         * Called when an item in the navigation drawer is selected.
+         */
+        void onNavigationDrawerItemSelected(int position);
     }
 }

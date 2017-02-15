@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.pixelmags.android.datamodels.Subscription;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.storage.SubscriptionsDataSet;
@@ -40,6 +41,10 @@ public class SubscriptionsFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
+    public SubscriptionsFragment() {
+        // Required empty public constructor
+    }
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -56,10 +61,6 @@ public class SubscriptionsFragment extends Fragment {
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    public SubscriptionsFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -140,6 +141,15 @@ public class SubscriptionsFragment extends Fragment {
         mListener = null;
     }
 
+    public void updateTextView(String text){
+
+
+        System.out.println("SUBS TEXT :::: " + text);
+
+       // mTextView.setText(text);
+    }
+
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -154,7 +164,6 @@ public class SubscriptionsFragment extends Fragment {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
     }
-
 
     public class GetSubscriptionsTask extends AsyncTask<String, String, String> {
 
@@ -207,14 +216,6 @@ public class SubscriptionsFragment extends Fragment {
         protected void onCancelled() {
             mGetSubscriptions = null;
         }
-    }
-
-    public void updateTextView(String text){
-
-
-        System.out.println("SUBS TEXT :::: " + text);
-
-       // mTextView.setText(text);
     }
 
 

@@ -1,16 +1,13 @@
 package com.pixelmags.android.api;
 
-import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.comms.WebRequest;
 import com.pixelmags.android.json.CreateUserParser;
 import com.pixelmags.android.storage.UserPrefs;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by austincoutinho on 07/10/15.
@@ -19,13 +16,12 @@ import java.util.List;
 public class CreateUser extends WebRequest {
 
     private static final String API_NAME="CreateUser";
-
+    CreateUserParser cParser;
     private String mEmail;
     private String mPassword;
     private String mFirstName;
     private String mLastName;
     private String mDOB;
-    CreateUserParser cParser;
 
 
     public CreateUser(){

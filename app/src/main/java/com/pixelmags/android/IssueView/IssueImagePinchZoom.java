@@ -19,12 +19,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 public class IssueImagePinchZoom extends ImageView {
-    Matrix matrix = new Matrix();
-
     // We can be in one of these 3 states
     static final int NONE = 0;
     static final int DRAG = 1;
     static final int ZOOM = 2;
+    static final int CLICK = 3;
+    static boolean b =false, c= false;
+    Matrix matrix = new Matrix();
     int mode = NONE;
     //static  NonSwipeableViewPager PagerLeft;
 // Remember some things for zooming
@@ -33,11 +34,8 @@ public class IssueImagePinchZoom extends ImageView {
     float minScale = 1f;
     float maxScale = 3f;
     float[] m;
-    static boolean b =false, c= false;
     float redundantXSpace, redundantYSpace;
-
     float width, height;
-    static final int CLICK = 3;
     float saveScale = 1f;
     float right, bottom, origWidth, origHeight, bmWidth, bmHeight;
 
@@ -199,6 +197,36 @@ public class IssueImagePinchZoom extends ImageView {
         maxScale = x;
     }
 
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        width = MeasureSpec.getSize(widthMeasureSpec);
+        height = MeasureSpec.getSize(heightMeasureSpec);
+        // Fit to screen.
+        float scale;
+        float scaleX = (float) width / (float) bmWidth;
+        float scaleY = (float) height / (float) bmHeight;
+        scale = Math.min(scaleX, scaleY);
+        matrix.setScale(scale, scale);
+        setImageMatrix(matrix);
+        saveScale = 1f;
+
+        // Center the image
+        redundantYSpace = (float) height - (scale * (float) bmHeight);
+        redundantXSpace = (float) width - (scale * (float) bmWidth);
+        redundantYSpace /= (float) 2;
+        redundantXSpace /= (float) 2;
+
+        matrix.postTranslate(redundantXSpace, redundantYSpace);
+
+        origWidth = width - 2 * redundantXSpace;
+        origHeight = height - 2 * redundantYSpace;
+        right = width * saveScale - width - (2 * redundantXSpace * saveScale);
+        bottom = height * saveScale - height
+                - (2 * redundantYSpace * saveScale);
+        setImageMatrix(matrix);
+    }
+
     private class ScaleListener extends
             ScaleGestureDetector.SimpleOnScaleGestureListener {
         @Override
@@ -267,36 +295,6 @@ public class IssueImagePinchZoom extends ImageView {
             }
             return true;
         }
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        width = MeasureSpec.getSize(widthMeasureSpec);
-        height = MeasureSpec.getSize(heightMeasureSpec);
-        // Fit to screen.
-        float scale;
-        float scaleX = (float) width / (float) bmWidth;
-        float scaleY = (float) height / (float) bmHeight;
-        scale = Math.min(scaleX, scaleY);
-        matrix.setScale(scale, scale);
-        setImageMatrix(matrix);
-        saveScale = 1f;
-
-        // Center the image
-        redundantYSpace = (float) height - (scale * (float) bmHeight);
-        redundantXSpace = (float) width - (scale * (float) bmWidth);
-        redundantYSpace /= (float) 2;
-        redundantXSpace /= (float) 2;
-
-        matrix.postTranslate(redundantXSpace, redundantYSpace);
-
-        origWidth = width - 2 * redundantXSpace;
-        origHeight = height - 2 * redundantYSpace;
-        right = width * saveScale - width - (2 * redundantXSpace * saveScale);
-        bottom = height * saveScale - height
-                - (2 * redundantYSpace * saveScale);
-        setImageMatrix(matrix);
     }
 
 /*public static void setPager(NonSwipeableViewPager pagerLeft) {

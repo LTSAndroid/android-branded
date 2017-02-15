@@ -7,11 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.pixelmags.android.datamodels.Issue;
-import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.datamodels.Page;
 import com.pixelmags.android.datamodels.PageTypeImage;
 import com.pixelmags.android.ui.AllIssuesFragment;
-import com.pixelmags.android.ui.uicomponents.MultiStateButton;
 
 import java.util.ArrayList;
 
@@ -50,83 +48,6 @@ public class IssueDataSet extends BrandedSQLiteHelper{
         // IMPORTANT -  Corresponding PAGE DATA table needs to be deleted first
 
     }
-
-
-
-
-    /* Inner class that defines the ISSUE table contents */
-    public static class IssueEntry {
-
-        public static final String ISSUE_TABLE_NAME = BrandedSQLiteHelper.TABLE_ISSUE_DATA;
-        public static final String COLUMN_ISSUE_ID = "issue_id";
-        public static final String COLUMN_MAGAZINE_ID = "magazine_id";
-        public static final String COLUMN_TITLE = "title";
-        public static final String COLUMN_THUMBNAIL_URL = "thumbnail_url";
-        public static final String COLUMN_ISSUE_DATE = "issue_date";
-        public static final String COLUMN_PAGE_COUNT = "page_count";
-        public static final String COLUMN_CREATED = "created";
-        public static final String COLUMN_LAST_MODIFIED = "last_modified";
-        public static final String COLUMN_MEDIA_FORMAT = "media_format";
-        public static final String COLUMN_PAGE_DATA_TABLE = "page_data_table";
-
-        public static final String CREATE_ISSUE_TABLE = "CREATE TABLE IF NOT EXISTS "
-                + ISSUE_TABLE_NAME
-                + "("
-                + COLUMN_ISSUE_ID + " INTEGER PRIMARY KEY ,"      // There should only be one record of an Issue
-                + COLUMN_MAGAZINE_ID + " INTEGER,"
-                + COLUMN_TITLE + " TEXT,"
-                + COLUMN_THUMBNAIL_URL + " TEXT,"
-                + COLUMN_ISSUE_DATE + " TEXT,"
-                + COLUMN_PAGE_COUNT + " INTEGER,"
-                + COLUMN_CREATED + " TEXT,"
-                + COLUMN_LAST_MODIFIED + " TEXT,"
-                + COLUMN_MEDIA_FORMAT + " TEXT,"
-                + COLUMN_PAGE_DATA_TABLE + " TEXT"
-                + ")";
-
-        public static final String DROP_ISSUE_TABLE = "DROP TABLE IF EXISTS " + ISSUE_TABLE_NAME;
-
-    }
-
-    /* Inner class that defines the PAGE DATA contents */
-    public static class PageDataEntry {
-
-        public static final String COLUMN_PAGE_NO = "page_no";
-        public static final String COLUMN_PAGE_ID = "page_id";
-        public static final String COLUMN_PAGE_JSON = "page_json";
-
-        // update page unit here
-
-        public static String getPageDataTableName(int issueId){
-            return TABLE_PAGE_DATA_PREFIX + issueId;
-        }
-
-        public static String getPageDataTableName(Issue issue){
-            return TABLE_PAGE_DATA_PREFIX + issue.issueID;
-        }
-
-
-        public static String getSQLForCreatePageDataTable(int issueId){
-            String createTable  ="CREATE TABLE IF NOT EXISTS "
-                    + getPageDataTableName(issueId)
-                    + "("
-                    + COLUMN_PAGE_NO + " INTEGER PRIMARY KEY ,"      // There should only be one record of an Issue
-                    + COLUMN_PAGE_ID + " TEXT,"
-                    + COLUMN_PAGE_JSON + " TEXT"
-                    + ")";
-
-            return createTable;
-
-        }
-
-        public static String getSQLForDropPageDataTable(int issueId){
-
-            return "DROP TABLE IF EXISTS " + getPageDataTableName(issueId);
-
-        }
-
-    }
-
 
     public void insertIssueData(SQLiteDatabase db, Issue issue){
 
@@ -360,6 +281,79 @@ public class IssueDataSet extends BrandedSQLiteHelper{
 
 
         return pages;
+
+    }
+
+    /* Inner class that defines the ISSUE table contents */
+    public static class IssueEntry {
+
+        public static final String ISSUE_TABLE_NAME = BrandedSQLiteHelper.TABLE_ISSUE_DATA;
+        public static final String COLUMN_ISSUE_ID = "issue_id";
+        public static final String COLUMN_MAGAZINE_ID = "magazine_id";
+        public static final String COLUMN_TITLE = "title";
+        public static final String COLUMN_THUMBNAIL_URL = "thumbnail_url";
+        public static final String COLUMN_ISSUE_DATE = "issue_date";
+        public static final String COLUMN_PAGE_COUNT = "page_count";
+        public static final String COLUMN_CREATED = "created";
+        public static final String COLUMN_LAST_MODIFIED = "last_modified";
+        public static final String COLUMN_MEDIA_FORMAT = "media_format";
+        public static final String COLUMN_PAGE_DATA_TABLE = "page_data_table";
+
+        public static final String CREATE_ISSUE_TABLE = "CREATE TABLE IF NOT EXISTS "
+                + ISSUE_TABLE_NAME
+                + "("
+                + COLUMN_ISSUE_ID + " INTEGER PRIMARY KEY ,"      // There should only be one record of an Issue
+                + COLUMN_MAGAZINE_ID + " INTEGER,"
+                + COLUMN_TITLE + " TEXT,"
+                + COLUMN_THUMBNAIL_URL + " TEXT,"
+                + COLUMN_ISSUE_DATE + " TEXT,"
+                + COLUMN_PAGE_COUNT + " INTEGER,"
+                + COLUMN_CREATED + " TEXT,"
+                + COLUMN_LAST_MODIFIED + " TEXT,"
+                + COLUMN_MEDIA_FORMAT + " TEXT,"
+                + COLUMN_PAGE_DATA_TABLE + " TEXT"
+                + ")";
+
+        public static final String DROP_ISSUE_TABLE = "DROP TABLE IF EXISTS " + ISSUE_TABLE_NAME;
+
+    }
+
+    /* Inner class that defines the PAGE DATA contents */
+    public static class PageDataEntry {
+
+        public static final String COLUMN_PAGE_NO = "page_no";
+        public static final String COLUMN_PAGE_ID = "page_id";
+        public static final String COLUMN_PAGE_JSON = "page_json";
+
+        // update page unit here
+
+        public static String getPageDataTableName(int issueId){
+            return TABLE_PAGE_DATA_PREFIX + issueId;
+        }
+
+        public static String getPageDataTableName(Issue issue){
+            return TABLE_PAGE_DATA_PREFIX + issue.issueID;
+        }
+
+
+        public static String getSQLForCreatePageDataTable(int issueId){
+            String createTable  ="CREATE TABLE IF NOT EXISTS "
+                    + getPageDataTableName(issueId)
+                    + "("
+                    + COLUMN_PAGE_NO + " INTEGER PRIMARY KEY ,"      // There should only be one record of an Issue
+                    + COLUMN_PAGE_ID + " TEXT,"
+                    + COLUMN_PAGE_JSON + " TEXT"
+                    + ")";
+
+            return createTable;
+
+        }
+
+        public static String getSQLForDropPageDataTable(int issueId){
+
+            return "DROP TABLE IF EXISTS " + getPageDataTableName(issueId);
+
+        }
 
     }
 

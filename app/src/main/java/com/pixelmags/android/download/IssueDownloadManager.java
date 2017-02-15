@@ -72,24 +72,6 @@ public class IssueDownloadManager {
      * Creates a cache of byte arrays indexed by image URLs. As new items are added to the
      * cache, the oldest items are ejected and subject to garbage collection.
      */
-
-    private final LruCache<URL, byte[]> mIssueImageCache;
-
-    // A queue of Runnables for the image download pool
-    private final BlockingQueue<Runnable> mDownloadWorkQueue;
-
-    // A queue of IssueDownloadManager tasks. Tasks are handed to a ThreadPool.
-    private final Queue<IssueDownloadTask> mDownloadTaskWorkQueue;
-
-    // A managed pool of background download threads
-    private final ThreadPoolExecutor mDownloadThreadPool;
-
-    // A managed pool of background decoder threads
-    // private final ThreadPoolExecutor mDecodeThreadPool;
-
-    // An object that manages Messages in a Thread
-    private Handler mHandler;
-
     // A single instance of IssueDownloadManager, used to implement the singleton pattern
     private static IssueDownloadManager sInstance = null;
 
@@ -102,6 +84,19 @@ public class IssueDownloadManager {
         // Creates a single static instance of IssueDownloadManager
         sInstance = new IssueDownloadManager();
     }
+
+    private final LruCache<URL, byte[]> mIssueImageCache;
+    // A queue of Runnables for the image download pool
+    private final BlockingQueue<Runnable> mDownloadWorkQueue;
+
+    // A managed pool of background decoder threads
+    // private final ThreadPoolExecutor mDecodeThreadPool;
+    // A queue of IssueDownloadManager tasks. Tasks are handed to a ThreadPool.
+    private final Queue<IssueDownloadTask> mDownloadTaskWorkQueue;
+    // A managed pool of background download threads
+    private final ThreadPoolExecutor mDownloadThreadPool;
+    // An object that manages Messages in a Thread
+    private Handler mHandler;
 
 
     /**
@@ -226,50 +221,6 @@ public class IssueDownloadManager {
     }
     
     /**
-     * Handles state messages for a particular task object
-     * @param issueDownloadTask A task object
-     * @param state The state of the task
-     */
-    @SuppressLint("HandlerLeak")
-    public void handleState(IssueDownloadTask issueDownloadTask, int state) {
-        switch (state) {
-            
-            // The task finished downloading and decoding the image
-            case TASK_COMPLETE:
-
-                System.out.println("TASK_COMPLETE handleState ..... xyz");
-
-                // Puts the image into cache
-                if (issueDownloadTask.isCacheEnabled()) {
-                    // If the task is set to cache the results, put the buffer
-                    // that was
-                    // successfully decoded into the cache
-                    mIssueImageCache.put(issueDownloadTask.getImageURL(), issueDownloadTask.getByteBuffer());
-                }
-                
-                // Gets a Message object, stores the state in it, and sends it to the Handler
-                Message completeMessage = mHandler.obtainMessage(state, issueDownloadTask);
-                completeMessage.sendToTarget();
-                break;
-            
-            // The task finished downloading the image
-            case DOWNLOAD_COMPLETE:
-                System.out.println("DOWNLOAD_COMPLETE handleState ..... xyz");
-                /*
-                 * Decodes the image, by queuing the decoder object to run in the decoder
-                 * thread pool
-                 */
-               // mDecodeThreadPool.execute(issueDownloadTask.getPhotoDecodeRunnable());
-            
-            // In all other cases, pass along the message without any other action.
-            default:
-                mHandler.obtainMessage(state, issueDownloadTask).sendToTarget();
-                break;
-        }
-
-    }
-
-    /**
      * Cancels all Threads in the ThreadPool
      */
     public static void cancelAll() {
@@ -290,13 +241,13 @@ public class IssueDownloadManager {
          * iterates over the array of tasks and interrupts the task's current Thread.
          */
         synchronized (sInstance) {
-            
+
             // Iterates over the array of tasks
             for (int taskArrayIndex = 0; taskArrayIndex < taskArraylen; taskArrayIndex++) {
-                
+
                 // Gets the task's current thread
                 Thread thread = taskArray[taskArrayIndex].mThreadThis;
-                
+
                 // if the Thread exists, post an interrupt to it
                 if (null != thread) {
                     thread.interrupt();
@@ -320,7 +271,7 @@ public class IssueDownloadManager {
              * Locks on this class to ensure that other processes aren't mutating Threads.
              */
             synchronized (sInstance) {
-                
+
                 // Gets the Thread that the downloader task is running on
                 Thread thread = downloaderTask.getCurrentThread();
 
@@ -359,7 +310,7 @@ public class IssueDownloadManager {
 
         // Initializes the task
         downloadTask.initializeDownloaderTask(IssueDownloadManager.sInstance, issueImageURL, cacheFlag);
-        
+
         /*
          * Provides the download task with the cache buffer corresponding to the URL to be
          * downloaded.
@@ -368,7 +319,7 @@ public class IssueDownloadManager {
 
         // If the byte buffer was empty, the image wasn't cached
         if (null == downloadTask.getByteBuffer()) {
-            
+
             /*
              * "Executes" the tasks' download Runnable in order to download the image. If no
              * Threads are available in the thread pool, the Runnable waits in the queue.
@@ -376,17 +327,61 @@ public class IssueDownloadManager {
             sInstance.mDownloadThreadPool.execute(downloadTask.getHTTPDownloadRunnable());
 
         } else {
-            
+
             /*
              * Signals that the download is "complete", because the byte array already contains the
              * undecoded image. The decoding starts.
              */
-            
+
             sInstance.handleState(downloadTask, DOWNLOAD_COMPLETE);
         }
 
         // Returns a task object, either newly-created or one from the task pool
         return downloadTask;
+    }
+
+    /**
+     * Handles state messages for a particular task object
+     * @param issueDownloadTask A task object
+     * @param state The state of the task
+     */
+    @SuppressLint("HandlerLeak")
+    public void handleState(IssueDownloadTask issueDownloadTask, int state) {
+        switch (state) {
+
+            // The task finished downloading and decoding the image
+            case TASK_COMPLETE:
+
+                System.out.println("TASK_COMPLETE handleState ..... xyz");
+
+                // Puts the image into cache
+                if (issueDownloadTask.isCacheEnabled()) {
+                    // If the task is set to cache the results, put the buffer
+                    // that was
+                    // successfully decoded into the cache
+                    mIssueImageCache.put(issueDownloadTask.getImageURL(), issueDownloadTask.getByteBuffer());
+                }
+
+                // Gets a Message object, stores the state in it, and sends it to the Handler
+                Message completeMessage = mHandler.obtainMessage(state, issueDownloadTask);
+                completeMessage.sendToTarget();
+                break;
+
+            // The task finished downloading the image
+            case DOWNLOAD_COMPLETE:
+                System.out.println("DOWNLOAD_COMPLETE handleState ..... xyz");
+                /*
+                 * Decodes the image, by queuing the decoder object to run in the decoder
+                 * thread pool
+                 */
+               // mDecodeThreadPool.execute(issueDownloadTask.getPhotoDecodeRunnable());
+
+            // In all other cases, pass along the message without any other action.
+            default:
+                mHandler.obtainMessage(state, issueDownloadTask).sendToTarget();
+                break;
+        }
+
     }
 
     /**

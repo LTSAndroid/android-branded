@@ -15,10 +15,10 @@ import java.util.ArrayList;
  */
 public class AllIssuesDataSet extends BrandedSQLiteHelper{
 
+    private String TAG="AllIssueDateSet";
     public AllIssuesDataSet(Context context) {
         super(context);
     }
-    private String TAG="AllIssueDateSet";
 
     public void createTableAllIssues(SQLiteDatabase db){
         db.execSQL(AllIssuesEntry.CREATE_ALL_ISSUES_TABLE);
@@ -27,55 +27,6 @@ public class AllIssuesDataSet extends BrandedSQLiteHelper{
     public void dropAllIssuesTable(SQLiteDatabase db){
         db.execSQL(AllIssuesEntry.DROP_ALL_ISSUES_TABLE);
     }
-
-    /* Inner class that defines the table contents */
-    public static class AllIssuesEntry {
-
-        public static final String ALL_ISSUES_TABLE_NAME = BrandedSQLiteHelper.TABLE_ALL_ISSUES;
-        public static final String COLUMN_ID = "magazine_id";
-        public static final String COLUMN_TITLE = "title";
-        public static final String COLUMN_SYNOPSIS = "synopsis";
-        public static final String COLUMN_ANDROID_STORE_SKU = "android_store_sku";
-        public static final String COLUMN_PRICE = "price";
-        public static final String COLUMN_TYPE = "type";
-        public static final String COLUMN_MANIFEST = "manifest";
-        public static final String COLUMN_THUMBNAIL_URL = "thumbnail_url";
-        public static final String COLUMN_IS_PUBLISHED = "is_published";
-        public static final String COLUMN_REMOVE_FROM_SALE = "remove_from_sale";
-        public static final String COLUMN_AGE_RESTRICTION = "age_restriction";
-        public static final String COLUMN_EXCLUDE_FROM_SUBSCRIPTION = "exclude_from_subscription";
-        public static final String COLUMN_INTERNAL_SAVED_URL = "internal_saved_url";
-        public static final String COLUMN_IS_THUMBNAIL_DOWNLOADED = "is_thumbnail_downloaded";
-        public static final String COLUMN_MEDIA_FORMAT = "media_format";
-        public static final String COLUMN_IS_ISSUE_OWNED="is_issue_owned";
-        public static final String COLUMN_PAYMENT_PROVIDER="payment";
-
-        public static final String CREATE_ALL_ISSUES_TABLE = "CREATE TABLE "
-                + ALL_ISSUES_TABLE_NAME
-                + "("
-                + COLUMN_ID + " INTEGER,"
-                + COLUMN_TITLE + " TEXT,"
-                + COLUMN_SYNOPSIS + " TEXT,"
-                + COLUMN_ANDROID_STORE_SKU + " TEXT,"
-                + COLUMN_PRICE + " REAL,"
-                + COLUMN_TYPE + " TEXT,"
-                + COLUMN_MANIFEST + " TEXT,"
-                + COLUMN_THUMBNAIL_URL + " TEXT,"
-                + COLUMN_IS_PUBLISHED + " INTEGER,"
-                + COLUMN_REMOVE_FROM_SALE + " INTEGER,"
-                + COLUMN_AGE_RESTRICTION + " TEXT,"
-                + COLUMN_EXCLUDE_FROM_SUBSCRIPTION + " TEXT,"
-                + COLUMN_INTERNAL_SAVED_URL + " TEXT,"
-                + COLUMN_IS_THUMBNAIL_DOWNLOADED + " INTEGER,"
-                + COLUMN_IS_ISSUE_OWNED + " INTEGER,"
-                + COLUMN_MEDIA_FORMAT + " TEXT,"
-                + COLUMN_PAYMENT_PROVIDER+ " TEXT"
-                + ")";
-
-        public static final String DROP_ALL_ISSUES_TABLE = "DROP TABLE IF EXISTS " + ALL_ISSUES_TABLE_NAME;
-
-    }
-
 
     public void insert_all_issues_data(SQLiteDatabase db, ArrayList<Magazine> magazinesArray){
 
@@ -218,7 +169,6 @@ public class AllIssuesDataSet extends BrandedSQLiteHelper{
 
         return magazinesArray;
     }
-
 
     public ArrayList<Magazine> getAllIssuesOnly(SQLiteDatabase db){
 
@@ -391,6 +341,54 @@ public class AllIssuesDataSet extends BrandedSQLiteHelper{
         }
 
         return mMagazine;
+    }
+
+    /* Inner class that defines the table contents */
+    public static class AllIssuesEntry {
+
+        public static final String ALL_ISSUES_TABLE_NAME = BrandedSQLiteHelper.TABLE_ALL_ISSUES;
+        public static final String COLUMN_ID = "magazine_id";
+        public static final String COLUMN_TITLE = "title";
+        public static final String COLUMN_SYNOPSIS = "synopsis";
+        public static final String COLUMN_ANDROID_STORE_SKU = "android_store_sku";
+        public static final String COLUMN_PRICE = "price";
+        public static final String COLUMN_TYPE = "type";
+        public static final String COLUMN_MANIFEST = "manifest";
+        public static final String COLUMN_THUMBNAIL_URL = "thumbnail_url";
+        public static final String COLUMN_IS_PUBLISHED = "is_published";
+        public static final String COLUMN_REMOVE_FROM_SALE = "remove_from_sale";
+        public static final String COLUMN_AGE_RESTRICTION = "age_restriction";
+        public static final String COLUMN_EXCLUDE_FROM_SUBSCRIPTION = "exclude_from_subscription";
+        public static final String COLUMN_INTERNAL_SAVED_URL = "internal_saved_url";
+        public static final String COLUMN_IS_THUMBNAIL_DOWNLOADED = "is_thumbnail_downloaded";
+        public static final String COLUMN_MEDIA_FORMAT = "media_format";
+        public static final String COLUMN_IS_ISSUE_OWNED="is_issue_owned";
+        public static final String COLUMN_PAYMENT_PROVIDER="payment";
+
+        public static final String CREATE_ALL_ISSUES_TABLE = "CREATE TABLE "
+                + ALL_ISSUES_TABLE_NAME
+                + "("
+                + COLUMN_ID + " INTEGER,"
+                + COLUMN_TITLE + " TEXT,"
+                + COLUMN_SYNOPSIS + " TEXT,"
+                + COLUMN_ANDROID_STORE_SKU + " TEXT,"
+                + COLUMN_PRICE + " REAL,"
+                + COLUMN_TYPE + " TEXT,"
+                + COLUMN_MANIFEST + " TEXT,"
+                + COLUMN_THUMBNAIL_URL + " TEXT,"
+                + COLUMN_IS_PUBLISHED + " INTEGER,"
+                + COLUMN_REMOVE_FROM_SALE + " INTEGER,"
+                + COLUMN_AGE_RESTRICTION + " TEXT,"
+                + COLUMN_EXCLUDE_FROM_SUBSCRIPTION + " TEXT,"
+                + COLUMN_INTERNAL_SAVED_URL + " TEXT,"
+                + COLUMN_IS_THUMBNAIL_DOWNLOADED + " INTEGER,"
+                + COLUMN_IS_ISSUE_OWNED + " INTEGER,"
+                + COLUMN_MEDIA_FORMAT + " TEXT,"
+                + COLUMN_PAYMENT_PROVIDER+ " TEXT"
+                + ")";
+
+        public static final String DROP_ALL_ISSUES_TABLE = "DROP TABLE IF EXISTS " + ALL_ISSUES_TABLE_NAME;
+
     }
 
 

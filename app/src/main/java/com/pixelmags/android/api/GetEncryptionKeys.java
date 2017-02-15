@@ -1,7 +1,6 @@
 package com.pixelmags.android.api;
 
 import com.pixelmags.android.comms.WebRequest;
-import com.pixelmags.android.json.GetDocumentKeyParser;
 import com.pixelmags.android.json.GetEncryptionKeysParser;
 
 import org.apache.http.NameValuePair;
@@ -15,13 +14,13 @@ import java.util.ArrayList;
 public class GetEncryptionKeys extends WebRequest
 {
     private static final String API_NAME="getEncryptionKeys";
+    GetEncryptionKeysParser getEncryptionKeysParser;
     private String mEmail;
     private String mPassword;
     private String mMagazineID;
     private String mAppBundleID;
     private String mDeviceID;
     private String mIssueID;
-    GetEncryptionKeysParser getEncryptionKeysParser;
 
     public GetEncryptionKeys(){
         super(API_NAME);

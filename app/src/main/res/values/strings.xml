@@ -118,7 +118,7 @@
     <string name="can_purchase_fail_message">You cannot purchase this issue.</string>
 
 
-<!-- TODO: Remove or change this placeholder text -->
+    <!-- TODO: Remove or change this placeholder text -->
     <string name="login_fragment">Login fragment</string>
     <string name="register_fragment">Register fragment</string>
     <string name="title_activity_launch">LaunchActivity</string>
@@ -128,7 +128,7 @@
     <!--Do not delete : test Activity-->
     <string name="title_activity_login">LaunchActivity</string>
 
-<!-- TODO: Remove or change this placeholder text -->
+    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="PixelMags">PixelMags <a href="http://www.pixelmags.com"></a></string>
     <string name="Pixelmags">PixelMags <a href="http://www.pixelmags.com/t+c/current"></a></string>

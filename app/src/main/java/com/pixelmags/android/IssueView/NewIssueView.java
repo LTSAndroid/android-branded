@@ -43,22 +43,115 @@ import static java.lang.Character.digit;
 public class NewIssueView extends FragmentActivity {
 
 
-    ImageFragmentPagerAdapter imageFragmentPagerAdapter;
-    ViewPager viewPager;
-    public String issueID;
-    //
-
-    AllDownloadsIssueTracker allDownloadsTracker;
-
+    public static int xDim, yDim;
+    public static boolean issueViewOpen = false;
     //
     //public static final String[] IMAGE_NAME = {"magone", "magtwo", "magthree", "magfour", "magfive", "magsix","magone","magtwo"};
     private static ArrayList<String> issuePagesLocations;
-
-    // TODO : get the decrypt key and store here
-    private String decrypt_key;
     private static String TAG = "NewIssueView";
     private static String documentKey;
+    //
+    public String issueID;
+    ImageFragmentPagerAdapter imageFragmentPagerAdapter;
+    ViewPager viewPager;
+    AllDownloadsIssueTracker allDownloadsTracker;
+    // TODO : get the decrypt key and store here
+    private String decrypt_key;
 
+    public static Bitmap decryptFile(String path, String documentKey){
+
+        Bitmap bitmap = null;
+
+        try {
+            // Create FileInputStream to read from the encrypted image file
+            FileInputStream fis = new FileInputStream(path);
+            IssueDecode issueDecode = new IssueDecode();
+
+            byte[] bitmapdata = issueDecode.getDecodedBitMap(documentKey,fis);
+
+            fis.close();
+
+            Log.d(TAG, "Bitmap data is : " + bitmapdata.toString());
+
+
+
+            if(bitmapdata != null) {
+//                bitmap = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
+
+                BitmapFactory.Options opts = new BitmapFactory.Options();
+                opts.inJustDecodeBounds = true;
+                opts.inSampleSize = calculateInSampleSize(opts,xDim, yDim);
+                opts.inJustDecodeBounds = false;
+                opts.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                bitmap = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length,opts);
+//                Log.d(TAG,"Source is : "+source);
+//                mask = mask.extractAlpha();
+//                source.recycle();
+
+
+
+
+                Log.d(TAG,"Bitmap is : "+bitmap);
+            }
+
+
+        } catch (Exception e) {
+
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return bitmap;
+    }
+
+
+//    @Override
+//    public void onBackPressed() {
+//
+//        setResult(Activity.RESULT_OK);
+//    }
+
+    //Given the bitmap size and View size calculate a subsampling size (powers of 2)
+    static int calculateInSampleSize( BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        int inSampleSize = 1;	//Default subsampling size
+        // See if image raw height and width is bigger than that of required view
+        if (options.outHeight > reqHeight || options.outWidth > reqWidth) {
+            //bigger
+            final int halfHeight = options.outHeight / 2;
+            final int halfWidth = options.outWidth / 2;
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) > reqHeight
+                    && (halfWidth / inSampleSize) > reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+        return inSampleSize;
+    }
+
+    public static byte[] decryptFilebyte(String path, String documentKey){
+
+        Bitmap bitmap = null;
+        byte[] bitmapdata = new byte[0];
+
+        try {
+            // Create FileInputStream to read from the encrypted image file
+            FileInputStream fis = new FileInputStream(path);
+            IssueDecode issueDecode = new IssueDecode();
+
+            bitmapdata = issueDecode.getDecodedBitMap(documentKey,fis);
+
+            fis.close();
+
+            Log.d(TAG, "Bitmap data is : " + bitmapdata.toString());
+
+
+        } catch (Exception e) {
+
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return bitmapdata;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,10 +164,10 @@ public class NewIssueView extends FragmentActivity {
 //        String issueID = String.valueOf(120974);
 //        //
 
+        issueViewOpen = true;
+
         issueID = getIntent().getExtras().getString("issueId");
         documentKey = getIntent().getExtras().getString("documentKey");
-        Log.d(TAG,"Issue Id is : "+issueID);
-        Log.d(TAG,"Document Key is : "+documentKey);
 
         AllDownloadsDataSet mDownloadReader = new AllDownloadsDataSet(BaseApp.getContext());
         allDownloadsTracker = mDownloadReader.getAllDownloadsTrackerForIssue(mDownloadReader.getReadableDatabase(), issueID);
@@ -102,8 +195,10 @@ public class NewIssueView extends FragmentActivity {
 
         }
 
-
         boolean tabletSize = getResources().getBoolean(R.bool.isTablet);
+
+        Log.d(TAG,"Table Size Value is : "+ tabletSize);
+
         if (tabletSize) {
             if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
                 imageFragmentPagerAdapter = new ImageFragmentPagerAdapter(getSupportFragmentManager());
@@ -121,66 +216,28 @@ public class NewIssueView extends FragmentActivity {
                 imageFragmentPagerAdapter = new ImageFragmentPagerAdapter(getSupportFragmentManager());
                 viewPager = (ViewPager) findViewById(R.id.pager);
                 viewPager.setAdapter(imageFragmentPagerAdapter);
+
         }
-
-
-
 
     }
 
+    private byte[] stringToBytes(String input) {
 
+        int length = input.length();
+        byte[] output = new byte[length / 2];
 
-    public class ImageFragmentPagerAdapter extends FragmentStatePagerAdapter {
-
-        /*
-            FragmentStatePagerAdapter more useful when there are a large number of pages, working more like a list view. When pages are not visible to the user,
-            their entire fragment may be destroyed, only keeping the saved state of that fragment. This allows the pager to hold on to much less
-            memory associated with each visited page as compared to FragmentPagerAdapter at the cost of potentially more overhead when switching between pages.
-         */
-
-        public ImageFragmentPagerAdapter(FragmentManager fm) {
-            super(fm);
+        for (int i = 0; i < length; i += 2) {
+            output[i / 2] = (byte) ((digit(input.charAt(i), 16) << 4) | digit(input.charAt(i+1), 16));
         }
-
-        @Override
-        public int getCount() {
-            if(issuePagesLocations == null){
-                return 0;
-            }
-
-            return issuePagesLocations.size();
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            SwipeFragment fragment = new SwipeFragment();
-            return fragment.newInstance(position);
-        }
-
-        @Override
-        public float getPageWidth(int position) {
-            boolean tabletSize = getResources().getBoolean(R.bool.isTablet);
-            if (tabletSize) {
-                if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
-                    return(1f/2f);
-                }else{
-                    return(1f/1f);
-                }
-
-            } else {
-                    return(1f/1f);
-            }
-
-
-        }
+        return output;
 
     }
 
     public static class SwipeFragment extends Fragment
     {
 
-        private byte[] bitmap;
         IssueImagePinchZoom imageView;
+        private byte[] bitmap;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -196,7 +253,13 @@ public class NewIssueView extends FragmentActivity {
 
             Bitmap imageForView = null;
             String imageLocation = issuePagesLocations.get(position);
+
+            xDim = imageView.getWidth();
+            yDim = imageView.getHeight();
+
             if(imageLocation != null){
+
+
 
 //                bitmap =  decryptFilebyte(imageLocation, documentKey);
 //                BitmapWorkerTask bitmapWorkerTask = new BitmapWorkerTask(imageView,bitmap);
@@ -204,8 +267,6 @@ public class NewIssueView extends FragmentActivity {
 
 
                 imageForView =  decryptFile(imageLocation,documentKey);
-
-                Log.d(TAG, "Image for view is : " + imageForView);
 
 //                saveImage(imageForView);
 
@@ -271,86 +332,6 @@ public class NewIssueView extends FragmentActivity {
 
     }
 
-
-
-
-    private byte[] stringToBytes(String input) {
-
-        int length = input.length();
-        byte[] output = new byte[length / 2];
-
-        for (int i = 0; i < length; i += 2) {
-            output[i / 2] = (byte) ((digit(input.charAt(i), 16) << 4) | digit(input.charAt(i+1), 16));
-        }
-        return output;
-
-    }
-
-    public static Bitmap decryptFile(String path, String documentKey){
-
-        Bitmap bitmap = null;
-
-        try {
-            // Create FileInputStream to read from the encrypted image file
-            FileInputStream fis = new FileInputStream(path);
-            IssueDecode issueDecode = new IssueDecode();
-
-            byte[] bitmapdata = issueDecode.getDecodedBitMap(documentKey,fis);
-
-            fis.close();
-
-            Log.d(TAG, "Bitmap data is : " + bitmapdata.toString());
-
-
-
-            if(bitmapdata != null) {
-//                bitmap = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
-
-                BitmapFactory.Options opts = new BitmapFactory.Options();
-                opts.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                bitmap = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length,opts);
-//                Log.d(TAG,"Source is : "+source);
-//                mask = mask.extractAlpha();
-//                source.recycle();
-
-                Log.d(TAG,"Bitmap is : "+bitmap);
-            }
-            
-
-        } catch (Exception e) {
-
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return bitmap;
-    }
-
-    public static byte[] decryptFilebyte(String path, String documentKey){
-
-        Bitmap bitmap = null;
-        byte[] bitmapdata = new byte[0];
-
-        try {
-            // Create FileInputStream to read from the encrypted image file
-            FileInputStream fis = new FileInputStream(path);
-            IssueDecode issueDecode = new IssueDecode();
-
-            bitmapdata = issueDecode.getDecodedBitMap(documentKey,fis);
-
-            fis.close();
-
-            Log.d(TAG, "Bitmap data is : " + bitmapdata.toString());
-
-
-        } catch (Exception e) {
-
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return bitmapdata;
-    }
-
-
     static class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
         private final WeakReference<ImageView> imageViewReference;
         private byte[] bitmap;
@@ -378,6 +359,52 @@ public class NewIssueView extends FragmentActivity {
                 }
             }
         }
+    }
+
+    public class ImageFragmentPagerAdapter extends FragmentStatePagerAdapter {
+
+        /*
+            FragmentStatePagerAdapter more useful when there are a large number of pages, working more like a list view. When pages are not visible to the user,
+            their entire fragment may be destroyed, only keeping the saved state of that fragment. This allows the pager to hold on to much less
+            memory associated with each visited page as compared to FragmentPagerAdapter at the cost of potentially more overhead when switching between pages.
+         */
+
+        public ImageFragmentPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public int getCount() {
+            if(issuePagesLocations == null){
+                return 0;
+            }
+
+            return issuePagesLocations.size();
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            SwipeFragment fragment = new SwipeFragment();
+            return fragment.newInstance(position);
+        }
+
+        @Override
+        public float getPageWidth(int position) {
+            boolean tabletSize = getResources().getBoolean(R.bool.isTablet);
+            if (tabletSize) {
+                if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+                    return(1f/2f);
+                }else{
+                    return(1f/1f);
+                }
+
+            } else {
+                    return(1f/1f);
+            }
+
+
+        }
+
     }
 
 

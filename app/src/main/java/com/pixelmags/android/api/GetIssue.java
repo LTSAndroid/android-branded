@@ -23,15 +23,19 @@ import java.util.ArrayList;
 public class GetIssue extends WebRequest
 {
     private static final String API_NAME="getIssue";
+    private static boolean failure = false;
+    GetIssueParser getIssueParser;
     private String mIssueID;
     private String TAG = "GetIssue";
-    private static boolean failure = false;
-
-    GetIssueParser getIssueParser;
 
     public GetIssue(){
         super(API_NAME);
     }
+
+    public static boolean setGetIssueFailure(){
+        return failure;
+    }
+
     public void init(String issueID)
     {
 
@@ -66,10 +70,6 @@ public class GetIssue extends WebRequest
             }
         }
 
-    }
-
-    public static boolean setGetIssueFailure(){
-        return failure;
     }
 
     private void setApiNameValuePairs(){

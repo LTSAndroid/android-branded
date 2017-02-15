@@ -7,8 +7,8 @@ import org.json.JSONObject;
  */
 public class JSONParser {
 
-    private String JSONRawData;
     public JSONObject baseJSON;
+    private String JSONRawData;
     private boolean success;
     private int error_code;
     private String error_message;

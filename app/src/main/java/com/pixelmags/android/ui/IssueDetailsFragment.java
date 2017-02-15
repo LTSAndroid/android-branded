@@ -41,6 +41,7 @@ import com.pixelmags.android.storage.BrandedSQLiteHelper;
 import com.pixelmags.android.storage.MyIssueDocumentKey;
 import com.pixelmags.android.storage.MyIssuesDataSet;
 import com.pixelmags.android.storage.UserPrefs;
+import com.pixelmags.android.ui.uicomponents.DownloadFragment;
 import com.pixelmags.android.ui.uicomponents.MultiStateButton;
 import com.pixelmags.android.util.BaseApp;
 import com.pixelmags.android.util.GetInternetStatus;
@@ -53,29 +54,25 @@ import java.util.ArrayList;
 public class IssueDetailsFragment extends Fragment {
 
 
-    public Magazine issueData;
     private static final String SERIALIZABLE_MAG_KEY = "serializable_mag_key";
     private static final String ISSUE_ID_KEY = "issue_id_key";
     private static final String MAGAZINE_ID_KEY = "magazine_id_key";
-
-    private DownloadIssueAsyncTask mIssueTask = null;
-
+    public Magazine issueData;
     LinearLayout previewImagesLayout;
-    private DownloadPreviewImagesAsyncTask mPreviewImagesTask = null;
-    private LoadIssueAsyncTask mLoadIssueTask = null;
-
-    private String mIssueID;
-    private String mMagazineID;
-
     ImageView issueDetailsImageView;
     TextView issueDetailsTitle;
     TextView issueDetailsSynopsis;
     MultiStateButton issueDetailsPriceButton;
-    private String TAG = "IssueDetailFragments";
-    private String documentKey;
     ProgressDialog progressBar;
     ArrayList<IssueDocumentKey> issueDocumentKeys;
     ArrayList<AllDownloadsIssueTracker> allDownloadsTracker;
+    private DownloadIssueAsyncTask mIssueTask = null;
+    private DownloadPreviewImagesAsyncTask mPreviewImagesTask = null;
+    private LoadIssueAsyncTask mLoadIssueTask = null;
+    private String mIssueID;
+    private String mMagazineID;
+    private String TAG = "IssueDetailFragments";
+    private String documentKey;
 
 
     public IssueDetailsFragment() {
@@ -242,14 +239,25 @@ public class IssueDetailsFragment extends Fragment {
                                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int which) {
 
-                                            Fragment fragmentDownload = new AllDownloadsFragment();
+//                                            Fragment fragmentDownload = new AllDownloadsFragment();
+//                                            // Insert the fragment by replacing any existing fragment
+//                                            FragmentManager allIssuesFragmentManager = getFragmentManager();
+//                                            allIssuesFragmentManager.beginTransaction()
+//                                                    .replace(R.id.main_fragment_container, fragmentDownload,"ALLDOWNLOADFRAGMENT")
+//                                                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+//                                                            //       .addToBackStack(null)
+//                                                    .commit();
+
+
+                                            Fragment fragmentDownload = new DownloadFragment();
                                             // Insert the fragment by replacing any existing fragment
                                             FragmentManager allIssuesFragmentManager = getFragmentManager();
                                             allIssuesFragmentManager.beginTransaction()
-                                                    .replace(R.id.main_fragment_container, fragmentDownload,"ALLDOWNLOADFRAGMENT")
+                                                    .replace(R.id.main_fragment_container, fragmentDownload,"DownloadFragment")
                                                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                                                            //       .addToBackStack(null)
+                                                    //       .addToBackStack(null)
                                                     .commit();
+
                                         }
                                     })
                                     .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -374,14 +382,25 @@ public class IssueDetailsFragment extends Fragment {
                     .setMessage("You can view your Issue in download section.")
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            Fragment fragmentDownload = new AllDownloadsFragment();
+//                            Fragment fragmentDownload = new AllDownloadsFragment();
+//                            // Insert the fragment by replacing any existing fragment
+//                            FragmentManager allIssuesFragmentManager = getFragmentManager();
+//                            allIssuesFragmentManager.beginTransaction()
+//                                    .replace(R.id.main_fragment_container, fragmentDownload,"ALLDOWNLOADFRAGMENT")
+//                                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+//                                            //       .addToBackStack(null)
+//                                    .commit();
+
+                            Fragment fragmentDownload = new DownloadFragment();
                             // Insert the fragment by replacing any existing fragment
                             FragmentManager allIssuesFragmentManager = getFragmentManager();
                             allIssuesFragmentManager.beginTransaction()
-                                    .replace(R.id.main_fragment_container, fragmentDownload,"ALLDOWNLOADFRAGMENT")
+                                    .replace(R.id.main_fragment_container, fragmentDownload,"DownloadFragment")
                                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                                            //       .addToBackStack(null)
+                                    //       .addToBackStack(null)
                                     .commit();
+
+
                         }
                     })
                     .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -456,66 +475,6 @@ public class IssueDetailsFragment extends Fragment {
 
     }
 
-    /**
-     *
-     * Represents an asynchronous task used to load the issues.
-     *
-     */
-    public class LoadIssueAsyncTask extends AsyncTask<String, String, Boolean> {
-
-        private final String mIssueID;
-
-        LoadIssueAsyncTask(String magID, String issueID) {
-            mIssueID = issueID;
-        }
-
-        @Override
-        protected Boolean doInBackground(String... params) {
-            // TODO: attempt authentication against a network service.
-
-            try {
-
-                AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
-                issueData = mDbHelper.getSingleIssue(mDbHelper.getReadableDatabase(),mIssueID);
-                mDbHelper.close();
-
-                loadMyIssue();
-
-
-                if(issueData != null) {
-
-                    // Load the issue Image here, as it is better to do it in the background
-                    if (issueData.isThumbnailDownloaded) {
-                        issueData.thumbnailBitmap = loadImageFromStorage(issueData.thumbnailDownloadedInternalPath);
-                    }
-                }
-
-                return true;
-
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-
-            return false;
-
-        }
-
-        protected void onPostExecute(Boolean result) {
-
-            if(result)
-            {
-                loadIssueData();
-
-            }
-
-        }
-
-        @Override
-        protected void onCancelled() {
-            mLoadIssueTask = null;
-        }
-    }
-
     public void loadMyIssue(){
 
         AllDownloadsDataSet mDbReader = new AllDownloadsDataSet(BaseApp.getContext());
@@ -588,10 +547,86 @@ public class IssueDetailsFragment extends Fragment {
 
     }
 
+    private Bitmap loadImageFromStorage(String path)
+    {
+
+        Bitmap issueThumbnail = null;
+        try {
+            File file = new File(path);
+            FileInputStream inputStream = new FileInputStream(file);
+            issueThumbnail = BitmapFactory.decodeStream(inputStream);
 
 
+            inputStream.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        return issueThumbnail;
+
+    }
+
+    /**
+     *
+     * Represents an asynchronous task used to load the issues.
+     *
+     */
+    public class LoadIssueAsyncTask extends AsyncTask<String, String, Boolean> {
+
+        private final String mIssueID;
+
+        LoadIssueAsyncTask(String magID, String issueID) {
+            mIssueID = issueID;
+        }
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+            // TODO: attempt authentication against a network service.
+
+            try {
+
+                AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
+                issueData = mDbHelper.getSingleIssue(mDbHelper.getReadableDatabase(),mIssueID);
+                mDbHelper.close();
+
+                loadMyIssue();
 
 
+                if(issueData != null) {
+
+                    // Load the issue Image here, as it is better to do it in the background
+                    if (issueData.isThumbnailDownloaded) {
+                        issueData.thumbnailBitmap = loadImageFromStorage(issueData.thumbnailDownloadedInternalPath);
+                    }
+                }
+
+                return true;
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+            return false;
+
+        }
+
+        protected void onPostExecute(Boolean result) {
+
+            if(result)
+            {
+                loadIssueData();
+
+            }
+
+        }
+
+        @Override
+        protected void onCancelled() {
+            mLoadIssueTask = null;
+        }
+    }
 
     /**
      *
@@ -724,27 +759,6 @@ public class IssueDetailsFragment extends Fragment {
         protected void onCancelled() {
             mIssueTask = null;
         }
-    }
-
-    private Bitmap loadImageFromStorage(String path)
-    {
-
-        Bitmap issueThumbnail = null;
-        try {
-            File file = new File(path);
-            FileInputStream inputStream = new FileInputStream(file);
-            issueThumbnail = BitmapFactory.decodeStream(inputStream);
-
-
-            inputStream.close();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-
-        return issueThumbnail;
-
     }
 
 }

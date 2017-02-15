@@ -1,6 +1,5 @@
 package com.pixelmags.android.json;
 
-import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.datamodels.PreviewImage;
 
 import org.json.JSONArray;

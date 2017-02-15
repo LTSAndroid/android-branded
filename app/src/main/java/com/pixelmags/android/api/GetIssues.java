@@ -19,9 +19,9 @@ import java.util.ArrayList;
 public class GetIssues extends WebRequest {
 
     private static final String API_NAME = "getIssues";
+    GetIssuesParser getIssuesParserParser;
     private String mMagazineID;
     private String mAppBundleID;
-    GetIssuesParser getIssuesParserParser;
 
     public GetIssues() {
         super(API_NAME);

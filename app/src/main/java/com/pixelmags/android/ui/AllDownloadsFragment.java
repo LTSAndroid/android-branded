@@ -33,14 +33,14 @@ import io.fabric.sdk.android.Fabric;
 
 public class AllDownloadsFragment extends Fragment {
 
-    private ArrayList<AllDownloadsIssueTracker> allDownloadsIssuesListTracker = null;
     public static CustomAllDownloadsGridAdapter gridDownloadAdapter;
-    private GetAllDownloadedIssuesTask mGetAllDownloadedIssuesTask;
-    private String TAG = "AllDownloadsFragment";
-    private static View grid;
     public static int jumpTime = 0;
+    private static View grid;
 //    private RecyclerView recyclerView;
     GridView gridView;
+    private ArrayList<AllDownloadsIssueTracker> allDownloadsIssuesListTracker = null;
+    private GetAllDownloadedIssuesTask mGetAllDownloadedIssuesTask;
+    private String TAG = "AllDownloadsFragment";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -141,6 +141,32 @@ public class AllDownloadsFragment extends Fragment {
         super.onPause();
     }
 
+    public void deleteThumbnail(String path){
+        File file = new File(path);
+        if(file.exists()){
+            file.delete();
+        }
+    }
+
+    private Bitmap loadImageFromStorage(String path)
+    {
+
+        Bitmap issueThumbnail = null;
+        try {
+            File file = new File(path);
+            FileInputStream inputStream = new FileInputStream(file);
+            issueThumbnail = BitmapFactory.decodeStream(inputStream);
+            inputStream.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        return issueThumbnail;
+
+    }
+
     /**
      *
      * Represents an asynchronous task used to fetch all the issues.
@@ -217,31 +243,5 @@ public class AllDownloadsFragment extends Fragment {
         protected void onCancelled() {
 
         }
-    }
-
-    public void deleteThumbnail(String path){
-        File file = new File(path);
-        if(file.exists()){
-            file.delete();
-        }
-    }
-
-    private Bitmap loadImageFromStorage(String path)
-    {
-
-        Bitmap issueThumbnail = null;
-        try {
-            File file = new File(path);
-            FileInputStream inputStream = new FileInputStream(file);
-            issueThumbnail = BitmapFactory.decodeStream(inputStream);
-            inputStream.close();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-
-        return issueThumbnail;
-
     }
 }

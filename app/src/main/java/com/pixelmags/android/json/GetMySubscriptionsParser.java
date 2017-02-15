@@ -1,6 +1,5 @@
 package com.pixelmags.android.json;
 
-import com.pixelmags.android.datamodels.MyIssue;
 import com.pixelmags.android.datamodels.MySubscription;
 
 import org.json.JSONArray;

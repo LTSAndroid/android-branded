@@ -14,8 +14,8 @@ import java.util.ArrayList;
 public class ForgotPassword extends WebRequest
 {
     private static final String API_NAME="forgotPassword";
-    private String mEmail;
     ForgotPasswordParser fParser;
+    private String mEmail;
 
     public ForgotPassword(){
         super(API_NAME);

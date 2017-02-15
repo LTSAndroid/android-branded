@@ -11,17 +11,9 @@ public class PageTypeImage extends Page {
     private PageTypeImageParser pageParser;
 
 
-   public enum MediaType {
-       SMALL, MEDIUM, LARGE
-   }
-
-
-
    public PageTypeImage(int pgNo, String pgID, String JSONData){
         super(pgNo, pgID, JSONData);
    }
-
-
 
     public PageDetails getPageDetails(MediaType pageSize){
 
@@ -46,6 +38,11 @@ public class PageTypeImage extends Page {
 
     }
 
+
+
+   public enum MediaType {
+       SMALL, MEDIUM, LARGE
+   }
 
     public class PageDetails{
 

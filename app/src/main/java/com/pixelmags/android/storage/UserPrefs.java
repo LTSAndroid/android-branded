@@ -85,14 +85,17 @@ public class UserPrefs {
 
     }
 
+    public static String getUserEmail(){
+        return getStringPrefs(USER_EMAIL, "");
+    }
 
     // User Email
     public static void setUserEmail(String email){
         setStringPref(USER_EMAIL, email);
     }
 
-    public static String getUserEmail(){
-        return getStringPrefs(USER_EMAIL, "");
+    public static String getUserPassword(){
+        return getStringPrefs(USER_PASSWORD,"");
     }
 
     // User Password
@@ -100,18 +103,17 @@ public class UserPrefs {
         setStringPref(USER_PASSWORD, password);
     }
 
-    public static String getUserPassword(){
-        return getStringPrefs(USER_PASSWORD,"");
+    public static String getUserDob(){
+        return getStringPrefs(USER_DOB,"");
     }
-
 
     // User Date of Birth
     public static void setUserDob(String dob){
         setStringPref(USER_DOB, dob);
     }
 
-    public static String getUserDob(){
-        return getStringPrefs(USER_DOB,"");
+    public static String getUserFirstName(){
+        return getStringPrefs(USER_FIRST_NAME,"");
     }
 
     // User First Name
@@ -119,8 +121,8 @@ public class UserPrefs {
         setStringPref(USER_FIRST_NAME, firstName);
     }
 
-    public static String getUserFirstName(){
-        return getStringPrefs(USER_FIRST_NAME,"");
+    public static String getUserLastName(){
+        return getStringPrefs(USER_LAST_NAME,"");
     }
 
     // User Last Name
@@ -128,18 +130,13 @@ public class UserPrefs {
         setStringPref(USER_LAST_NAME, lastName);
     }
 
-    public static String getUserLastName(){
-        return getStringPrefs(USER_LAST_NAME,"");
+    public static String getUserPixelmagsId(){
+        return getStringPrefs(USER_PIXELMAGS_ID,"");
     }
-
 
     // User Last Name
     public static void setUserPixelmagsId(String userPixelmagsId){
         setStringPref(USER_PIXELMAGS_ID, userPixelmagsId);
-    }
-
-    public static String getUserPixelmagsId(){
-        return getStringPrefs(USER_PIXELMAGS_ID,"");
     }
 
 
@@ -173,15 +170,15 @@ public class UserPrefs {
 
     // User Log in status
 
-    public static void setUserLoggedIn(boolean loggedInStatus) {
-
-        setBooleanPref(USER_LOGIN_STATUS, loggedInStatus);
-
-    }
-
     public static boolean getUserLoggedIn() {
 
         return getBooleanPrefs(USER_LOGIN_STATUS, false);
+
+    }
+
+    public static void setUserLoggedIn(boolean loggedInStatus) {
+
+        setBooleanPref(USER_LOGIN_STATUS, loggedInStatus);
 
     }
 

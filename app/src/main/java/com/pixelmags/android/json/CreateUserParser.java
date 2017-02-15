@@ -1,7 +1,5 @@
 package com.pixelmags.android.json;
 
-import org.json.JSONObject;
-
 /**
  * Created by austincoutinho on 08/10/15.
  */

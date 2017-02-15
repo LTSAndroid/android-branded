@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.v7.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card_view"
     android:layout_width="fill_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:layout_margin="6dp">
 
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -17,7 +17,7 @@
         android:paddingTop="10dp" >
 
         <ImageView
-            android:id="@+id/gridDownloadedIssueImage"
+            android:id="@+id/issue_image"
             android:layout_width="110dp"
             android:layout_height="110dp"
             android:layout_alignParentTop="true"
@@ -36,7 +36,7 @@
                 android:id="@+id/downloadTopContainer"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:paddingLeft="35dp"
+                android:paddingLeft="20dp"
                 android:paddingRight="5dp">
 
                 <ImageView
@@ -54,12 +54,11 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/gridDownloadedTitleText"
+                        android:id="@+id/issue_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:text="Issue"
                         android:textAppearance="?android:attr/textAppearanceMedium"
+                        tools:text="San Diego PREMIER November 2016"
                         />
 
                 </LinearLayout>
@@ -94,26 +93,18 @@
                         android:textSize="10sp" />
 
                     <TextView
-                        android:id="@+id/downloadStatusCount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_toLeftOf="@+id/percentage_symbol"
-                        android:layout_toStartOf="@+id/percentage_symbol"
-                        android:background="@android:color/transparent"
-                        android:textSize="10sp"
-                        tools:text="30" />
-
-                    <TextView
-                        android:id="@+id/percentage_symbol"
+                        android:id="@+id/progress_percentage"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignEnd="@+id/progressBar"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
                         android:layout_alignParentTop="true"
                         android:layout_alignRight="@+id/progressBar"
                         android:background="@android:color/transparent"
-                        android:text="%"
-                        android:textSize="10sp" />
+                        android:gravity="end"
+                        android:textSize="10sp"
+                        tools:text="30%" />
 
 
                     <ProgressBar
@@ -127,14 +118,14 @@
                         android:max="100"/>
 
                     <!--<ProgressBar-->
-                        <!--style="@android:style/Widget.ProgressBar.Horizontal"-->
-                        <!--android:layout_width="fill_parent"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:layout_below="@+id/downloadStatusText"-->
-                        <!--android:id="@+id/progressBar"-->
-                        <!--android:layout_gravity="center_vertical"-->
-                        <!--android:indeterminate="false"-->
-                        <!--android:max="100" />-->
+                    <!--style="@android:style/Widget.ProgressBar.Horizontal"-->
+                    <!--android:layout_width="fill_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_below="@+id/downloadStatusText"-->
+                    <!--android:id="@+id/progressBar"-->
+                    <!--android:layout_gravity="center_vertical"-->
+                    <!--android:indeterminate="false"-->
+                    <!--android:max="100" />-->
 
                 </RelativeLayout>
 
@@ -142,24 +133,10 @@
             </RelativeLayout>
 
             <com.pixelmags.android.ui.uicomponents.MultiStateButton
-                android:id="@+id/gridMultiStateButton"
+                android:id="@+id/multi_state_button"
                 style="@style/MultiStateButtonBase"
                 android:layout_width="150dp"/>
 
-
-            <!--<Button-->
-                <!--android:layout_width="100dp"-->
-                <!--android:layout_height="35dp"-->
-                <!--android:background="@drawable/shape"-->
-                <!--android:text="Status"-->
-                <!--android:shadowColor="#3384ff"-->
-                <!--android:shadowDx="0"-->
-                <!--android:shadowDy="0"-->
-                <!--android:shadowRadius="5"-->
-                <!--android:id="@+id/gridDownloadStatusButton"-->
-                <!--android:textColor="#ffffff"-->
-                <!--android:layout_marginTop="5dp"-->
-                <!--android:layout_gravity="center_horizontal" />-->
 
 
         </LinearLayout>

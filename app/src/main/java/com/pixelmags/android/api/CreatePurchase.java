@@ -1,11 +1,7 @@
 package com.pixelmags.android.api;
 
-import android.content.Intent;
-
-import com.pixelmags.android.IssueView.NewIssueView;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.comms.WebRequest;
-import com.pixelmags.android.json.CanPurchaseParser;
 import com.pixelmags.android.json.CreatePurchaseParser;
 import com.pixelmags.android.storage.UserPrefs;
 
@@ -20,11 +16,10 @@ import java.util.ArrayList;
 public class CreatePurchase extends WebRequest
 {
     private static final String API_NAME="createPurchase";
+    CreatePurchaseParser cParser;
     private int mIssue_id;
     private String mPurchaseReceipt;
     private String mPurchaseSignature;
-
-    CreatePurchaseParser cParser;
 
     public CreatePurchase(){
         super(API_NAME);

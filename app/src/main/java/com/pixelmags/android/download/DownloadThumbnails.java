@@ -13,7 +13,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 
 /**
@@ -23,12 +22,11 @@ public class DownloadThumbnails implements Runnable {
 
     private static final String THUMBNAIL_DIR_PREFIX="/Temp/IssueThumbnails";
     private static final String THUMBNAILS_DOWNLOADEDISSUE_DIR_PREFIX="/Permanent/DownloadedIssueThumbnails";
-
+    public static ArrayList<Magazine> allIssues;
     private int issueIndex;
     private String url;
     private String issueFileName;
     private String savedPath;
-
     private boolean isDownloaded;
 
     DownloadThumbnails(String downloadUrl, int magIndex, String issue){
@@ -37,8 +35,6 @@ public class DownloadThumbnails implements Runnable {
         this.issueFileName = issue;
         this.isDownloaded = false;
     }
-
-    public static ArrayList<Magazine> allIssues;
 
     public static void copyThumbnailOfIssueDownloaded(String issueID) {
 
@@ -156,6 +152,21 @@ public class DownloadThumbnails implements Runnable {
 
     }
 
+    private static void createAndClearStorageDirectory(){
+
+        ContextWrapper cw = new ContextWrapper(BaseApp.getContext());
+        // path to /data/data/yourapp/app_data/imageDir
+        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+
+        File folder = new File(directory.getAbsolutePath()+THUMBNAIL_DIR_PREFIX);
+        folder.mkdirs();
+
+        for(File file: folder.listFiles()) {
+            file.delete();
+        }
+
+    }
+
     @Override
     public void run() {
 
@@ -199,23 +210,6 @@ public class DownloadThumbnails implements Runnable {
         }
 
         return myPath.getAbsolutePath();
-    }
-
-
-
-    private static void createAndClearStorageDirectory(){
-
-        ContextWrapper cw = new ContextWrapper(BaseApp.getContext());
-        // path to /data/data/yourapp/app_data/imageDir
-        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
-
-        File folder = new File(directory.getAbsolutePath()+THUMBNAIL_DIR_PREFIX);
-        folder.mkdirs();
-
-        for(File file: folder.listFiles()) {
-            file.delete();
-        }
-
     }
 
 

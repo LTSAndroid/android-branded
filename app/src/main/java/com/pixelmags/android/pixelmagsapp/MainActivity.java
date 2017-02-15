@@ -33,13 +33,16 @@ import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
 import com.pixelmags.android.api.CanPurchase;
+import com.pixelmags.android.bean.DataTransferInterface;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.datamodels.MyIssue;
 import com.pixelmags.android.datamodels.MySubscription;
+import com.pixelmags.android.pixelmagsapp.adapter.DownloadAdapter;
 import com.pixelmags.android.pixelmagsapp.billing.CreatePurchaseTask;
 import com.pixelmags.android.pixelmagsapp.service.PMService;
 import com.pixelmags.android.pixelmagsapp.test.ResultsFragment;
+import com.pixelmags.android.storage.AllDownloadsDataSet;
 import com.pixelmags.android.storage.AllIssuesDataSet;
 import com.pixelmags.android.storage.MyIssuesDataSet;
 import com.pixelmags.android.storage.MySubscriptionsDataSet;
@@ -74,126 +77,45 @@ public class MainActivity extends AppCompatActivity
         SubscriptionsFragment.OnFragmentInteractionListener {
 
     public IabHelper mHelper;
-    private ArrayList<Magazine> pixelmagsMagazinesList = null;
     public ArrayList<Magazine> billingMagazinesList;
     public ArrayList<Purchase> userOwnedSKUList;
     public ArrayList<String> skuList;
-    private String TAG = "MainActivity";
-
-    /**
-     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
-     */
-
-    private NavigationDrawerFragment mNavigationDrawerFragment;
-
-    /**
-     * The service that will perform all the downloads in the background.
-     * This is started whenever the App is launched and within the MainActivity.
-     * The service should stop itself once all downloads are complete.
-     */
-
-    // Service Parameters
-    private PMService mPMService;
-    private ServiceConnection mConnection = null;
-    boolean mIsBound = false;
-
-    /**
-     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
-     */
-    private CharSequence mTitle;
     public CanPurchaseTask mCanPurchaseTask = null;
     public CreatePurchaseTask mCreatePurchaseTask = null;
-    private int purchaseIssueId;
-    private String purchaseSKU;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState)
+    boolean mIsBound = false;
+    private ArrayList<Magazine> pixelmagsMagazinesList = null;
+    private String TAG = "MainActivity";
+    IabHelper.QueryInventoryFinishedListener mGotInventoryListener
+            = new IabHelper.QueryInventoryFinishedListener()
     {
-        super.onCreate(savedInstanceState);
-        Fabric.with(this, new Crashlytics());
-        // start the service
-        startDownloadService();
-
-        setContentView(R.layout.activity_main);
-
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
-
-        // Set up the drawer.
-        mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
-
-
-        // setting STRICT DEVELOPER MODE (Disable this for live apps)
-        PMStrictMode.setStrictMode(Config.DEVELOPER_MODE);
-
-
-        Util.doPreLaunchSteps();
-
-        // This string is unique for each app
-        String base64EncodedPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhE2tqqq+WSoEXHyqOdeFjKFGgWVuhapArdTe/b0wzxAJE0pdsM8FlywwyIQlLd51hj6vvDkmd8T3dRi6LX2Ww2M8+fpK7jP3ydMyTZB9efuAiRZq2tlo2GmrFmO0vTdD0MkY4OdX9ROEvY9k/cbzXX73uNH0FAcZ38ypr/qf66IS2yI+z+Oiip7c39pDrG0P4kVamJQOjs7PLTmtwU1PWc43phqISxxpLJWxj0yW/YjfZ7Knk5n84p02CpDJcoZXdsBu7X4GOc79DRURDHuLu3tgkp3roXTQeX6y4Ht9843Hu5rSRgADQ/5828+SozdhIAhQ4CT/MZ0w0NEd0/OitwIDAQAB";
-        mHelper = new IabHelper(this, base64EncodedPublicKey);
-
-        mHelper.startSetup(new
-                               IabHelper.OnIabSetupFinishedListener()
-                               {
-                                   public void onIabSetupFinished(IabResult result)
-                                   {
-                                       if (!result.isSuccess())
-                                       {
-                                           //failed
-                                       }
-                                       else
-                                       {
-                                           //success
-                                       }
-                                   }
-                               });
-
-
-        mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener()
+        public void onQueryInventoryFinished(IabResult result,
+                                             Inventory inventory)
         {
-            public void onIabSetupFinished(IabResult result)
+
+            if (result.isFailure())
             {
-                if (!result.isSuccess())
-                {
-                    /*Utilities.log("Unable to setup billing: " + result);
-                    isBillingSetup = false;*/
-                } else
-                {
-                    /*Utilities.log("Billing setup successfully");
-                    isBillingSetup = true;*/
-                    pixelmagsMagazinesList = null; // clear the list
-
-                    AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
-                    pixelmagsMagazinesList = mDbHelper.getAllIssues(mDbHelper.getReadableDatabase());
-
-                    Log.d(TAG,"Pixel Image Magazine List is : " +pixelmagsMagazinesList);
-
-                    mDbHelper.close();
-
-                    skuList = new ArrayList<String>();
-
-                    if (pixelmagsMagazinesList != null)
-                    {
-
-                        for (int i = 0; i < pixelmagsMagazinesList.size(); i++)
-                        {
-                            skuList.add(pixelmagsMagazinesList.get(i).android_store_sku);
-
-                        }
-//                        skuList.add("com.pixelmags.androidbranded.test1");//This to confirm billing sku
-//                        skuList.add("com.pixelmags.androidbranded.test2");//This is to confirm billing sku
-//                        skuList.add("com.pixelmags.androidbranded.test3");//This is to confirm billing sku
-                    }
-                    mHelper.queryInventoryAsync(true, skuList, mQueryFinishedListener);
-                }
+                // handle error here
             }
-        });
-    }
+            else
+            {
+                // does the user have the premium upgrade?
+                //mIsPremium = inventory.hasPurchase(SKU_PREMIUM);
+                // update UI accordingly
+                List<String> allOwnedSKUS = inventory.getAllOwnedSkus();
+                userOwnedSKUList = new ArrayList<Purchase>();
+                for ( int i = 0; i < allOwnedSKUS.size(); i++)
+                {
+                    Purchase purchaseData = inventory.getPurchase(allOwnedSKUS.get(i));
+                    Log.d(TAG,"Purchase Data is : "+purchaseData);
+                    //Assign button Status here and also restore purchase if the issue is not purchased
+                    userOwnedSKUList.add(purchaseData);
+                }
 
+
+
+            }
+        }
+    };
     IabHelper.QueryInventoryFinishedListener mQueryFinishedListener = new IabHelper.QueryInventoryFinishedListener()
     {
         public void onQueryInventoryFinished(IabResult result, Inventory inventory)
@@ -310,40 +232,163 @@ public class MainActivity extends AppCompatActivity
         }
 
     };
+    /**
+     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
+     */
 
-    IabHelper.QueryInventoryFinishedListener mGotInventoryListener
-            = new IabHelper.QueryInventoryFinishedListener()
+    private NavigationDrawerFragment mNavigationDrawerFragment;
+    /**
+     * The service that will perform all the downloads in the background.
+     * This is started whenever the App is launched and within the MainActivity.
+     * The service should stop itself once all downloads are complete.
+     */
+
+    // Service Parameters
+    private PMService mPMService;
+    private ServiceConnection mConnection = null;
+    /**
+     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
+     */
+    private CharSequence mTitle;
+    private int purchaseIssueId;
+    private String purchaseSKU;
+    IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener
+            = new IabHelper.OnIabPurchaseFinishedListener()
     {
-        public void onQueryInventoryFinished(IabResult result,
-                                             Inventory inventory)
+        public void onIabPurchaseFinished(IabResult result,Purchase purchase)
         {
-
             if (result.isFailure())
             {
-                // handle error here
+                Log.d(TAG,"Inside the failure condition");
+                // Handle error
+                return;
             }
-            else
+
+
+            else if (purchase.getSku().equals(purchaseSKU))
             {
-                // does the user have the premium upgrade?
-                //mIsPremium = inventory.hasPurchase(SKU_PREMIUM);
-                // update UI accordingly
-                List<String> allOwnedSKUS = inventory.getAllOwnedSkus();
-                userOwnedSKUList = new ArrayList<Purchase>();
-                for ( int i = 0; i < allOwnedSKUS.size(); i++)
-                {
-                    Purchase purchaseData = inventory.getPurchase(allOwnedSKUS.get(i));
-                    Log.d(TAG,"Purchase Data is : "+purchaseData);
-                    //Assign button Status here and also restore purchase if the issue is not purchased
-                    userOwnedSKUList.add(purchaseData);
-                }
 
+                Log.d(TAG,"Inside the success condition");
 
-
+                //true
+                //  consumeItem();
+                // buyButton.setEnabled(false);
             }
+
         }
     };
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
+        // start the service
+        startDownloadService();
 
+        setContentView(R.layout.activity_main);
+
+        mNavigationDrawerFragment = (NavigationDrawerFragment)
+                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
+        mTitle = getTitle();
+
+        // Set up the drawer.
+        mNavigationDrawerFragment.setUp(
+                R.id.navigation_drawer,
+                (DrawerLayout) findViewById(R.id.drawer_layout));
+
+
+        // setting STRICT DEVELOPER MODE (Disable this for live apps)
+        PMStrictMode.setStrictMode(Config.DEVELOPER_MODE);
+
+
+        Util.doPreLaunchSteps();
+
+        // This string is unique for each app
+        String base64EncodedPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhE2tqqq+WSoEXHyqOdeFjKFGgWVuhapArdTe/b0wzxAJE0pdsM8FlywwyIQlLd51hj6vvDkmd8T3dRi6LX2Ww2M8+fpK7jP3ydMyTZB9efuAiRZq2tlo2GmrFmO0vTdD0MkY4OdX9ROEvY9k/cbzXX73uNH0FAcZ38ypr/qf66IS2yI+z+Oiip7c39pDrG0P4kVamJQOjs7PLTmtwU1PWc43phqISxxpLJWxj0yW/YjfZ7Knk5n84p02CpDJcoZXdsBu7X4GOc79DRURDHuLu3tgkp3roXTQeX6y4Ht9843Hu5rSRgADQ/5828+SozdhIAhQ4CT/MZ0w0NEd0/OitwIDAQAB";
+        mHelper = new IabHelper(this, base64EncodedPublicKey);
+
+        mHelper.startSetup(new
+                               IabHelper.OnIabSetupFinishedListener()
+                               {
+                                   public void onIabSetupFinished(IabResult result)
+                                   {
+                                       if (!result.isSuccess())
+                                       {
+                                           //failed
+                                       }
+                                       else
+                                       {
+                                           //success
+                                       }
+                                   }
+                               });
+
+
+        mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener()
+        {
+            public void onIabSetupFinished(IabResult result)
+            {
+                if (!result.isSuccess())
+                {
+                    /*Utilities.log("Unable to setup billing: " + result);
+                    isBillingSetup = false;*/
+                } else
+                {
+                    /*Utilities.log("Billing setup successfully");
+                    isBillingSetup = true;*/
+                    pixelmagsMagazinesList = null; // clear the list
+
+                    AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
+                    pixelmagsMagazinesList = mDbHelper.getAllIssues(mDbHelper.getReadableDatabase());
+
+                    Log.d(TAG,"Pixel Image Magazine List is : " +pixelmagsMagazinesList);
+
+                    mDbHelper.close();
+
+                    skuList = new ArrayList<String>();
+
+                    if (pixelmagsMagazinesList != null)
+                    {
+
+                        for (int i = 0; i < pixelmagsMagazinesList.size(); i++)
+                        {
+                            skuList.add(pixelmagsMagazinesList.get(i).android_store_sku);
+
+                        }
+//                        skuList.add("com.pixelmags.androidbranded.test1");//This to confirm billing sku
+//                        skuList.add("com.pixelmags.androidbranded.test2");//This is to confirm billing sku
+//                        skuList.add("com.pixelmags.androidbranded.test3");//This is to confirm billing sku
+                    }
+                    mHelper.queryInventoryAsync(true, skuList, mQueryFinishedListener);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onBackPressed(){
+        super.onBackPressed();
+
+
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+
+        SaveToDB(DataTransferInterface.count,DataTransferInterface.issueId);
+        DownloadAdapter.stopTimer();
+    }
+
+    public void SaveToDB(int count, int issue) {
+
+        AllDownloadsDataSet mDbReader_current = new AllDownloadsDataSet(BaseApp.getContext());
+        mDbReader_current.updateProgressCountOfIssue(mDbReader_current.getWritableDatabase(),
+                String.valueOf(issue), count);
+        mDbReader_current.close();
+
+    }
 
     @Override
     public void onNavigationDrawerItemSelected(int position)
@@ -354,7 +399,6 @@ public class MainActivity extends AppCompatActivity
                 .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
                 .commit();
     }
-
 
     // set the title based on the menu item
     public void onSectionAttached(int number) {
@@ -408,33 +452,6 @@ public class MainActivity extends AppCompatActivity
         mHelper.launchPurchaseFlow(this, sku, 1001,
                 mPurchaseFinishedListener,base64);
     }
-
-    IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener
-            = new IabHelper.OnIabPurchaseFinishedListener()
-    {
-        public void onIabPurchaseFinished(IabResult result,Purchase purchase)
-        {
-            if (result.isFailure())
-            {
-                Log.d(TAG,"Inside the failure condition");
-                // Handle error
-                return;
-            }
-
-
-            else if (purchase.getSku().equals(purchaseSKU))
-            {
-
-                Log.d(TAG,"Inside the success condition");
-
-                //true
-                //  consumeItem();
-                // buyButton.setEnabled(false);
-            }
-
-        }
-    };
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -534,49 +551,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            return rootView;
-        }
-
-        @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
-            ((MainActivity) activity).onSectionAttached(
-                    getArguments().getInt(ARG_SECTION_NUMBER));
-        }
-    }
-
-
-    /* All added code here */
-
     @Override
     public void onResume(){
         super.onResume();
@@ -585,6 +559,8 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+
+    /* All added code here */
 
     @Override
     public void onDestroy() {
@@ -597,9 +573,6 @@ public class MainActivity extends AppCompatActivity
         }
 
     }
-
-
-    // Service :: Implementation
 
     public void startDownloadService() {
 
@@ -630,6 +603,8 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    // Service :: Implementation
+
     void doBindService() {
         // Establish a connection with the service.  We use an explicit
         // class name because we want a specific service implementation that
@@ -647,7 +622,6 @@ public class MainActivity extends AppCompatActivity
             mIsBound = false;
         }
     }
-
 
     // Service :: stop download service
     public void stopDownloadService() {
@@ -668,8 +642,6 @@ public class MainActivity extends AppCompatActivity
         stopService(new Intent(MainActivity.this, PMService.class));
     }
 
-
-
     public void resumeServiceDownloadProcessing(){
 
         // do a resume only after the AllIssues fragment is loaded
@@ -680,7 +652,6 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-
     public void notifyServiceOfNewDownload(){
 
         if(mPMService != null){
@@ -688,8 +659,6 @@ public class MainActivity extends AppCompatActivity
         }
 
     }
-
-
 
     // implement function, mandatory
     public void onFragmentInteraction(Uri uri){
@@ -701,17 +670,75 @@ public class MainActivity extends AppCompatActivity
         getSupportActionBar().setTitle(title);
     }
 
-
     // refresh naviagtion drawer
     public void refreshNavigationDrawer(){
+    }
+
+    private void displayCanPurchaseFail(){
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle(getString(R.string.can_purchase_fail_title));
+
+        // set dialog message
+        alertDialogBuilder
+                .setMessage(getString(R.string.can_purchase_fail_message))
+                .setCancelable(false)
+                .setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int id) {
+                        dialog.dismiss();
+                    }
+                });
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+
+    }
+
+    /**
+     * A placeholder fragment containing a simple view.
+     */
+    public static class PlaceholderFragment extends Fragment {
+        /**
+         * The fragment argument representing the section number for this
+         * fragment.
+         */
+        private static final String ARG_SECTION_NUMBER = "section_number";
+
+        public PlaceholderFragment() {
+        }
+
+        /**
+         * Returns a new instance of this fragment for the given section
+         * number.
+         */
+        public static PlaceholderFragment newInstance(int sectionNumber) {
+            PlaceholderFragment fragment = new PlaceholderFragment();
+            Bundle args = new Bundle();
+            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            return rootView;
+        }
+
+        @Override
+        public void onAttach(Activity activity) {
+            super.onAttach(activity);
+            ((MainActivity) activity).onSectionAttached(
+                    getArguments().getInt(ARG_SECTION_NUMBER));
+        }
     }
 
     public class CanPurchaseTask extends AsyncTask<String, String, Boolean> {
 
         public int mIssue_id;
         public String mSKU;
-        private CanPurchaseTask mCanPurchaseTask = null;
         public String result;
+        private CanPurchaseTask mCanPurchaseTask = null;
         private ProgressDialog progressBar;
 
         public CanPurchaseTask(String SKU , int issue_id) {
@@ -778,26 +805,6 @@ public class MainActivity extends AppCompatActivity
         protected void onCancelled() {
             mCanPurchaseTask = null;
         }
-    }
-
-
-    private void displayCanPurchaseFail(){
-
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-        alertDialogBuilder.setTitle(getString(R.string.can_purchase_fail_title));
-
-        // set dialog message
-        alertDialogBuilder
-                .setMessage(getString(R.string.can_purchase_fail_message))
-                .setCancelable(false)
-                .setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog,int id) {
-                        dialog.dismiss();
-                    }
-                });
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
-
     }
 
 }

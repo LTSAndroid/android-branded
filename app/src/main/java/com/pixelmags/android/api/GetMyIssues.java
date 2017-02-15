@@ -3,7 +3,6 @@ package com.pixelmags.android.api;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.comms.WebRequest;
 import com.pixelmags.android.datamodels.MyIssue;
-import com.pixelmags.android.json.GetIssuesParser;
 import com.pixelmags.android.json.GetMyIssuesParser;
 import com.pixelmags.android.storage.MyIssuesDataSet;
 import com.pixelmags.android.storage.UserPrefs;

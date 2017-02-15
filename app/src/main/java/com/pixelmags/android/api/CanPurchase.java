@@ -16,10 +16,9 @@ import java.util.ArrayList;
 public class CanPurchase extends WebRequest
 {
     private static final String API_NAME = "canPurchase";
-
+    CanPurchaseParser cParser;
     private int mIssue_id;
     private String mSKU;
-    CanPurchaseParser cParser;
 
     public CanPurchase()
     {

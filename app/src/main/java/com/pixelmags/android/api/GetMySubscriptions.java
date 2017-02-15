@@ -3,11 +3,8 @@ package com.pixelmags.android.api;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.comms.WebRequest;
 import com.pixelmags.android.datamodels.MySubscription;
-import com.pixelmags.android.datamodels.Subscription;
 import com.pixelmags.android.json.GetMySubscriptionsParser;
-import com.pixelmags.android.json.GetSubscriptionsParser;
 import com.pixelmags.android.storage.MySubscriptionsDataSet;
-import com.pixelmags.android.storage.SubscriptionsDataSet;
 import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.util.BaseApp;
 

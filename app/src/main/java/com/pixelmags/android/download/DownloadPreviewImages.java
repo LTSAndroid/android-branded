@@ -1,16 +1,10 @@
 package com.pixelmags.android.download;
 
-import android.content.Context;
-import android.content.ContextWrapper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.datamodels.PreviewImage;
-import com.pixelmags.android.util.BaseApp;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 
@@ -20,7 +14,7 @@ import java.util.ArrayList;
 public class DownloadPreviewImages implements Runnable {
 
     public static final int MAX_PREVIEW_IMAGE_COUNT = 5;
-
+    public static ArrayList<PreviewImage> previewImageArrayList;
     private String url;
     private int previewImageIndex;
 
@@ -28,8 +22,6 @@ public class DownloadPreviewImages implements Runnable {
         this.previewImageIndex = index;
         this.url = downloadUrl;
     }
-
-    public static ArrayList<PreviewImage> previewImageArrayList;
 
     public static ArrayList<PreviewImage> DownloadPreviewImageBitmaps(ArrayList<PreviewImage> previewImageArray) {
 

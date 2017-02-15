@@ -4,10 +4,7 @@ import com.pixelmags.android.datamodels.Issue;
 import com.pixelmags.android.datamodels.Page;
 import com.pixelmags.android.datamodels.PageTypeImage;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
 
 /**
  * Created by Annie on 11/10/15.

@@ -1,12 +1,6 @@
 package com.pixelmags.android.json;
 
-import com.pixelmags.android.datamodels.PreviewImage;
 import com.pixelmags.android.datamodels.User;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 
 /**
  * Created by Annie on 09/10/15.

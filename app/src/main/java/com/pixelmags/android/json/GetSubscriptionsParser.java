@@ -14,8 +14,8 @@ import java.util.ArrayList;
 
 public class GetSubscriptionsParser extends JSONParser {
 
-    String mUserID;
     public ArrayList<Subscription> subscriptionsList;
+    String mUserID;
 
 
 

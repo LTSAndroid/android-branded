@@ -79,6 +79,25 @@ public class RegisterFragment extends Fragment {
     private GetMyIssuesTask mGetMyIssuesTask = null;
     private GetMySubscriptionsTask mGetMySubscriptionsTask = null;
     private ProgressDialog progressBar;
+    // Listener
+    private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDialog.OnDateSetListener() {
+
+        // when dialog box is closed, below method will be called.
+        public void onDateSet(DatePicker view, int selectedYear,
+                              int selectedMonth, int selectedDay) {
+            String year1 = String.valueOf(selectedYear);
+            String month1 = String.valueOf(selectedMonth + 1);
+            String day1 = String.valueOf(selectedDay);
+
+            mDOBView.setText(day1 + "/" + month1 + "/" + year1);
+            mDOBView.setError(null);
+
+        }
+    };
+
+    public RegisterFragment() {
+        // Required empty public constructor
+    }
 
     /**
      * Use this factory method to create a new instance of
@@ -98,11 +117,6 @@ public class RegisterFragment extends Fragment {
         return fragment;
     }
 
-    public RegisterFragment() {
-        // Required empty public constructor
-    }
-
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,7 +129,6 @@ public class RegisterFragment extends Fragment {
         }
 
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -166,23 +179,6 @@ public class RegisterFragment extends Fragment {
         return rootView;
     }
 
-    // Listener
-    private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDialog.OnDateSetListener() {
-
-        // when dialog box is closed, below method will be called.
-        public void onDateSet(DatePicker view, int selectedYear,
-                              int selectedMonth, int selectedDay) {
-            String year1 = String.valueOf(selectedYear);
-            String month1 = String.valueOf(selectedMonth + 1);
-            String day1 = String.valueOf(selectedDay);
-
-            mDOBView.setText(day1 + "/" + month1 + "/" + year1);
-            mDOBView.setError(null);
-
-        }
-    };
-
-
     public void navigateTobacktologinbutton() {
 
         // Intent a = new Intent(getActivity().getBaseContext(), LoginActivity.class);
@@ -229,25 +225,6 @@ public class RegisterFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
-
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-
-
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
-    }
-
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -365,7 +342,6 @@ public class RegisterFragment extends Fragment {
         }
     }
 
-
     private boolean isEmailValid(String email) {
         //TODO: Replace this with your own logic
         return email.contains("@");
@@ -375,6 +351,66 @@ public class RegisterFragment extends Fragment {
 
         //TODO: Replace this with your own logic
         return password.length() > 4;
+    }
+
+    public void displayLogInFailed(){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(getString(R.string.log_in_fail_title));
+        builder.setMessage(getString(R.string.log_in_fail_message));
+        builder.setPositiveButton(getString(R.string.ok), null);
+        builder.show();
+
+    }
+
+    public void loadAllIssuesPage(){
+
+        // Check if no view has focus:
+        View view = getActivity().getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+
+        Fragment fragmentAllIsuues = new AllIssuesFragment();
+
+        // Insert the fragment by replacing any existing fragment
+        FragmentManager allIssuesFragmentManager = getFragmentManager();
+        allIssuesFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment_container, fragmentAllIsuues)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .commit();
+
+    }
+
+    private void callGetMyIssuesAPI()
+    {
+        mGetMyIssuesTask = new GetMyIssuesTask();
+        mGetMyIssuesTask.execute((String) null);
+    }
+
+    private void callGetMySubscriptionsAPI()
+    {
+        mGetMySubscriptionsTask = new GetMySubscriptionsTask();
+        mGetMySubscriptionsTask.execute((String) null);
+    }
+
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     * <p/>
+     * See the Android Training lesson <a href=
+     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * >Communicating with Other Fragments</a> for more information.
+     */
+
+
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        public void onFragmentInteraction(Uri uri);
     }
 
     /**
@@ -565,8 +601,6 @@ public class RegisterFragment extends Fragment {
         }
     }
 
-
-
     private class ValidateUserTask extends AsyncTask<String, String,String> {
 
         private final String mEmail;
@@ -619,48 +653,6 @@ public class RegisterFragment extends Fragment {
         }
     }
 
-    public void displayLogInFailed(){
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(getString(R.string.log_in_fail_title));
-        builder.setMessage(getString(R.string.log_in_fail_message));
-        builder.setPositiveButton(getString(R.string.ok), null);
-        builder.show();
-
-    }
-
-
-    public void loadAllIssuesPage(){
-
-        // Check if no view has focus:
-        View view = getActivity().getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-
-        Fragment fragmentAllIsuues = new AllIssuesFragment();
-
-        // Insert the fragment by replacing any existing fragment
-        FragmentManager allIssuesFragmentManager = getFragmentManager();
-        allIssuesFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, fragmentAllIsuues)
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .commit();
-
-    }
-
-    private void callGetMyIssuesAPI()
-    {
-        mGetMyIssuesTask = new GetMyIssuesTask();
-        mGetMyIssuesTask.execute((String) null);
-    }
-
-    private void callGetMySubscriptionsAPI()
-    {
-        mGetMySubscriptionsTask = new GetMySubscriptionsTask();
-        mGetMySubscriptionsTask.execute((String) null);
-    }
     private class GetMyIssuesTask extends AsyncTask<String, String,String> {
 
         GetMyIssues apiGetMyIssues;

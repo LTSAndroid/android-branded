@@ -24,11 +24,10 @@ public class DownloadSingleIssue implements Runnable {
 
     private static final String ISSUE_DIR_PREFIX_1 = "/Issues/"+ Config.Magazine_Number+"/";
     private static final String ISSUE_DIR_PREFIX_PDF = "/PDF";
-
+    public static Issue mIssue;
     private int issuePageIndex;
     private String url;
     private String issuePageFileName;
-
     private boolean isDownloaded;
 
     DownloadSingleIssue(String downloadUrl, int pageIndex, String pageName){
@@ -39,8 +38,6 @@ public class DownloadSingleIssue implements Runnable {
         this.isDownloaded = false;
 
     }
-
-    public static Issue mIssue;
 
     public static boolean DownloadIssuePages(Issue issue) {
 

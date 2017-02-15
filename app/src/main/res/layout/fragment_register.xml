@@ -9,47 +9,47 @@
 
 
     <RelativeLayout
+        android:id="@+id/fragment_register"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/white"
         android:orientation="vertical"
         android:padding="20dp"
-        android:background="@color/white"
-        tools:context="com.pixelmags.android.ui.RegisterFragment"
-        android:id="@+id/fragment_register">
+        tools:context="com.pixelmags.android.ui.RegisterFragment">
 
 
         <EditText
+            android:id="@+id/accountuserid"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="6dp"
-            android:paddingStart="6dp"
-            android:minHeight="50dp"
-            android:layout_marginBottom="6dp"
-            android:inputType="textCapCharacters"
-            android:ems="10"
-            android:textColorHint="@color/black"
-            android:id="@+id/accountuserid"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:hint="@string/hint_first_name"
+            android:layout_marginBottom="6dp"
             android:background="@color/edit_text_background"
-            android:textColor="@color/black"/>
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/hint_first_name"
+            android:inputType="textCapCharacters"
+            android:minHeight="50dp"
             android:paddingLeft="6dp"
             android:paddingStart="6dp"
-            android:minHeight="50dp"
-            android:background="@color/edit_text_background"
             android:textColor="@color/black"
-            android:textColorHint="@color/black"
-            android:inputType="textCapCharacters"
+            android:textColorHint="@color/black"/>
+
+        <EditText
+            android:id="@+id/accountEmailid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/accountuserid"
+            android:layout_centerHorizontal="true"
+            android:background="@color/edit_text_background"
             android:ems="10"
             android:hint="@string/hint_last_name"
-            android:id="@+id/accountEmailid"
-            android:layout_below="@+id/accountuserid"
-            android:layout_centerHorizontal="true" />
+            android:inputType="textCapCharacters"
+            android:minHeight="50dp"
+            android:paddingLeft="6dp"
+            android:paddingStart="6dp"
+            android:textColor="@color/black"
+            android:textColorHint="@color/black" />
 
          <!--<DatePicker
             android:layout_width="150dp"
@@ -63,126 +63,126 @@
         <requestFocus />
 
         <Button
+            android:id="@+id/pick_dob"
             android:layout_width="70dp"
             android:layout_height="40dp"
-            android:singleLine="true"
+            android:layout_alignBottom="@+id/registerDateOfBirth"
+            android:layout_toEndOf="@+id/registerDoRegister"
+            android:layout_toRightOf="@+id/registerDoRegister"
             android:background="@drawable/register_button_background"
-            android:shadowColor="#3384ff"
-            android:textColor="#ffffff"
             android:padding="3dp"
+            android:shadowColor="#3384ff"
             android:shadowDx="0"
             android:shadowDy="0"
             android:shadowRadius="5"
+            android:singleLine="true"
             android:text="@string/pick_dateofbirth"
-            android:id="@+id/pick_dob"
-            android:layout_alignBottom="@+id/registerDateOfBirth"
-            android:layout_toRightOf="@+id/registerDoRegister"
-            android:layout_toEndOf="@+id/registerDoRegister" />
+            android:textColor="#ffffff" />
 
         <TextView
+            android:id="@+id/registerDateOfBirth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/registerDateOfBirth"
-            android:paddingLeft="6dp"
-            android:paddingStart="6dp"
-            android:minHeight="50dp"
-            android:gravity="center_vertical"
-            android:background="@color/edit_text_background"
-            android:textColorHint="@color/black"
-            android:textColor="@color/black"
-            android:layout_centerVertical="true"
-            android:singleLine="true"
-            android:layout_marginTop="6dp"
-            android:paddingRight="60dp"
-            android:layout_below="@+id/accountEmailid"
             android:layout_alignParentLeft="true"
-            android:hint="@string/hint_date_of_birth"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="6dp"
-            android:paddingStart="6dp"
-            android:minHeight="50dp"
-            android:background="@color/edit_text_background"
-            android:textColorHint="@color/black"
-            android:textColor="@color/black"
-            android:layout_marginBottom="6dp"
-            android:inputType="textEmailAddress"
+            android:layout_below="@+id/accountEmailid"
+            android:layout_centerVertical="true"
             android:layout_marginTop="6dp"
+            android:background="@color/edit_text_background"
+            android:gravity="center_vertical"
+            android:hint="@string/hint_date_of_birth"
+            android:minHeight="50dp"
+            android:paddingLeft="6dp"
+            android:paddingRight="60dp"
+            android:paddingStart="6dp"
+            android:singleLine="true"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/black"
+            android:textColorHint="@color/black"/>
+
+        <EditText
             android:id="@+id/accountName"
-            android:hint="@string/hint_email"
-            android:layout_below="@+id/registerDateOfBirth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/registerDateOfBirth"
-            android:layout_alignStart="@+id/registerDateOfBirth" />
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="6dp"
-            android:paddingStart="6dp"
-            android:minHeight="50dp"
-            android:background="@color/edit_text_background"
-            android:textColorHint="@color/black"
-            android:textColor="@color/black"
+            android:layout_alignStart="@+id/registerDateOfBirth"
+            android:layout_below="@+id/registerDateOfBirth"
             android:layout_marginBottom="6dp"
-            android:inputType="textPassword"
-            android:digits="0,1,2,3,4,5,6,7,8,9,*,@,qwertzuiopasdfghjklyxcvbnm"
-            android:singleLine="true"
+            android:layout_marginTop="6dp"
+            android:background="@color/edit_text_background"
+            android:hint="@string/hint_email"
+            android:inputType="textEmailAddress"
+            android:minHeight="50dp"
+            android:paddingLeft="6dp"
+            android:paddingStart="6dp"
+            android:textColor="@color/black"
+            android:textColorHint="@color/black" />
+
+        <EditText
             android:id="@+id/registerPassword"
-            android:hint="@string/hint_password"
-            android:maxLength="12"
-            android:layout_below="@+id/accountName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/accountName"
-            android:layout_alignStart="@+id/accountName"/>
+            android:layout_alignStart="@+id/accountName"
+            android:layout_below="@+id/accountName"
+            android:layout_marginBottom="6dp"
+            android:background="@color/edit_text_background"
+            android:digits="0,1,2,3,4,5,6,7,8,9,*,@,qwertzuiopasdfghjklyxcvbnm"
+            android:hint="@string/hint_password"
+            android:inputType="textPassword"
+            android:maxLength="12"
+            android:minHeight="50dp"
+            android:paddingLeft="6dp"
+            android:paddingStart="6dp"
+            android:singleLine="true"
+            android:textColor="@color/black"
+            android:textColorHint="@color/black"/>
 
 
         <EditText
+            android:id="@+id/registerConfirmPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/registerPassword"
+            android:layout_alignStart="@+id/registerPassword"
+            android:layout_below="@+id/registerPassword"
+            android:background="@color/edit_text_background"
+            android:digits="0,1,2,3,4,5,6,7,8,9,*,@,qwertzuiopasdfghjklyxcvbnm"
+            android:hint="@string/hint_confirm_password"
+            android:inputType="textPassword"
+            android:maxLength="12"
+            android:minHeight="50dp"
             android:paddingLeft="6dp"
             android:paddingStart="6dp"
-            android:minHeight="50dp"
-            android:background="@color/edit_text_background"
-            android:textColorHint="@color/black"
-            android:textColor="@color/black"
-            android:inputType="textPassword"
-            android:hint="@string/hint_confirm_password"
-            android:digits="0,1,2,3,4,5,6,7,8,9,*,@,qwertzuiopasdfghjklyxcvbnm"
             android:singleLine="true"
-            android:maxLength="12"
-            android:id="@+id/registerConfirmPassword"
-            android:layout_below="@+id/registerPassword"
-            android:layout_alignLeft="@+id/registerPassword"
-            android:layout_alignStart="@+id/registerPassword" />
+            android:textColor="@color/black"
+            android:textColorHint="@color/black" />
 
         <CheckBox
+            android:id="@+id/registerAcceptTermsConditions"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/accept_terms_and_conditions"
-            android:id="@+id/registerAcceptTermsConditions"
-            android:checked="false"
-            android:textColor="@color/black"
-            android:layout_below="@+id/registerConfirmPassword"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_marginTop="40dp" />
+            android:layout_below="@+id/registerConfirmPassword"
+            android:layout_marginTop="40dp"
+            android:checked="false"
+            android:text="@string/accept_terms_and_conditions"
+            android:textColor="@color/black" />
 
         <Button
+            android:id="@+id/registerDoRegister"
             android:layout_width="180dp"
             android:layout_height="45dp"
-            android:text="@string/register"
+            android:layout_below="@+id/registerAcceptTermsConditions"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="40dp"
             android:background="@drawable/register_button_background"
             android:shadowColor="#3384ff"
-            android:textColor="#ffffff"
             android:shadowDx="0"
             android:shadowDy="0"
             android:shadowRadius="5"
-            android:id="@+id/registerDoRegister"
-            android:layout_below="@+id/registerAcceptTermsConditions"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="40dp" />
+            android:text="@string/register"
+            android:textColor="#ffffff" />
 
         <!--<Button-->
             <!--android:layout_width="180dp"-->

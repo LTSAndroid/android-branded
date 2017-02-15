@@ -17,10 +17,10 @@
         android:layout_alignParentTop="true"
         android:layout_marginRight="15dp"
         android:layout_marginTop="15dp"
-        android:paddingTop="2dp"
-        android:paddingBottom="2dp"
         android:background="@color/blue"
-        android:textColor="#ffffff"
-        android:text="Close" />
+        android:paddingBottom="2dp"
+        android:paddingTop="2dp"
+        android:text="Close"
+        android:textColor="#ffffff" />
 
 </RelativeLayout>

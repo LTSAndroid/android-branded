@@ -1,7 +1,6 @@
 package com.pixelmags.android.download;
 
 import com.pixelmags.android.datamodels.Issue;
-import com.pixelmags.android.datamodels.Page;
 import com.pixelmags.android.datamodels.PageTypeImage;
 
 import java.net.URL;
@@ -28,7 +27,7 @@ public class DownloadIssue {
             for (int i = 0; i < mIssue.pages.size(); i++) {
 
                 PageTypeImage page = (PageTypeImage) mIssue.pages.get(i);
-                PageTypeImage.PageDetails pageDetails = page.getPageDetails(PageTypeImage.MediaType.LARGE);
+                PageTypeImage.PageDetails pageDetails = page.getPageDetails(PageTypeImage.MediaType.MEDIUM);
 
                 URL pageURL = new java.net.URL(pageDetails.url);
 

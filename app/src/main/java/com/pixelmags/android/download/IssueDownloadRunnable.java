@@ -17,60 +17,17 @@ import java.net.URL;
  */
 
 class IssueDownloadRunnable implements Runnable {
-    // Sets the size for each read action (bytes)
-    private static final int READ_SIZE = 1024 * 2;
-
-    // Sets a tag for this class
-    @SuppressWarnings("unused")
-    private static final String LOG_TAG = "PhotoDownloadRunnable";
-
     // Constants for indicating the state of the download
     static final int HTTP_STATE_FAILED = -1;
     static final int HTTP_STATE_STARTED = 0;
     static final int HTTP_STATE_COMPLETED = 1;
-
+    // Sets the size for each read action (bytes)
+    private static final int READ_SIZE = 1024 * 2;
+    // Sets a tag for this class
+    @SuppressWarnings("unused")
+    private static final String LOG_TAG = "PhotoDownloadRunnable";
     // Defines a field that contains the calling object of type PhotoTask.
     final TaskRunnableDownloadMethods mPhotoTask;
-
-    /**
-     *
-     * An interface that defines methods that PhotoTask implements. An instance of
-     * PhotoTask passes itself to an PhotoDownloadRunnable instance through the
-     * PhotoDownloadRunnable constructor, after which the two instances can access each other's
-     * variables.
-     */
-    interface TaskRunnableDownloadMethods {
-
-        /**
-         * Sets the Thread that this instance is running on
-         * @param currentThread the current Thread
-         */
-        void setDownloadThread(Thread currentThread);
-
-        /**
-         * Returns the current contents of the download buffer
-         * @return The byte array downloaded from the URL in the last read
-         */
-        byte[] getByteBuffer();
-
-        /**
-         * Sets the current contents of the download buffer
-         * @param buffer The bytes that were just read
-         */
-        void setByteBuffer(byte[] buffer);
-
-        /**
-         * Defines the actions for each state of the PhotoTask instance.
-         * @param state The current state of the task
-         */
-        void handleDownloadState(int state);
-
-        /**
-         * Gets the URL for the image being downloaded
-         * @return The image URL
-         */
-        URL getImageURL();
-    }
 
     /**
      * This constructor creates an instance of PhotoDownloadRunnable and stores in it a reference
@@ -81,7 +38,7 @@ class IssueDownloadRunnable implements Runnable {
     IssueDownloadRunnable(TaskRunnableDownloadMethods photoTask) {
         mPhotoTask = photoTask;
     }
-    
+
     /*
      * Defines this object's task, which is a set of instructions designed to be run on a Thread.
      */
@@ -94,7 +51,7 @@ class IssueDownloadRunnable implements Runnable {
          * can interrupt the Thread.
          */
         mPhotoTask.setDownloadThread(Thread.currentThread());
-        
+
         // Moves the current Thread into the background
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
 
@@ -113,10 +70,10 @@ class IssueDownloadRunnable implements Runnable {
             // Before continuing, checks to see that the Thread hasn't been
             // interrupted
             if (Thread.interrupted()) {
-                
+
                 throw new InterruptedException();
             }
-            
+
             // If there's no cache buffer for this image
             if (null == byteBuffer) {
 
@@ -142,14 +99,14 @@ class IssueDownloadRunnable implements Runnable {
                     // Before continuing, checks to see that the Thread
                     // hasn't been interrupted
                     if (Thread.interrupted()) {
-                     
+
                         throw new InterruptedException();
                     }
                     // Gets the input stream containing the image
                     byteStream = httpConn.getInputStream();
 
                     if (Thread.interrupted()) {
-                     
+
                         throw new InterruptedException();
                     }
                     /*
@@ -218,7 +175,7 @@ class IssueDownloadRunnable implements Runnable {
                                 bufferLeft -= readResult;
 
                                 if (Thread.interrupted()) {
-                                    
+
                                     throw new InterruptedException();
                                 }
                             }
@@ -305,14 +262,14 @@ class IssueDownloadRunnable implements Runnable {
                             remainingLength -= readResult;
 
                             if (Thread.interrupted()) {
-                                
+
                                 throw new InterruptedException();
                             }
                         }
                     }
 
                     if (Thread.interrupted()) {
-                        
+
                         throw new InterruptedException();
                     }
 
@@ -334,7 +291,7 @@ class IssueDownloadRunnable implements Runnable {
                     }
                 }
             }
-            
+
             /*
              * Stores the downloaded bytes in the byte buffer in the PhotoTask instance.
              */
@@ -346,15 +303,15 @@ class IssueDownloadRunnable implements Runnable {
              * decoded.
              */
             mPhotoTask.handleDownloadState(HTTP_STATE_COMPLETED);
-      
+
         // Catches exceptions thrown in response to a queued interrupt
         } catch (InterruptedException e1) {
-            
+
             // Does nothing
-        
+
         // In all cases, handle the results
         } finally {
-            
+
             // If the byteBuffer is null, reports that the download failed.
             if (null == byteBuffer) {
                 mPhotoTask.handleDownloadState(HTTP_STATE_FAILED);
@@ -366,13 +323,53 @@ class IssueDownloadRunnable implements Runnable {
              * object and returns the current thread. Locking keeps all references to Thread
              * objects the same until the reference to the current Thread is deleted.
              */
-            
+
             // Sets the reference to the current Thread to null, releasing its storage
             mPhotoTask.setDownloadThread(null);
-            
+
             // Clears the Thread's interrupt flag
             Thread.interrupted();
         }
+    }
+    
+    /**
+     *
+     * An interface that defines methods that PhotoTask implements. An instance of
+     * PhotoTask passes itself to an PhotoDownloadRunnable instance through the
+     * PhotoDownloadRunnable constructor, after which the two instances can access each other's
+     * variables.
+     */
+    interface TaskRunnableDownloadMethods {
+
+        /**
+         * Sets the Thread that this instance is running on
+         * @param currentThread the current Thread
+         */
+        void setDownloadThread(Thread currentThread);
+
+        /**
+         * Returns the current contents of the download buffer
+         * @return The byte array downloaded from the URL in the last read
+         */
+        byte[] getByteBuffer();
+
+        /**
+         * Sets the current contents of the download buffer
+         * @param buffer The bytes that were just read
+         */
+        void setByteBuffer(byte[] buffer);
+
+        /**
+         * Defines the actions for each state of the PhotoTask instance.
+         * @param state The current state of the task
+         */
+        void handleDownloadState(int state);
+
+        /**
+         * Gets the URL for the image being downloaded
+         * @return The image URL
+         */
+        URL getImageURL();
     }
 }
 

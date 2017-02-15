@@ -46,6 +46,17 @@ public class LaunchActivity extends Activity {
 
     }
 
+/**
+ 094.
+ * Very important!
+ 095.
+ */
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+    }
+
     private class PreLaunchAppTask extends AsyncTask<String, String, String> {
 
 
@@ -134,16 +145,6 @@ public class LaunchActivity extends Activity {
             super.onPreExecute();
             launchMainActivity();
         }
-
-    }
-/**
- 094.
- * Very important!
- 095.
- */
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
 
     }
 }

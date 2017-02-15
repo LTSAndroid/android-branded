@@ -32,32 +32,17 @@ Usage :
 
 public class PMService extends Service {
 
+    // This is the object that receives interactions from clients.
+    private final IBinder mBinder = new LocalBinder();
     AllDownloadsDataSet allDownloads;
     DownloadsManager downloadsManager;
-
     DownloadManagerAsyncTask mDMTask;
     boolean DMTaskRunning = false;
     private String TAG = "PMService";
 
+
     public PMService() {
     }
-
-
-    /**
-     * Class for clients to access.  Because we know this service always
-     * runs in the same process as its clients, we don't need to deal with
-     * IPC.
-     */
-    public class LocalBinder extends Binder {
-
-        public PMService getService() {
-            return PMService.this;
-        }
-
-    }
-
-    // This is the object that receives interactions from clients.
-    private final IBinder mBinder = new LocalBinder();
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -75,18 +60,15 @@ public class PMService extends Service {
         return START_STICKY;
     }
 
-
     @Override
     public void onDestroy() {
         super.onDestroy();
         System.out.println("PMService Stopped");
     }
 
-
     public void requestServiceShutdown(){
         stopSelf();
     }
-
 
     public void newDownloadRequested(){
 
@@ -120,6 +102,19 @@ public class PMService extends Service {
             downloadsManager = DownloadsManager.getInstance();
             downloadsManager.setRequestPending();
         }
+    }
+
+    /**
+     * Class for clients to access.  Because we know this service always
+     * runs in the same process as its clients, we don't need to deal with
+     * IPC.
+     */
+    public class LocalBinder extends Binder {
+
+        public PMService getService() {
+            return PMService.this;
+        }
+
     }
 
     /**

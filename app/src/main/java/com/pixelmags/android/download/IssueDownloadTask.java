@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 
 import com.pixelmags.android.download.IssueDownloadRunnable.TaskRunnableDownloadMethods;
 
-import java.lang.ref.WeakReference;
 import java.net.URL;
 
 /**
@@ -23,31 +22,24 @@ import java.net.URL;
 
 public class IssueDownloadTask implements TaskRunnableDownloadMethods {
 
-    // The image's URL
-    private URL mImageURL;
-
-    // Is the cache enabled for this transaction?
-    private boolean mCacheEnabled;
-
-    // Field containing the Thread this task is running on.
-    Thread mThreadThis;
-
-    //References to the runnable objects that handle downloading of the image.
-    private Runnable mDownloadRunnable;
-
-    // A buffer for containing the bytes that make up the image
-    byte[] mImageBuffer;
-
-    // The bitmap of image
-    private Bitmap mImageBitMap;
-
-    // The Thread on which this task is currently running.
-    private Thread mCurrentThread;
-
     /*
      * An object that contains the ThreadPool singleton.
      */
     private static IssueDownloadManager sIssueDownloadManager;
+    // Field containing the Thread this task is running on.
+    Thread mThreadThis;
+    // A buffer for containing the bytes that make up the image
+    byte[] mImageBuffer;
+    // The image's URL
+    private URL mImageURL;
+    // Is the cache enabled for this transaction?
+    private boolean mCacheEnabled;
+    //References to the runnable objects that handle downloading of the image.
+    private Runnable mDownloadRunnable;
+    // The bitmap of image
+    private Bitmap mImageBitMap;
+    // The Thread on which this task is currently running.
+    private Thread mCurrentThread;
 
     /**
      * Creates an PhotoTask containing a download object and a decoder object.
@@ -88,6 +80,12 @@ public class IssueDownloadTask implements TaskRunnableDownloadMethods {
         return mImageBuffer;
     }
     
+    // Implements IssueDownloadRunnable.setByteBuffer. Sets the image buffer to a buffer object.
+    @Override
+    public void setByteBuffer(byte[] imageBuffer) {
+        mImageBuffer = imageBuffer;
+    }
+
     /**
      * Recycles an PhotoTask object before it's put back into the pool. One reason to do
      * this is to avoid memory leaks.
@@ -107,12 +105,6 @@ public class IssueDownloadTask implements TaskRunnableDownloadMethods {
     @Override
     public URL getImageURL() {
         return mImageURL;
-    }
-
-    // Implements IssueDownloadRunnable.setByteBuffer. Sets the image buffer to a buffer object.
-    @Override
-    public void setByteBuffer(byte[] imageBuffer) {
-        mImageBuffer = imageBuffer;
     }
     
     // Delegates handling the current state of the task to the IssueDownloadManager object

@@ -6,19 +6,19 @@
 
 
     <EditText
+        android:id="@+id/resultsText"
         android:layout_width="match_parent"
         android:layout_height="449dp"
-        android:inputType="textMultiLine"
-        android:ems="10"
-        android:id="@+id/resultsText"
         android:layout_gravity="center_horizontal|bottom"
+        android:ems="10"
+        android:inputType="textMultiLine"
         android:text="This text view should display the results passed on to it." />
 
     <TextView
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_gravity="left|top"
         android:text="Results"
-        android:id="@+id/textView"
-        android:layout_gravity="left|top" />
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 </FrameLayout>

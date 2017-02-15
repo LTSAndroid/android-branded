@@ -3,23 +3,16 @@ package com.pixelmags.android.download;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.widget.Toast;
 
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.datamodels.Issue;
-import com.pixelmags.android.datamodels.Magazine;
-import com.pixelmags.android.datamodels.Page;
 import com.pixelmags.android.datamodels.PageTypeImage;
-import com.pixelmags.android.storage.AllDownloadsDataSet;
 import com.pixelmags.android.util.BaseApp;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
-import com.pixelmags.android.pixelmagsapp.R;
 
 /**
  * Created by austincoutinho on 17/12/15.
@@ -30,11 +23,10 @@ public class DownloadIssueThreaded implements Runnable {
 
     private static final String ISSUE_DIR_PREFIX_1 = "/Issues/"+ Config.Magazine_Number+"/";
     private static final String ISSUE_DIR_PREFIX_PDF = "/PDF";
-
+    public static Issue mIssue;
     private int issuePageIndex;
     private String url;
     private String issuePageFileName;
-
     private boolean isDownloaded;
 
     DownloadIssueThreaded(String downloadUrl, int pageIndex, String pageName){
@@ -43,8 +35,6 @@ public class DownloadIssueThreaded implements Runnable {
         this.issuePageFileName = pageName;
         this.isDownloaded = false;
     }
-
-    public static Issue mIssue;
 
     public static boolean DownloadIssuePages(Issue issue) {
 

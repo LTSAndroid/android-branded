@@ -1,8 +1,8 @@
 package com.pixelmags.android.pixelmagsapp.billing;
 
 import android.os.AsyncTask;
+
 import com.pixelmags.android.api.CanPurchase;
-import com.pixelmags.android.pixelmagsapp.MainActivity;
 
 /**
  * Created by Annie on 20/02/2016.

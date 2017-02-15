@@ -3,9 +3,6 @@ package com.pixelmags.android.util;
 /**
  * Created by Annie on 22-01-2016.
  */
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Locale;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -15,6 +12,10 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.pixelmags.android.comms.IssueViewConstant;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Locale;
 
 public class IssueViewUtils {
 

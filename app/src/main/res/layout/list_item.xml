@@ -126,15 +126,6 @@
                         android:indeterminate="false"
                         android:max="100"/>
 
-                    <!--<ProgressBar-->
-                        <!--style="@android:style/Widget.ProgressBar.Horizontal"-->
-                        <!--android:layout_width="fill_parent"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:layout_below="@+id/downloadStatusText"-->
-                        <!--android:id="@+id/progressBar"-->
-                        <!--android:layout_gravity="center_vertical"-->
-                        <!--android:indeterminate="false"-->
-                        <!--android:max="100" />-->
 
                 </RelativeLayout>
 
@@ -145,21 +136,6 @@
                 android:id="@+id/gridMultiStateButton"
                 style="@style/MultiStateButtonBase"
                 android:layout_width="150dp"/>
-
-
-            <!--<Button-->
-                <!--android:layout_width="100dp"-->
-                <!--android:layout_height="35dp"-->
-                <!--android:background="@drawable/shape"-->
-                <!--android:text="Status"-->
-                <!--android:shadowColor="#3384ff"-->
-                <!--android:shadowDx="0"-->
-                <!--android:shadowDy="0"-->
-                <!--android:shadowRadius="5"-->
-                <!--android:id="@+id/gridDownloadStatusButton"-->
-                <!--android:textColor="#ffffff"-->
-                <!--android:layout_marginTop="5dp"-->
-                <!--android:layout_gravity="center_horizontal" />-->
 
 
         </LinearLayout>

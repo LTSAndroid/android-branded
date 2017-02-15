@@ -1,7 +1,6 @@
 package com.pixelmags.android.api;
 
 import com.pixelmags.android.comms.WebRequest;
-import com.pixelmags.android.json.FindMemberByEmailParser;
 import com.pixelmags.android.json.FindUserByDeviceIDParser;
 
 import org.apache.http.NameValuePair;
@@ -15,8 +14,8 @@ import java.util.ArrayList;
 public class FindUserByDeviceID extends WebRequest
 {
     private static final String API_NAME="findUserByDeviceID";
-    private String mDeviceID;
     FindUserByDeviceIDParser fParser;
+    private String mDeviceID;
 
     public FindUserByDeviceID(){
         super(API_NAME);

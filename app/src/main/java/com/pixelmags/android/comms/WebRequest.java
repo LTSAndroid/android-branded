@@ -10,17 +10,11 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.ByteArrayBuffer;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,18 +26,15 @@ public class WebRequest {
 
     private static final int NET_READ_TIMEOUT_MILLIS = 30000;
     private static final int NET_CONNECT_TIMEOUT_MILLIS = 30000;
-    private String TAG = "WebRequest";
-
-    private String API_URL;
-
     public String baseDeviceId;
     public String baseMagazineId;
     public String baseAppBundleId;
     public String baseApiMode;
     public String baseApiVersion;
-
     public List<NameValuePair> baseApiNameValuePairs;
     public int responseCode;
+    private String TAG = "WebRequest";
+    private String API_URL;
     private String resultData;
 
     public WebRequest(){}

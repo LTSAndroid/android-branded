@@ -68,6 +68,10 @@ public class LoginFragment extends Fragment {
      */
     private GetMySubscriptionsTask mGetMySubscriptionsTask = null;
 
+    public LoginFragment() {
+        // Required empty public constructor
+    }
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -85,11 +89,6 @@ public class LoginFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
-
-    public LoginFragment() {
-        // Required empty public constructor
-    }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -179,22 +178,6 @@ public class LoginFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
-    }
-
-
     /* ##22 Any Mod's positioned here */
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -206,8 +189,6 @@ public class LoginFragment extends Fragment {
     private ActionBar getActionBar() {
         return ((AppCompatActivity) getActivity()).getSupportActionBar();
     }
-
-
 
     // On click log in button
     public void doLogin()
@@ -231,6 +212,7 @@ public class LoginFragment extends Fragment {
             focusView = mPasswordView;
             cancel = true;
         }
+
 
         // Check for a valid email address.
         if (!AccountUtil.isEmailValid(email)) {
@@ -306,6 +288,53 @@ public class LoginFragment extends Fragment {
 
     }
 
+    public void loadAllIssuesPage(){
+
+        // Check if no view has focus:
+        View view = getActivity().getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+
+        Fragment fragmentAllIsuues = new AllIssuesFragment();
+
+        // Insert the fragment by replacing any existing fragment
+        FragmentManager allIssuesFragmentManager = getFragmentManager();
+        allIssuesFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment_container, fragmentAllIsuues)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .commit();
+
+    }
+
+    private void callGetMyIssuesAPI()
+    {
+        mGetMyIssuesTask = new GetMyIssuesTask();
+        mGetMyIssuesTask.execute((String) null);
+    }
+
+    private void callGetMySubscriptionsAPI()
+    {
+        mGetMySubscriptionsTask = new GetMySubscriptionsTask();
+        mGetMySubscriptionsTask.execute((String) null);
+    }
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     * <p>
+     * See the Android Training lesson <a href=
+     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * >Communicating with Other Fragments</a> for more information.
+     */
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        public void onFragmentInteraction(Uri uri);
+    }
+
     private class ValidateUserTask extends AsyncTask<String, String,String> {
 
         private final String mEmail;
@@ -359,37 +388,6 @@ public class LoginFragment extends Fragment {
         }
     }
 
-    public void loadAllIssuesPage(){
-
-        // Check if no view has focus:
-        View view = getActivity().getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-
-        Fragment fragmentAllIsuues = new AllIssuesFragment();
-
-        // Insert the fragment by replacing any existing fragment
-        FragmentManager allIssuesFragmentManager = getFragmentManager();
-        allIssuesFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, fragmentAllIsuues)
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .commit();
-
-    }
-
-    private void callGetMyIssuesAPI()
-    {
-        mGetMyIssuesTask = new GetMyIssuesTask();
-        mGetMyIssuesTask.execute((String) null);
-    }
-
-    private void callGetMySubscriptionsAPI()
-    {
-        mGetMySubscriptionsTask = new GetMySubscriptionsTask();
-        mGetMySubscriptionsTask.execute((String) null);
-    }
     private class GetMyIssuesTask extends AsyncTask<String, String,String> {
 
         GetMyIssues apiGetMyIssues;

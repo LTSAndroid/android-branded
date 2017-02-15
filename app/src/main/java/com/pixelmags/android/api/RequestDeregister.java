@@ -1,7 +1,6 @@
 package com.pixelmags.android.api;
 
 import com.pixelmags.android.comms.WebRequest;
-import com.pixelmags.android.json.GetIssuesParser;
 import com.pixelmags.android.json.RequestDeregisterParser;
 
 import org.apache.http.NameValuePair;
@@ -15,9 +14,9 @@ import java.util.ArrayList;
 public class RequestDeregister extends WebRequest
 {
     private static final String API_NAME="requestDeregister";
+    RequestDeregisterParser getRequestDeregisterParser;
     private String mEmail;
     private String mdeviceID;
-    RequestDeregisterParser getRequestDeregisterParser;
 
     public RequestDeregister(){
         super(API_NAME);

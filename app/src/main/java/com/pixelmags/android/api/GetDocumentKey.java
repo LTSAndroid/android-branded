@@ -15,6 +15,7 @@ import java.util.ArrayList;
 public class GetDocumentKey extends WebRequest
 {
     private static final String API_NAME="getDocumentKey";
+    GetDocumentKeyParser getDocumentKeyParser;
     private String mEmail;
     private String mPassword;
     private String mMagazineID;
@@ -22,7 +23,6 @@ public class GetDocumentKey extends WebRequest
     private String mDeviceID;
     private String mIssueID;
     private String documentKey;
-    GetDocumentKeyParser getDocumentKeyParser;
 
     public GetDocumentKey(){
         super(API_NAME);
