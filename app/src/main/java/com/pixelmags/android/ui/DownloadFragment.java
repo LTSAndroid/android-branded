@@ -1,4 +1,4 @@
-package com.pixelmags.android.ui.uicomponents;
+package com.pixelmags.android.ui;
 
 
 import android.app.Activity;

@@ -1,7 +1,6 @@
 package com.pixelmags.android.util;
 
 import com.pixelmags.android.pixelmagsapp.R;
-import com.pixelmags.android.pixelmagsapp.adapter.CustomAllDownloadsGridAdapter;
 import com.pixelmags.android.storage.UserPrefs;
 
 /**
@@ -40,9 +39,6 @@ public static void doPreLaunchSteps(){
 
     }
 
-    public static void updateView(CustomAllDownloadsGridAdapter.ViewHolder viewHolder, int copyOfJumpTime){
-        viewHolder.progressPercentage.setText(String.valueOf(copyOfJumpTime));
-    }
 
 
 }

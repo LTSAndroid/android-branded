@@ -25,12 +25,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.pixelmags.android.bean.DataTransferInterface;
+import com.pixelmags.android.bean.DataTransfer;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.pixelmagsapp.adapter.DownloadAdapter;
 import com.pixelmags.android.storage.AllDownloadsDataSet;
 import com.pixelmags.android.storage.UserPrefs;
-import com.pixelmags.android.ui.uicomponents.DownloadFragment;
 import com.pixelmags.android.util.BaseApp;
 import com.pixelmags.android.util.Util;
 
@@ -235,10 +234,10 @@ public class NavigationDrawerFragment extends Fragment {
                 currentPage =getString(R.string.menu_title_allissues);
                 mTitle = getString(R.string.menu_title_allissues);
 
-                Log.d("PauseState","Progress Count when nav is : "+DataTransferInterface.count);
-                Log.d("PauseState","Issue Id when nav is : "+DataTransferInterface.issueId);
+                Log.d("PauseState","Progress Count when nav is : "+ DataTransfer.count);
+                Log.d("PauseState","Issue Id when nav is : "+ DataTransfer.issueId);
 
-                SaveToDB(DataTransferInterface.count,DataTransferInterface.issueId);
+                SaveToDB(DataTransfer.count, DataTransfer.issueId);
                 DownloadAdapter.stopTimer();
 
 
@@ -256,10 +255,10 @@ public class NavigationDrawerFragment extends Fragment {
                 /*Intent launch = new Intent(getActivity().getBaseContext(), LaunchActivity.class);
                 startActivity(launch);*/
 
-                Log.d("PauseState","Progress Count when nav is : "+DataTransferInterface.count);
-                Log.d("PauseState","Issue Id when nav is : "+DataTransferInterface.issueId);
+                Log.d("PauseState","Progress Count when nav is : "+ DataTransfer.count);
+                Log.d("PauseState","Issue Id when nav is : "+ DataTransfer.issueId);
 
-                SaveToDB(DataTransferInterface.count,DataTransferInterface.issueId);
+                SaveToDB(DataTransfer.count, DataTransfer.issueId);
                 DownloadAdapter.stopTimer();
 
 
@@ -353,19 +352,6 @@ public class NavigationDrawerFragment extends Fragment {
                 currentPage =getString(R.string.menu_title_downloads);
                 mTitle = getString(R.string.menu_title_downloads);
                 Log.d(TAG,"Inside the All Download case");
-//                Fragment fragmentAllDownloads = new AllDownloadsFragment();
-//                FragmentManager downloadsFragmentManager = getFragmentManager();
-//                downloadsFragmentManager.beginTransaction()
-//                        .replace(R.id.main_fragment_container, fragmentAllDownloads,"ALLDOWNLOADFRAGMENT")
-//                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-//                        .commit();
-
-
-//                progressCount = DownloadAdapter.stopTimer();
-//                issueId = DownloadAdapter.issueId();
-//                if(progressCount != 0 && issueId != 0){
-//                    SaveToDB(progressCount,issueId);
-//                }
 
 
                 Fragment fragmentDownload = new DownloadFragment();
@@ -391,10 +377,10 @@ public class NavigationDrawerFragment extends Fragment {
 //                Intent mailer = Intent.createChooser(intent, null);
 //                getActivity().startActivity(mailer);
 
-                Log.d("PauseState","Progress Count when nav is : "+DataTransferInterface.count);
-                Log.d("PauseState","Issue Id when nav is : "+DataTransferInterface.issueId);
+                Log.d("PauseState","Progress Count when nav is : "+ DataTransfer.count);
+                Log.d("PauseState","Issue Id when nav is : "+ DataTransfer.issueId);
 
-                SaveToDB(DataTransferInterface.count,DataTransferInterface.issueId);
+                SaveToDB(DataTransfer.count, DataTransfer.issueId);
                 DownloadAdapter.stopTimer();
 
                 Fragment fragmentContact = new ContactSupportFragment();
@@ -409,10 +395,10 @@ public class NavigationDrawerFragment extends Fragment {
                 currentPage =getString(R.string.menu_title_about);
                 mTitle = getString(R.string.menu_title_about);
 
-                Log.d("PauseState","Progress Count when nav is : "+DataTransferInterface.count);
-                Log.d("PauseState","Issue Id when nav is : "+DataTransferInterface.issueId);
+                Log.d("PauseState","Progress Count when nav is : "+ DataTransfer.count);
+                Log.d("PauseState","Issue Id when nav is : "+ DataTransfer.issueId);
 
-                SaveToDB(DataTransferInterface.count,DataTransferInterface.issueId);
+                SaveToDB(DataTransfer.count, DataTransfer.issueId);
                 DownloadAdapter.stopTimer();
 
                 Fragment aboutFragment = new AboutFragment();

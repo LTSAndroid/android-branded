@@ -41,7 +41,6 @@ import com.pixelmags.android.storage.BrandedSQLiteHelper;
 import com.pixelmags.android.storage.MyIssueDocumentKey;
 import com.pixelmags.android.storage.MyIssuesDataSet;
 import com.pixelmags.android.storage.UserPrefs;
-import com.pixelmags.android.ui.uicomponents.DownloadFragment;
 import com.pixelmags.android.ui.uicomponents.MultiStateButton;
 import com.pixelmags.android.util.BaseApp;
 import com.pixelmags.android.util.GetInternetStatus;
@@ -239,16 +238,6 @@ public class IssueDetailsFragment extends Fragment {
                                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int which) {
 
-//                                            Fragment fragmentDownload = new AllDownloadsFragment();
-//                                            // Insert the fragment by replacing any existing fragment
-//                                            FragmentManager allIssuesFragmentManager = getFragmentManager();
-//                                            allIssuesFragmentManager.beginTransaction()
-//                                                    .replace(R.id.main_fragment_container, fragmentDownload,"ALLDOWNLOADFRAGMENT")
-//                                                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-//                                                            //       .addToBackStack(null)
-//                                                    .commit();
-
-
                                             Fragment fragmentDownload = new DownloadFragment();
                                             // Insert the fragment by replacing any existing fragment
                                             FragmentManager allIssuesFragmentManager = getFragmentManager();
@@ -382,14 +371,6 @@ public class IssueDetailsFragment extends Fragment {
                     .setMessage("You can view your Issue in download section.")
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-//                            Fragment fragmentDownload = new AllDownloadsFragment();
-//                            // Insert the fragment by replacing any existing fragment
-//                            FragmentManager allIssuesFragmentManager = getFragmentManager();
-//                            allIssuesFragmentManager.beginTransaction()
-//                                    .replace(R.id.main_fragment_container, fragmentDownload,"ALLDOWNLOADFRAGMENT")
-//                                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-//                                            //       .addToBackStack(null)
-//                                    .commit();
 
                             Fragment fragmentDownload = new DownloadFragment();
                             // Insert the fragment by replacing any existing fragment

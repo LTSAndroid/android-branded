@@ -220,14 +220,6 @@ public class DownloadsManager {
 
                 issueInQueue.downloadStatus = AllDownloadsDataSet.DOWNLOAD_STATUS_COMPLETED;
 
-                // Error cannot update the view from other thread
-//                AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment();
-//                allDownloadsFragment.updateButtonStateFragment(issueInQueue.downloadStatus);
-                // Till here
-
-
-//                issueIdCurrent = issueInQueue.issueID;
-
 
             }
 
@@ -450,8 +442,6 @@ public class DownloadsManager {
         if(pagesForSingleDownloadTable != null){
 
             noOfIssuePageSize = pagesForSingleDownloadTable.size();
-//            AllDownloadsFragment allDownloadsFragment = new AllDownloadsFragment(); // Commented for new changes
-//            allDownloadsFragment.updateIssueTotalPage(noOfIssuePageSize);
 
             for(int i=0; i< pagesForSingleDownloadTable.size();i++) {
 
@@ -493,29 +483,7 @@ public class DownloadsManager {
         if(queueTaskCompleted  || queueTaskPaused){
             // launch the queue task again
 
-            //mQueueProcessorTask = new QueueProcessorAsyncTask();
-            //mQueueProcessorTask.execute((String) null);
-
-            Log.d(TAG, "Inside the launchQueueTask method" + issueTracker.issueID);
-
             // Setting new Issue in Progress
-
-//            AllDownloadsDataSet mDbReader = new AllDownloadsDataSet(BaseApp.getContext());
-//            mDbReader.setIssueToInProgress(mDbReader.getReadableDatabase(), issueTracker);
-//            boolean downloadStatusUpdated = mDbReader.setIssueToView(mDbReader.getWritableDatabase(),issueTracker);
-//            Log.d(TAG,"Download status updated : "+downloadStatusUpdated);
-//            allDownloadsIssuesListTracker = mDbReader.getDownloadIssueList(mDbReader.getReadableDatabase(), Config.Magazine_Number);
-//            for(int i=0; i<allDownloadsIssuesListTracker.size(); i++){
-//                Log.d(TAG,"All download Issue List Tracker is : "+allDownloadsIssuesListTracker.get(i).downloadStatus);
-//            }
-//
-//            mDbReader.close();
-
-//            AllDownloadsFragment fragment = new AllDownloadsFragment();
-//            fragment.refreshGrid(allDownloadsIssuesListTracker);
-
-//            CustomAllDownloadsGridAdapter customAllDownloadsGridAdapter = new CustomAllDownloadsGridAdapter(allDownloadsIssuesListTracker);
-//            customAllDownloadsGridAdapter.refreshArrayList(allDownloadsIssuesListTracker);
 
 
             QueueProcessorThread qThread = new QueueProcessorThread(issueTracker);

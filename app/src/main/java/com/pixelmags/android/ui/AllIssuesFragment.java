@@ -42,7 +42,6 @@ import com.pixelmags.android.storage.BrandedSQLiteHelper;
 import com.pixelmags.android.storage.MyIssueDocumentKey;
 import com.pixelmags.android.storage.MyIssuesDataSet;
 import com.pixelmags.android.storage.UserPrefs;
-import com.pixelmags.android.ui.uicomponents.DownloadFragment;
 import com.pixelmags.android.ui.uicomponents.MultiStateButton;
 import com.pixelmags.android.util.BaseApp;
 import com.pixelmags.android.util.GetInternetStatus;
@@ -636,19 +635,6 @@ public class AllIssuesFragment extends Fragment {
 
                                                 currentPage = getString(R.string.menu_title_downloads);
 
-                                                // Changed for testing the download
-
-//                                                Fragment fragmentDownload = new AllDownloadsFragment();
-//                                                // Insert the fragment by replacing any existing fragment
-//                                                FragmentManager allIssuesFragmentManager = getFragmentManager();
-//                                                allIssuesFragmentManager.beginTransaction()
-//                                                        .replace(R.id.main_fragment_container, fragmentDownload, "ALLDOWNLOADFRAGMENT")
-//                                                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-//                                                        //       .addToBackStack(null)
-//                                                        .commit();
-
-                                                // Till here
-
                                                 Fragment fragmentDownload = new DownloadFragment();
                                                 // Insert the fragment by replacing any existing fragment
                                                 FragmentManager allIssuesFragmentManager = getFragmentManager();
@@ -904,19 +890,6 @@ public class AllIssuesFragment extends Fragment {
                             public void onClick(DialogInterface dialog, int which) {
 
                                 currentPage =getString(R.string.menu_title_downloads);
-
-                                // Commented for testing
-
-//                                Fragment fragmentDownload = new AllDownloadsFragment();
-//                                // Insert the fragment by replacing any existing fragment
-//                                FragmentManager allIssuesFragmentManager = getFragmentManager();
-//                                allIssuesFragmentManager.beginTransaction()
-//                                        .replace(R.id.main_fragment_container, fragmentDownload,"ALLDOWNLOADFRAGMENT")
-//                                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-//                                                //       .addToBackStack(null)
-//                                        .commit();
-
-                                // Till here
 
 
                                 Fragment fragmentDownload = new DownloadFragment();

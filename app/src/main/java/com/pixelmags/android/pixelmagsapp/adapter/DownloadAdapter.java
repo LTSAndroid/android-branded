@@ -22,7 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.pixelmags.android.IssueView.NewIssueView;
-import com.pixelmags.android.bean.DataTransferInterface;
+import com.pixelmags.android.bean.DataTransfer;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
 import com.pixelmags.android.datamodels.IssueDocumentKey;
@@ -34,8 +34,8 @@ import com.pixelmags.android.storage.AllDownloadsDataSet;
 import com.pixelmags.android.storage.BrandedSQLiteHelper;
 import com.pixelmags.android.storage.MyIssueDocumentKey;
 import com.pixelmags.android.storage.SingleIssueDownloadDataSet;
+import com.pixelmags.android.ui.DownloadFragment;
 import com.pixelmags.android.ui.IssueDetailsFragment;
-import com.pixelmags.android.ui.uicomponents.DownloadFragment;
 import com.pixelmags.android.ui.uicomponents.MultiStateButton;
 import com.pixelmags.android.util.BaseApp;
 import com.pixelmags.android.util.GetInternetStatus;
@@ -54,7 +54,7 @@ public class DownloadAdapter extends RecyclerView.Adapter<DownloadAdapter.myView
     public static DownloadAdapter.myViewHolder holderCopy;
     public int currentIssueDownloadingPosition = 0;
     ArrayList<IssueDocumentKey> issueDocumentKeys;
-    DataTransferInterface dataTransferInterface;
+    DataTransfer dataTransfer;
     private Activity activity;
     private FragmentManager fragmentManager;
     private ArrayList<AllDownloadsIssueTracker> allDownloadsIssuesListTracker;
@@ -200,7 +200,7 @@ public class DownloadAdapter extends RecyclerView.Adapter<DownloadAdapter.myView
 
             currentIssueDownloadingPosition = (int) holder.progressBar.getTag();
             issueIdCopy = allDownloadsIssuesListTracker.get(currentIssueDownloadingPosition).issueID;
-            DataTransferInterface.issueId = issueIdCopy;
+            DataTransfer.issueId = issueIdCopy;
 
             isStart = true;
             holder.timer = new Timer();
@@ -225,8 +225,8 @@ public class DownloadAdapter extends RecyclerView.Adapter<DownloadAdapter.myView
                                             holder.progressPercentage.setText(String.valueOf(counts) + "%");
                                             holder.jumpTime = counts;
                                             copyOfJumpTime = holder.jumpTime;
-                                            DataTransferInterface.count = holder.jumpTime;
-                                            Log.d("PauseState","Copy of jump time is :"+ DataTransferInterface.count);
+                                            DataTransfer.count = holder.jumpTime;
+                                            Log.d("PauseState","Copy of jump time is :"+ DataTransfer.count);
                                             holder.count++;
                                         } else {
                                             isStart = false;
@@ -244,7 +244,7 @@ public class DownloadAdapter extends RecyclerView.Adapter<DownloadAdapter.myView
                                                 holder.progressBar.setProgress(holder.jumpTime);
                                                 holder.progressPercentage.setText(String.valueOf(holder.jumpTime) + "%");
 
-                                                DataTransferInterface.count = holder.jumpTime;
+                                                DataTransfer.count = holder.jumpTime;
 
                                             }
 
@@ -388,7 +388,7 @@ public class DownloadAdapter extends RecyclerView.Adapter<DownloadAdapter.myView
 
                     documentKey = getIssueDocumentKey(allDownloadsIssuesListTracker.get(pos).issueID);
 
-                    SaveToDB(DataTransferInterface.count,DataTransferInterface.issueId);
+                    SaveToDB(DataTransfer.count, DataTransfer.issueId);
                     DownloadAdapter.stopTimer();
 
                     Intent intent = new Intent(activity,NewIssueView.class);

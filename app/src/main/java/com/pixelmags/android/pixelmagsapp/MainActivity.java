@@ -33,7 +33,7 @@ import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
 import com.pixelmags.android.api.CanPurchase;
-import com.pixelmags.android.bean.DataTransferInterface;
+import com.pixelmags.android.bean.DataTransfer;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.datamodels.MyIssue;
@@ -377,7 +377,7 @@ public class MainActivity extends AppCompatActivity
     public void onPause(){
         super.onPause();
 
-        SaveToDB(DataTransferInterface.count,DataTransferInterface.issueId);
+        SaveToDB(DataTransfer.count, DataTransfer.issueId);
         DownloadAdapter.stopTimer();
     }
 
