@@ -60,7 +60,6 @@ public class DownloadAdapter extends RecyclerView.Adapter<DownloadAdapter.myView
     private ArrayList<AllDownloadsIssueTracker> allDownloadsIssuesListTracker;
     private int status;
     private int previousProgressCount;
-    //    public boolean isStart;
     private String documentKey;
     private int listMenuItemPosition;
     private String TAG = "Download Adapter";
