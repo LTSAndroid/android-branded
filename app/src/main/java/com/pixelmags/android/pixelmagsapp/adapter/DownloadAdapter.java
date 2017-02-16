@@ -79,8 +79,6 @@ public class DownloadAdapter extends RecyclerView.Adapter<DownloadAdapter.myView
 
     public static void stopTimer(){
 
-//      Log.d("PauseState","Holder Copy is : "+holderCopy);
-//        Log.d("PauseState","Holder Copy Timer is : "+holderCopy.timer);
         if(holderCopy != null){
             if(holderCopy.timer != null){
                 holderCopy.timer.cancel();
