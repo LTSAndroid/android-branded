@@ -143,8 +143,6 @@ public class DownloadAdapter extends RecyclerView.Adapter<DownloadAdapter.myView
 
         status = allDownloadsIssuesListTracker.get(position).downloadStatus;
 
-        Log.d(TAG,"Status of the Issue is : "+status);
-
         if(status == 3){
             String pausedStatusText = AllDownloadsDataSet.getDownloadStatusText(status);
             holder.gridDownloadStatusButton.setAsDownload(pausedStatusText);
