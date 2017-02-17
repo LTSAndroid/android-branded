@@ -104,12 +104,6 @@ public class NewIssueView extends FragmentActivity {
     }
 
 
-//    @Override
-//    public void onBackPressed() {
-//
-//        setResult(Activity.RESULT_OK);
-//    }
-
     //Given the bitmap size and View size calculate a subsampling size (powers of 2)
     static int calculateInSampleSize( BitmapFactory.Options options, int reqWidth, int reqHeight) {
         int inSampleSize = 1;	//Default subsampling size

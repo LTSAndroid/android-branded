@@ -39,7 +39,7 @@ public class GetIssueParser extends JSONParser {
             int pageCount = unit.getInt("pageCount");
             mIssue.pageCount = pageCount;
 
-                    System.out.println("RETRIEVED ISSUE===" +unit.getString("title"));
+            System.out.println("RETRIEVED ISSUE===" +unit.getString("title"));
 
             JSONObject pageManifestArrayData = unit.getJSONObject("page_manifest");
             for(int pageNo=1; pageNo<=pageCount; pageNo++)
