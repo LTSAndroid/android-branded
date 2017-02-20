@@ -3,6 +3,7 @@ package com.pixelmags.android.ui;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -67,6 +68,7 @@ public class NavigationDrawerFragment extends Fragment {
     private boolean mUserLearnedDrawer;
     private CharSequence mTitle;
     private String TAG = "NavigationDrawer";
+    SaveToDataBase saveToDataBase;
 
     public NavigationDrawerFragment() {
     }
@@ -234,12 +236,8 @@ public class NavigationDrawerFragment extends Fragment {
                 currentPage =getString(R.string.menu_title_allissues);
                 mTitle = getString(R.string.menu_title_allissues);
 
-                Log.d("PauseState","Progress Count when nav is : "+ DataTransfer.count);
-                Log.d("PauseState","Issue Id when nav is : "+ DataTransfer.issueId);
-
-                SaveToDB(DataTransfer.count, DataTransfer.issueId);
-                DownloadAdapter.stopTimer();
-
+                saveToDataBase = new SaveToDataBase(DataTransfer.count, DataTransfer.issueId);
+                saveToDataBase.execute();
 
                 Fragment fragmentAllIsuues = new AllIssuesFragment();
                 // Insert the fragment by replacing any existing fragment
@@ -255,11 +253,8 @@ public class NavigationDrawerFragment extends Fragment {
                 /*Intent launch = new Intent(getActivity().getBaseContext(), LaunchActivity.class);
                 startActivity(launch);*/
 
-                Log.d("PauseState","Progress Count when nav is : "+ DataTransfer.count);
-                Log.d("PauseState","Issue Id when nav is : "+ DataTransfer.issueId);
-
-                SaveToDB(DataTransfer.count, DataTransfer.issueId);
-                DownloadAdapter.stopTimer();
+                saveToDataBase = new SaveToDataBase(DataTransfer.count, DataTransfer.issueId);
+                saveToDataBase.execute();
 
 
                 if(UserPrefs.getUserLoggedIn())
@@ -377,11 +372,8 @@ public class NavigationDrawerFragment extends Fragment {
 //                Intent mailer = Intent.createChooser(intent, null);
 //                getActivity().startActivity(mailer);
 
-                Log.d("PauseState","Progress Count when nav is : "+ DataTransfer.count);
-                Log.d("PauseState","Issue Id when nav is : "+ DataTransfer.issueId);
-
-                SaveToDB(DataTransfer.count, DataTransfer.issueId);
-                DownloadAdapter.stopTimer();
+                saveToDataBase = new SaveToDataBase(DataTransfer.count, DataTransfer.issueId);
+                saveToDataBase.execute();
 
                 Fragment fragmentContact = new ContactSupportFragment();
                 FragmentManager contactFragmentManager = getFragmentManager();
@@ -395,11 +387,8 @@ public class NavigationDrawerFragment extends Fragment {
                 currentPage =getString(R.string.menu_title_about);
                 mTitle = getString(R.string.menu_title_about);
 
-                Log.d("PauseState","Progress Count when nav is : "+ DataTransfer.count);
-                Log.d("PauseState","Issue Id when nav is : "+ DataTransfer.issueId);
-
-                SaveToDB(DataTransfer.count, DataTransfer.issueId);
-                DownloadAdapter.stopTimer();
+                saveToDataBase = new SaveToDataBase(DataTransfer.count, DataTransfer.issueId);
+                saveToDataBase.execute();
 
                 Fragment aboutFragment = new AboutFragment();
                 Bundle args1 = new Bundle();
@@ -424,6 +413,35 @@ public class NavigationDrawerFragment extends Fragment {
 
 
     }
+
+    public class SaveToDataBase extends AsyncTask<String, String, String> {
+
+        private int count;
+        private int issueId;
+
+        SaveToDataBase(int count, int issueId){
+
+            this.count = count;
+            this.issueId = issueId;
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+
+            AllDownloadsDataSet mDbReader_current = new AllDownloadsDataSet(BaseApp.getContext());
+            mDbReader_current.updateProgressCountOfIssue(mDbReader_current.getWritableDatabase(),
+                    String.valueOf(issueId), count);
+            mDbReader_current.close();
+
+            return null;
+        }
+
+        @Override
+        protected  void onPostExecute(String result){
+            DownloadAdapter.stopTimer();
+        }
+    }
+
 
     @Override
     public void onAttach(Activity activity) {

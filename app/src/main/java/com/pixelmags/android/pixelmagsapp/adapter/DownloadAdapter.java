@@ -214,6 +214,8 @@ public class DownloadAdapter extends RecyclerView.Adapter<DownloadAdapter.myView
                             @Override
                             public void run() {
 
+                                Log.d(TAG,"Timer JumpTime is : "+holder.jumpTime);
+
                                 if (holder.jumpTime != 100) {
 
                                     if (holder.count == 0) {
@@ -231,6 +233,7 @@ public class DownloadAdapter extends RecyclerView.Adapter<DownloadAdapter.myView
                                         } else {
                                             isStart = false;
                                             holder.timer.cancel();
+                                            holder.timer.purge();
 //                                        getInternetStatus.showAlertDialog();
                                         }
 
@@ -300,6 +303,7 @@ public class DownloadAdapter extends RecyclerView.Adapter<DownloadAdapter.myView
                                         } else {
                                             isStart = false;
                                             holder.timer.cancel();
+                                            holder.timer.purge();
                                         }
 
                                     }
@@ -347,7 +351,7 @@ public class DownloadAdapter extends RecyclerView.Adapter<DownloadAdapter.myView
                 }
 
 
-            }, 1500, 1500);
+            }, 2000, 2000);
         }
 
 
@@ -448,6 +452,7 @@ public class DownloadAdapter extends RecyclerView.Adapter<DownloadAdapter.myView
                                             isStart = false;
                                             if(holder.timer != null)
                                             holder.timer.cancel();
+                                            holder.timer.purge();
 
                                         }
                                     }

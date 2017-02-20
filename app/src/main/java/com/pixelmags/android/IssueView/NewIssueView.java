@@ -1,5 +1,6 @@
 package com.pixelmags.android.IssueView;
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,10 +12,13 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.crashlytics.android.Crashlytics;
@@ -58,41 +62,62 @@ public class NewIssueView extends FragmentActivity {
     // TODO : get the decrypt key and store here
     private String decrypt_key;
 
-    public static Bitmap decryptFile(String path, String documentKey){
+//    public static Bitmap decryptFile(String path, String documentKey){
+//
+//        Bitmap bitmap = null;
+//
+//        try {
+//            // Create FileInputStream to read from the encrypted image file
+//            FileInputStream fis = new FileInputStream(path);
+//            IssueDecode issueDecode = new IssueDecode();
+//
+//            byte[] bitmapdata = issueDecode.getDecodedBitMap(documentKey,fis);
+//
+//            fis.close();
+//
+//            Log.d(TAG, "Bitmap data is : " + bitmapdata.toString());
+//
+//
+//
+//            if(bitmapdata != null) {
+////                bitmap = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
+//
+//
+//                BitmapFactory.Options opts = new BitmapFactory.Options();
+//                opts.inJustDecodeBounds = true;
+//                opts.inSampleSize = calculateInSampleSize(opts,xDim, yDim);
+//                opts.inJustDecodeBounds = false;
+//                opts.inPreferredConfig = Bitmap.Config.RGB_565;  // Changed for better memory usage
+////                bitmap = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length,opts);
+//
+//
+//                Log.d(TAG,"Bitmap is : "+bitmap);
+//            }
+//
+//
+//        } catch (Exception e) {
+//
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+//        return bitmap;
+//    }
 
-        Bitmap bitmap = null;
+
+    public static byte[] decryptFile(String path, String documentKey){
+
+        byte[] bitmapdata = null;
 
         try {
             // Create FileInputStream to read from the encrypted image file
             FileInputStream fis = new FileInputStream(path);
             IssueDecode issueDecode = new IssueDecode();
 
-            byte[] bitmapdata = issueDecode.getDecodedBitMap(documentKey,fis);
+            bitmapdata = issueDecode.getDecodedBitMap(documentKey,fis);
 
             fis.close();
 
             Log.d(TAG, "Bitmap data is : " + bitmapdata.toString());
-
-
-
-            if(bitmapdata != null) {
-//                bitmap = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
-
-                BitmapFactory.Options opts = new BitmapFactory.Options();
-                opts.inJustDecodeBounds = true;
-                opts.inSampleSize = calculateInSampleSize(opts,xDim, yDim);
-                opts.inJustDecodeBounds = false;
-                opts.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                bitmap = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length,opts);
-//                Log.d(TAG,"Source is : "+source);
-//                mask = mask.extractAlpha();
-//                source.recycle();
-
-
-
-
-                Log.d(TAG,"Bitmap is : "+bitmap);
-            }
 
 
         } catch (Exception e) {
@@ -100,9 +125,8 @@ public class NewIssueView extends FragmentActivity {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        return bitmap;
+        return bitmapdata;
     }
-
 
     //Given the bitmap size and View size calculate a subsampling size (powers of 2)
     static int calculateInSampleSize( BitmapFactory.Options options, int reqWidth, int reqHeight) {
@@ -215,6 +239,18 @@ public class NewIssueView extends FragmentActivity {
 
     }
 
+
+    public static void getScreenResolution(Context context)
+    {
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics(metrics);
+        xDim = metrics.widthPixels;
+        yDim = metrics.heightPixels;
+    }
+
+
     private byte[] stringToBytes(String input) {
 
         int length = input.length();
@@ -245,11 +281,17 @@ public class NewIssueView extends FragmentActivity {
 
             Log.d(TAG,"Issue page locations is : " +issuePagesLocations.get(position));
 
-            Bitmap imageForView = null;
+//            Bitmap imageForView = null;
+            byte[] imageForView = null;
             String imageLocation = issuePagesLocations.get(position);
 
-            xDim = imageView.getWidth();
-            yDim = imageView.getHeight();
+            if(getActivity() != null) {
+                getScreenResolution(getActivity());
+            }else{
+                xDim = imageView.getWidth();
+                yDim = imageView.getHeight();
+            }
+
 
             if(imageLocation != null){
 
@@ -262,15 +304,20 @@ public class NewIssueView extends FragmentActivity {
 
                 imageForView =  decryptFile(imageLocation,documentKey);
 
-//                saveImage(imageForView);
+                BitmapWorkerTask bitmapWorkerTask = new BitmapWorkerTask(imageView,imageForView);
+                bitmapWorkerTask.execute();
 
 
-                if(imageForView != null){
-                    imageView.setImageBitmap(imageForView);
-                }else{
+                // Change Image
 
-                    System.out.println("Issue Image is Null");
-                }
+//                if(imageForView != null){
+//                    imageView.setImageBitmap(imageForView);
+//                    System.gc();
+//                }else{
+//
+//                    System.out.println("Issue Image is Null");
+//                }
+
             }else{
                 imageView.setBackgroundResource(R.drawable.placeholderissueview);
             }
@@ -329,6 +376,7 @@ public class NewIssueView extends FragmentActivity {
     static class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
         private final WeakReference<ImageView> imageViewReference;
         private byte[] bitmap;
+        private Bitmap bitmapImage;
 
         public BitmapWorkerTask(ImageView imageView,byte[] bitmap) {
             // Use a WeakReference to ensure the ImageView can be garbage collected
@@ -339,17 +387,24 @@ public class NewIssueView extends FragmentActivity {
         // Decode image in background.
         @Override
         protected Bitmap doInBackground(Integer... params) {
-            return BitmapFactory.decodeByteArray(bitmap, 0, bitmap.length);
+            BitmapFactory.Options opts = new BitmapFactory.Options();
+            opts.inJustDecodeBounds = true;
+            opts.inSampleSize = calculateInSampleSize(opts,xDim, yDim);
+            opts.inJustDecodeBounds = false;
+            opts.inPreferredConfig = Bitmap.Config.RGB_565;  // Changed for better memory usage
+            bitmapImage = BitmapFactory.decodeByteArray(bitmap, 0, bitmap.length,opts);
+            return bitmapImage;
         }
 
         // Once complete, see if ImageView is still around and set bitmap.
         @Override
         protected void onPostExecute(Bitmap bitmap) {
+
             if (imageViewReference != null && bitmap != null) {
                 final ImageView imageView = imageViewReference.get();
                 if (imageView != null) {
                     Log.d(TAG,"Inside the onPost execute method");
-                    imageView.setImageBitmap(bitmap);
+                    imageView.setImageBitmap(bitmapImage);
                 }
             }
         }

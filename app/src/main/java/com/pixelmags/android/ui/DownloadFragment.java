@@ -13,11 +13,12 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.pixelmags.android.IssueView.NewIssueView;
+import com.pixelmags.android.bean.DataTransfer;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
 import com.pixelmags.android.download.DownloadThumbnails;
@@ -113,12 +114,75 @@ public class DownloadFragment extends Fragment {
 
         super.onResume();
 
-        if(NewIssueView.issueViewOpen){
-            FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-            ft.detach(this).attach(this).commit();
+//        if(NewIssueView.issueViewOpen){
+//            FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+//            ft.detach(this).attach(this).commit();
+//
+//            NewIssueView.issueViewOpen = false;
+//        }
 
-            NewIssueView.issueViewOpen = false;
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK){
+
+                    SaveToDataBase saveToDataBase = new SaveToDataBase(DataTransfer.count, DataTransfer.issueId);
+                    saveToDataBase.execute();
+
+                    // handle back button
+                    Fragment fragment = new AllIssuesFragment();
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.main_fragment_container, fragment, "All Issues")
+                            .commit();
+
+                    return true;
+
+                }
+
+                return false;
+            }
+        });
+
+    }
+
+    public class SaveToDataBase extends AsyncTask<String, String, String>{
+
+        private int count;
+        private int issueId;
+
+        SaveToDataBase(int count, int issueId){
+
+            this.count = count;
+            this.issueId = issueId;
         }
+
+        @Override
+        protected String doInBackground(String... strings) {
+
+            AllDownloadsDataSet mDbReader_current = new AllDownloadsDataSet(BaseApp.getContext());
+            mDbReader_current.updateProgressCountOfIssue(mDbReader_current.getWritableDatabase(),
+                    String.valueOf(issueId), count);
+            mDbReader_current.close();
+
+            return null;
+        }
+
+        @Override
+        protected  void onPostExecute(String result){
+            DownloadAdapter.stopTimer();
+        }
+    }
+
+
+    public void SaveToDB(int count, int issue) {
+
+        AllDownloadsDataSet mDbReader_current = new AllDownloadsDataSet(BaseApp.getContext());
+        mDbReader_current.updateProgressCountOfIssue(mDbReader_current.getWritableDatabase(),
+                String.valueOf(issue), count);
+        mDbReader_current.close();
 
     }
 
