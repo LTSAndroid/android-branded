@@ -1,5 +1,8 @@
 package com.pixelmags.android.api;
 
+import android.util.Log;
+
+import com.pixelmags.android.comms.ErrorMessage;
 import com.pixelmags.android.comms.WebRequest;
 import com.pixelmags.android.json.CreateUserParser;
 import com.pixelmags.android.storage.UserPrefs;
@@ -22,6 +25,7 @@ public class CreateUser extends WebRequest {
     private String mFirstName;
     private String mLastName;
     private String mDOB;
+    private String TAG = "CreateUser";
 
 
     public CreateUser(){
@@ -47,17 +51,34 @@ public class CreateUser extends WebRequest {
                     cParser.parse();
                     saveCreateUserDataToApp();
                 } else{
-
                     // Add error handling code here
+                    Log.d(TAG,"Get API Error Message "+cParser.getErrorMessage());
+                    ErrorMessage errorMessage = new ErrorMessage();
+                    errorMessage.setError(true);
+                    errorMessage.setErrorMessage(cParser.getErrorMessage());
 
                 }
 
             }
+        }else{
+            cParser = new CreateUserParser(getAPIResultData());
+            if(cParser.initJSONParse()){
+
+                    // Add error handling code here
+                    Log.d(TAG,"Get API Error Message "+cParser.getErrorMessage());
+                    ErrorMessage errorMessage = new ErrorMessage();
+                    errorMessage.setError(true);
+                    errorMessage.setErrorMessage(cParser.getErrorMessage());
+
+
+            }
         }
+
 
     }
 
     private void setApiNameValuePairs(){
+
 
         baseApiNameValuePairs = new ArrayList<NameValuePair>(9);
         baseApiNameValuePairs.add(new BasicNameValuePair("email", mEmail));

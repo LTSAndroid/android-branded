@@ -25,7 +25,9 @@ public class CreateUserParser extends JSONParser {
 
             mUserID = baseJSON.getString("user_id");
 
-        }catch(Exception e){}
+        }catch(Exception e){
+            e.printStackTrace();
+        }
 
 
         return true;

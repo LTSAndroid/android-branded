@@ -32,6 +32,7 @@ import com.pixelmags.android.api.CreateUser;
 import com.pixelmags.android.api.GetMyIssues;
 import com.pixelmags.android.api.GetMySubscriptions;
 import com.pixelmags.android.api.ValidateUser;
+import com.pixelmags.android.comms.ErrorMessage;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.storage.UserPrefs;
 
@@ -89,7 +90,7 @@ public class RegisterFragment extends Fragment {
             String month1 = String.valueOf(selectedMonth + 1);
             String day1 = String.valueOf(selectedDay);
 
-            mDOBView.setText(day1 + "/" + month1 + "/" + year1);
+            mDOBView.setText(day1 + "-" + month1 + "-" + year1);
             mDOBView.setError(null);
 
         }
@@ -268,8 +269,10 @@ public class RegisterFragment extends Fragment {
             focusView = mPasswordView;
             cancel = true;
         }
+
+
         //for confirm password
-        if (TextUtils.isEmpty(cPassword) || !isPasswordValid(cPassword)) {
+        if (TextUtils.isEmpty(cPassword)) {
             mCPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mCPasswordView;
             cancel = true;
@@ -337,6 +340,7 @@ public class RegisterFragment extends Fragment {
             focusView.requestFocus();
         } else {
             // perform the user register attempt.
+//            mRegisterTask = new UserRegistrationTask(email, password,firstName,lastName,DOB);
             mRegisterTask = new UserRegistrationTask(email, password,firstName,lastName,DOB);
             mRegisterTask.execute((String) null);
         }
@@ -350,7 +354,7 @@ public class RegisterFragment extends Fragment {
     private boolean isPasswordValid(String password) {
 
         //TODO: Replace this with your own logic
-        return password.length() > 4;
+        return password.length() >= 6;
     }
 
     public void displayLogInFailed(){
@@ -438,6 +442,12 @@ public class RegisterFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+
+            Log.d(TAG,"Email is : "+mEmail);
+            Log.d(TAG,"Password is : "+mPassword);
+            Log.d(TAG,"FirstName is : "+mFirstName);
+            Log.d(TAG,"LastName is : "+mLastName);
+            Log.d(TAG,"DOB is : "+mDOB);
 
             try{
 
@@ -580,8 +590,24 @@ public class RegisterFragment extends Fragment {
 
 
             // perform the user register attempt.
-            mValidateUserTask = new ValidateUserTask(mEmail, mPassword);
-            mValidateUserTask.execute((String) null);
+
+            ErrorMessage errorMessage = new ErrorMessage();
+            if(errorMessage.isError()){
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle(getString(R.string.registration_fail_title));
+                builder.setMessage(errorMessage.getErrorMessage());
+                builder.setPositiveButton(getString(R.string.ok), null);
+                builder.show();
+
+                errorMessage.setError(false);
+
+            }else{
+
+                mValidateUserTask = new ValidateUserTask(mEmail, mPassword);
+                mValidateUserTask.execute((String) null);
+            }
+
+
 
 
 //            Fragment fragment = new AllIssuesFragment();

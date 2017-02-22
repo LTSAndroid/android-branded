@@ -12,6 +12,7 @@ public class JSONParser {
     private boolean success;
     private int error_code;
     private String error_message;
+    private String TAG = "JSONParser";
 
 
     JSONParser(){}

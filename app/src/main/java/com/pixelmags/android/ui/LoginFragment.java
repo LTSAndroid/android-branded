@@ -206,7 +206,7 @@ public class  LoginFragment extends Fragment {
 
         // Do the checks in reverse
 
-        // Check for a valid password, if the user entered one.
+//         Check for a valid password, if the user entered one.
         if (!TextUtils.isEmpty(password) && !AccountUtil.isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;

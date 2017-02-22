@@ -35,6 +35,9 @@ public static void doPreLaunchSteps(){
         UserPrefs.setUserFirstName("");
         UserPrefs.setUserLastName("");
         UserPrefs.setUserPassword("");
+        UserPrefs.setUserEmail("");
+        UserPrefs.setUserPassword("");
+        UserPrefs.setUserDob("");
 
 
     }

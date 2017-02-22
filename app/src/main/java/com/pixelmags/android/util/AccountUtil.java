@@ -16,7 +16,7 @@ public class AccountUtil {
 
     public static boolean isPasswordValid(String password) {
 
-        return (password.length() > 5) ? true : false;
+        return (password.length() >= 6) ? true : false;
     }
 
 }
