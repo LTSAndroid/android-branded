@@ -32,7 +32,6 @@ import com.pixelmags.android.api.CreateUser;
 import com.pixelmags.android.api.GetMyIssues;
 import com.pixelmags.android.api.GetMySubscriptions;
 import com.pixelmags.android.api.ValidateUser;
-import com.pixelmags.android.comms.ErrorMessage;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.storage.UserPrefs;
 
@@ -591,24 +590,8 @@ public class RegisterFragment extends Fragment {
 
             // perform the user register attempt.
 
-            ErrorMessage errorMessage = new ErrorMessage();
-            if(errorMessage.isError()){
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle(getString(R.string.registration_fail_title));
-                builder.setMessage(errorMessage.getErrorMessage());
-                builder.setPositiveButton(getString(R.string.ok), null);
-                builder.show();
-
-                errorMessage.setError(false);
-
-            }else{
-
                 mValidateUserTask = new ValidateUserTask(mEmail, mPassword);
                 mValidateUserTask.execute((String) null);
-            }
-
-
-
 
 //            Fragment fragment = new AllIssuesFragment();
 //            FragmentManager fragmentManager = getFragmentManager();

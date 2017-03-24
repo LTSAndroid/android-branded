@@ -1,6 +1,7 @@
 package com.pixelmags.android.api;
 
 import com.pixelmags.android.comms.Config;
+import com.pixelmags.android.comms.ErrorMessage;
 import com.pixelmags.android.comms.WebRequest;
 import com.pixelmags.android.json.CanPurchaseParser;
 import com.pixelmags.android.storage.UserPrefs;
@@ -19,6 +20,7 @@ public class CanPurchase extends WebRequest
     CanPurchaseParser cParser;
     private int mIssue_id;
     private String mSKU;
+    private String TAG = "CanPurchase";
 
     public CanPurchase()
     {
@@ -41,9 +43,11 @@ public class CanPurchase extends WebRequest
                     success = true;
                     // Enable these when going live
 
+                    ErrorMessage.canPurchaseResponse = String.valueOf(success);
+
                     //cParser.parse();
                     //launch purchase
-                   /* MainActivity mActivity= new MainActivity();
+                     /*MainActivity mActivity= new MainActivity();
                     mActivity.createPurchaseLauncher(mSKU,mIssue_id);*/
                 }
             }
@@ -60,10 +64,13 @@ public class CanPurchase extends WebRequest
         baseApiNameValuePairs.add(new BasicNameValuePair("device_id", UserPrefs.getDeviceID()));
         baseApiNameValuePairs.add(new BasicNameValuePair("magazine_id", Config.Magazine_Number));
         baseApiNameValuePairs.add(new BasicNameValuePair("issue_id", issueId));
-        baseApiNameValuePairs.add(new BasicNameValuePair("payment_gateway", "Amazon"));  // Change it to google once it going to live
+        baseApiNameValuePairs.add(new BasicNameValuePair("payment_gateway", "google")); // Todo: Change it to google once it going to live
         baseApiNameValuePairs.add(new BasicNameValuePair("app_bundle_id", Config.Bundle_ID));
         baseApiNameValuePairs.add(new BasicNameValuePair("api_mode", Config.api_mode));
         baseApiNameValuePairs.add(new BasicNameValuePair("api_version", Config.api_version));
+
+//        Log.d(TAG,"Base API JSON String for Can purchase is : "+String.valueOf(baseApiNameValuePairs));
+//        ErrorMessage.canPurchaseJsonRequest = String.valueOf(baseApiNameValuePairs);
 
     }
     }

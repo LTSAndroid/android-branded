@@ -5,30 +5,13 @@ package com.pixelmags.android.comms;
  */
 public class ErrorMessage {
 
-    private boolean isError = false;
-    private String errorMessage;
+    public static boolean hasError = false;
+    public static String errorMessage;
+    public static int errorCode;
+    public static String jsonTestResult;
 
-    public boolean isError() {
-        return isError;
-    }
-
-    public void setError(boolean error) {
-        isError = error;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
-
-    @Override
-    public String toString() {
-        return "ErrorMessage{" +
-                "isError=" + isError +
-                ", errorMessage='" + errorMessage + '\'' +
-                '}';
-    }
+    public static String canPurchaseJsonRequest;
+    public static String canPurchaseResponse;
+    public static String createPurchaseRequest;
+    public static String createPurchaseResponse;
 }

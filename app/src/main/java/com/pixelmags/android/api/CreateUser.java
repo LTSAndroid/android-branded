@@ -53,10 +53,9 @@ public class CreateUser extends WebRequest {
                 } else{
                     // Add error handling code here
                     Log.d(TAG,"Get API Error Message "+cParser.getErrorMessage());
-                    ErrorMessage errorMessage = new ErrorMessage();
-                    errorMessage.setError(true);
-                    errorMessage.setErrorMessage(cParser.getErrorMessage());
-
+                    ErrorMessage.hasError = true;
+                    ErrorMessage.errorCode = cParser.getErrorCode();
+                    ErrorMessage.errorMessage = cParser.getErrorMessage();
                 }
 
             }
@@ -65,11 +64,10 @@ public class CreateUser extends WebRequest {
             if(cParser.initJSONParse()){
 
                     // Add error handling code here
-                    Log.d(TAG,"Get API Error Message "+cParser.getErrorMessage());
-                    ErrorMessage errorMessage = new ErrorMessage();
-                    errorMessage.setError(true);
-                    errorMessage.setErrorMessage(cParser.getErrorMessage());
-
+                Log.d(TAG,"Get API Error Message "+cParser.getErrorMessage());
+                ErrorMessage.hasError = true;
+                ErrorMessage.errorCode = cParser.getErrorCode();
+                ErrorMessage.errorMessage = cParser.getErrorMessage();
 
             }
         }

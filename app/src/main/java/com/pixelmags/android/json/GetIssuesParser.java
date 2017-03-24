@@ -46,7 +46,7 @@ public class GetIssuesParser extends JSONParser {
 
                 magazine.id = unit.getInt("ID");
 
-                Log.d(TAG,"Magazine Id is : "+magazine.id);
+                Log.d(TAG,"Issue Id is : "+magazine.id);
 
             //    magazine.magazineId = unit.getInt("ID"); // Is this different from ID field ??
                 magazine.synopsis = unit.getString("synopsis");
@@ -89,6 +89,8 @@ public class GetIssuesParser extends JSONParser {
             for(int i=0; i<allIssuesList.size(); i++){
                 Log.d(TAG,"Array List after sorting  is : "+ allIssuesList.get(i).issueDate);
             }
+
+            Log.d(TAG,"All Issue Data from API is : "+allIssuesList);
 
 
 

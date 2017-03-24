@@ -22,6 +22,7 @@ public class GetIssues extends WebRequest {
     GetIssuesParser getIssuesParserParser;
     private String mMagazineID;
     private String mAppBundleID;
+    private String TAG = "GetIssues";
 
     public GetIssues() {
         super(API_NAME);
@@ -71,6 +72,8 @@ public class GetIssues extends WebRequest {
             System.out.println("MAGAZINE Title === " + mag.title);
         }
 */
+
+        Log.d(TAG,"All Issue received from the API is : "+getIssuesParserParser.allIssuesList.toString());
 
         getIssuesParserParser.allIssuesList = DownloadThumbnails.DownloadAllThumbnailData(getIssuesParserParser.allIssuesList);
 

@@ -30,11 +30,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.pixelmags.android.api.CanPurchase;
 import com.pixelmags.android.bean.DataTransfer;
 import com.pixelmags.android.comms.Config;
+import com.pixelmags.android.comms.ErrorMessage;
 import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.datamodels.MyIssue;
 import com.pixelmags.android.datamodels.MySubscription;
@@ -85,6 +87,8 @@ public class MainActivity extends AppCompatActivity
     boolean mIsBound = false;
     private ArrayList<Magazine> pixelmagsMagazinesList = null;
     private String TAG = "MainActivity";
+    private String purchaseIssuePrice;
+    private String purchaseIssueCurrencyType;
     IabHelper.QueryInventoryFinishedListener mGotInventoryListener
             = new IabHelper.QueryInventoryFinishedListener()
     {
@@ -111,9 +115,8 @@ public class MainActivity extends AppCompatActivity
                     userOwnedSKUList.add(purchaseData);
                 }
 
-
-
             }
+
         }
     };
     IabHelper.QueryInventoryFinishedListener mQueryFinishedListener = new IabHelper.QueryInventoryFinishedListener()
@@ -140,10 +143,10 @@ public class MainActivity extends AppCompatActivity
                 mySubsArray = mDbSubReader.getMySubscriptions(mDbSubReader.getReadableDatabase());
                 mDbSubReader.close();
 
-                for(int i=0; i< mySubsArray.size();i++)
-                {
-                    MySubscription sub = mySubsArray.get(i);
-                }
+//                for(int i=0; i< mySubsArray.size();i++)
+//                {
+//                    MySubscription sub = mySubsArray.get(i);
+//                }
 
             }
 
@@ -181,6 +184,10 @@ public class MainActivity extends AppCompatActivity
 
                                 if (issue.issueID == finalMagazine.id) {
                                     finalMagazine.isIssueOwnedByUser = true;
+                                    purchaseIssuePrice = details.getPrice();
+                                    Log.d(TAG,"Purchase Issue Price is : "+purchaseIssuePrice);
+                                    purchaseIssueCurrencyType = details.getCurrencyType();
+                                    Log.d(TAG,"Purchase Issue Currency Type is : "+purchaseIssueCurrencyType);
                                 }
                             }
                         }
@@ -260,6 +267,30 @@ public class MainActivity extends AppCompatActivity
             if (result.isFailure())
             {
                 Log.d(TAG,"Inside the failure condition");
+
+//                new Handler().postDelayed(
+//                        new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                new android.support.v7.app.AlertDialog.Builder(MainActivity.this)
+//                                        .setIcon(android.R.drawable.ic_dialog_alert)
+//                                        .setTitle(getResources().getString(R.string.error))
+//                                        .setMessage(getResources().getString(R.string.issue_owned))
+//                                        .setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+//                                            @Override
+//                                            public void onClick(DialogInterface dialog, int which) {
+//
+//                                                dialog.dismiss();
+//                                            }
+//                                        })
+//                                        .show();
+//                            }
+//                        },
+//                        2000
+//                );
+
+
+
                 // Handle error
                 return;
             }
@@ -270,13 +301,29 @@ public class MainActivity extends AppCompatActivity
 
                 Log.d(TAG,"Inside the success condition");
 
+                mHelper.consumeAsync(purchase, mConsumeFinishedListener);
+
                 //true
-                //  consumeItem();
+//                  consumeItem();
                 // buyButton.setEnabled(false);
             }
 
         }
     };
+
+
+    IabHelper.OnConsumeFinishedListener mConsumeFinishedListener =
+            new IabHelper.OnConsumeFinishedListener() {
+                public void onConsumeFinished(Purchase purchase, IabResult result) {
+                    if (result.isSuccess()) {
+                        // provision the in-app purchase to the user
+                        // (for example, credit 50 gold coins to player's character)
+                    }
+                    else {
+                        // handle error
+                    }
+                }
+            };
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -304,25 +351,25 @@ public class MainActivity extends AppCompatActivity
 
         Util.doPreLaunchSteps();
 
-        // This string is unique for each app
-        String base64EncodedPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhE2tqqq+WSoEXHyqOdeFjKFGgWVuhapArdTe/b0wzxAJE0pdsM8FlywwyIQlLd51hj6vvDkmd8T3dRi6LX2Ww2M8+fpK7jP3ydMyTZB9efuAiRZq2tlo2GmrFmO0vTdD0MkY4OdX9ROEvY9k/cbzXX73uNH0FAcZ38ypr/qf66IS2yI+z+Oiip7c39pDrG0P4kVamJQOjs7PLTmtwU1PWc43phqISxxpLJWxj0yW/YjfZ7Knk5n84p02CpDJcoZXdsBu7X4GOc79DRURDHuLu3tgkp3roXTQeX6y4Ht9843Hu5rSRgADQ/5828+SozdhIAhQ4CT/MZ0w0NEd0/OitwIDAQAB";
-        mHelper = new IabHelper(this, base64EncodedPublicKey);
+       mHelper = new IabHelper(this, Config.base64EncodedPublicKey);
 
         mHelper.startSetup(new
-                               IabHelper.OnIabSetupFinishedListener()
-                               {
-                                   public void onIabSetupFinished(IabResult result)
-                                   {
-                                       if (!result.isSuccess())
-                                       {
-                                           //failed
-                                       }
-                                       else
-                                       {
-                                           //success
-                                       }
-                                   }
-                               });
+               IabHelper.OnIabSetupFinishedListener()
+               {
+                   public void onIabSetupFinished(IabResult result)
+                   {
+                       if (!result.isSuccess())
+                       {
+                           //failed
+                           Log.d(TAG,"In App Billing setup failed");
+                       }
+                       else
+                       {
+                           //success
+                           Log.d(TAG,"In App Billing setup success");
+                       }
+                   }
+               });
 
 
         mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener()
@@ -359,6 +406,14 @@ public class MainActivity extends AppCompatActivity
 //                        skuList.add("com.pixelmags.androidbranded.test1");//This to confirm billing sku
 //                        skuList.add("com.pixelmags.androidbranded.test2");//This is to confirm billing sku
 //                        skuList.add("com.pixelmags.androidbranded.test3");//This is to confirm billing sku
+//                        skuList.add("pub_google_hoffman_media_llc_the_cottage_journal.40325.nc");
+//                        skuList.add("pub_google_hoffman_media_llc_the_cottage_journal.35721.nc");
+//                        skuList.add("pub_google_extreme_publishing_ltd_trailbike_enduro_magazine_tbm.32891.nc");
+//                        skuList.add("pub_google_extreme_publishing_ltd_trailbike_enduro_magazine_tbm.32889.nc");
+//                        skuList.add("pub_google_mustang_seats_mustang_seats.32879.nc");
+                        skuList.add("pub_google_mustang_seats_mustang_seats.32919.nc");
+//                          skuList.add("pub_google_hoffman_media_llc_cooking_with_paula_deen_magazine.45687.nc");
+//                        skuList.add("com.pixelmags.androidbranded.testapp");//This is to confirm billing sku
                     }
                     mHelper.queryInventoryAsync(true, skuList, mQueryFinishedListener);
                 }
@@ -448,15 +503,26 @@ public class MainActivity extends AppCompatActivity
         String encodeData = "{\"user_id\": "+ userPixelMagsID +"}";
         byte[] data = encodeData.getBytes();
         String base64 = Base64.encodeToString(data, Base64.DEFAULT);
+        Log.d(TAG,"base 64 key is : "+base64);
 //        mHelper.launchPurchaseFlow(this, "com.pixelmagsandroid.newtestapp4", 1001,
 //                mPurchaseFinishedListener,base64);
+//        mHelper.launchPurchaseFlow(this, sku, 1001,
+//                mPurchaseFinishedListener,base64);
+
+
         mHelper.launchPurchaseFlow(this, sku, 1001,
-                mPurchaseFinishedListener,base64);
+                mPurchaseFinishedListener, "bGoa+V7g/yqDXvKRqq+JTFn4uQZbPiQJo4pf9RzJ");
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        Log.d(TAG,"Request Code of onActivity Result is : "+requestCode);
+        Log.d(TAG,"Result Code of onActivity Result is : "+resultCode);
+        Log.d(TAG,"Data received from onActivity Result is : "+data);
+
         if (requestCode == 1001) {
+            Log.d(TAG,"On Activity Result Data is : "+data);
             int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
             String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
             String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
@@ -465,12 +531,31 @@ public class MainActivity extends AppCompatActivity
                 try {
                     JSONObject jo = new JSONObject(purchaseData);
 
-                    String purchase_receipt=jo.getString("purchaseToken");
-                    String purchase_signature= dataSignature;
+                    String purchase_receipt= jo.toString();
 
-                    //
-                    mCreatePurchaseTask = new CreatePurchaseTask(purchaseIssueId,purchase_receipt,purchase_signature);
+//                    byte[] jo_data = new byte[0];
+//                    try {
+//                        jo_data = jo.toString().getBytes("utf-8");
+//                    } catch (UnsupportedEncodingException e) {
+//                        e.printStackTrace();
+//                    }
+//                    String base64_purchase_receipt = Base64.encodeToString(jo_data, Base64.DEFAULT);
+
+                    Log.d(TAG,"Purchase Receipt is : "+purchase_receipt);
+                    String purchase_signature = dataSignature;
+                    Log.d(TAG,"Purchase Signature is : "+purchase_signature);
+                    Log.d(TAG,"Purchase Issue Price is : "+purchaseIssuePrice);
+                    Log.d(TAG,"Purchase Issue Currency Type is : "+purchaseIssueCurrencyType);
+
+
+                    mCreatePurchaseTask = new CreatePurchaseTask(purchaseIssueId,purchase_receipt,purchase_signature,purchaseIssuePrice,
+                            purchaseIssueCurrencyType,this);
                     mCreatePurchaseTask.execute((String) null);
+
+                    if(ErrorMessage.hasError){
+                        ErrorMessage.hasError = false;
+                        Toast.makeText(this,"Error when called create purchase is : "+ErrorMessage.errorMessage,Toast.LENGTH_LONG).show();
+                    }
 
                     //google result
                 }
@@ -480,6 +565,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
+
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {

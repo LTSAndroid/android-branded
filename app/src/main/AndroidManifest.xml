@@ -44,7 +44,7 @@
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/app_name"></activity>
+            android:label="@string/app_name" />
 
         <meta-data
             android:name="com.google.android.gms.version"
@@ -53,19 +53,20 @@
         <activity
             android:name="com.pixelmags.android.ui.LoginActivity"
             android:label="@string/title_activity_login"
-            android:windowSoftInputMode="adjustResize|stateVisible"></activity>
-        <activity android:name="com.pixelmags.android.IssueView.NewIssueView"></activity>
+            android:windowSoftInputMode="adjustResize|stateVisible" />
+        <activity android:name="com.pixelmags.android.IssueView.NewIssueView" />
 
         <service
             android:name=".service.PMService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="8a2434bdb03a3d12dee93648e0e0904b07e7f715" />
 
-        <activity android:name="com.pixelmags.android.ui.DownloadActivity"></activity>
+        <activity android:name="com.pixelmags.android.ui.DownloadActivity" />
+        <activity android:name="com.pixelmags.android.comms.CreatePurchaseTestResult"></activity>
     </application>
 
 </manifest>

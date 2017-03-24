@@ -121,10 +121,67 @@ public class AllIssuesFragment extends Fragment {
         //Launch Can Purchase, if user loggedin
         if(UserPrefs.getUserLoggedIn())
         {
+            {
+                //Launch Can Purchase, if user loggedin
+                if(UserPrefs.getUserLoggedIn())
+                {
 
-            MainActivity myAct = (MainActivity) getActivity();
+                    MainActivity myAct = (MainActivity) getActivity();
+                    // Uncomment when going to live
 //            myAct.canPurchaseLauncher(magazinesList.get(position).android_store_sku, magazinesList.get(position).id);
-            myAct.canPurchaseLauncher("com.pixelmags.androidbranded.test3", magazinesList.get(position).id);
+//                    myAct.canPurchaseLauncher("pub_google_hoffman_media_llc_the_cottage_journal.35721.nc", 35721);
+//                    myAct.canPurchaseLauncher("pub_google_extreme_publishing_ltd_trailbike_enduro_magazine_tbm.32891.nc", 32891);
+//                    myAct.canPurchaseLauncher("pub_google_extreme_publishing_ltd_trailbike_enduro_magazine_tbm.32889.nc", 32889);
+                    myAct.canPurchaseLauncher("pub_google_mustang_seats_mustang_seats.32919.nc",32919);
+                }
+                else
+                {
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+                    alertDialogBuilder.setTitle(getString(R.string.purchase_initiation_fail_title));
+
+
+                    // set dialog message
+                    alertDialogBuilder
+                            .setMessage(getString(R.string.purchase_initiation_fail_message))
+                            .setCancelable(false)
+                            .setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog,int id) {
+                                    dialog.dismiss();
+
+                                    Fragment fragmentLogin = new LoginFragment();
+
+                                    // Insert the fragment by replacing any existing fragment
+                                    FragmentManager allIssuesFragmentManager = getFragmentManager();
+                                    allIssuesFragmentManager.beginTransaction()
+                                            .replace(R.id.main_fragment_container, fragmentLogin)
+                                            .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                                            .commit();
+                                }
+                            });
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+                    alertDialog.show();
+
+                }
+
+                //check for download state before launch, prefer separate class as we need to reuse
+                //if check passes then start the activity
+       /* Intent intent = new Intent(getActivity(), NewIssueView.class);
+        intent.putExtra("ISSUE_ID", 120974);
+        startActivity(intent);*/
+                // startActivity(new Intent(getActivity(), NewIssueView.class));
+       /* NewIssueView issueViewFragment = (NewIssueView) getActivity();
+        issueViewFragment.loadIssue(magazinesList.get(position).id);*/
+       /* AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        builder.setTitle(getString(R.string.allIssues_purchase_title));
+        String message = getString(R.string.allIssues_purchase_message)+ " "+magazinesList.get(position).title + "?";
+        builder.setMessage(message);
+        builder.setPositiveButton("OK", null);
+        builder.setNegativeButton("Cancel", null);
+        builder.show();*/
+
+            }
+
         }
         else
         {
@@ -356,12 +413,16 @@ public class AllIssuesFragment extends Fragment {
 
         for(int i=0; i<magazinesList.size(); i++){
 
+
+            Log.d(TAG,"Type of issue is : "+magazinesList.get(i).type);
+
             if (magazinesList.get(i).paymentProvider != null &&
                     magazinesList.get(i).paymentProvider.trim().equalsIgnoreCase("free")) {
                 magazinesList.get(i).status = Magazine.STATUS_DOWNLOAD;
             }
 
-            if(magazinesList.get(i).type.trim().equalsIgnoreCase("subscription")){
+            if(!magazinesList.get(i).paymentProvider.equalsIgnoreCase("google") || !magazinesList.get(i).paymentProvider.trim().equalsIgnoreCase("free")
+            && magazinesList.get(i).type.trim().equalsIgnoreCase("subscription")){
                 magazinesList.remove(magazinesList.get(i));
             }
 

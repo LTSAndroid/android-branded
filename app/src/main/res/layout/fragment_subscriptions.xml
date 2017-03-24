@@ -1,70 +1,230 @@
-<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:alignmentMode="alignBounds"
-    android:background="#FFFFFF"
-    android:columnCount="2"
-    android:fitsSystemWindows="true"
-    android:useDefaultMargins="true"
-    tools:context="com.pixelmags.android.ui.SubscriptionsFragment">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:scrollbars="none">
 
-    <!-- TODO: Update blank fragment layout -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/subscription_details_layout"
+        android:orientation="vertical">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:orientation="horizontal"
+            android:padding="10dp">
 
-    <TextView
-        android:id="@+id/subscriptionsBuyNowButton"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_alignParentLeft="true"
-        android:layout_marginTop="70dp"
-        android:paddingLeft="20dip"
-        android:text="1 Month Subscription"
-        android:textSize="17dp"
-        android:textStyle="bold"
-        />
+            <TextView
+                android:id="@+id/magazine_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/magazine_id"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
 
-    <com.pixelmags.android.ui.uicomponents.MultiStateButton
-        android:id="@+id/gridMultiStateSubscriptionButton1"
-        style="@style/MultiStateButtonBase"
-        android:layout_width="100dp"
-        android:layout_marginRight="20dp"
-        android:text="£1.99"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=":"
+                android:layout_weight="1.5"
+                android:textColor="@color/black"
+                android:textSize="18sp"/>
 
-    <TextView
-        android:id="@+id/subscriptions6MonthsText"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_below="@+id/subscriptionsBuyNowButton"
-        android:paddingLeft="20dip"
-        android:text="3 Months Subscription"
-        android:textSize="17dp"
-        android:textStyle="bold" />
-
-
-    <com.pixelmags.android.ui.uicomponents.MultiStateButton
-        android:id="@+id/gridMultiStateSubscriptionButton2"
-        style="@style/MultiStateButtonBase"
-        android:layout_width="100dp"
-        android:layout_marginRight="20dp"
-        android:text="£1.99"/>
-
-    <TextView
-        android:id="@+id/subscriptions3MonthsText"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_below="@+id/subscriptions6MonthsText"
-        android:paddingLeft="20dip"
-        android:text="6 Months Subscription"
-        android:textSize="17dp"
-        android:textStyle="bold"/>
-
-    <com.pixelmags.android.ui.uicomponents.MultiStateButton
-        android:id="@+id/gridMultiStateSubscriptionButton3"
-        style="@style/MultiStateButtonBase"
-        android:layout_width="100dp"
-        android:layout_marginRight="20dp"
-        android:text="£1.99"/>
+            <TextView
+                android:id="@+id/magazine_id_value"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_alignTop="@+id/labelUserId"
+                android:layout_toEndOf="@+id/labelUserId"
+                android:layout_toRightOf="@+id/labelUserId"
+                tools:text="1578"
+                android:textColor="@color/black"
+                android:textSize="18dp" />
 
 
-</GridLayout>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/credits_available"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/credits_available"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=":"
+                android:layout_weight="1.5"
+                android:textColor="@color/black"
+                android:textSize="18sp"/>
+
+            <TextView
+                android:id="@+id/credits_available_value"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_alignTop="@+id/labelUserId"
+                android:layout_toEndOf="@+id/labelUserId"
+                android:layout_toRightOf="@+id/labelUserId"
+                tools:text="$15"
+                android:textColor="@color/black"
+                android:textSize="18dp" />
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/purchase_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/purchase_date"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=":"
+                android:layout_weight="1.5"
+                android:textColor="@color/black"
+                android:textSize="18sp"/>
+
+            <TextView
+                android:id="@+id/purchase_date_value"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_alignTop="@+id/labelUserId"
+                android:layout_toEndOf="@+id/labelUserId"
+                android:layout_toRightOf="@+id/labelUserId"
+                tools:text="20-10-2016"
+                android:textColor="@color/black"
+                android:textSize="18dp" />
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/expiry_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/expiry_date"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=":"
+                android:layout_weight="1.5"
+                android:textColor="@color/black"
+                android:textSize="18sp"/>
+
+            <TextView
+                android:id="@+id/expiry_date_value"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_alignTop="@+id/labelUserId"
+                android:layout_toEndOf="@+id/labelUserId"
+                android:layout_toRightOf="@+id/labelUserId"
+                tools:text="10-01-2017"
+                android:textColor="@color/black"
+                android:textSize="18dp" />
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/subscription_production_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/subscription_production_id"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=":"
+                android:layout_weight="1.5"
+                android:textColor="@color/black"
+                android:textSize="18sp"/>
+
+            <TextView
+                android:id="@+id/subscription_production_id_value"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_alignTop="@+id/labelUserId"
+                android:layout_toEndOf="@+id/labelUserId"
+                android:layout_toRightOf="@+id/labelUserId"
+                tools:text="1578"
+                android:textColor="@color/black"
+                android:textSize="18dp" />
+
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/my_recycler_view"
+        android:scrollbars="none"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
+</RelativeLayout>

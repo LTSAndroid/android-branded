@@ -1,5 +1,6 @@
 package com.pixelmags.android.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.pixelmags.android.comms.CreatePurchaseTestResult;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.util.Util;
@@ -25,6 +27,7 @@ public class UserAccountFragment extends Fragment {
     private TextView dataUserId;
     private TextView dataEmail;
     private TextView dataFullName;
+    private Button logDetails;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -38,6 +41,16 @@ public class UserAccountFragment extends Fragment {
 
         // set the Logout Listener
         View rootView = inflater.inflate(R.layout.fragment_useraccount, container, false);
+
+        logDetails = (Button) rootView.findViewById(R.id.logs_details);
+        logDetails.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), CreatePurchaseTestResult.class);
+                startActivity(intent);
+            }
+        });
+
 
         dataUserId = (TextView) rootView.findViewById(R.id.dataUserId);
         dataUserId.setText(UserPrefs.getUserPixelmagsId());

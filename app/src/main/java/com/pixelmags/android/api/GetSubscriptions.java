@@ -19,6 +19,7 @@ public class GetSubscriptions extends WebRequest {
     private static final String API_NAME="getSubscriptions";
 
     GetSubscriptionsParser subsParser;
+    private String TAG = "GetSubscription";
 
 
     public GetSubscriptions(){
@@ -75,6 +76,19 @@ public class GetSubscriptions extends WebRequest {
         SubscriptionsDataSet mDbHelper = new SubscriptionsDataSet(BaseApp.getContext());
         mDbHelper.insert_all_subscriptions(mDbHelper.getWritableDatabase(), subsParser.subscriptionsList);
         mDbHelper.close();
+
+        //Enable these only for testing purpose. Else not required
+
+//        SubscriptionsDataSet mDbReader = new SubscriptionsDataSet(BaseApp.getContext());
+//        ArrayList<Subscription> mySubsArray = mDbReader.getAllSubscriptions(mDbReader.getReadableDatabase());
+//        mDbReader.close();
+//
+//        for(int i=0; i< mySubsArray.size();i++) {
+//            Subscription sub = mySubsArray.get(i);
+//            Log.d(TAG,"Complete Subscription is : "+sub.payment_provider);
+//            Log.d(TAG,"Subscription Description is ::" + sub.description);
+//            Log.d(TAG,"Subscription price is "+sub.price);
+//        }
     }
 
 

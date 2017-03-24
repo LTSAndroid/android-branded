@@ -27,6 +27,9 @@ public class JSONParser {
 
     public boolean initJSONParse(){
 
+
+//        ErrorMessage.jsonTestResult = JSONRawData;
+
         try{
 
             baseJSON = new JSONObject(JSONRawData);

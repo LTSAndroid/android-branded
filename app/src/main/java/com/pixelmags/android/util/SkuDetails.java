@@ -29,6 +29,7 @@ public class SkuDetails {
     String mTitle;
     String mDescription;
     String mJson;
+    String currencyType;
 
     public SkuDetails(String jsonSkuDetails) throws JSONException {
         this(IabHelper.ITEM_TYPE_INAPP, jsonSkuDetails);
@@ -43,6 +44,7 @@ public class SkuDetails {
         mPrice = o.optString("price");
         mTitle = o.optString("title");
         mDescription = o.optString("description");
+        currencyType = o.optString("price_currency_code");
     }
 
     public String getSku() { return mSku; }
@@ -50,6 +52,7 @@ public class SkuDetails {
     public String getPrice() { return mPrice; }
     public String getTitle() { return mTitle; }
     public String getDescription() { return mDescription; }
+    public String getCurrencyType() { return currencyType; }
 
     @Override
     public String toString() {

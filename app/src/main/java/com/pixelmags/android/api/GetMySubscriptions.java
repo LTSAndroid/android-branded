@@ -1,8 +1,9 @@
 package com.pixelmags.android.api;
 
+import android.util.Log;
+
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.comms.WebRequest;
-import com.pixelmags.android.datamodels.MySubscription;
 import com.pixelmags.android.json.GetMySubscriptionsParser;
 import com.pixelmags.android.storage.MySubscriptionsDataSet;
 import com.pixelmags.android.storage.UserPrefs;
@@ -21,6 +22,7 @@ public class GetMySubscriptions extends WebRequest {
     private static final String API_NAME="getMySubscriptions";
 
     public GetMySubscriptionsParser mySubsParser;
+    private String TAG = "GetMySubscription";
 
 
     public GetMySubscriptions(){
@@ -31,6 +33,8 @@ public class GetMySubscriptions extends WebRequest {
 
         setApiNameValuePairs();
         doPostRequest();
+
+        Log.d(TAG,"Response Code for subscription is : "+responseCode);
 
         if(responseCode==200){
             mySubsParser = new GetMySubscriptionsParser(getAPIResultData());
@@ -70,14 +74,19 @@ public class GetMySubscriptions extends WebRequest {
         mDbHelper.close();
 
 
-        MySubscriptionsDataSet mDbReader = new MySubscriptionsDataSet(BaseApp.getContext());
-        ArrayList<MySubscription> mySubsArray = mDbReader.getMySubscriptions(mDbReader.getReadableDatabase());
-        mDbReader.close();
+        //Enable these only for testing purpose. Else not required
 
-        for(int i=0; i< mySubsArray.size();i++) {
-            MySubscription sub = mySubsArray.get(i);
-            System.out.println(" MySubscription CREDITS ::" + sub.creditsAvailable);
-        }
+//        MySubscriptionsDataSet mDbReader = new MySubscriptionsDataSet(BaseApp.getContext());
+//        ArrayList<MySubscription> mySubsArray = mDbReader.getMySubscriptions(mDbReader.getReadableDatabase());
+//        mDbReader.close();
+//
+//        Log.d(TAG,"My Subscription Array size is : "+mySubsArray.size());
+//
+//        for(int i=0; i< mySubsArray.size();i++) {
+//            MySubscription sub = mySubsArray.get(i);
+//            Log.d(TAG,"MySubscription CREDITS : "+sub.creditsAvailable);
+//            Log.d(TAG,"MySybscription price is "+sub.expiresDate);
+//        }
         // Save the MySubscription Objects into the SQlite DB
 
     }

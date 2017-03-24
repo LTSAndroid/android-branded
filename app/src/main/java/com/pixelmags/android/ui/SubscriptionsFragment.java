@@ -5,17 +5,27 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.pixelmags.android.datamodels.MySubscription;
 import com.pixelmags.android.datamodels.Subscription;
 import com.pixelmags.android.pixelmagsapp.R;
+import com.pixelmags.android.pixelmagsapp.adapter.SubscriptionAdapter;
+import com.pixelmags.android.storage.MySubscriptionsDataSet;
 import com.pixelmags.android.storage.SubscriptionsDataSet;
-import com.pixelmags.android.ui.uicomponents.MultiStateButton;
 import com.pixelmags.android.util.BaseApp;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -39,7 +49,21 @@ public class SubscriptionsFragment extends Fragment {
     private GetSubscriptionsTask mGetSubscriptions = null;
     //TextView mTextView;
 
+    private RecyclerView mRecyclerView;
+    private SubscriptionAdapter subscriptionAdapter;
+
     private OnFragmentInteractionListener mListener;
+    private String TAG = "SubscriptionFragment";
+    List<String> subDescription;
+    List<String> subPrice;
+    List<String> subPaymentProvider;
+    List<String> androidStoreSku;
+    private LinearLayout subscriptionDetailLayout;
+    private TextView magazineId;
+    private TextView creditsAvaliable;
+    private TextView purchaseDate;
+    private TextView expiryDate;
+    private TextView subscriptionProductionId;
 
     public SubscriptionsFragment() {
         // Required empty public constructor
@@ -79,38 +103,73 @@ public class SubscriptionsFragment extends Fragment {
 
         View rootView =  inflater.inflate(R.layout.fragment_subscriptions, container, false);
 
-        // retrieve the Subscriptions
-        // retrieving the issues
-        mGetSubscriptions = new GetSubscriptionsTask();
-        mGetSubscriptions.execute((String) null);
-        //mTextView = (TextView) rootView.findViewById(R.id.subscriptions_text);
 
-        MultiStateButton subscriptionButton1 = (MultiStateButton) rootView.findViewById(R.id.gridMultiStateSubscriptionButton1);
-        subscriptionButton1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.my_recycler_view);
+        subscriptionDetailLayout = (LinearLayout) rootView.findViewById(R.id.subscription_details_layout);
+        magazineId = (TextView) rootView.findViewById(R.id.magazine_id_value);
+        creditsAvaliable = (TextView) rootView.findViewById(R.id.credits_available_value);
+        purchaseDate = (TextView) rootView.findViewById(R.id.purchase_date_value);
+        expiryDate = (TextView) rootView.findViewById(R.id.expiry_date_value);
+        subscriptionProductionId = (TextView) rootView.findViewById(R.id.subscription_production_id_value);
 
-              //  mTextView.setText("Subscribing..");
+
+        MySubscriptionsDataSet mySubscriptionData = new MySubscriptionsDataSet(BaseApp.getContext());
+        ArrayList<MySubscription> mySubscriptionArrayList = mySubscriptionData.getMySubscriptions(mySubscriptionData.getReadableDatabase());
+        mySubscriptionData.close();
+
+
+        if(mySubscriptionArrayList != null){
+            if(mySubscriptionArrayList.size()>0){
+                mRecyclerView.setVisibility(View.GONE);
+                subscriptionDetailLayout.setVisibility(View.VISIBLE);
+
+                for(int i=0; i<mySubscriptionArrayList.size(); i++){
+                    magazineId.setText(mySubscriptionArrayList.get(i).magazineID);
+                    creditsAvaliable.setText(mySubscriptionArrayList.get(i).creditsAvailable);
+                    purchaseDate.setText(mySubscriptionArrayList.get(i).purchaseDate);
+                    expiryDate.setText(mySubscriptionArrayList.get(i).expiresDate);
+                    subscriptionProductionId.setText(mySubscriptionArrayList.get(i).subscriptionProductId);
+                }
+
             }
-        });
+        } else{
+            subscriptionDetailLayout.setVisibility(View.GONE);
+            mRecyclerView.setVisibility(View.VISIBLE);
 
-        MultiStateButton subscriptionButton2 = (MultiStateButton) rootView.findViewById(R.id.gridMultiStateSubscriptionButton2);
-        subscriptionButton2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            SubscriptionsDataSet mDbReader = new SubscriptionsDataSet(BaseApp.getContext());
+            ArrayList<Subscription> mySubsArray = mDbReader.getAllSubscriptions(mDbReader.getReadableDatabase());
+            mDbReader.close();
 
-              //  mTextView.setText("Subscribing for 6months");
+            subDescription = new ArrayList<String>();
+            subPrice = new ArrayList<String>();
+            subPaymentProvider = new ArrayList<String>();
+            androidStoreSku = new ArrayList<String>();
+
+            subDescription.clear();
+            subPrice.clear();
+            subPaymentProvider.clear();
+            androidStoreSku.clear();
+
+            Log.d(TAG,"My Sub Array Price is : "+mySubsArray.size());
+
+            for(int i=0; i< mySubsArray.size();i++) {
+                Subscription sub = mySubsArray.get(i);
+                Log.d(TAG,"Complete Subscription is : "+sub.payment_provider);
+                Log.d(TAG,"Subscription Description is ::" + sub.description);
+                Log.d(TAG,"Subscription price is "+sub.price);
+
+                subDescription.add(sub.description);
+                subPrice.add(String.valueOf(sub.price));
+                subPaymentProvider.add(sub.payment_provider);
+                androidStoreSku.add(sub.android_store_sku);
             }
-        });
 
-        MultiStateButton subscriptionButton3 = (MultiStateButton) rootView.findViewById(R.id.gridMultiStateSubscriptionButton3);
-        subscriptionButton3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-              //  mTextView.setText("Subscribing for 3months");
-            }
-        });
+            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+            mRecyclerView.setLayoutManager(layoutManager);
+            mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+            subscriptionAdapter = new SubscriptionAdapter(subDescription, subPrice, subPaymentProvider, androidStoreSku, getActivity());
+            mRecyclerView.setAdapter(subscriptionAdapter);
+        }
 
 
         // Inflate the layout for this fragment
@@ -133,6 +192,34 @@ public class SubscriptionsFragment extends Fragment {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+    }
+
+    @Override
+    public void onResume() {
+
+        super.onResume();
+
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK){
+
+                    // handle back button
+                    Fragment fragment = new AllIssuesFragment();
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.main_fragment_container, fragment, "All Issues")
+                            .commit();
+
+                    return true;
+
+                }
+
+                return false;
+            }
+        });
     }
 
     @Override
@@ -205,6 +292,7 @@ public class SubscriptionsFragment extends Fragment {
                 Subscription sub = subscriptionsArray.get(i);
 
                 resultSubs = resultSubs + "////"+sub.price+","+sub.description+","+sub.synopsis;
+
             }
 
             updateTextView(resultSubs);
