@@ -128,11 +128,13 @@ public class AllIssuesFragment extends Fragment {
 
                     MainActivity myAct = (MainActivity) getActivity();
                     // Uncomment when going to live
-//            myAct.canPurchaseLauncher(magazinesList.get(position).android_store_sku, magazinesList.get(position).id);
+            myAct.canPurchaseLauncher("product", magazinesList.get(position).android_store_sku, magazinesList.get(position).id);
 //                    myAct.canPurchaseLauncher("pub_google_hoffman_media_llc_the_cottage_journal.35721.nc", 35721);
 //                    myAct.canPurchaseLauncher("pub_google_extreme_publishing_ltd_trailbike_enduro_magazine_tbm.32891.nc", 32891);
 //                    myAct.canPurchaseLauncher("pub_google_extreme_publishing_ltd_trailbike_enduro_magazine_tbm.32889.nc", 32889);
-                    myAct.canPurchaseLauncher("pub_google_mustang_seats_mustang_seats.32919.nc",32919);
+//                    myAct.canPurchaseLauncher("pub_google_mustang_seats_mustang_seats.32879.nc",32879);
+//                    myAct.canPurchaseLauncher("product","pub_google_hoffman_media_llc_victoria_magazine.35725.nc",35725);
+//                    myAct.canPurchaseLauncher("product","pub_google_hoffman_media_llc_victoria_magazine.37055.nc",37055);
                 }
                 else
                 {
@@ -418,6 +420,10 @@ public class AllIssuesFragment extends Fragment {
 
             if (magazinesList.get(i).paymentProvider != null &&
                     magazinesList.get(i).paymentProvider.trim().equalsIgnoreCase("free")) {
+                magazinesList.get(i).status = Magazine.STATUS_DOWNLOAD;
+            }
+
+            if(magazinesList.get(i).isIssueOwnedByUser){
                 magazinesList.get(i).status = Magazine.STATUS_DOWNLOAD;
             }
 

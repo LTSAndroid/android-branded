@@ -30,6 +30,7 @@ public class CreatePurchase extends WebRequest
     private String purchaseCurrencyType;
     private String TAG = "CreatePurchase";
     private Activity activity;
+    GetMyIssues apiGetMyIssues;
 
     public CreatePurchase(){
         super(API_NAME);
@@ -52,12 +53,15 @@ public class CreatePurchase extends WebRequest
             cParser = new CreatePurchaseParser(getAPIResultData());
 
             ErrorMessage.canPurchaseResponse = getAPIResultData();
-            Log.d(TAG,"Can Purchase response is : "+getAPIResultData());
+            Log.d(TAG,"Create Purchase response is : "+getAPIResultData());
 
             if(cParser.initJSONParse()){
 
                 if(cParser.isSuccess()){
                     cParser.parse();
+
+                    apiGetMyIssues = new GetMyIssues();
+                    apiGetMyIssues.init();
 
                 } else{
 

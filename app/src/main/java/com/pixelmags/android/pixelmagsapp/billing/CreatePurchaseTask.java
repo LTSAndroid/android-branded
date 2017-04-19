@@ -23,6 +23,7 @@ public class CreatePurchaseTask extends AsyncTask<String, String, String>
     private String purchaseCurrencyType;
     private Activity activity;
 
+
     private CreatePurchaseTask mCreatePurchaseTask = null;
     private String TAG = "CreatePurchaseTask";
 
@@ -60,15 +61,17 @@ public class CreatePurchaseTask extends AsyncTask<String, String, String>
         mCreatePurchaseTask=null;
         //showProgress(false);
 
-        Log.d(TAG,"Result of the create purchase Task is : "+result);
+        Log.d(TAG,"Result of the create purchase API is : "+result);
 
         if (result != null) {
             System.out.println("API result :: " + result);
 
             // Update the Issue view once purchase is success.
             //Re-launching main activity once issue is purchased successfully.
+
             Intent intent = new Intent(activity, MainActivity.class);
             activity.startActivity(intent);
+
 
         }
     else

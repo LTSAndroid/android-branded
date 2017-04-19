@@ -31,6 +31,7 @@ public class SubscriptionAdapter extends RecyclerView.Adapter<SubscriptionAdapte
     private List<String> subscriptionPrc;
     private List<String> subscriptionPaymentProvider;
     private List<String> androidStoreSku;
+    private List<Integer> id;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -49,8 +50,10 @@ public class SubscriptionAdapter extends RecyclerView.Adapter<SubscriptionAdapte
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public SubscriptionAdapter(List<String> subscriptionDesc, List<String> subscriptionPrc,List<String> subscriptionPaymentProvider,
+    public SubscriptionAdapter(List<Integer> id, List<String> subscriptionDesc, List<String> subscriptionPrc,List<String> subscriptionPaymentProvider,
                                List<String> androidStoreSku, Activity activity) {
+
+        this.id = id;
         this.subscriptionDesc = subscriptionDesc;
         this.subscriptionPrc = subscriptionPrc;
         this.subscriptionPaymentProvider = subscriptionPaymentProvider;
@@ -84,15 +87,14 @@ public class SubscriptionAdapter extends RecyclerView.Adapter<SubscriptionAdapte
             @Override
             public void onClick(View v) {
 
-                //Launch Can Purchase, if user loggedin
+                //Launch Can Purchase Subscription, if user loggedin
                 if(UserPrefs.getUserLoggedIn())
                 {
 
                     // Need to check what should be passed when calling subscription
 
                     MainActivity myAct = (MainActivity) activity;
-                    //myAct.canPurchaseLauncher(androidStoreSku.get(position), Integer.parseInt(subscriptionPrc.get(position)));
-                    myAct.canPurchaseLauncher("com.pixelmags.androidbranded.test3", Integer.parseInt(subscriptionPrc.get(position)));
+                    myAct.canPurchaseLauncher("sub",androidStoreSku.get(position), id.get(position));
                 }
                 else
                 {
@@ -101,7 +103,7 @@ public class SubscriptionAdapter extends RecyclerView.Adapter<SubscriptionAdapte
 
                     // set dialog message
                     alertDialogBuilder
-                            .setMessage(activity.getString(R.string.purchase_initiation_fail_message))
+                            .setMessage(activity.getString(R.string.purchase_subscription_fail_message))
                             .setCancelable(false)
                             .setPositiveButton(activity.getString(R.string.ok),new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog,int id) {

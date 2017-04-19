@@ -62,9 +62,6 @@ import com.pixelmags.android.util.Purchase;
 import com.pixelmags.android.util.SkuDetails;
 import com.pixelmags.android.util.Util;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -89,6 +86,8 @@ public class MainActivity extends AppCompatActivity
     private String TAG = "MainActivity";
     private String purchaseIssuePrice;
     private String purchaseIssueCurrencyType;
+
+    // These listener will return only purchase made by the user
     IabHelper.QueryInventoryFinishedListener mGotInventoryListener
             = new IabHelper.QueryInventoryFinishedListener()
     {
@@ -110,7 +109,7 @@ public class MainActivity extends AppCompatActivity
                 for ( int i = 0; i < allOwnedSKUS.size(); i++)
                 {
                     Purchase purchaseData = inventory.getPurchase(allOwnedSKUS.get(i));
-                    Log.d(TAG,"Purchase Data is : "+purchaseData);
+                    Log.d(TAG,"User previous Purchase Data list is : "+purchaseData);
                     //Assign button Status here and also restore purchase if the issue is not purchased
                     userOwnedSKUList.add(purchaseData);
                 }
@@ -156,15 +155,17 @@ public class MainActivity extends AppCompatActivity
 
                 // For finding the list
                 for(int i=0; i<pixelmagsMagazinesList.size(); i++){
-                    Log.d(TAG,"Sku List is : "+pixelmagsMagazinesList.get(i).android_store_sku);
+                    Log.d(TAG,"Pixel Mags Sku List is : "+pixelmagsMagazinesList.get(i).android_store_sku);
                 }
 
 
 
                 for (int i = 0; i < pixelmagsMagazinesList.size(); i++) {
                     String SKU = pixelmagsMagazinesList.get(i).android_store_sku;
-                    Log.d(TAG,"Inventory sku is : "+inventory.getSkuDetails(SKU));
-                    Log.d(TAG,"Has details is : "+inventory.hasDetails(SKU));
+                    Log.d(TAG,"SKU is : "+SKU);
+                    Log.d(TAG,"Inventory is : "+inventory);
+                    Log.d(TAG,"Inventory get sku details is : "+inventory.getSkuDetails(SKU));
+                    Log.d(TAG,"Inventory has details is : "+inventory.hasDetails(SKU));
 
                     if (inventory.hasDetails(SKU)) //yet to be changed,this is for billing test
                     {
@@ -266,32 +267,9 @@ public class MainActivity extends AppCompatActivity
         {
             if (result.isFailure())
             {
-                Log.d(TAG,"Inside the failure condition");
-
-//                new Handler().postDelayed(
-//                        new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                new android.support.v7.app.AlertDialog.Builder(MainActivity.this)
-//                                        .setIcon(android.R.drawable.ic_dialog_alert)
-//                                        .setTitle(getResources().getString(R.string.error))
-//                                        .setMessage(getResources().getString(R.string.issue_owned))
-//                                        .setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
-//                                            @Override
-//                                            public void onClick(DialogInterface dialog, int which) {
-//
-//                                                dialog.dismiss();
-//                                            }
-//                                        })
-//                                        .show();
-//                            }
-//                        },
-//                        2000
-//                );
-
-
 
                 // Handle error
+                Log.d(TAG, "Error purchasing: " + result);
                 return;
             }
 
@@ -301,7 +279,7 @@ public class MainActivity extends AppCompatActivity
 
                 Log.d(TAG,"Inside the success condition");
 
-                mHelper.consumeAsync(purchase, mConsumeFinishedListener);
+//                mHelper.consumeAsync(purchase, mConsumeFinishedListener);
 
                 //true
 //                  consumeItem();
@@ -353,6 +331,7 @@ public class MainActivity extends AppCompatActivity
 
        mHelper = new IabHelper(this, Config.base64EncodedPublicKey);
 
+        // Checking In-app Billing Version 3 API Support
         mHelper.startSetup(new
                IabHelper.OnIabSetupFinishedListener()
                {
@@ -411,7 +390,12 @@ public class MainActivity extends AppCompatActivity
 //                        skuList.add("pub_google_extreme_publishing_ltd_trailbike_enduro_magazine_tbm.32891.nc");
 //                        skuList.add("pub_google_extreme_publishing_ltd_trailbike_enduro_magazine_tbm.32889.nc");
 //                        skuList.add("pub_google_mustang_seats_mustang_seats.32879.nc");
-                        skuList.add("pub_google_mustang_seats_mustang_seats.32919.nc");
+//                        skuList.add("pub_google_mustang_seats_mustang_seats.32919.nc");
+//                        skuList.add("pub_google_mustang_seats_mustang_seats.32879.nc");
+//                        skuList.add("pub_google_hoffman_media_llc_victoria_magazine.35725.nc");
+//                        skuList.add("pub_google_hoffman_media_llc_victoria_magazine.35727.nc");
+//                        skuList.add("pub_google_hoffman_media_llc_victoria_magazine.37055.nc");
+
 //                          skuList.add("pub_google_hoffman_media_llc_cooking_with_paula_deen_magazine.45687.nc");
 //                        skuList.add("com.pixelmags.androidbranded.testapp");//This is to confirm billing sku
                     }
@@ -486,69 +470,71 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void  canPurchaseLauncher(String sku, int issueId)
-    {
-        mCanPurchaseTask = new CanPurchaseTask(sku,issueId);
+//    public void  canPurchaseLauncher(String sku, int issueId)
+//    {
+//        mCanPurchaseTask = new CanPurchaseTask(sku,issueId);
+//        mCanPurchaseTask.execute((String) null);
+//    }
+
+    public void canPurchaseLauncher(String type, String sku, int issueId){
+        mCanPurchaseTask = new CanPurchaseTask(type,sku,issueId);
         mCanPurchaseTask.execute((String) null);
     }
 
-    public void createPurchaseLauncher(String sku, int issueId)
+    public void createPurchaseLauncher(String type, String sku, int issueId)
     {
         mCanPurchaseTask = null;
         purchaseIssueId = issueId;
         purchaseSKU = sku;
-//        String userPixelMagsID = UserPrefs.getUserPixelmagsId();
-        String userPixelMagsID = UserPrefs.getUserEmail();
-        Log.d(TAG,"User Pixel Mags ID is : "+userPixelMagsID);
-        String encodeData = "{\"user_id\": "+ userPixelMagsID +"}";
+        String userPixelMagsID = UserPrefs.getUserPixelmagsId();
+//        String userPixelMagsID = UserPrefs.getUserEmail();
+        Log.d(TAG,"User Pixel Mags ID is before encode : "+userPixelMagsID);
+        String encodeData = "{\"user_id\":"+ userPixelMagsID +"}";
         byte[] data = encodeData.getBytes();
         String base64 = Base64.encodeToString(data, Base64.DEFAULT);
-        Log.d(TAG,"base 64 key is : "+base64);
-//        mHelper.launchPurchaseFlow(this, "com.pixelmagsandroid.newtestapp4", 1001,
-//                mPurchaseFinishedListener,base64);
-//        mHelper.launchPurchaseFlow(this, sku, 1001,
-//                mPurchaseFinishedListener,base64);
+        Log.d(TAG,"base 64 payload key is : "+base64);
 
 
-        mHelper.launchPurchaseFlow(this, sku, 1001,
-                mPurchaseFinishedListener, "bGoa+V7g/yqDXvKRqq+JTFn4uQZbPiQJo4pf9RzJ");
+        String finalBase64;
+        if(base64.contains("\n")){
+            finalBase64 = base64.replaceAll("\n","");
+            finalBase64.trim();
+        }else{
+            finalBase64 = base64.trim();
+        }
+
+        if(type.equalsIgnoreCase("product")){
+            mHelper.launchPurchaseFlow(this, sku, 1001,
+                    mPurchaseFinishedListener,finalBase64);
+        }else if(type.equalsIgnoreCase("sub")){
+            mHelper.launchPurchaseFlow(this, sku, 1002,
+                    mPurchaseFinishedListener,finalBase64);
+        }
+
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        Log.d(TAG,"Request Code of onActivity Result is : "+requestCode);
-        Log.d(TAG,"Result Code of onActivity Result is : "+resultCode);
-        Log.d(TAG,"Data received from onActivity Result is : "+data);
-
         if (requestCode == 1001) {
-            Log.d(TAG,"On Activity Result Data is : "+data);
             int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
             String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
             String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
 
             if (resultCode == RESULT_OK) {
                 try {
-                    JSONObject jo = new JSONObject(purchaseData);
+                    // Commented to pass purchaseData directly
+//                    JSONObject jo = new JSONObject(purchaseData);
 
-                    String purchase_receipt= jo.toString();
+//                    String purchase_receipt= jo.toString();
 
-//                    byte[] jo_data = new byte[0];
-//                    try {
-//                        jo_data = jo.toString().getBytes("utf-8");
-//                    } catch (UnsupportedEncodingException e) {
-//                        e.printStackTrace();
-//                    }
-//                    String base64_purchase_receipt = Base64.encodeToString(jo_data, Base64.DEFAULT);
-
-                    Log.d(TAG,"Purchase Receipt is : "+purchase_receipt);
-                    String purchase_signature = dataSignature;
-                    Log.d(TAG,"Purchase Signature is : "+purchase_signature);
+                    Log.d(TAG,"Purchase Receipt as a string is : "+purchaseData);
+                    Log.d(TAG,"Purchase Signature is : "+dataSignature);
                     Log.d(TAG,"Purchase Issue Price is : "+purchaseIssuePrice);
                     Log.d(TAG,"Purchase Issue Currency Type is : "+purchaseIssueCurrencyType);
 
 
-                    mCreatePurchaseTask = new CreatePurchaseTask(purchaseIssueId,purchase_receipt,purchase_signature,purchaseIssuePrice,
+                    mCreatePurchaseTask = new CreatePurchaseTask(purchaseIssueId,purchaseData,dataSignature,purchaseIssuePrice,
                             purchaseIssueCurrencyType,this);
                     mCreatePurchaseTask.execute((String) null);
 
@@ -559,7 +545,36 @@ public class MainActivity extends AppCompatActivity
 
                     //google result
                 }
-                catch (JSONException e) {
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }else if(requestCode == 1002){
+
+            String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
+            String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
+
+            if (resultCode == RESULT_OK) {
+                try {
+
+                    Log.d(TAG,"Purchase Subscription Receipt as a string is : "+purchaseData);
+                    Log.d(TAG,"Purchase Subscription Signature is : "+dataSignature);
+                    Log.d(TAG,"Purchase Subscription Issue Price is : "+purchaseIssuePrice);
+                    Log.d(TAG,"Purchase Subscription Issue Currency Type is : "+purchaseIssueCurrencyType);
+
+
+                    mCreatePurchaseTask = new CreatePurchaseTask(purchaseIssueId,purchaseData,dataSignature,purchaseIssuePrice,
+                            purchaseIssueCurrencyType,this);
+                    mCreatePurchaseTask.execute((String) null);
+
+                    if(ErrorMessage.hasError){
+                        ErrorMessage.hasError = false;
+                        Toast.makeText(this,"Error when called create purchase is : "+ErrorMessage.errorMessage,Toast.LENGTH_LONG).show();
+                    }
+
+                    //google result
+                }
+                catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -825,12 +840,14 @@ public class MainActivity extends AppCompatActivity
         public int mIssue_id;
         public String mSKU;
         public String result;
+        public String mType;
         private CanPurchaseTask mCanPurchaseTask = null;
         private ProgressDialog progressBar;
 
-        public CanPurchaseTask(String SKU , int issue_id) {
+        public CanPurchaseTask(String type, String SKU , int issue_id) {
             mIssue_id = issue_id;
             mSKU = SKU;
+            mType = type;
         }
 
 
@@ -870,7 +887,7 @@ public class MainActivity extends AppCompatActivity
                 System.out.println("CAN PURCHASE .......");
 
                 //Launch google purchase
-                createPurchaseLauncher(mSKU, mIssue_id);
+                createPurchaseLauncher(mType, mSKU, mIssue_id);
             }
 
             return resultToDisplay;

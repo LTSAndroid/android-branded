@@ -58,6 +58,7 @@ public class SubscriptionsFragment extends Fragment {
     List<String> subPrice;
     List<String> subPaymentProvider;
     List<String> androidStoreSku;
+    List<Integer> id;
     private LinearLayout subscriptionDetailLayout;
     private TextView magazineId;
     private TextView creditsAvaliable;
@@ -119,7 +120,7 @@ public class SubscriptionsFragment extends Fragment {
 
 
         if(mySubscriptionArrayList != null){
-            if(mySubscriptionArrayList.size()>0){
+            if(mySubscriptionArrayList.size() >= 1){
                 mRecyclerView.setVisibility(View.GONE);
                 subscriptionDetailLayout.setVisibility(View.VISIBLE);
 
@@ -131,8 +132,50 @@ public class SubscriptionsFragment extends Fragment {
                     subscriptionProductionId.setText(mySubscriptionArrayList.get(i).subscriptionProductId);
                 }
 
+            }else{
+                subscriptionDetailLayout.setVisibility(View.GONE);
+                mRecyclerView.setVisibility(View.VISIBLE);
+
+                SubscriptionsDataSet mDbReader = new SubscriptionsDataSet(BaseApp.getContext());
+                ArrayList<Subscription> mySubsArray = mDbReader.getAllSubscriptions(mDbReader.getReadableDatabase());
+                mDbReader.close();
+
+                subDescription = new ArrayList<String>();
+                subPrice = new ArrayList<String>();
+                subPaymentProvider = new ArrayList<String>();
+                androidStoreSku = new ArrayList<String>();
+                id = new ArrayList<Integer>();
+
+                id.clear();
+                subDescription.clear();
+                subPrice.clear();
+                subPaymentProvider.clear();
+                androidStoreSku.clear();
+
+                Log.d(TAG,"My Sub Array Price is : "+mySubsArray.size());
+
+                for(int i=0; i< mySubsArray.size();i++) {
+                    Subscription sub = mySubsArray.get(i);
+                    Log.d(TAG,"Sub ID is : "+sub.id);
+                    Log.d(TAG,"Complete Subscription is : "+sub.payment_provider);
+                    Log.d(TAG,"Subscription Description is ::" + sub.description);
+                    Log.d(TAG,"Subscription price is "+sub.price);
+                    Log.d(TAG,"Subscription android store sku is "+sub.android_store_sku);
+
+                    id.add(sub.id);
+                    subDescription.add(sub.description);
+                    subPrice.add(String.valueOf(sub.price));
+                    subPaymentProvider.add(sub.payment_provider);
+                    androidStoreSku.add(sub.android_store_sku);
+                }
+
+                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+                mRecyclerView.setLayoutManager(layoutManager);
+                mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+                subscriptionAdapter = new SubscriptionAdapter(id,subDescription, subPrice, subPaymentProvider, androidStoreSku, getActivity());
+                mRecyclerView.setAdapter(subscriptionAdapter);
             }
-        } else{
+        }else{
             subscriptionDetailLayout.setVisibility(View.GONE);
             mRecyclerView.setVisibility(View.VISIBLE);
 
@@ -144,7 +187,9 @@ public class SubscriptionsFragment extends Fragment {
             subPrice = new ArrayList<String>();
             subPaymentProvider = new ArrayList<String>();
             androidStoreSku = new ArrayList<String>();
+            id = new ArrayList<Integer>();
 
+            id.clear();
             subDescription.clear();
             subPrice.clear();
             subPaymentProvider.clear();
@@ -154,10 +199,13 @@ public class SubscriptionsFragment extends Fragment {
 
             for(int i=0; i< mySubsArray.size();i++) {
                 Subscription sub = mySubsArray.get(i);
+                Log.d(TAG,"Sub ID is : "+sub.id);
                 Log.d(TAG,"Complete Subscription is : "+sub.payment_provider);
                 Log.d(TAG,"Subscription Description is ::" + sub.description);
                 Log.d(TAG,"Subscription price is "+sub.price);
+                Log.d(TAG,"Subscription android store sku is "+sub.android_store_sku);
 
+                id.add(sub.id);
                 subDescription.add(sub.description);
                 subPrice.add(String.valueOf(sub.price));
                 subPaymentProvider.add(sub.payment_provider);
@@ -167,7 +215,7 @@ public class SubscriptionsFragment extends Fragment {
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
             mRecyclerView.setLayoutManager(layoutManager);
             mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-            subscriptionAdapter = new SubscriptionAdapter(subDescription, subPrice, subPaymentProvider, androidStoreSku, getActivity());
+            subscriptionAdapter = new SubscriptionAdapter(id,subDescription, subPrice, subPaymentProvider, androidStoreSku, getActivity());
             mRecyclerView.setAdapter(subscriptionAdapter);
         }
 

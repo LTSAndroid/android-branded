@@ -301,7 +301,7 @@ public class IssueDetailsFragment extends Fragment {
 
             Log.d(TAG,"Magazine List Id is : " +issueData.id);
 
-            myAct.canPurchaseLauncher(issueData.android_store_sku, issueData.id);
+            myAct.canPurchaseLauncher("product",issueData.android_store_sku, issueData.id);
         }
         else
         {
