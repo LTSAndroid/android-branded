@@ -8,11 +8,13 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.pixelmagsapp.MainActivity;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.storage.UserPrefs;
@@ -32,6 +34,7 @@ public class SubscriptionAdapter extends RecyclerView.Adapter<SubscriptionAdapte
     private List<String> subscriptionPaymentProvider;
     private List<String> androidStoreSku;
     private List<Integer> id;
+    private String TAG = "SubscriptionAdapter";
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -81,6 +84,7 @@ public class SubscriptionAdapter extends RecyclerView.Adapter<SubscriptionAdapte
         holder.subscriptionDescription.setTag(position);
 
         holder.subscriptionPrice.setText(subscriptionPrc.get(position));
+//        holder.subscriptionPrice.setText("£19.99");
         holder.subscriptionPrice.setTag(position);
 
         holder.subscriptionPrice.setOnClickListener(new View.OnClickListener() {
@@ -93,8 +97,19 @@ public class SubscriptionAdapter extends RecyclerView.Adapter<SubscriptionAdapte
 
                     // Need to check what should be passed when calling subscription
 
+                    String modifiedPrice = null;
+                    Log.d(TAG,"Before price is : "+subscriptionPrc.get(position));
+                    for(int i=0; i<Config.currencyList.length; i++){
+                        if(subscriptionPrc.get(position).contains(Config.currencyList[i])){
+                            modifiedPrice = subscriptionPrc.get(position).replace(Config.currencyList[i],"");
+                            modifiedPrice = modifiedPrice.replaceAll("^\\s+", "").replaceAll("\\s+$", "");
+                        }
+                    }
+
+                    Log.d(TAG,"Price is : "+modifiedPrice);
+
                     MainActivity myAct = (MainActivity) activity;
-                    myAct.canPurchaseLauncher("sub",androidStoreSku.get(position), id.get(position));
+                    myAct.canPurchaseLauncher("sub",androidStoreSku.get(position), modifiedPrice, Config.localeValue, id.get(position));
                 }
                 else
                 {

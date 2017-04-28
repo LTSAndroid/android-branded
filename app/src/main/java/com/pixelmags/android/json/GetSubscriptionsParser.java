@@ -50,7 +50,7 @@ public class GetSubscriptionsParser extends JSONParser {
                     sub.magazine_id = unit.getInt("magazine_id");
                     sub.synopsis = unit.getString("synopsis");
                     sub.android_store_sku = unit.getString("itunes_store_sku");   // NEEDS TO BE CHANGED
-                    sub.price = unit.getDouble("price");
+                    sub.price = String.valueOf(unit.getDouble("price"));
                     sub.payment_provider = unit.getString("payment_provider");
                     sub.parent_sku_id = unit.getString("parent_sku_id");
                     sub.thumbnail_url = unit.getString("thumbnail_url");

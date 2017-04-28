@@ -2,7 +2,10 @@
 
     <!-- App Name -->
     <!--<string name="app_name">PixelMags app</string>-->
-    <string name="app_name">San Diego PREMIER</string>
+    <!--<string name="app_name">San Diego PREMIER</string>-->
+    <!--<string name="app_name">TrailBike &amp; Enduro Magazine (TBM)</string>-->
+    <!--<string name="app_name">Victoria</string>-->
+    <string name="app_name">Cooking with Paula Deen Magazine</string>
 
     <!-- Generic - to re-use -->
     <string name="ok">OK</string>
@@ -143,6 +146,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="contact_support">Please choose any of the below application to reach us out.</string>
+    <string name="download_support">Seems like you have not started any download. Get started by going to All Issues page.</string>
     <string name="PixelMags">PixelMags <a href="http://www.pixelmags.com"></a></string>
     <string name="Pixelmags">PixelMags <a href="http://www.pixelmags.com/t+c/current"></a></string>
     <string name="go_to_register">REGISTER</string>

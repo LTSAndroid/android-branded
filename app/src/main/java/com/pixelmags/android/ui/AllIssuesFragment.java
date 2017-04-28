@@ -128,13 +128,28 @@ public class AllIssuesFragment extends Fragment {
 
                     MainActivity myAct = (MainActivity) getActivity();
                     // Uncomment when going to live
-            myAct.canPurchaseLauncher("product", magazinesList.get(position).android_store_sku, magazinesList.get(position).id);
+                    String modifiedPrice = null;
+                    Log.d(TAG,"Before price is : "+magazinesList.get(position).price);
+                    for(int i=0; i<Config.currencyList.length; i++){
+                        if(magazinesList.get(position).price.contains(Config.currencyList[i])){
+                            modifiedPrice = magazinesList.get(position).price.replace(Config.currencyList[i],"");
+                            modifiedPrice = modifiedPrice.replaceAll("^\\s+", "").replaceAll("\\s+$", "");
+
+                        }
+
+                    }
+
+                    Log.d(TAG,"Price is :"+modifiedPrice);
+                    Log.d(TAG,"Android Store SKU is : "+magazinesList.get(position).android_store_sku);
+                    Log.d(TAG,"Issue ID is : "+magazinesList.get(position).id);
+                    Log.d(TAG,"Issue ID is : "+magazinesList.get(position).id);
+            myAct.canPurchaseLauncher("product", magazinesList.get(position).android_store_sku, modifiedPrice, Config.localeValue, magazinesList.get(position).id);
 //                    myAct.canPurchaseLauncher("pub_google_hoffman_media_llc_the_cottage_journal.35721.nc", 35721);
 //                    myAct.canPurchaseLauncher("pub_google_extreme_publishing_ltd_trailbike_enduro_magazine_tbm.32891.nc", 32891);
 //                    myAct.canPurchaseLauncher("pub_google_extreme_publishing_ltd_trailbike_enduro_magazine_tbm.32889.nc", 32889);
 //                    myAct.canPurchaseLauncher("pub_google_mustang_seats_mustang_seats.32879.nc",32879);
 //                    myAct.canPurchaseLauncher("product","pub_google_hoffman_media_llc_victoria_magazine.35725.nc",35725);
-//                    myAct.canPurchaseLauncher("product","pub_google_hoffman_media_llc_victoria_magazine.37055.nc",37055);
+//                    myAct.canPurchaseLauncher("product","pub_google_hoffman_media_llc_victoria_magazine.37055.nc",35727);
                 }
                 else
                 {

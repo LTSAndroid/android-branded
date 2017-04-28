@@ -128,7 +128,7 @@ public class SubscriptionsDataSet extends BrandedSQLiteHelper{
                     sub.magazine_id = queryCursor.getInt(queryCursor.getColumnIndex(SubscriptionsEntry.COLUMN_MAGAZINE_ID));
                     sub.synopsis = queryCursor.getString(queryCursor.getColumnIndex(SubscriptionsEntry.COLUMN_SYNOPSIS));
                     sub.android_store_sku = queryCursor.getString(queryCursor.getColumnIndex(SubscriptionsEntry.COLUMN_ANDROID_STORE_SKU));
-                    sub.price = queryCursor.getDouble(queryCursor.getColumnIndex(SubscriptionsEntry.COLUMN_PRICE));
+                    sub.price = queryCursor.getString(queryCursor.getColumnIndex(SubscriptionsEntry.COLUMN_PRICE));
                     sub.payment_provider = queryCursor.getString(queryCursor.getColumnIndex(SubscriptionsEntry.COLUMN_PAYMENT_PROVIDER));
                     sub.parent_sku_id = queryCursor.getString(queryCursor.getColumnIndex(SubscriptionsEntry.COLUMN_PARENT_SKU_ID));
                     sub.thumbnail_url = queryCursor.getString(queryCursor.getColumnIndex(SubscriptionsEntry.COLUMN_THUMBNAIL_URL));

@@ -1,14 +1,14 @@
 package com.pixelmags.android.api;
 
 import android.app.Activity;
-import android.content.DialogInterface;
-import android.support.v7.app.AlertDialog;
+import android.content.Intent;
 import android.util.Log;
 
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.comms.ErrorMessage;
 import com.pixelmags.android.comms.WebRequest;
 import com.pixelmags.android.json.CreatePurchaseParser;
+import com.pixelmags.android.pixelmagsapp.MainActivity;
 import com.pixelmags.android.storage.UserPrefs;
 
 import org.apache.http.NameValuePair;
@@ -26,11 +26,12 @@ public class CreatePurchase extends WebRequest
     private int mIssue_id;
     private String mPurchaseReceipt;
     private String mPurchaseSignature;
-    private String purchasePrice;
-    private String purchaseCurrencyType;
+    private String mPurchasePrice;
+    private String mPurchaseCurrencyType;
     private String TAG = "CreatePurchase";
     private Activity activity;
     GetMyIssues apiGetMyIssues;
+    GetMySubscriptions apiGetMySubscription;
 
     public CreatePurchase(){
         super(API_NAME);
@@ -43,8 +44,8 @@ public class CreatePurchase extends WebRequest
         mIssue_id = issue_id;
         mPurchaseReceipt = purchaseReceipt;
         mPurchaseSignature = purchaseSignature;
-        this.purchasePrice = purchasePrice;
-        this.purchaseCurrencyType = purchaseCurrencyType;
+        mPurchasePrice = purchasePrice;
+        mPurchaseCurrencyType = purchaseCurrencyType;
 
         setApiNameValuePairs();
         doPostRequest();
@@ -55,20 +56,34 @@ public class CreatePurchase extends WebRequest
             ErrorMessage.canPurchaseResponse = getAPIResultData();
             Log.d(TAG,"Create Purchase response is : "+getAPIResultData());
 
+            Log.d(TAG,"Create Purchase initJSONParse is : "+cParser.initJSONParse());
+
+            Log.d(TAG,"Create Purchase is success is : "+cParser.isSuccess());
             if(cParser.initJSONParse()){
 
                 if(cParser.isSuccess()){
                     cParser.parse();
 
-                    apiGetMyIssues = new GetMyIssues();
-                    apiGetMyIssues.init();
+                    if(cParser.transaction_Id != null) {
+                        apiGetMyIssues = new GetMyIssues();
+                        apiGetMyIssues.init();
+
+                        apiGetMySubscription = new GetMySubscriptions();
+                        apiGetMySubscription.init();
+                    }
+
+                    // Update the Issue view once purchase is success.
+                    //Re-launching main activity once issue is purchased successfully.
+
+                    Intent intent = new Intent(activity, MainActivity.class);
+                    activity.startActivity(intent);
 
                 } else{
 
                     // Add error handling code here
-                    showAlertDialog(cParser.getErrorMessage());
-                    Log.d(TAG,"Get API Error Message "+cParser.getErrorMessage());
                     ErrorMessage.hasError = true;
+
+                    Log.d(TAG,"Get API Error Message "+cParser.getErrorMessage());
                     ErrorMessage.errorCode = cParser.getErrorCode();
                     ErrorMessage.errorMessage = cParser.getErrorMessage();
                 }
@@ -79,6 +94,8 @@ public class CreatePurchase extends WebRequest
     }
     private void setApiNameValuePairs()
     {
+        Log.d(TAG,"Price when setting name value pair is : "+mPurchasePrice);
+
         String issueId = String.valueOf(mIssue_id);
         baseApiNameValuePairs = new ArrayList<NameValuePair>(13);
         baseApiNameValuePairs.add(new BasicNameValuePair("auth_email_address", UserPrefs.getUserEmail()));
@@ -89,8 +106,8 @@ public class CreatePurchase extends WebRequest
         baseApiNameValuePairs.add(new BasicNameValuePair("payment_gateway", "google"));
         baseApiNameValuePairs.add(new BasicNameValuePair("purchase_receipt", mPurchaseReceipt));
         baseApiNameValuePairs.add(new BasicNameValuePair("purchase_signature", mPurchaseSignature));
-        baseApiNameValuePairs.add(new BasicNameValuePair("purchase_price", purchasePrice));
-        baseApiNameValuePairs.add(new BasicNameValuePair("purchase_locale", purchaseCurrencyType));
+        baseApiNameValuePairs.add(new BasicNameValuePair("purchase_price", mPurchasePrice));
+        baseApiNameValuePairs.add(new BasicNameValuePair("purchase_locale", mPurchaseCurrencyType));
         baseApiNameValuePairs.add(new BasicNameValuePair("app_bundle_id", Config.Bundle_ID));
         baseApiNameValuePairs.add(new BasicNameValuePair("api_mode", Config.api_mode));
         baseApiNameValuePairs.add(new BasicNameValuePair("api_version", Config.api_version));
@@ -101,24 +118,4 @@ public class CreatePurchase extends WebRequest
 
     }
 
-
-    public void showAlertDialog(String message){
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setTitle("Error")
-                .setMessage(message)
-                .setCancelable(false)
-                .setNegativeButton("Close", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-//                            activity.finishAffinity();
-//                        } else {
-//                            ActivityCompat.finishAffinity(activity);
-//                        }
-//                        System.exit(0);
-                        dialog.dismiss();
-                    }
-                });
-        AlertDialog alert = builder.create();
-        alert.show();
-    }
 }

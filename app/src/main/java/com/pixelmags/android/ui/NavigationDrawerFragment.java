@@ -344,6 +344,14 @@ public class NavigationDrawerFragment extends Fragment {
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                  //       .addToBackStack(null)
                         .commit();
+
+
+
+//                CreatePurchaseTask mCreatePurchaseTask;
+//                mCreatePurchaseTask = new CreatePurchaseTask(11111,"{\"orderId\":\"GPA.3343-6572-6631-41359\",\"packageName\":\"com.pixelmags.androidbranded.pixelmagsapp.appfive\",\"productId\":\"pub_google_hoffman_media_llc_cooking_with_paula_deen_magazine.44427\",\"purchaseTime\":1492970076039,\"purchaseState\":0,\"developerPayload\":\"eyJ1c2VyX2lkIjoxMDE2MDI1MDd9\",\"purchaseToken\":\"mfpfapaophlecjacoolpjcff.AO-J1OyNgK5g8HdOMZYtM8SsiWyxR2zqcQoGj5pH_8HfFFepTd31aCc8JLVqpKM7WIyeDfkginXeEUSY_9Ohmkn4PrS7-nICXD6kcOfyA_C_Lv3or6ekoi0UhddWe-laOsP8vmyJ9PZHCbHnKSgrURvzCPuK3ceTRQylPHTRD6wTd6IUw-aVDiz9PHTwzaGo0SrKXkj3UJDIPg0TXScVVSbxCSD0ArN0obL2PqtT2aMoP6jk7G3ncO4\",\"autoRenewing\":true}","NLaSouKjpsOvRHD/WyV2/vAPk4XQtLMDTpKFQMXaFiuGaFHRd+XisNgkpuzhuIDJm+LjQTac4fcHbDqIlufv7Xo8EczJ9GfdXL/2B1Q5yXl1+05xB+CKiuCNN9xMPD21R3Whw1SlhFpMwmHBE6wd7V9zY9INHNlMuK0kGonJ5LPuBBZkKHUiQWzvdex+N+U9yATYOia4KMTZEaj3kpJun5MMjtV6z3iQnLxMkL/3xRu8mWlcg4ZpcoASeX5BoCo3O36b+oijmEXGPa8R6gkGdBM/dkupFXmtVsg77MFh1LfBypbRxx3i9VfFjNf/bFF2M76RgIYj6yxqa+06qHt3Sw==","40",
+//                        "INR",getActivity());
+//                mCreatePurchaseTask.execute((String) null);
+
                 break;
 
 

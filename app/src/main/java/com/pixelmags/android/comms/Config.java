@@ -10,11 +10,33 @@ public class Config
     public static final String Support_EMail = "support.kindle@pixelmags.com";
 //    public static final String Magazine_Number = "1597";
 //    public static final String Magazine_Title = "The Cottage Journal";
-    public static final String Magazine_Number = "1589"; // 3499 1589 1597 1435 1593 1589
-//    public static final String Magazine_Title = "Victoria";
 //    public static final String Magazine_Title = "San Diego PREMIER";
+
+    // 3499 1589 1597 1435 1593       1589
+
+//    public static final String Magazine_Number = "1593";
+//    public static final String Magazine_Title = "Victoria";
+//    public static final String Bundle_ID = "com.pixelmags.android.managed.hoffman-media-victoria-magazine";
+
+//    public static final String Magazine_Number = "1435";
+//    public static final String Magazine_Title = "Mustang Seats";
+//    public static final String Bundle_ID = "com.pixelmags.google.managed.d2m-mustang-seats";
+
+
+//    public static final String Magazine_Number = "472";
+//    public static final String Magazine_Title = "Digital SLR Photography Magazine";
+//    public static final String Bundle_ID = "com.pixelmags.reader.managed.google.dennis-digital-slr-photography";
+
+
+    public static final String Magazine_Number = "1589";
     public static final String Magazine_Title = "Cooking with Paula Deen Magazine";
     public static final String Bundle_ID = "com.pixelmags.google.managed.llc-cooking-with-paula-deen-magazine";
+
+//    public static final String Magazine_Number = "1437";
+//    public static final String Magazine_Title = "TrailBike & Enduro Magazine (TBM)";
+//    public static final String Bundle_ID = "com.pixelmags.google.managed.extreme-trailbike-enduro-mag";
+
+
 //    public static final String Bundle_ID = "com.pixelmags.reader.managed.android-amazon.sandiego-premier";
 //    public static final String Bundle_ID = "com.pixelmags.google.managed.hoffman-media-cottage-journal-magazine";
 //    public static final String Bundle_ID = "com.pixelmags.android.managed.hoffman-media-cottage-journal-magazine";
@@ -38,4 +60,6 @@ public class Config
 
     public static final Boolean DEVELOPER_MODE = false; // set to false in live apps
 
+    public static String localeValue = null;
+    public static String[] currencyList = {"Lek","؋","$","ƒ","ман","Br","BZ$","$b","KM","P","лв","R$","៛","¥","₡","kn","₱","Kč","kr","RD$","£","€","¢","Q","L","Ft","kr","₹","Rp","﷼","₪","J$","¥","лв","₩","₭","CHF","kr","₨"};
 }

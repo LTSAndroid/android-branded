@@ -22,6 +22,7 @@ import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.pixelmagsapp.adapter.SubscriptionAdapter;
 import com.pixelmags.android.storage.MySubscriptionsDataSet;
 import com.pixelmags.android.storage.SubscriptionsDataSet;
+import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.util.BaseApp;
 
 import java.util.ArrayList;
@@ -119,14 +120,14 @@ public class SubscriptionsFragment extends Fragment {
         mySubscriptionData.close();
 
 
-        if(mySubscriptionArrayList != null){
+        if(mySubscriptionArrayList != null && UserPrefs.getUserLoggedIn()){
             if(mySubscriptionArrayList.size() >= 1){
                 mRecyclerView.setVisibility(View.GONE);
                 subscriptionDetailLayout.setVisibility(View.VISIBLE);
 
                 for(int i=0; i<mySubscriptionArrayList.size(); i++){
                     magazineId.setText(mySubscriptionArrayList.get(i).magazineID);
-                    creditsAvaliable.setText(mySubscriptionArrayList.get(i).creditsAvailable);
+//                    creditsAvaliable.setText(mySubscriptionArrayList.get(i).creditsAvailable);
                     purchaseDate.setText(mySubscriptionArrayList.get(i).purchaseDate);
                     expiryDate.setText(mySubscriptionArrayList.get(i).expiresDate);
                     subscriptionProductionId.setText(mySubscriptionArrayList.get(i).subscriptionProductId);

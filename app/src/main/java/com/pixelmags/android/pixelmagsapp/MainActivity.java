@@ -21,6 +21,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
@@ -40,6 +41,7 @@ import com.pixelmags.android.comms.ErrorMessage;
 import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.datamodels.MyIssue;
 import com.pixelmags.android.datamodels.MySubscription;
+import com.pixelmags.android.datamodels.Subscription;
 import com.pixelmags.android.pixelmagsapp.adapter.DownloadAdapter;
 import com.pixelmags.android.pixelmagsapp.billing.CreatePurchaseTask;
 import com.pixelmags.android.pixelmagsapp.service.PMService;
@@ -48,6 +50,7 @@ import com.pixelmags.android.storage.AllDownloadsDataSet;
 import com.pixelmags.android.storage.AllIssuesDataSet;
 import com.pixelmags.android.storage.MyIssuesDataSet;
 import com.pixelmags.android.storage.MySubscriptionsDataSet;
+import com.pixelmags.android.storage.SubscriptionsDataSet;
 import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.ui.LoginFragment;
 import com.pixelmags.android.ui.NavigationDrawerFragment;
@@ -77,12 +80,14 @@ public class MainActivity extends AppCompatActivity
 
     public IabHelper mHelper;
     public ArrayList<Magazine> billingMagazinesList;
+    public ArrayList<Subscription> biilingSubscriptionList;
     public ArrayList<Purchase> userOwnedSKUList;
     public ArrayList<String> skuList;
     public CanPurchaseTask mCanPurchaseTask = null;
     public CreatePurchaseTask mCreatePurchaseTask = null;
     boolean mIsBound = false;
     private ArrayList<Magazine> pixelmagsMagazinesList = null;
+    private ArrayList<Subscription> pixelMagsSubscriptionList = null;
     private String TAG = "MainActivity";
     private String purchaseIssuePrice;
     private String purchaseIssueCurrencyType;
@@ -110,6 +115,7 @@ public class MainActivity extends AppCompatActivity
                 {
                     Purchase purchaseData = inventory.getPurchase(allOwnedSKUS.get(i));
                     Log.d(TAG,"User previous Purchase Data list is : "+purchaseData);
+
                     //Assign button Status here and also restore purchase if the issue is not purchased
                     userOwnedSKUList.add(purchaseData);
                 }
@@ -150,18 +156,13 @@ public class MainActivity extends AppCompatActivity
             }
 
             billingMagazinesList = new ArrayList<Magazine>();
+            biilingSubscriptionList = new ArrayList<Subscription>();
 
             if(pixelmagsMagazinesList != null) {
 
-                // For finding the list
-                for(int i=0; i<pixelmagsMagazinesList.size(); i++){
-                    Log.d(TAG,"Pixel Mags Sku List is : "+pixelmagsMagazinesList.get(i).android_store_sku);
-                }
-
-
-
                 for (int i = 0; i < pixelmagsMagazinesList.size(); i++) {
                     String SKU = pixelmagsMagazinesList.get(i).android_store_sku;
+                    Log.d(TAG,"Type of magazine list is : "+pixelmagsMagazinesList.get(i).type);
                     Log.d(TAG,"SKU is : "+SKU);
                     Log.d(TAG,"Inventory is : "+inventory);
                     Log.d(TAG,"Inventory get sku details is : "+inventory.getSkuDetails(SKU));
@@ -172,6 +173,24 @@ public class MainActivity extends AppCompatActivity
                         SkuDetails details = inventory.getSkuDetails(SKU);
 
                         pixelmagsMagazinesList.get(i).price = details.getPrice();
+
+//                        Log.d(TAG,"Locale  is : "+getResources().getConfiguration().locale);
+//                        Log.d(TAG,"Locale Default is : "+ Locale.getDefault());
+//                        Log.d(TAG,"Locale Language is : "+getResources().getConfiguration().locale.getLanguage());
+//                        Log.d(TAG,"Locale Country is : "+getResources().getConfiguration().locale.getCountry());
+
+                        if(isSimSupport(MainActivity.this)){
+                            TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+                            String countryCodeValue = tm.getNetworkCountryIso();
+                            countryCodeValue = countryCodeValue.toUpperCase();
+                            String language = getResources().getConfiguration().locale.getLanguage();
+                            Config.localeValue = language+"_"+countryCodeValue+"@currency="+details.getCurrencyType();
+                        }else{
+                            Config.localeValue = getResources().getConfiguration().locale+"@currency="+details.getCurrencyType();
+                        }
+
+
+
                         Magazine finalMagazine = new Magazine();
 
                         finalMagazine.id = pixelmagsMagazinesList.get(i).id;
@@ -210,6 +229,7 @@ public class MainActivity extends AppCompatActivity
                         finalMagazine.paymentProvider = pixelmagsMagazinesList.get(i).paymentProvider;
                         finalMagazine.exclude_from_subscription = pixelmagsMagazinesList.get(i).exclude_from_subscription;
 
+
                         billingMagazinesList.add(finalMagazine);
                     }
                 }
@@ -222,6 +242,47 @@ public class MainActivity extends AppCompatActivity
                     mDbHelper.close();
                 }
 
+            }
+
+            if(pixelMagsSubscriptionList != null){
+
+                Log.d(TAG,"Pixel Mags Subscription list is : "+pixelMagsSubscriptionList);
+
+                for (int i = 0; i < pixelMagsSubscriptionList.size(); i++) {
+                    Log.d(TAG,"Pixel Mag Subscription list 2 is : "+pixelMagsSubscriptionList.get(i).android_store_sku);
+                        String SKU = pixelMagsSubscriptionList.get(i).android_store_sku;
+                        Log.d(TAG,"SKU of Subscription is : "+SKU);
+                        Log.d(TAG,"Inventory is : "+inventory);
+                        if (inventory.hasDetails(SKU)) //yet to be changed,this is for billing test
+                        {
+                            SkuDetails details = inventory.getSkuDetails(SKU);
+                            Log.d(TAG, "Sku Details for subscription is : " + details);
+                            Subscription finalSubscription = new Subscription();
+                            finalSubscription.id = pixelMagsSubscriptionList.get(i).id;
+                            finalSubscription.magazine_id = pixelMagsSubscriptionList.get(i).magazine_id;
+                            finalSubscription.synopsis = pixelMagsSubscriptionList.get(i).synopsis;
+                            finalSubscription.android_store_sku = pixelMagsSubscriptionList.get(i).android_store_sku;
+                            finalSubscription.price = details.getPrice();
+                            finalSubscription.payment_provider = pixelMagsSubscriptionList.get(i).payment_provider;
+                            finalSubscription.parent_sku_id = pixelMagsSubscriptionList.get(i).parent_sku_id;
+                            finalSubscription.thumbnail_url = pixelMagsSubscriptionList.get(i).thumbnail_url;
+                            finalSubscription.credits_included = pixelMagsSubscriptionList.get(i).credits_included;
+                            finalSubscription.description = pixelMagsSubscriptionList.get(i).description;
+                            finalSubscription.remove_from_sale = pixelMagsSubscriptionList.get(i).remove_from_sale;
+                            finalSubscription.auto_renewable = pixelMagsSubscriptionList.get(i).auto_renewable;
+
+                            biilingSubscriptionList.add(finalSubscription);
+                        }
+
+                    Log.d(TAG,"Billing Subscription List is : "+biilingSubscriptionList);
+
+                    if(biilingSubscriptionList.size() != 0) {
+                        SubscriptionsDataSet mDbHelper = new SubscriptionsDataSet(BaseApp.getContext());
+                        mDbHelper.insert_all_subscriptions(mDbHelper.getWritableDatabase(), biilingSubscriptionList);
+                        mDbHelper.close();
+                    }
+
+                }
             }
 
             // update the UI
@@ -277,7 +338,8 @@ public class MainActivity extends AppCompatActivity
             else if (purchase.getSku().equals(purchaseSKU))
             {
 
-                Log.d(TAG,"Inside the success condition");
+                Log.d(TAG,"Inside the success condition" + purchaseSKU);
+
 
 //                mHelper.consumeAsync(purchase, mConsumeFinishedListener);
 
@@ -303,6 +365,15 @@ public class MainActivity extends AppCompatActivity
                 }
             };
 
+
+    // For testing
+
+//    IInAppBillingService mService;
+//    ServiceConnection mServiceConn;
+
+
+    // Till here
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -312,6 +383,71 @@ public class MainActivity extends AppCompatActivity
         startDownloadService();
 
         setContentView(R.layout.activity_main);
+
+        // For testing
+
+//        mServiceConn = new ServiceConnection() {
+//            @Override
+//            public void onServiceDisconnected(ComponentName name) {
+//                mService = null;
+//            }
+//
+//            @Override
+//            public void onServiceConnected(ComponentName name,
+//                                           IBinder service) {
+//                mService = IInAppBillingService.Stub.asInterface(service);
+//            }
+//        };
+//
+//        Log.d(TAG,"mService is : "+mService);
+//
+//        Intent serviceIntent =
+//                new Intent("com.android.vending.billing.InAppBillingService.BIND");
+//        serviceIntent.setPackage("com.android.vending");
+//        bindService(serviceIntent, mServiceConn, Context.BIND_AUTO_CREATE);
+//
+//
+//        try {
+//
+//            Bundle ownedItems = mService.getPurchases(3, "com.pixelmags.androidbranded.pixelmagsapp.appfive", "inapp", null);
+//
+//            int response = ownedItems.getInt("RESPONSE_CODE");
+//            if (response == 0) {
+//                ArrayList<String> ownedSkus =
+//                        ownedItems.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
+//                ArrayList<String>  purchaseDataList =
+//                        ownedItems.getStringArrayList("INAPP_PURCHASE_DATA_LIST");
+//                ArrayList<String>  signatureList =
+//                        ownedItems.getStringArrayList("INAPP_DATA_SIGNATURE_LIST");
+//                String continuationToken =
+//                        ownedItems.getString("INAPP_CONTINUATION_TOKEN");
+//
+//                for (int i = 0; i < purchaseDataList.size(); ++i) {
+//                    String purchaseData = purchaseDataList.get(i);
+//                    String signature = signatureList.get(i);
+//                    String sku = ownedSkus.get(i);
+//
+//
+//                    Log.d(TAG,"User Previous Purchase Data from new method : "+purchaseData);
+//                    Log.d(TAG,"User Previous Purchase Signature from new method : "+signature);
+//                    Log.d(TAG,"User Previous Purchase sku from new method : "+sku);
+//
+//                    // do something with this purchase information
+//                    // e.g. display the updated list of products owned by user
+//                }
+//
+//                // if continuationToken != null, call getPurchases again
+//                // and pass in the token to retrieve more items
+//            }
+//
+//
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//        }
+
+
+        // Till here
+
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -364,13 +500,17 @@ public class MainActivity extends AppCompatActivity
                     /*Utilities.log("Billing setup successfully");
                     isBillingSetup = true;*/
                     pixelmagsMagazinesList = null; // clear the list
+                    pixelMagsSubscriptionList = null;
 
                     AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
                     pixelmagsMagazinesList = mDbHelper.getAllIssues(mDbHelper.getReadableDatabase());
-
+                    mDbHelper.close();
                     Log.d(TAG,"Pixel Image Magazine List is : " +pixelmagsMagazinesList);
 
-                    mDbHelper.close();
+                    SubscriptionsDataSet mSubscriptionHelper = new SubscriptionsDataSet(BaseApp.getContext());
+                    pixelMagsSubscriptionList = mSubscriptionHelper.getAllSubscriptions(mSubscriptionHelper.getReadableDatabase());
+                    mSubscriptionHelper.close();
+
 
                     skuList = new ArrayList<String>();
 
@@ -382,7 +522,7 @@ public class MainActivity extends AppCompatActivity
                             skuList.add(pixelmagsMagazinesList.get(i).android_store_sku);
 
                         }
-//                        skuList.add("com.pixelmags.androidbranded.test1");//This to confirm billing sku
+//                        skuList.add("pub_google_hoffman_media_llc_cooking_with_paula_deen_magazine.45687.nc");//This to confirm billing sku
 //                        skuList.add("com.pixelmags.androidbranded.test2");//This is to confirm billing sku
 //                        skuList.add("com.pixelmags.androidbranded.test3");//This is to confirm billing sku
 //                        skuList.add("pub_google_hoffman_media_llc_the_cottage_journal.40325.nc");
@@ -408,10 +548,15 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onBackPressed(){
         super.onBackPressed();
+    }
 
-
+    public static boolean isSimSupport(Context context)
+    {
+        TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);  //gets the current TelephonyManager
+        return !(tm.getSimState() == TelephonyManager.SIM_STATE_ABSENT);
 
     }
+
 
     @Override
     public void onPause(){
@@ -476,20 +621,29 @@ public class MainActivity extends AppCompatActivity
 //        mCanPurchaseTask.execute((String) null);
 //    }
 
-    public void canPurchaseLauncher(String type, String sku, int issueId){
-        mCanPurchaseTask = new CanPurchaseTask(type,sku,issueId);
+    public void canPurchaseLauncher(String type, String sku, String price, String currencyType, int issueId){
+        mCanPurchaseTask = new CanPurchaseTask(type,sku,price,currencyType,issueId);
         mCanPurchaseTask.execute((String) null);
     }
 
-    public void createPurchaseLauncher(String type, String sku, int issueId)
+    public void createPurchaseLauncher(String type, String sku, String price, String currencyType, int issueId)
     {
         mCanPurchaseTask = null;
         purchaseIssueId = issueId;
         purchaseSKU = sku;
+        purchaseIssuePrice = price;
+        purchaseIssueCurrencyType = currencyType;
+        Log.d(TAG,"SKU when sending to purchase launcher : "+sku);
         String userPixelMagsID = UserPrefs.getUserPixelmagsId();
 //        String userPixelMagsID = UserPrefs.getUserEmail();
         Log.d(TAG,"User Pixel Mags ID is before encode : "+userPixelMagsID);
-        String encodeData = "{\"user_id\":"+ userPixelMagsID +"}";
+        String encodeData;
+        if(BuildConfig.DEBUG){
+            encodeData = "{\"user_id\":"+ userPixelMagsID +",\"mode\":\"debug\"}";
+        }else{
+            encodeData = "{\"user_id\":"+ userPixelMagsID +",\"mode\":\"release\"}";
+        }
+        Log.d(TAG,"Encoded Data is : "+encodeData);
         byte[] data = encodeData.getBytes();
         String base64 = Base64.encodeToString(data, Base64.DEFAULT);
         Log.d(TAG,"base 64 payload key is : "+base64);
@@ -532,6 +686,7 @@ public class MainActivity extends AppCompatActivity
                     Log.d(TAG,"Purchase Signature is : "+dataSignature);
                     Log.d(TAG,"Purchase Issue Price is : "+purchaseIssuePrice);
                     Log.d(TAG,"Purchase Issue Currency Type is : "+purchaseIssueCurrencyType);
+                    Log.d(TAG,"Purchase Issue ID is : "+purchaseIssueId);
 
 
                     mCreatePurchaseTask = new CreatePurchaseTask(purchaseIssueId,purchaseData,dataSignature,purchaseIssuePrice,
@@ -566,6 +721,7 @@ public class MainActivity extends AppCompatActivity
                     mCreatePurchaseTask = new CreatePurchaseTask(purchaseIssueId,purchaseData,dataSignature,purchaseIssuePrice,
                             purchaseIssueCurrencyType,this);
                     mCreatePurchaseTask.execute((String) null);
+
 
                     if(ErrorMessage.hasError){
                         ErrorMessage.hasError = false;
@@ -673,6 +829,12 @@ public class MainActivity extends AppCompatActivity
             mHelper.dispose();
             mHelper = null;
         }
+
+        // For testing
+
+//        if (mService != null) {
+//            unbindService(mServiceConn);
+//        }
 
     }
 
@@ -841,12 +1003,16 @@ public class MainActivity extends AppCompatActivity
         public String mSKU;
         public String result;
         public String mType;
+        public String mPrice;
+        public String mCurrencyType;
         private CanPurchaseTask mCanPurchaseTask = null;
         private ProgressDialog progressBar;
 
-        public CanPurchaseTask(String type, String SKU , int issue_id) {
+        public CanPurchaseTask(String type, String SKU , String price, String currencyType, int issue_id) {
             mIssue_id = issue_id;
             mSKU = SKU;
+            mPrice = price;
+            mCurrencyType = currencyType;
             mType = type;
         }
 
@@ -886,8 +1052,9 @@ public class MainActivity extends AppCompatActivity
             {
                 System.out.println("CAN PURCHASE .......");
 
+                Log.d(TAG,"M Price is : "+mPrice);
                 //Launch google purchase
-                createPurchaseLauncher(mType, mSKU, mIssue_id);
+                createPurchaseLauncher(mType, mSKU, mPrice, mCurrencyType,mIssue_id);
             }
 
             return resultToDisplay;

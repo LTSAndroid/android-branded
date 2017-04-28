@@ -5,6 +5,18 @@
     android:layout_height="match_parent">
 
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:textColor="@color/blue"
+        android:textSize="18sp"
+        android:text="@string/download_support" />
+
+
+
+
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"

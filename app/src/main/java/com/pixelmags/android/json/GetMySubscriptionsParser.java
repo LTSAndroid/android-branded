@@ -1,5 +1,7 @@
 package com.pixelmags.android.json;
 
+import android.util.Log;
+
 import com.pixelmags.android.datamodels.MySubscription;
 
 import org.json.JSONArray;
@@ -14,6 +16,7 @@ public class GetMySubscriptionsParser extends JSONParser {
 
     public Object mData;
     public ArrayList<MySubscription> mySubscriptionsList;
+    private String TAG = "GetMySubscriptionsParser";
 
     public GetMySubscriptionsParser(String Data){
         super(Data);
@@ -33,6 +36,8 @@ public class GetMySubscriptionsParser extends JSONParser {
                 MySubscription mySubscription = new MySubscription();
                 JSONObject unit = arrayData.getJSONObject(i);
 
+                Log.d(TAG,"Credit Available is : "+unit.isNull("credits_available"));
+                if(!unit.isNull("credits_available"))
                 mySubscription.creditsAvailable = unit.getInt("credits_available");
                 //   mySubscription.issueID = unit.getInt("issue_id");  // Does not exist
                 mySubscription.purchaseDate = unit.getString("purchase_date");

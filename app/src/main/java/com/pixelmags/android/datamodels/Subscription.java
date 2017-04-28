@@ -32,7 +32,7 @@ public class Subscription {
     public int magazine_id;
     public String synopsis;
     public String android_store_sku;
-    public double price;
+    public String price;
     public String payment_provider;
     public String parent_sku_id; // Seems like not being used
     public String thumbnail_url;

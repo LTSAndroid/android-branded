@@ -60,7 +60,7 @@
             android:shadowDy="0"
             android:shadowRadius="5"
             android:textColor="#ffffff"
-            tools:text="Issue Price"/>
+            android:text="£"/>
 
         <!--
         <Button

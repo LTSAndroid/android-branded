@@ -83,6 +83,7 @@ public class MultiStateButton extends Button {
         }else{
             mMagazine.status = Magazine.STATUS_PRICE;
             setAsPurchase(mMagazine.price);
+//            setAsPurchase("£2.99");
         }
 
     }

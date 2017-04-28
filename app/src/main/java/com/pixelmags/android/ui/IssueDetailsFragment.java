@@ -301,7 +301,16 @@ public class IssueDetailsFragment extends Fragment {
 
             Log.d(TAG,"Magazine List Id is : " +issueData.id);
 
-            myAct.canPurchaseLauncher("product",issueData.android_store_sku, issueData.id);
+            String modifiedPrice = null;
+            Log.d(TAG,"Before price is : "+issueData.price);
+            for(int i=0; i<Config.currencyList.length; i++){
+                if(issueData.price.contains(Config.currencyList[i])){
+                    modifiedPrice = issueData.price.replace(Config.currencyList[i],"");
+                    modifiedPrice = modifiedPrice.replaceAll("^\\s+", "").replaceAll("\\s+$", "");
+                }
+            }
+            Log.d(TAG,"Price is : "+modifiedPrice);
+            myAct.canPurchaseLauncher("product",issueData.android_store_sku, modifiedPrice, Config.localeValue, issueData.id);
         }
         else
         {

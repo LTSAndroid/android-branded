@@ -32,6 +32,7 @@
 
     <com.pixelmags.android.ui.uicomponents.MultiStateButton
         android:id="@+id/gridMultiStateButton"
+        android:text="£"
         style="@style/MultiStateButtonBase"
         android:padding="10dp"/>
 
