@@ -28,7 +28,6 @@ import android.widget.Toast;
 
 import com.pixelmags.android.bean.DataTransfer;
 import com.pixelmags.android.pixelmagsapp.R;
-import com.pixelmags.android.pixelmagsapp.adapter.DownloadAdapter;
 import com.pixelmags.android.storage.AllDownloadsDataSet;
 import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.util.BaseApp;
@@ -52,6 +51,7 @@ public class NavigationDrawerFragment extends Fragment {
      */
     private static final String PREF_USER_LEARNED_DRAWER = "navigation_drawer_learned";
     public static String currentPage;
+    SaveToDataBase saveToDataBase;
     /**
      * A pointer to the current callbacks instance (the Activity).
      */
@@ -63,12 +63,11 @@ public class NavigationDrawerFragment extends Fragment {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerListView;
     private View mFragmentContainerView;
-    private int mCurrentSelectedPosition = 0;
+    private int mCurrentSelectedPosition = 6;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
     private CharSequence mTitle;
     private String TAG = "NavigationDrawer";
-    SaveToDataBase saveToDataBase;
 
     public NavigationDrawerFragment() {
     }
@@ -240,6 +239,11 @@ public class NavigationDrawerFragment extends Fragment {
                 saveToDataBase.execute();
 
                 Fragment fragmentAllIsuues = new AllIssuesFragment();
+
+                Bundle bundle = new Bundle();
+                bundle.putString("Update", "Success");
+                fragmentAllIsuues.setArguments(bundle);
+
                 // Insert the fragment by replacing any existing fragment
                 FragmentManager allIssuesFragmentManager = getFragmentManager();
                 allIssuesFragmentManager.beginTransaction()
@@ -417,6 +421,23 @@ public class NavigationDrawerFragment extends Fragment {
                  //       .addToBackStack(null)
                         .commit();
                 break;
+            case 6:
+                currentPage =getString(R.string.menu_title_allissues);
+                mTitle = getString(R.string.menu_title_allissues);
+
+                saveToDataBase = new SaveToDataBase(DataTransfer.count, DataTransfer.issueId);
+                saveToDataBase.execute();
+
+                Fragment fragmentAllIssues = new AllIssuesFragment();
+
+                // Insert the fragment by replacing any existing fragment
+                FragmentManager allIssuesFragmentManagerSecond = getFragmentManager();
+                allIssuesFragmentManagerSecond.beginTransaction()
+                        .replace(R.id.main_fragment_container, fragmentAllIssues,"All Issues")
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        //       .addToBackStack(null)
+                        .commit();
+                break;
             default:
                 currentPage =getString(R.string.app_name);
                 mTitle = getString(R.string.app_name);
@@ -425,35 +446,6 @@ public class NavigationDrawerFragment extends Fragment {
 
 
     }
-
-    public class SaveToDataBase extends AsyncTask<String, String, String> {
-
-        private int count;
-        private int issueId;
-
-        SaveToDataBase(int count, int issueId){
-
-            this.count = count;
-            this.issueId = issueId;
-        }
-
-        @Override
-        protected String doInBackground(String... strings) {
-
-            AllDownloadsDataSet mDbReader_current = new AllDownloadsDataSet(BaseApp.getContext());
-            mDbReader_current.updateProgressCountOfIssue(mDbReader_current.getWritableDatabase(),
-                    String.valueOf(issueId), count);
-            mDbReader_current.close();
-
-            return null;
-        }
-
-        @Override
-        protected  void onPostExecute(String result){
-            DownloadAdapter.stopTimer();
-        }
-    }
-
 
     @Override
     public void onAttach(Activity activity) {
@@ -559,7 +551,6 @@ public class NavigationDrawerFragment extends Fragment {
 
     }
 
-
     /**
      * Callbacks interface that all activities using this fragment must implement.
      */
@@ -568,5 +559,33 @@ public class NavigationDrawerFragment extends Fragment {
          * Called when an item in the navigation drawer is selected.
          */
         void onNavigationDrawerItemSelected(int position);
+    }
+
+    public class SaveToDataBase extends AsyncTask<String, String, String> {
+
+        private int count;
+        private int issueId;
+
+        SaveToDataBase(int count, int issueId){
+
+            this.count = count;
+            this.issueId = issueId;
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+
+            AllDownloadsDataSet mDbReader_current = new AllDownloadsDataSet(BaseApp.getContext());
+            mDbReader_current.updateProgressCountOfIssue(mDbReader_current.getWritableDatabase(),
+                    String.valueOf(issueId), count);
+            mDbReader_current.close();
+
+            return null;
+        }
+
+        @Override
+        protected  void onPostExecute(String result){
+//            DownloadAdapter.stopTimer();
+        }
     }
 }

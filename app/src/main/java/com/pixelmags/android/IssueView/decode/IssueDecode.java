@@ -36,7 +36,6 @@ public class IssueDecode {
        // System.out.println("DOCUMENT KEY :: "+documentKeyHex);
         byte[] decodedKey = Base64.decode(documentKeyHex, Base64.DEFAULT);
 
-
         SecretKeySpec skeySpec = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
         Cipher cipher;
         byte[] decryptedData=null;

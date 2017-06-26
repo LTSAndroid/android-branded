@@ -40,6 +40,7 @@ import com.pixelmags.android.storage.AllIssuesDataSet;
 import com.pixelmags.android.storage.BrandedSQLiteHelper;
 import com.pixelmags.android.storage.MyIssueDocumentKey;
 import com.pixelmags.android.storage.MyIssuesDataSet;
+import com.pixelmags.android.storage.SingleIssuePreviewDataSet;
 import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.ui.uicomponents.MultiStateButton;
 import com.pixelmags.android.util.BaseApp;
@@ -72,6 +73,7 @@ public class IssueDetailsFragment extends Fragment {
     private String mMagazineID;
     private String TAG = "IssueDetailFragments";
     private String documentKey;
+    private DownloadPreviewImagesLocal downloadPreviewImagesLocal = null;
 
 
     public IssueDetailsFragment() {
@@ -344,62 +346,23 @@ public class IssueDetailsFragment extends Fragment {
     public void downloadButtonClicked(){
         if(UserPrefs.getUserLoggedIn()){
 
-            progressBar = new ProgressDialog(getActivity());
-            if (progressBar != null) {
-                progressBar.show();
-                progressBar.setCancelable(false);
-                progressBar.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                progressBar.setContentView(R.layout.progress_dialog);
-            }
-
             String issueId = String.valueOf(issueData.id);
 
             GetInternetStatus getInternetStatus = new GetInternetStatus(getActivity());
 
             if(getInternetStatus.isNetworkAvailable()){
-                GetIssue getIssue = new GetIssue();
-                getIssue.init(issueId);
+
+                Log.d(TAG,"Issue Id when download button clicked is : "+issueId);
+                // To See Preview Images
+                downloadPreviewImagesLocal = new DownloadPreviewImagesLocal(Config.Magazine_Number, issueId);
+                downloadPreviewImagesLocal.execute((String) null);
+
+//                GetIssue getIssue = new GetIssue();
+//                getIssue.init(issueId);
 
             }else{
                 getInternetStatus.showAlertDialog();
             }
-
-            GetDocumentKey getDocumentKey = new GetDocumentKey();
-            documentKey = getDocumentKey.init(UserPrefs.getUserEmail(), UserPrefs.getUserPassword(), UserPrefs.getDeviceID(),
-                    issueId,Config.Magazine_Number, Config.Bundle_ID);
-
-            saveDocumentKey(issueId,Config.Magazine_Number,documentKey.trim());
-
-            issueData.status = Magazine.STATUS_VIEW;
-            issueDetailsPriceButton.setText(BaseApp.getContext().getString(R.string.view));
-
-            progressBar.dismiss();
-
-            new AlertDialog.Builder(getActivity())
-                    .setTitle("Issue Download!")
-                    .setMessage("You can view your Issue in download section.")
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-
-                            Fragment fragmentDownload = new DownloadFragment();
-                            // Insert the fragment by replacing any existing fragment
-                            FragmentManager allIssuesFragmentManager = getFragmentManager();
-                            allIssuesFragmentManager.beginTransaction()
-                                    .replace(R.id.main_fragment_container, fragmentDownload,"DownloadFragment")
-                                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                                    //       .addToBackStack(null)
-                                    .commit();
-
-
-                        }
-                    })
-                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
 
 
         }else{
@@ -542,6 +505,7 @@ public class IssueDetailsFragment extends Fragment {
 
         Bitmap issueThumbnail = null;
         try {
+            Log.d(TAG,"Path is : "+path);
             File file = new File(path);
             FileInputStream inputStream = new FileInputStream(file);
             issueThumbnail = BitmapFactory.decodeStream(inputStream);
@@ -617,6 +581,118 @@ public class IssueDetailsFragment extends Fragment {
             mLoadIssueTask = null;
         }
     }
+
+
+    public class DownloadPreviewImagesLocal extends AsyncTask<String, String, String> {
+
+        ArrayList<PreviewImage> previewImageArrayList;
+        private String mIssueID;
+        private String magID;
+
+        DownloadPreviewImagesLocal(String magID, String issueID) {
+            mIssueID = issueID;
+            this.magID = magID;
+            previewImageArrayList = null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            progressBar = new ProgressDialog(getActivity());
+            if (progressBar != null) {
+                progressBar.show();
+                progressBar.setCancelable(false);
+                progressBar.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                progressBar.setContentView(R.layout.progress_dialog);
+            }
+
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            // TODO: attempt authentication against a network service.
+
+            String resultToDisplay = "";
+
+            try {
+
+                GetPreviewImages getPreviewImages = new GetPreviewImages();
+                previewImageArrayList = getPreviewImages.init(mIssueID, Config.Bundle_ID);
+
+                GetIssue getIssue = new GetIssue();
+                getIssue.init(mIssueID);
+
+                GetDocumentKey getDocumentKey = new GetDocumentKey();
+                documentKey = getDocumentKey.init(UserPrefs.getUserEmail(), UserPrefs.getUserPassword(), UserPrefs.getDeviceID(),
+                        mIssueID,Config.Magazine_Number, Config.Bundle_ID);
+
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            return resultToDisplay;
+
+        }
+
+        protected void onPostExecute(String result) {
+
+            try{
+                if(previewImageArrayList != null){
+
+                    if(progressBar != null)
+                        progressBar.dismiss();
+
+                    Log.d(TAG,"MIssue Id is : "+mIssueID);
+
+                    SingleIssuePreviewDataSet mDbDownloadTableWriter = new SingleIssuePreviewDataSet(BaseApp.getContext());
+                    boolean resultInsertion = mDbDownloadTableWriter.initFormationOfSingleIssueDownloadTable(mDbDownloadTableWriter.getWritableDatabase(),
+                            "Preview_Issue_Table_"+magID+mIssueID, previewImageArrayList);
+                    mDbDownloadTableWriter.close();
+
+
+                    if(documentKey != null) {
+                        saveDocumentKey(mIssueID, Config.Magazine_Number, documentKey.trim());
+                    }
+
+                    issueData.status = Magazine.STATUS_VIEW;
+                    issueDetailsPriceButton.setText(BaseApp.getContext().getString(R.string.view));
+
+
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle("Issue Download!")
+                            .setMessage("You can view your Issue in download section.")
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                    Fragment fragmentDownload = new DownloadFragment();
+                                    // Insert the fragment by replacing any existing fragment
+                                    FragmentManager allIssuesFragmentManager = getFragmentManager();
+                                    allIssuesFragmentManager.beginTransaction()
+                                            .replace(R.id.main_fragment_container, fragmentDownload,"DownloadFragment")
+                                            .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                                            //       .addToBackStack(null)
+                                            .commit();
+
+
+                                }
+                            })
+                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
+
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+        }
+    }
+
 
     /**
      *
@@ -705,6 +781,9 @@ public class IssueDetailsFragment extends Fragment {
                 previewImageArrayList = getPreviewImages.init(mIssueID, Config.Bundle_ID);
 
                 if(previewImageArrayList != null){
+
+                    Log.d(TAG,"Preview Image Array List size is : "+previewImageArrayList.size());
+
                     previewImageArrayList = DownloadPreviewImages.DownloadPreviewImageBitmaps(previewImageArrayList);
                 }
 
@@ -727,12 +806,18 @@ public class IssueDetailsFragment extends Fragment {
                         PreviewImage previewImage = previewImageArrayList.get(i);
 
                         if(previewImage.previewImageBitmap != null) {
-                            ImageView imageView = new ImageView(getActivity());
+                            final ImageView imageView = new ImageView(getActivity());
                             imageView.setId(i);
                             imageView.setPadding(2, 2, 5, 2);
                             imageView.setMinimumWidth(previewImage.imageWidth);
                             imageView.setImageBitmap(previewImage.previewImageBitmap);
                             imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                            imageView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Log.d(TAG,"Position of the preview image clicked is : "+imageView.getId());
+                                }
+                            });
 
                             previewImagesLayout.addView(imageView);
                         }

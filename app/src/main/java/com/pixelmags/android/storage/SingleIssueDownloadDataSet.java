@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
 import com.pixelmags.android.datamodels.SingleDownloadIssueTracker;
@@ -40,7 +41,7 @@ public class SingleIssueDownloadDataSet extends BrandedSQLiteHelper {
                 + SingleIssueDownloadEntry.COLUMN_PAGE_NO + " INTEGER PRIMARY KEY,"
                 + SingleIssueDownloadEntry.COLUMN_URL_PDF_LARGE + " TEXT,"
                 + SingleIssueDownloadEntry.COLUMN_MD5_CHECKSUM_LARGE + " TEXT,"
-                    + SingleIssueDownloadEntry.COLUMN_DOWNLOADED_LOCATION_PDF_LARGE + " TEXT,"
+                + SingleIssueDownloadEntry.COLUMN_DOWNLOADED_LOCATION_PDF_LARGE + " TEXT,"
                 + SingleIssueDownloadEntry.COLUMN_DOWNLOAD_STATUS_PDF_LARGE + " INTEGER"
                 + ")";
 
@@ -97,6 +98,8 @@ public class SingleIssueDownloadDataSet extends BrandedSQLiteHelper {
 
             // get all the previous stored values
             ArrayList<SingleDownloadIssueTracker> previousIssueDownloadTable = getUniqueSingleIssueDownloadTable(db, allDownloadTrackerUnit.uniqueIssueDownloadTable);
+
+            Log.d(TAG,"Single Issue Download Table is : "+previousIssueDownloadTable);
 
             if(previousIssueDownloadTable == null){
                 // if no previous table exists insert the new values

@@ -77,6 +77,11 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
 
                     // handle back button
                     Fragment fragment = new AllIssuesFragment();
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString("Update", "Success");
+                    fragment.setArguments(bundle);
+
                     getActivity().getSupportFragmentManager().beginTransaction()
                             .replace(R.id.main_fragment_container, fragment, "All Issues")
                             .commit();

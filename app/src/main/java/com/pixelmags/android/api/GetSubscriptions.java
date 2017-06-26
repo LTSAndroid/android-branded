@@ -1,14 +1,15 @@
 package com.pixelmags.android.api;
 
+import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.comms.WebRequest;
 import com.pixelmags.android.json.GetSubscriptionsParser;
 import com.pixelmags.android.storage.SubscriptionsDataSet;
 import com.pixelmags.android.util.BaseApp;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
+import okhttp3.FormBody;
 
-import java.util.ArrayList;
+//import org.apache.http.NameValuePair;
+//import org.apache.http.message.BasicNameValuePair;
 
 /**
  * Created by austincoutinho on 07/10/15.
@@ -51,11 +52,19 @@ public class GetSubscriptions extends WebRequest {
 
     private void setApiNameValuePairs(){
 
-        baseApiNameValuePairs = new ArrayList<NameValuePair>(4);
-        baseApiNameValuePairs.add(new BasicNameValuePair("magazine_id", baseMagazineId));
-        baseApiNameValuePairs.add(new BasicNameValuePair("app_bundle_id", baseAppBundleId));
-        baseApiNameValuePairs.add(new BasicNameValuePair("api_mode",baseApiMode));
-        baseApiNameValuePairs.add(new BasicNameValuePair("api_version", baseApiVersion));
+        requestBody = new FormBody.Builder()
+                .add("magazine_id", baseMagazineId)
+                .add("app_bundle_id", Config.Bundle_ID)
+                .add("api_mode", Config.api_mode)
+                .add("api_version", Config.api_version)
+
+                .build();
+
+//        baseApiNameValuePairs = new ArrayList<NameValuePair>(4);
+//        baseApiNameValuePairs.add(new BasicNameValuePair("magazine_id", baseMagazineId));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("app_bundle_id", baseAppBundleId));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("api_mode",baseApiMode));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("api_version", baseApiVersion));
 
     }
 

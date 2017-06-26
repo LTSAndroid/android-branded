@@ -12,4 +12,27 @@
         android:layout_centerInParent="true"
         android:scaleType="centerCrop" />
 
+
+    <!--<ImageView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:src="@drawable/share"-->
+        <!--android:id="@+id/share"-->
+        <!--android:padding="10dp"-->
+        <!--android:layout_alignParentTop="true"-->
+        <!--android:layout_alignParentRight="true"-->
+        <!--android:layout_alignParentEnd="true" />-->
+
+
+    <!--<ImageView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:src="@drawable/bookmark_icon_initial"-->
+        <!--android:id="@+id/bookmark"-->
+        <!--android:padding="10dp"-->
+        <!--android:layout_alignParentTop="true"-->
+        <!--android:layout_toLeftOf="@+id/share"-->
+        <!--android:layout_toStartOf="@+id/share" />-->
+
+
 </RelativeLayout>

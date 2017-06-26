@@ -56,6 +56,39 @@ public class DownloadPreviewImages implements Runnable {
         return previewImageArrayList;
     }
 
+    public static ArrayList<PreviewImage> DownloadPreviewImageBitmapsForIssueView(ArrayList<PreviewImage> previewImageArray) {
+
+        previewImageArrayList = previewImageArray;
+
+        ArrayList<Thread> previewImageDownloadThreads = new ArrayList<Thread>();
+
+        for (int i = 0; i < previewImageArrayList.size(); i++) {
+            PreviewImage pImg = previewImageArrayList.get(i);
+            DownloadPreviewImages downloadThread = new DownloadPreviewImages(pImg.previewImageURL, i);
+
+            Thread t1 = new Thread(downloadThread);
+            previewImageDownloadThreads.add(t1);
+        }
+
+
+        for (Thread thread : previewImageDownloadThreads){
+            thread.start();
+        }
+
+        try{
+
+            for (Thread joinThread : previewImageDownloadThreads){
+                joinThread.join();
+            }
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+
+        return previewImageArrayList;
+    }
+
 
     @Override
     public void run() {

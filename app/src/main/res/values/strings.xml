@@ -5,7 +5,9 @@
     <!--<string name="app_name">San Diego PREMIER</string>-->
     <!--<string name="app_name">TrailBike &amp; Enduro Magazine (TBM)</string>-->
     <!--<string name="app_name">Victoria</string>-->
-    <string name="app_name">Cooking with Paula Deen Magazine</string>
+    <!--<string name="app_name">Cooking with Paula Deen Magazine</string>-->
+    <string name="app_name">Iron Man Magazine</string>
+    <!--<string name="app_name">Magazine Test Ironman</string>-->
 
     <!-- Generic - to re-use -->
     <string name="ok">OK</string>
@@ -145,8 +147,8 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="contact_support">Please choose any of the below application to reach us out.</string>
-    <string name="download_support">Seems like you have not started any download. Get started by going to All Issues page.</string>
+    <string name="contact_support">Please choose any of the options below to reach out to us.</string>
+    <string name="download_support">You have not started any downloads. Get started by going to the All Issue page.</string>
     <string name="PixelMags">PixelMags <a href="http://www.pixelmags.com"></a></string>
     <string name="Pixelmags">PixelMags <a href="http://www.pixelmags.com/t+c/current"></a></string>
     <string name="go_to_register">REGISTER</string>
@@ -165,7 +167,7 @@
     <string name="queue_initiation_title">Issue download is in queue!</string>
     <string name="queue_initiation_message">You can view your Issue once download start.</string>
 
-    <string name="logout">Are you sure you want to exit from San Diego PREMIER?</string>
+    <string name="logout">Are you sure you want to exit from Iron Man Magazine?</string>
 
     <string name="termsCondition"><a href="http://www.pixelmags.com/t+c/current/">View Terms &amp; Condition</a></string>
     <string name="no_internet">Uh oh! \n\nLooks like you don\'t have an internet connection. Please connect to  network and try again.</string>

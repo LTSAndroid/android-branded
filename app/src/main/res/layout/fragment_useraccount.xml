@@ -135,19 +135,6 @@
         android:text="@string/log_out"
         android:textColor="#ffffff" />
 
-    <Button
-        android:layout_width="fill_parent"
-        android:layout_height="40dp"
-        android:id="@+id/logs_details"
-        android:layout_marginTop="8dip"
-        android:onClick="onButtonClick"
-        android:visibility="gone"
-        android:background="@drawable/shape"
-        android:text=   "Log_details"
-        android:textColor="#ffffff"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_gravity="center_horizontal"/>
 
 
 </LinearLayout>

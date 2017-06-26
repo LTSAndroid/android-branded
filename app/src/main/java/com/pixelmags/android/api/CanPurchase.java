@@ -6,10 +6,10 @@ import com.pixelmags.android.comms.WebRequest;
 import com.pixelmags.android.json.CanPurchaseParser;
 import com.pixelmags.android.storage.UserPrefs;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
+import okhttp3.FormBody;
 
-import java.util.ArrayList;
+//import org.apache.http.NameValuePair;
+//import org.apache.http.message.BasicNameValuePair;
 
 /**
  * Created by Annie on 09/10/15.
@@ -57,17 +57,34 @@ public class CanPurchase extends WebRequest
     }
     private void setApiNameValuePairs()
     {
-            String issueId = String.valueOf(mIssue_id);
-        baseApiNameValuePairs = new ArrayList<NameValuePair>(9);
-        baseApiNameValuePairs.add(new BasicNameValuePair("auth_email_address", UserPrefs.getUserEmail()));
-        baseApiNameValuePairs.add(new BasicNameValuePair("auth_password", UserPrefs.getUserPassword()));
-        baseApiNameValuePairs.add(new BasicNameValuePair("device_id", UserPrefs.getDeviceID()));
-        baseApiNameValuePairs.add(new BasicNameValuePair("magazine_id", Config.Magazine_Number));
-        baseApiNameValuePairs.add(new BasicNameValuePair("issue_id", issueId));
-        baseApiNameValuePairs.add(new BasicNameValuePair("payment_gateway", "google")); // Todo: Change it to google once it going to live
-        baseApiNameValuePairs.add(new BasicNameValuePair("app_bundle_id", Config.Bundle_ID));
-        baseApiNameValuePairs.add(new BasicNameValuePair("api_mode", Config.api_mode));
-        baseApiNameValuePairs.add(new BasicNameValuePair("api_version", Config.api_version));
+
+        String issueId = String.valueOf(mIssue_id);
+        requestBody = new FormBody.Builder()
+                .add("auth_email_address", UserPrefs.getUserEmail())
+                .add("auth_password", UserPrefs.getUserPassword())
+                .add("device_id", UserPrefs.getDeviceID())
+                .add("magazine_id", Config.Magazine_Number)
+                .add("issue_id", issueId)
+                .add("payment_gateway", "google")
+                .add("app_bundle_id", Config.Bundle_ID)
+                .add("api_mode", Config.api_mode)
+                .add("api_version", Config.api_version)
+
+                .build();
+
+
+
+//        String issueId = String.valueOf(mIssue_id);
+//        baseApiNameValuePairs = new ArrayList<NameValuePair>(9);
+//        baseApiNameValuePairs.add(new BasicNameValuePair("auth_email_address", UserPrefs.getUserEmail()));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("auth_password", UserPrefs.getUserPassword()));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("device_id", UserPrefs.getDeviceID()));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("magazine_id", Config.Magazine_Number));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("issue_id", issueId));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("payment_gateway", "google")); // Todo: Change it to google once it going to live
+//        baseApiNameValuePairs.add(new BasicNameValuePair("app_bundle_id", Config.Bundle_ID));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("api_mode", Config.api_mode));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("api_version", Config.api_version));
 
 //        Log.d(TAG,"Base API JSON String for Can purchase is : "+String.valueOf(baseApiNameValuePairs));
 //        ErrorMessage.canPurchaseJsonRequest = String.valueOf(baseApiNameValuePairs);

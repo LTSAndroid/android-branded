@@ -29,11 +29,13 @@ import com.crashlytics.android.Crashlytics;
 import com.pixelmags.android.IssueView.NewIssueView;
 import com.pixelmags.android.api.GetDocumentKey;
 import com.pixelmags.android.api.GetIssue;
+import com.pixelmags.android.api.GetPreviewImages;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
 import com.pixelmags.android.datamodels.IssueDocumentKey;
 import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.datamodels.MyIssue;
+import com.pixelmags.android.datamodels.PreviewImage;
 import com.pixelmags.android.pixelmagsapp.MainActivity;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.storage.AllDownloadsDataSet;
@@ -41,6 +43,7 @@ import com.pixelmags.android.storage.AllIssuesDataSet;
 import com.pixelmags.android.storage.BrandedSQLiteHelper;
 import com.pixelmags.android.storage.MyIssueDocumentKey;
 import com.pixelmags.android.storage.MyIssuesDataSet;
+import com.pixelmags.android.storage.SingleIssuePreviewDataSet;
 import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.ui.uicomponents.MultiStateButton;
 import com.pixelmags.android.util.BaseApp;
@@ -59,7 +62,6 @@ public class AllIssuesFragment extends Fragment {
     public static String currentPage;
     public CustomGridAdapter gridAdapter;
     ArrayList<AllDownloadsIssueTracker> allDownloadsTracker;
-    ProgressDialog progressDialog;
     ArrayList<IssueDocumentKey> issueDocumentKeys;
     private ArrayList<Magazine> magazinesList = null;
     private GetAllIssuesTask mGetAllIssuesTask = null;
@@ -68,6 +70,7 @@ public class AllIssuesFragment extends Fragment {
     private MultiStateButton issuePriceButton;
     private String documentKey;
     private ProgressDialog progressBar;
+    private DownloadPreviewImagesAsyncTask mPreviewImagesTask = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -83,16 +86,73 @@ public class AllIssuesFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_display_issues, container, false);
 
-        // retrieving the issues - run inside a async task as there is db access required.
-        mGetAllIssuesTask = new GetAllIssuesTask(Config.Magazine_Number,Config.Bundle_ID);
-        mGetAllIssuesTask.execute((String) null);
+        try {
+            progressBar = new ProgressDialog(getActivity());
+            if (progressBar != null) {
+                progressBar.show();
+                progressBar.setCancelable(false);
+                progressBar.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                progressBar.setContentView(R.layout.progress_dialog);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
-        // loadAllIssues();
 
         setGridAdapter(rootView);
 
+
+
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            String status = bundle.getString("Update", null);
+            if(status != null && status.equalsIgnoreCase("Success")){
+                updateIssueView();
+            }
+        }
+
+
         // Inflate the layout for this fragment
         return rootView;
+    }
+
+
+    public void updateIssueView(){
+
+        AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
+
+        boolean tableExists = mDbHelper.isTableExists(mDbHelper.getReadableDatabase());
+
+        Log.d(TAG,"Table Exists is : "+tableExists);
+
+        if(tableExists){
+            // retrieving the issues - run inside a async task as there is db access required.
+            mGetAllIssuesTask = new GetAllIssuesTask(Config.Magazine_Number,Config.Bundle_ID);
+            mGetAllIssuesTask.execute((String) null);
+
+//                setGridAdapter(rootView);
+        }else{
+            mDbHelper.close();
+            if(progressBar != null)
+                progressBar.dismiss();
+            showAlertDialog("Currently no issues released for this magazine");
+        }
+    }
+
+    private void showAlertDialog(String message) {
+        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity());
+        builder.setTitle("Alert")
+                .setMessage(message)
+                .setCancelable(false)
+                .setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        dialog.dismiss();
+
+                    }
+                });
+        android.support.v7.app.AlertDialog alert = builder.create();
+        alert.show();
     }
 
 
@@ -138,18 +198,9 @@ public class AllIssuesFragment extends Fragment {
                         }
 
                     }
+                    myAct.canPurchaseLauncher("product", magazinesList.get(position).android_store_sku, modifiedPrice,
+                            Config.localeValue, magazinesList.get(position).id);
 
-                    Log.d(TAG,"Price is :"+modifiedPrice);
-                    Log.d(TAG,"Android Store SKU is : "+magazinesList.get(position).android_store_sku);
-                    Log.d(TAG,"Issue ID is : "+magazinesList.get(position).id);
-                    Log.d(TAG,"Issue ID is : "+magazinesList.get(position).id);
-            myAct.canPurchaseLauncher("product", magazinesList.get(position).android_store_sku, modifiedPrice, Config.localeValue, magazinesList.get(position).id);
-//                    myAct.canPurchaseLauncher("pub_google_hoffman_media_llc_the_cottage_journal.35721.nc", 35721);
-//                    myAct.canPurchaseLauncher("pub_google_extreme_publishing_ltd_trailbike_enduro_magazine_tbm.32891.nc", 32891);
-//                    myAct.canPurchaseLauncher("pub_google_extreme_publishing_ltd_trailbike_enduro_magazine_tbm.32889.nc", 32889);
-//                    myAct.canPurchaseLauncher("pub_google_mustang_seats_mustang_seats.32879.nc",32879);
-//                    myAct.canPurchaseLauncher("product","pub_google_hoffman_media_llc_victoria_magazine.35725.nc",35725);
-//                    myAct.canPurchaseLauncher("product","pub_google_hoffman_media_llc_victoria_magazine.37055.nc",35727);
                 }
                 else
                 {
@@ -253,8 +304,13 @@ public class AllIssuesFragment extends Fragment {
 
             GetInternetStatus getInternetStatus = new GetInternetStatus(getActivity());
             if(getInternetStatus.isNetworkAvailable()){
-                downloadIssue = new DownloadIssue(position);
-                downloadIssue.execute((String) null);
+
+                // To See Preview Images
+                mPreviewImagesTask = new DownloadPreviewImagesAsyncTask(Config.Magazine_Number, String.valueOf(magazinesList.get(position).id),position);
+                mPreviewImagesTask.execute((String) null);
+
+//                downloadIssue = new DownloadIssue(position);
+//                downloadIssue.execute((String) null);
 
             }else{
                 getInternetStatus.showAlertDialog();
@@ -425,29 +481,35 @@ public class AllIssuesFragment extends Fragment {
         magazinesList = null; // clear the list
 
         AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
+
         magazinesList = mDbHelper.getAllIssuesOnly(mDbHelper.getReadableDatabase());
         mDbHelper.close();
 
-        for(int i=0; i<magazinesList.size(); i++){
 
+        if(magazinesList != null){
+            for(int i=0; i<magazinesList.size(); i++){
 
-            Log.d(TAG,"Type of issue is : "+magazinesList.get(i).type);
+                Log.d(TAG,"Type of issue is : "+magazinesList.get(i).type);
 
-            if (magazinesList.get(i).paymentProvider != null &&
-                    magazinesList.get(i).paymentProvider.trim().equalsIgnoreCase("free")) {
-                magazinesList.get(i).status = Magazine.STATUS_DOWNLOAD;
+                if (magazinesList.get(i).paymentProvider != null &&
+                        magazinesList.get(i).paymentProvider.trim().equalsIgnoreCase("free")) {
+                    magazinesList.get(i).status = Magazine.STATUS_DOWNLOAD;
+                }
+
+                if(magazinesList.get(i).isIssueOwnedByUser){
+                    magazinesList.get(i).status = Magazine.STATUS_DOWNLOAD;
+                }
+
+                if(!magazinesList.get(i).paymentProvider.equalsIgnoreCase("google") || !magazinesList.get(i).paymentProvider.trim().equalsIgnoreCase("free")
+                        && magazinesList.get(i).type.trim().equalsIgnoreCase("subscription")){
+                    magazinesList.remove(magazinesList.get(i));
+                }
+
             }
-
-            if(magazinesList.get(i).isIssueOwnedByUser){
-                magazinesList.get(i).status = Magazine.STATUS_DOWNLOAD;
-            }
-
-            if(!magazinesList.get(i).paymentProvider.equalsIgnoreCase("google") || !magazinesList.get(i).paymentProvider.trim().equalsIgnoreCase("free")
-            && magazinesList.get(i).type.trim().equalsIgnoreCase("subscription")){
-                magazinesList.remove(magazinesList.get(i));
-            }
-
+        }else{
+           magazinesList = null;
         }
+
 
             AllDownloadsDataSet mDbReader = new AllDownloadsDataSet(BaseApp.getContext());
             if (mDbReader != null) {
@@ -494,6 +556,7 @@ public class AllIssuesFragment extends Fragment {
                     // DownloadImageTask mDownloadTask = new DownloadImageTask(i);
                     // mDownloadTask.execute((String) null);
 
+                    Log.d(TAG,"Magazine List is : "+magazinesList.get(i));
                     if (magazinesList.get(i).isThumbnailDownloaded) {
                         magazinesList.get(i).thumbnailBitmap = loadImageFromStorage(magazinesList.get(i).thumbnailDownloadedInternalPath);
 
@@ -549,26 +612,24 @@ public class AllIssuesFragment extends Fragment {
                         }
                     }
 
-
-            /*ArrayList<String> skuList = new ArrayList<String> ();
-
-            for(int i=0; i< magazinesList.size();i++) {
-
-                skuList.add(magazinesList.get(i).android_store_sku);
-                DownloadImageTask mDownloadTask = new DownloadImageTask(i);
-                mDownloadTask.execute((String) null);*/
-
                 }
 
-            /*Bundle querySkus = new Bundle();
-            querySkus.putStringArrayList("ITEM_ID_LIST", skuList);*/
+
+                if(progressBar != null){
+                    progressBar.dismiss();
+                }
+
+            }else{
+                if(progressBar != null){
+                    progressBar.dismiss();
+                }
             }
 
     }
 
     private Bitmap loadImageFromStorage(String path)
     {
-
+        Log.d(TAG,"Path of the loaded Image from storage is : "+path);
         Bitmap issueThumbnail = null;
         try {
             File file = new File(path);
@@ -601,7 +662,8 @@ public class AllIssuesFragment extends Fragment {
 
     }
 
-/**
+
+    /**
  *  A custom GridView to display the Magazines.
  *
  */
@@ -686,10 +748,13 @@ public class AllIssuesFragment extends Fragment {
 
                     }
 
-                    if (magazinesList.get(position).title != null) {
-                        TextView issueTitleText = (TextView) v.findViewById(R.id.gridTitleText);
-                        issueTitleText.setText(magazinesList.get(position).title);
+                    if(magazinesList != null){
+                        if (magazinesList.get(position).title != null) {
+                            TextView issueTitleText = (TextView) v.findViewById(R.id.gridTitleText);
+                            issueTitleText.setText(magazinesList.get(position).title);
+                        }
                     }
+
 
                     issuePriceButton = (MultiStateButton) v.findViewById(R.id.gridMultiStateButton);
 
@@ -765,7 +830,6 @@ public class AllIssuesFragment extends Fragment {
                 }
             }
 
-
             return v;
         }
 
@@ -814,23 +878,23 @@ public class AllIssuesFragment extends Fragment {
             mAppBundleID = appBundleID;
         }
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            try {
-                progressBar = new ProgressDialog(getActivity());
-                if (progressBar != null) {
-                    progressBar.show();
-                    progressBar.setCancelable(false);
-                    progressBar.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                    progressBar.setContentView(R.layout.progress_dialog);
-                }
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-
-        }
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//
+//            try {
+//                progressBar = new ProgressDialog(getActivity());
+//                if (progressBar != null) {
+//                    progressBar.show();
+//                    progressBar.setCancelable(false);
+//                    progressBar.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+//                    progressBar.setContentView(R.layout.progress_dialog);
+//                }
+//            }catch (Exception e){
+//                e.printStackTrace();
+//            }
+//
+//        }
 
 
         @Override
@@ -843,8 +907,8 @@ public class AllIssuesFragment extends Fragment {
 
                 //GetIssues apiGetIssues = new GetIssues();
                // apiGetIssues.init(mMagazineID, mAppBundleID);
-                loadAllIssues(); //new change
 
+                loadAllIssues(); //new change
 
             }catch (Exception e){
                     e.printStackTrace();
@@ -856,20 +920,26 @@ public class AllIssuesFragment extends Fragment {
         @Override
         protected void onPostExecute(String result) {
         super.onPostExecute(result);
+
             mGetAllIssuesTask = null;
-            progressBar.dismiss();
 
-           /* for(int i=0; i< issuessArray.size();i++) {
+       /* for(int i=0; i< issuessArray.size();i++) {
 
-                Magazine magazine = issuessArray.get(i);
+            Magazine magazine = issuessArray.get(i);
 
-            }*/
-
+        }*/
+       Log.d(TAG,"Inside the on Post execute method **" +progressBar);
 
             if(gridAdapter!=null){
+                if(progressBar != null){
+                    progressBar.dismiss();
+                }
                 gridAdapter.notifyDataSetChanged();
+            }else{
+                if(progressBar != null){
+                    progressBar.dismiss();
+                }
             }
-
 
         }
 
@@ -879,6 +949,83 @@ public class AllIssuesFragment extends Fragment {
         }
     }
 
+
+    public class DownloadPreviewImagesAsyncTask extends AsyncTask<String, String, String> {
+
+        ArrayList<PreviewImage> previewImageArrayList;
+        private String mIssueID;
+        private String magID;
+        private int position;
+
+        DownloadPreviewImagesAsyncTask(String magID, String issueID, int position) {
+            mIssueID = issueID;
+            this.magID = magID;
+            previewImageArrayList = null;
+            this.position = position;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            progressBar = new ProgressDialog(getActivity());
+            if (progressBar != null) {
+                progressBar.show();
+                progressBar.setCancelable(false);
+                progressBar.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                progressBar.setContentView(R.layout.progress_dialog);
+            }
+
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            // TODO: attempt authentication against a network service.
+
+            String resultToDisplay = "";
+
+            try {
+
+                GetPreviewImages getPreviewImages = new GetPreviewImages();
+                previewImageArrayList = getPreviewImages.init(mIssueID, Config.Bundle_ID);
+
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            return resultToDisplay;
+
+        }
+
+        protected void onPostExecute(String result) {
+
+            try{
+                if(previewImageArrayList != null){
+
+                    Log.d(TAG,"Table Name of the preview Image is : "+"Preview_Issue_Table_"+magID+mIssueID);
+
+                    SingleIssuePreviewDataSet mDbDownloadTableWriter = new SingleIssuePreviewDataSet(BaseApp.getContext());
+                    boolean resultInsertion = mDbDownloadTableWriter.initFormationOfSingleIssueDownloadTable(mDbDownloadTableWriter.getWritableDatabase(),
+                            "Preview_Issue_Table_"+magID+mIssueID, previewImageArrayList);
+                    mDbDownloadTableWriter.close();
+
+                    downloadIssue = new DownloadIssue(position);
+                    downloadIssue.execute((String) null);
+
+                }else{
+
+                    if(progressBar != null)
+                        progressBar.dismiss();
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+
+
     public class DownloadIssue extends AsyncTask<String, String, String> {
 
         private int position;
@@ -886,21 +1033,6 @@ public class AllIssuesFragment extends Fragment {
 
         public DownloadIssue(int position){
             this.position = position;
-        }
-
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            progressDialog = new ProgressDialog(getActivity());
-            if (progressDialog != null) {
-                progressDialog.show();
-                progressDialog.setCancelable(false);
-                progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                progressDialog.setContentView(R.layout.progress_dialog);
-            }
-
         }
 
 
@@ -941,7 +1073,8 @@ public class AllIssuesFragment extends Fragment {
             super.onPostExecute(result);
 
 
-            progressDialog.dismiss();
+            if(progressBar != null)
+                progressBar.dismiss();
 
             boolean status = GetIssue.setGetIssueFailure();
 

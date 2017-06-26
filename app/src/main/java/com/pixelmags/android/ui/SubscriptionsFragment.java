@@ -1,6 +1,7 @@
 package com.pixelmags.android.ui;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -42,24 +43,20 @@ public class SubscriptionsFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    private GetSubscriptionsTask mGetSubscriptions = null;
-    //TextView mTextView;
-
-    private RecyclerView mRecyclerView;
-    private SubscriptionAdapter subscriptionAdapter;
-
-    private OnFragmentInteractionListener mListener;
-    private String TAG = "SubscriptionFragment";
     List<String> subDescription;
     List<String> subPrice;
     List<String> subPaymentProvider;
+    //TextView mTextView;
     List<String> androidStoreSku;
     List<Integer> id;
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
+    private GetSubscriptionsTask mGetSubscriptions = null;
+    private RecyclerView mRecyclerView;
+    private SubscriptionAdapter subscriptionAdapter;
+    private OnFragmentInteractionListener mListener;
+    private String TAG = "SubscriptionFragment";
     private LinearLayout subscriptionDetailLayout;
     private TextView magazineId;
     private TextView creditsAvaliable;
@@ -137,9 +134,18 @@ public class SubscriptionsFragment extends Fragment {
                 subscriptionDetailLayout.setVisibility(View.GONE);
                 mRecyclerView.setVisibility(View.VISIBLE);
 
+
+                ArrayList<Subscription> mySubsArray = null;
+
                 SubscriptionsDataSet mDbReader = new SubscriptionsDataSet(BaseApp.getContext());
-                ArrayList<Subscription> mySubsArray = mDbReader.getAllSubscriptions(mDbReader.getReadableDatabase());
-                mDbReader.close();
+
+                boolean tableExists = mDbReader.isTableExists(mDbReader.getReadableDatabase());
+                if(tableExists){
+                    mySubsArray = mDbReader.getAllSubscriptions(mDbReader.getReadableDatabase());
+                    mDbReader.close();
+                }else{
+                    mDbReader.close();
+                }
 
                 subDescription = new ArrayList<String>();
                 subPrice = new ArrayList<String>();
@@ -153,8 +159,62 @@ public class SubscriptionsFragment extends Fragment {
                 subPaymentProvider.clear();
                 androidStoreSku.clear();
 
-                Log.d(TAG,"My Sub Array Price is : "+mySubsArray.size());
 
+                if(mySubsArray != null){
+                    for(int i=0; i< mySubsArray.size();i++) {
+                        Subscription sub = mySubsArray.get(i);
+                        Log.d(TAG,"Sub ID is : "+sub.id);
+                        Log.d(TAG,"Complete Subscription is : "+sub.payment_provider);
+                        Log.d(TAG,"Subscription Description is ::" + sub.description);
+                        Log.d(TAG,"Subscription price is "+sub.price);
+                        Log.d(TAG,"Subscription android store sku is "+sub.android_store_sku);
+
+                        id.add(sub.id);
+                        subDescription.add(sub.description);
+                        subPrice.add(String.valueOf(sub.price));
+                        subPaymentProvider.add(sub.payment_provider);
+                        androidStoreSku.add(sub.android_store_sku);
+                    }
+
+                    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+                    mRecyclerView.setLayoutManager(layoutManager);
+                    mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+                    subscriptionAdapter = new SubscriptionAdapter(id,subDescription, subPrice, subPaymentProvider, androidStoreSku, getActivity());
+                    mRecyclerView.setAdapter(subscriptionAdapter);
+                }else{
+                    showAlertDialog("Currently no subscription released for this magazine");
+                }
+
+            }
+        }else{
+            subscriptionDetailLayout.setVisibility(View.GONE);
+            mRecyclerView.setVisibility(View.VISIBLE);
+
+            ArrayList<Subscription> mySubsArray = null;
+
+            SubscriptionsDataSet mDbReader = new SubscriptionsDataSet(BaseApp.getContext());
+
+            boolean tableExists = mDbReader.isTableExists(mDbReader.getReadableDatabase());
+            if(tableExists){
+                mySubsArray = mDbReader.getAllSubscriptions(mDbReader.getReadableDatabase());
+                mDbReader.close();
+            }else{
+                mDbReader.close();
+            }
+
+            subDescription = new ArrayList<String>();
+            subPrice = new ArrayList<String>();
+            subPaymentProvider = new ArrayList<String>();
+            androidStoreSku = new ArrayList<String>();
+            id = new ArrayList<Integer>();
+
+            id.clear();
+            subDescription.clear();
+            subPrice.clear();
+            subPaymentProvider.clear();
+            androidStoreSku.clear();
+
+            if(mySubsArray != null){
                 for(int i=0; i< mySubsArray.size();i++) {
                     Subscription sub = mySubsArray.get(i);
                     Log.d(TAG,"Sub ID is : "+sub.id);
@@ -175,54 +235,32 @@ public class SubscriptionsFragment extends Fragment {
                 mRecyclerView.setItemAnimator(new DefaultItemAnimator());
                 subscriptionAdapter = new SubscriptionAdapter(id,subDescription, subPrice, subPaymentProvider, androidStoreSku, getActivity());
                 mRecyclerView.setAdapter(subscriptionAdapter);
-            }
-        }else{
-            subscriptionDetailLayout.setVisibility(View.GONE);
-            mRecyclerView.setVisibility(View.VISIBLE);
-
-            SubscriptionsDataSet mDbReader = new SubscriptionsDataSet(BaseApp.getContext());
-            ArrayList<Subscription> mySubsArray = mDbReader.getAllSubscriptions(mDbReader.getReadableDatabase());
-            mDbReader.close();
-
-            subDescription = new ArrayList<String>();
-            subPrice = new ArrayList<String>();
-            subPaymentProvider = new ArrayList<String>();
-            androidStoreSku = new ArrayList<String>();
-            id = new ArrayList<Integer>();
-
-            id.clear();
-            subDescription.clear();
-            subPrice.clear();
-            subPaymentProvider.clear();
-            androidStoreSku.clear();
-
-            Log.d(TAG,"My Sub Array Price is : "+mySubsArray.size());
-
-            for(int i=0; i< mySubsArray.size();i++) {
-                Subscription sub = mySubsArray.get(i);
-                Log.d(TAG,"Sub ID is : "+sub.id);
-                Log.d(TAG,"Complete Subscription is : "+sub.payment_provider);
-                Log.d(TAG,"Subscription Description is ::" + sub.description);
-                Log.d(TAG,"Subscription price is "+sub.price);
-                Log.d(TAG,"Subscription android store sku is "+sub.android_store_sku);
-
-                id.add(sub.id);
-                subDescription.add(sub.description);
-                subPrice.add(String.valueOf(sub.price));
-                subPaymentProvider.add(sub.payment_provider);
-                androidStoreSku.add(sub.android_store_sku);
+            }else{
+                showAlertDialog("Currently no subscription released for this magazine");
             }
 
-            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-            mRecyclerView.setLayoutManager(layoutManager);
-            mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-            subscriptionAdapter = new SubscriptionAdapter(id,subDescription, subPrice, subPaymentProvider, androidStoreSku, getActivity());
-            mRecyclerView.setAdapter(subscriptionAdapter);
+
         }
 
 
         // Inflate the layout for this fragment
         return rootView;
+    }
+
+    private void showAlertDialog(String message) {
+        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity());
+        builder.setTitle("Alert")
+                .setMessage(message)
+                .setCancelable(false)
+                .setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        dialog.dismiss();
+
+                    }
+                });
+        android.support.v7.app.AlertDialog alert = builder.create();
+        alert.show();
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -258,6 +296,11 @@ public class SubscriptionsFragment extends Fragment {
 
                     // handle back button
                     Fragment fragment = new AllIssuesFragment();
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString("Update", "Success");
+                    fragment.setArguments(bundle);
+
                     getActivity().getSupportFragmentManager().beginTransaction()
                             .replace(R.id.main_fragment_container, fragment, "All Issues")
                             .commit();

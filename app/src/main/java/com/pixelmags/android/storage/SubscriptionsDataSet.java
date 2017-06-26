@@ -31,6 +31,21 @@ public class SubscriptionsDataSet extends BrandedSQLiteHelper{
         db.execSQL(SubscriptionsEntry.DROP_SUBSCRIPTIONS_TABLE);
     }
 
+    public boolean isTableExists(SQLiteDatabase db)
+    {
+
+        Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM sqlite_master WHERE type = ? AND name = ?", new String[]{"table", BrandedSQLiteHelper.TABLE_SUBSCRIPTIONS});
+        if (!cursor.moveToFirst()) {
+            db.close();
+            cursor.close();
+            return false;
+        }
+        int count = cursor.getInt(0);
+        db.close();
+        cursor.close();
+        return count > 0;
+    }
+
     public void insert_all_subscriptions(SQLiteDatabase db, ArrayList<Subscription> subscriptionsArray){
 
         // Do batch inserts using Transcations. This is to vastly increase the speed of DB writes

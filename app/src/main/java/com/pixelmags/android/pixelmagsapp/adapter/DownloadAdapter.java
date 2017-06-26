@@ -25,12 +25,14 @@ import com.pixelmags.android.IssueView.NewIssueView;
 import com.pixelmags.android.bean.DataTransfer;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
+import com.pixelmags.android.datamodels.Bookmark;
 import com.pixelmags.android.datamodels.IssueDocumentKey;
 import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.download.DownloadThumbnails;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.pixelmagsapp.service.DownloadsManager;
 import com.pixelmags.android.storage.AllDownloadsDataSet;
+import com.pixelmags.android.storage.BookmarkDataSet;
 import com.pixelmags.android.storage.BrandedSQLiteHelper;
 import com.pixelmags.android.storage.MyIssueDocumentKey;
 import com.pixelmags.android.storage.SingleIssueDownloadDataSet;
@@ -76,15 +78,6 @@ public class DownloadAdapter extends RecyclerView.Adapter<DownloadAdapter.myView
 
     }
 
-    public static void stopTimer(){
-
-        if(holderCopy != null){
-            if(holderCopy.timer != null){
-                holderCopy.timer.cancel();
-            }
-        }
-
-    }
 
     @Override
     public DownloadAdapter.myViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -393,7 +386,7 @@ public class DownloadAdapter extends RecyclerView.Adapter<DownloadAdapter.myView
                     documentKey = getIssueDocumentKey(allDownloadsIssuesListTracker.get(pos).issueID);
 
                     SaveToDB(DataTransfer.count, DataTransfer.issueId);
-                    DownloadAdapter.stopTimer();
+//                    DownloadAdapter.stopTimer();
 
                     Intent intent = new Intent(activity,NewIssueView.class);
                     intent.putExtra("issueId",issueId);
@@ -550,121 +543,6 @@ public class DownloadAdapter extends RecyclerView.Adapter<DownloadAdapter.myView
                                         Toast.makeText(activity,"Please pause current downloading issue to resume another one",Toast.LENGTH_LONG).show();
                                     }
 
-//                                    else{
-//
-//                                        DownloadsManager.downloading = false;
-//                                        DownloadsManager.getInstance().downLoadPaused();
-//
-//                                        for(int i=0; i<allDownloadsIssuesListTracker.size(); i++){
-//                                            int progressBarTag = (int) holder.progressBar.getTag();
-//                                            if(progressBarTag == currentIssueDownloadingPosition){
-//                                                holder.progressBar.setProgress(copyOfJumpTime);
-//                                                holder.progressPercentage.setText(String.valueOf(copyOfJumpTime) + "%");
-//                                                isStart = false;
-//                                                if(copyOfJumpTime!=0) {
-//                                                    holder.timer.cancel();
-//                                                    holder.timer = null;
-//                                                }
-//                                            }
-//
-//
-//                                            // Setting Issue to pause in All Download Data set Table
-//                                            AllDownloadsDataSet mDbReader = new AllDownloadsDataSet(BaseApp.getContext());
-//                                            boolean pauseUpdated = mDbReader.setIssueToPaused(mDbReader.getWritableDatabase(), String.valueOf(allDownloadsIssuesListTracker.get(i).issueID),
-//                                                    copyOfJumpTime);
-//                                            mDbReader.close();
-//
-//                                            allDownloadsIssuesListTracker.get(i).downloadStatus = AllDownloadsDataSet.DOWNLOAD_STATUS_PAUSED;
-//                                            allDownloadsIssuesListTracker.get(i).progressCompleted = copyOfJumpTime;
-//
-//                                            Log.d(TAG,"Jump Time when updating issue to pause state is 2 : "+copyOfJumpTime);
-//
-//                                            holder.count =0;
-//                                            holder.jumpTime = 0;
-//                                            copyOfJumpTime = 0;
-//
-////                                            if(allDownloadsIssuesListTracker.get(i).downloadStatus == AllDownloadsDataSet.DOWNLOAD_STATUS_VIEW){
-////                                                holder.progressBar.setProgress(holder.jumpTime);
-////                                                holder.progressPercentage.setText(String.valueOf(holder.jumpTime) + "%");
-////                                                isStart = false;
-////                                                holder.timer.cancel();
-////
-////                                                Log.d(TAG,"Jump Time when updating issue to pause state is : "+holder.jumpTime);
-////
-////                                                // Setting Issue to pause in All Download Data set Table
-////                                                AllDownloadsDataSet mDbReader = new AllDownloadsDataSet(BaseApp.getContext());
-////                                                boolean pauseUpdated = mDbReader.setIssueToPaused(mDbReader.getWritableDatabase(), String.valueOf(allDownloadsIssuesListTracker.get(i).issueID),
-////                                                        holder.jumpTime);
-////                                                mDbReader.close();
-////
-////                                                allDownloadsIssuesListTracker.get(i).downloadStatus = AllDownloadsDataSet.DOWNLOAD_STATUS_PAUSED;
-////                                                allDownloadsIssuesListTracker.get(i).progressCompleted = holder.jumpTime;
-////
-////                                                Log.d(TAG,"Jump Time when updating issue to pause state is 2 : "+holder.jumpTime);
-////
-////                                                holder.count =0;
-////                                                holder.jumpTime = 0;
-////                                                copyOfJumpTime = 0;
-////
-////                                                DownloadsManager.downloading = false;
-////                                                DownloadsManager.getInstance().downLoadPaused();
-////                                                DownloadFragment.updateAdapter();
-////
-////                                            }
-//
-//                                        }
-//
-//
-////                                        Log.d(TAG,"Jump Time when updating issue to pause state is : "+jumpTimeOnPause);
-////
-////                                        // Setting Issue to pause in All Download Data set Table
-////                                        AllDownloadsDataSet mDbReader = new AllDownloadsDataSet(BaseApp.getContext());
-////                                        boolean pauseUpdated = mDbReader.setIssueToPaused(mDbReader.getWritableDatabase(), String.valueOf(allDownloadsIssuesListTracker.get(currentIssueDownloadingPosition).issueID),
-////                                                jumpTimeOnPause);
-////                                        mDbReader.close();
-////
-////                                        allDownloadsIssuesListTracker.get(currentIssueDownloadingPosition).downloadStatus = AllDownloadsDataSet.DOWNLOAD_STATUS_PAUSED;
-////                                        allDownloadsIssuesListTracker.get(currentIssueDownloadingPosition).progressCompleted = jumpTimeOnPause;
-////
-////                                        Log.d(TAG,"Jump Time when updating issue to pause state is 2 : "+copyOfJumpTime);
-////
-////                                        holder.count =0;
-////                                        holder.jumpTime = 0;
-////                                        copyOfJumpTime = 0;
-////                                        jumpTimeOnPause = 0;
-////
-////                                        DownloadFragment.updateAdapter();
-//
-//                                        // Making other issue resume
-//
-//                                        DownloadsManager.getInstance().downLoadResume();
-//
-//                                        AllDownloadsDataSet mDbReader_download = new AllDownloadsDataSet(BaseApp.getContext());
-//                                        AllDownloadsIssueTracker previousDownload = mDbReader_download.getAllDownloadsTrackerForIssue(mDbReader_download.getWritableDatabase(),
-//                                                String.valueOf(allDownloadsIssuesListTracker.get(listMenuItemPosition).issueID));
-//                                        int previousProgressCountOnResume = previousDownload.progressCompleted;
-//                                        Log.d(TAG,"Previous Count of paused issue going to resume state is : "+previousProgressCountOnResume);
-//                                        holder.copyOfOnResumeCount = previousProgressCountOnResume;
-//                                        mDbReader_download.setIssueToInProgress(mDbReader_download.getReadableDatabase(), String.valueOf(allDownloadsIssuesListTracker.get(listMenuItemPosition).issueID),
-//                                                holder.copyOfOnResumeCount);
-//                                        mDbReader_download.close();
-//
-//                                        allDownloadsIssuesListTracker.get(listMenuItemPosition).downloadStatus = AllDownloadsDataSet.DOWNLOAD_STATUS_VIEW;
-//                                        allDownloadsIssuesListTracker.get(listMenuItemPosition).progressCompleted = holder.copyOfOnResumeCount;
-//
-//                                        for(int i=0; i<allDownloadsIssuesListTracker.size(); i++){
-//                                            int progressBarTag = (int) holder.progressBar.getTag();
-//                                            if(progressBarTag == listMenuItemPosition){
-//                                                holder.jumpTime = holder.copyOfOnResumeCount;
-//                                                isStart = true;
-//                                            }
-//                                        }
-//
-////                                      notifyDataSetChanged();
-//                                        DownloadFragment.updateAdapter();
-//
-//                                    }
-
                                 }
 
                                 break;
@@ -741,6 +619,21 @@ public class DownloadAdapter extends RecyclerView.Adapter<DownloadAdapter.myView
                                     allDownloadsDataSet.close();
 
 //                    allDownloadsIssuesListTracker.get(listMenuItemPosition).downloadStatus = AllDownloadsDataSet.DOWNLOAD_STATUS_NONE;
+
+                                    // Deleting Bookmark Table
+
+                                    BookmarkDataSet mDbHelper = new BookmarkDataSet(BaseApp.getContext());
+                                    ArrayList<Bookmark> bookmarkArrayList = mDbHelper.getIssueBookmark(mDbHelper.getReadableDatabase(),
+                                            String.valueOf(allDownloadsIssuesListTracker.get(listMenuItemPosition).issueID));
+                                    if(bookmarkArrayList.size() > 0){
+                                        mDbHelper.deleteBookmarkByIssueId(mDbHelper.getReadableDatabase(),
+                                                String.valueOf(allDownloadsIssuesListTracker.get(listMenuItemPosition).issueID));
+                                        mDbHelper.close();
+                                    }else{
+                                        mDbHelper.close();
+                                    }
+
+
                                     allDownloadsIssuesListTracker.remove(allDownloadsIssuesListTracker.get(listMenuItemPosition));
 
                                     Log.d("PauseState","Count when issue is deleted : "+issueIdCopy);

@@ -4,10 +4,10 @@ import com.pixelmags.android.comms.WebRequest;
 import com.pixelmags.android.json.ValidateUserParser;
 import com.pixelmags.android.storage.UserPrefs;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
+import okhttp3.FormBody;
 
-import java.util.ArrayList;
+//import org.apache.http.NameValuePair;
+//import org.apache.http.message.BasicNameValuePair;
 
 /**
  * Created by Annie on 07/10/15.
@@ -58,13 +58,23 @@ public class ValidateUser extends WebRequest
 
     private void setApiNameValuePairs(){
 
-        baseApiNameValuePairs = new ArrayList<NameValuePair>(6);
-        baseApiNameValuePairs.add(new BasicNameValuePair("auth_email_address", mEmail));
-        baseApiNameValuePairs.add(new BasicNameValuePair("auth_password", mPassword));
-        baseApiNameValuePairs.add(new BasicNameValuePair("device_id", baseDeviceId));
-        baseApiNameValuePairs.add(new BasicNameValuePair("magazine_id", baseMagazineId));
-        baseApiNameValuePairs.add(new BasicNameValuePair("api_mode", baseApiMode));
-        baseApiNameValuePairs.add(new BasicNameValuePair("api_version", baseApiVersion));
+        requestBody = new FormBody.Builder()
+                .add("auth_email_address", mEmail)
+                .add("auth_password", mPassword)
+                .add("device_id", baseDeviceId)
+                .add("magazine_id", baseMagazineId)
+                .add("api_mode", baseApiMode)
+                .add("api_version", baseApiVersion)
+
+                .build();
+
+//        baseApiNameValuePairs = new ArrayList<NameValuePair>(6);
+//        baseApiNameValuePairs.add(new BasicNameValuePair("auth_email_address", mEmail));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("auth_password", mPassword));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("device_id", baseDeviceId));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("magazine_id", baseMagazineId));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("api_mode", baseApiMode));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("api_version", baseApiVersion));
 
     }
 

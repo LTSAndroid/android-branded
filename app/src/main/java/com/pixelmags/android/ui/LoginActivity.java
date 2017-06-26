@@ -31,22 +31,30 @@ import android.widget.TextView;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.pixelmagsapp.R;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.ByteArrayBuffer;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+//import org.apache.http.HttpResponse;
+//import org.apache.http.NameValuePair;
+//import org.apache.http.client.HttpClient;
+//import org.apache.http.client.entity.UrlEncodedFormEntity;
+//import org.apache.http.client.methods.HttpPost;
+//import org.apache.http.impl.client.DefaultHttpClient;
+//import org.apache.http.message.BasicNameValuePair;
+//import org.apache.http.util.ByteArrayBuffer;
 
 /**
  * A login screen that offers login via email/password.
@@ -60,11 +68,11 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     private static final String[] DUMMY_CREDENTIALS = new String[]{
             "foo@example.com:hello", "bar@example.com:world"
     };
+    OkHttpClient clientAPI;
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private UserLoginTask mAuthTask = null;
-
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
@@ -75,6 +83,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        clientAPI = new OkHttpClient();
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -287,42 +297,86 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
         @Override
         protected String doInBackground(String... params) {
-            String urlString=""; // URL to call
-
-            HttpClient httpclient = new DefaultHttpClient();
-            HttpPost httppost = new HttpPost("https://api.pixelmags.com/validateUser");
-
+            String urlString="https://api.pixelmags.com/validateUser"; // URL to call
             String resultToDisplay = "";
 
+            RequestBody formBody = new FormBody.Builder()
+                    .add("email", mEmail)
+                    .add("password", mPassword)
+                    .add("device_id", "testingforbanded")
+                    .add("magazine_id", Config.Magazine_Number)
+                    .add("api_mode", Config.api_mode)
+                    .add("api_version", Config.api_version)
+                    .build();
+
+            Request request = new Request.Builder()
+                    .url(urlString)
+                    .header("Content-Type","application/x-www-form-urlencoded")
+                    .post(formBody)
+                    .build();
+
+            OkHttpClient.Builder builder = new OkHttpClient.Builder();
+
             try {
-                // Add your data
-                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(6);
-                nameValuePairs.add(new BasicNameValuePair("email", mEmail));
-                nameValuePairs.add(new BasicNameValuePair("password", mPassword));
-                nameValuePairs.add(new BasicNameValuePair("device_id", "testingforbanded"));
-                nameValuePairs.add(new BasicNameValuePair("magazine_id", Config.Magazine_Number));
-                nameValuePairs.add(new BasicNameValuePair("api_mode",Config.api_mode));
-                nameValuePairs.add(new BasicNameValuePair("api_version", Config.api_version));
-                httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
-                // Execute HTTP Post Request
-                HttpResponse response = httpclient.execute(httppost);
-                InputStream is = response.getEntity().getContent();
-                BufferedInputStream bis = new BufferedInputStream(is);
-                ByteArrayBuffer baf = new ByteArrayBuffer(20);
+                Response responses = clientAPI.newCall(request).execute();
 
-                int current = 0;
+                if (responses.code() == 200) {
+                    InputStream is = responses.body().byteStream();
+                    BufferedInputStream bis = new BufferedInputStream(is);
+                    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
-                while ((current = bis.read()) != -1) {
-                    baf.append((byte) current);
-                }
+                    int current = 0;
+                    while ((current = bis.read()) != -1) {
+                        buffer.write((byte) current);
+                    }
 
             /* Convert the Bytes read to a String. */
-                resultToDisplay = new String(baf.toByteArray());
-                // TODO Auto-generated catch block
+                    resultToDisplay = new String(buffer.toByteArray());
+
+
+                    is.close();
+                }
+
             } catch (IOException e) {
-                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
+
+
+//            HttpClient httpclient = new DefaultHttpClient();
+//            HttpPost httppost = new HttpPost("https://api.pixelmags.com/validateUser");
+//
+//            String resultToDisplay = "";
+//
+//            try {
+//                // Add your data
+//                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(6);
+//                nameValuePairs.add(new BasicNameValuePair("email", mEmail));
+//                nameValuePairs.add(new BasicNameValuePair("password", mPassword));
+//                nameValuePairs.add(new BasicNameValuePair("device_id", "testingforbanded"));
+//                nameValuePairs.add(new BasicNameValuePair("magazine_id", Config.Magazine_Number));
+//                nameValuePairs.add(new BasicNameValuePair("api_mode",Config.api_mode));
+//                nameValuePairs.add(new BasicNameValuePair("api_version", Config.api_version));
+//                httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+//
+//                // Execute HTTP Post Request
+//                HttpResponse response = httpclient.execute(httppost);
+//                InputStream is = response.getEntity().getContent();
+//                BufferedInputStream bis = new BufferedInputStream(is);
+//                ByteArrayBuffer baf = new ByteArrayBuffer(20);
+//
+//                int current = 0;
+//
+//                while ((current = bis.read()) != -1) {
+//                    baf.append((byte) current);
+//                }
+//
+//            /* Convert the Bytes read to a String. */
+//                resultToDisplay = new String(baf.toByteArray());
+//                // TODO Auto-generated catch block
+//            } catch (IOException e) {
+//                // TODO Auto-generated catch block
+//            }
 
             return resultToDisplay;
 

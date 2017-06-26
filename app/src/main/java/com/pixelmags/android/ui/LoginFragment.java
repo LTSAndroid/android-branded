@@ -265,6 +265,11 @@ public class  LoginFragment extends Fragment {
 
                     // handle back button
                     Fragment fragment = new AllIssuesFragment();
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString("Update", "Success");
+                    fragment.setArguments(bundle);
+
                     getActivity().getSupportFragmentManager().beginTransaction()
                             .replace(R.id.main_fragment_container, fragment, "HOME")
                             .commit();
@@ -298,6 +303,10 @@ public class  LoginFragment extends Fragment {
         }
 
         Fragment fragmentAllIsuues = new AllIssuesFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putString("Update", "Success");
+        fragmentAllIsuues.setArguments(bundle);
 
         // Insert the fragment by replacing any existing fragment
         FragmentManager allIssuesFragmentManager = getFragmentManager();

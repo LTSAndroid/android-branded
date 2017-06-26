@@ -1,12 +1,14 @@
 package com.pixelmags.android.api;
 
+import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.comms.WebRequest;
 import com.pixelmags.android.json.GetEncryptionKeysParser;
+import com.pixelmags.android.storage.UserPrefs;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
+import okhttp3.FormBody;
 
-import java.util.ArrayList;
+//import org.apache.http.NameValuePair;
+//import org.apache.http.message.BasicNameValuePair;
 
 /**
  * Created by Annie on 09/10/15.
@@ -56,15 +58,27 @@ public class GetEncryptionKeys extends WebRequest
     }
     private void setApiNameValuePairs(){
 
-        baseApiNameValuePairs = new ArrayList<NameValuePair>(7);
-        baseApiNameValuePairs.add(new BasicNameValuePair("email", mEmail));
-        baseApiNameValuePairs.add(new BasicNameValuePair("password", mPassword));
-        baseApiNameValuePairs.add(new BasicNameValuePair("device_id", mDeviceID));
-        baseApiNameValuePairs.add(new BasicNameValuePair("issue_id", mIssueID));
-        baseApiNameValuePairs.add(new BasicNameValuePair("magazine_id", mMagazineID));
-        baseApiNameValuePairs.add(new BasicNameValuePair("app_bundle_id", mAppBundleID));
-        baseApiNameValuePairs.add(new BasicNameValuePair("api_mode", baseApiMode));
-        baseApiNameValuePairs.add(new BasicNameValuePair("api_version", baseApiVersion));
+        requestBody = new FormBody.Builder()
+                .add("email", mEmail)
+                .add("password", mPassword)
+                .add("device_id", UserPrefs.getDeviceID())
+                .add("issue_id", mIssueID)
+                .add("magazine_id", Config.Magazine_Number)
+                .add("app_bundle_id", Config.Bundle_ID)
+                .add("api_mode", Config.api_mode)
+                .add("api_version", Config.api_version)
+
+                .build();
+
+//        baseApiNameValuePairs = new ArrayList<NameValuePair>(7);
+//        baseApiNameValuePairs.add(new BasicNameValuePair("email", mEmail));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("password", mPassword));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("device_id", mDeviceID));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("issue_id", mIssueID));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("magazine_id", mMagazineID));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("app_bundle_id", mAppBundleID));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("api_mode", baseApiMode));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("api_version", baseApiVersion));
 
     }
 }

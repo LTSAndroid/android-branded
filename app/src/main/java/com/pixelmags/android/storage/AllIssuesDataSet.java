@@ -28,6 +28,21 @@ public class AllIssuesDataSet extends BrandedSQLiteHelper{
         db.execSQL(AllIssuesEntry.DROP_ALL_ISSUES_TABLE);
     }
 
+    public boolean isTableExists(SQLiteDatabase db)
+    {
+
+        Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM sqlite_master WHERE type = ? AND name = ?", new String[]{"table",  AllIssuesEntry.ALL_ISSUES_TABLE_NAME});
+        if (!cursor.moveToFirst()) {
+            db.close();
+            cursor.close();
+            return false;
+        }
+        int count = cursor.getInt(0);
+        db.close();
+        cursor.close();
+        return count > 0;
+    }
+
     public void insert_all_issues_data(SQLiteDatabase db, ArrayList<Magazine> magazinesArray){
 
         // Do batch inserts using Transcations. This is to vastly increase the speed of DB writes

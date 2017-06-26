@@ -17,7 +17,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -42,16 +41,16 @@ import com.pixelmags.android.datamodels.Magazine;
 import com.pixelmags.android.datamodels.MyIssue;
 import com.pixelmags.android.datamodels.MySubscription;
 import com.pixelmags.android.datamodels.Subscription;
-import com.pixelmags.android.pixelmagsapp.adapter.DownloadAdapter;
+import com.pixelmags.android.download.DownloadThumbnails;
 import com.pixelmags.android.pixelmagsapp.billing.CreatePurchaseTask;
 import com.pixelmags.android.pixelmagsapp.service.PMService;
-import com.pixelmags.android.pixelmagsapp.test.ResultsFragment;
 import com.pixelmags.android.storage.AllDownloadsDataSet;
 import com.pixelmags.android.storage.AllIssuesDataSet;
 import com.pixelmags.android.storage.MyIssuesDataSet;
 import com.pixelmags.android.storage.MySubscriptionsDataSet;
 import com.pixelmags.android.storage.SubscriptionsDataSet;
 import com.pixelmags.android.storage.UserPrefs;
+import com.pixelmags.android.ui.AllIssuesFragment;
 import com.pixelmags.android.ui.LoginFragment;
 import com.pixelmags.android.ui.NavigationDrawerFragment;
 import com.pixelmags.android.ui.RegisterFragment;
@@ -75,8 +74,7 @@ import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, LoginFragment.OnFragmentInteractionListener ,
-        RegisterFragment.OnFragmentInteractionListener, ResultsFragment.OnFragmentInteractionListener,
-        SubscriptionsFragment.OnFragmentInteractionListener {
+        RegisterFragment.OnFragmentInteractionListener, SubscriptionsFragment.OnFragmentInteractionListener {
 
     public IabHelper mHelper;
     public ArrayList<Magazine> billingMagazinesList;
@@ -86,12 +84,21 @@ public class MainActivity extends AppCompatActivity
     public CanPurchaseTask mCanPurchaseTask = null;
     public CreatePurchaseTask mCreatePurchaseTask = null;
     boolean mIsBound = false;
+    IabHelper.OnConsumeFinishedListener mConsumeFinishedListener =
+            new IabHelper.OnConsumeFinishedListener() {
+                public void onConsumeFinished(Purchase purchase, IabResult result) {
+                    if (result.isSuccess()) {
+                        // provision the in-app purchase to the user
+                        // (for example, credit 50 gold coins to player's character)
+                    }
+                    else {
+                        // handle error
+                    }
+                }
+            };
     private ArrayList<Magazine> pixelmagsMagazinesList = null;
     private ArrayList<Subscription> pixelMagsSubscriptionList = null;
     private String TAG = "MainActivity";
-    private String purchaseIssuePrice;
-    private String purchaseIssueCurrencyType;
-
     // These listener will return only purchase made by the user
     IabHelper.QueryInventoryFinishedListener mGotInventoryListener
             = new IabHelper.QueryInventoryFinishedListener()
@@ -124,6 +131,8 @@ public class MainActivity extends AppCompatActivity
 
         }
     };
+    private String purchaseIssuePrice;
+    private String purchaseIssueCurrencyType;
     IabHelper.QueryInventoryFinishedListener mQueryFinishedListener = new IabHelper.QueryInventoryFinishedListener()
     {
         public void onQueryInventoryFinished(IabResult result, Inventory inventory)
@@ -165,19 +174,15 @@ public class MainActivity extends AppCompatActivity
                     Log.d(TAG,"Type of magazine list is : "+pixelmagsMagazinesList.get(i).type);
                     Log.d(TAG,"SKU is : "+SKU);
                     Log.d(TAG,"Inventory is : "+inventory);
-                    Log.d(TAG,"Inventory get sku details is : "+inventory.getSkuDetails(SKU));
-                    Log.d(TAG,"Inventory has details is : "+inventory.hasDetails(SKU));
 
                     if (inventory.hasDetails(SKU)) //yet to be changed,this is for billing test
                     {
+
                         SkuDetails details = inventory.getSkuDetails(SKU);
 
-                        pixelmagsMagazinesList.get(i).price = details.getPrice();
+                        Log.d(TAG,"Details inside SKU is : "+details);
 
-//                        Log.d(TAG,"Locale  is : "+getResources().getConfiguration().locale);
-//                        Log.d(TAG,"Locale Default is : "+ Locale.getDefault());
-//                        Log.d(TAG,"Locale Language is : "+getResources().getConfiguration().locale.getLanguage());
-//                        Log.d(TAG,"Locale Country is : "+getResources().getConfiguration().locale.getCountry());
+                        pixelmagsMagazinesList.get(i).price = details.getPrice();
 
                         if(isSimSupport(MainActivity.this)){
                             TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
@@ -229,24 +234,40 @@ public class MainActivity extends AppCompatActivity
                         finalMagazine.paymentProvider = pixelmagsMagazinesList.get(i).paymentProvider;
                         finalMagazine.exclude_from_subscription = pixelmagsMagazinesList.get(i).exclude_from_subscription;
 
-
                         billingMagazinesList.add(finalMagazine);
+                    }else{
+                        if(i == pixelmagsMagazinesList.size()-1 ){
+                            if(billingMagazinesList.size() == 0){
+                                AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
+                                mDbHelper.dropAllIssuesTable(mDbHelper.getWritableDatabase());
+                            }
+
+                        }
                     }
                 }
+
+
 
                 // Save the Magazine Objects into the SQlite DB
 
                 if(billingMagazinesList.size() != 0) {
+
+                    billingMagazinesList = DownloadThumbnails.DownloadAllThumbnailData(billingMagazinesList);
+
                     AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
                     mDbHelper.insert_all_issues_data(mDbHelper.getWritableDatabase(), billingMagazinesList);
                     mDbHelper.close();
+
                 }
 
             }
 
-            if(pixelMagsSubscriptionList != null){
+            AllIssuesFragment issueFragment = (AllIssuesFragment) getSupportFragmentManager().findFragmentByTag("All Issues");
+            if(issueFragment != null && issueFragment.isVisible()) {
+                issueFragment.updateIssueView();
+            }
 
-                Log.d(TAG,"Pixel Mags Subscription list is : "+pixelMagsSubscriptionList);
+            if(pixelMagsSubscriptionList != null){
 
                 for (int i = 0; i < pixelMagsSubscriptionList.size(); i++) {
                     Log.d(TAG,"Pixel Mag Subscription list 2 is : "+pixelMagsSubscriptionList.get(i).android_store_sku);
@@ -256,7 +277,6 @@ public class MainActivity extends AppCompatActivity
                         if (inventory.hasDetails(SKU)) //yet to be changed,this is for billing test
                         {
                             SkuDetails details = inventory.getSkuDetails(SKU);
-                            Log.d(TAG, "Sku Details for subscription is : " + details);
                             Subscription finalSubscription = new Subscription();
                             finalSubscription.id = pixelMagsSubscriptionList.get(i).id;
                             finalSubscription.magazine_id = pixelMagsSubscriptionList.get(i).magazine_id;
@@ -272,11 +292,18 @@ public class MainActivity extends AppCompatActivity
                             finalSubscription.auto_renewable = pixelMagsSubscriptionList.get(i).auto_renewable;
 
                             biilingSubscriptionList.add(finalSubscription);
+                        }else{
+                            if(i == pixelMagsSubscriptionList.size()-1 ){
+                                if(biilingSubscriptionList.size() == 0){
+                                    SubscriptionsDataSet mDbHelper = new SubscriptionsDataSet(BaseApp.getContext());
+                                    mDbHelper.dropSubscriptionsTable(mDbHelper.getWritableDatabase());
+                                }
+
+                            }
                         }
 
-                    Log.d(TAG,"Billing Subscription List is : "+biilingSubscriptionList);
-
                     if(biilingSubscriptionList.size() != 0) {
+
                         SubscriptionsDataSet mDbHelper = new SubscriptionsDataSet(BaseApp.getContext());
                         mDbHelper.insert_all_subscriptions(mDbHelper.getWritableDatabase(), biilingSubscriptionList);
                         mDbHelper.close();
@@ -287,13 +314,13 @@ public class MainActivity extends AppCompatActivity
 
             // update the UI
 
-            Fragment currentFragment = getSupportFragmentManager().findFragmentByTag("All Issues");
-            if(currentFragment != null && currentFragment.isVisible()) {
-                FragmentTransaction fragTransaction = getSupportFragmentManager().beginTransaction();
-                fragTransaction.detach(currentFragment);
-                fragTransaction.attach(currentFragment);
-                fragTransaction.commit();
-            }
+//            Fragment currentFragment = getSupportFragmentManager().findFragmentByTag("All Issues");
+//            if(currentFragment != null && currentFragment.isVisible()) {
+//                FragmentTransaction fragTransaction = getSupportFragmentManager().beginTransaction();
+//                fragTransaction.detach(currentFragment);
+//                fragTransaction.attach(currentFragment);
+//                fragTransaction.commit();
+//            }
 
 
 
@@ -352,20 +379,6 @@ public class MainActivity extends AppCompatActivity
     };
 
 
-    IabHelper.OnConsumeFinishedListener mConsumeFinishedListener =
-            new IabHelper.OnConsumeFinishedListener() {
-                public void onConsumeFinished(Purchase purchase, IabResult result) {
-                    if (result.isSuccess()) {
-                        // provision the in-app purchase to the user
-                        // (for example, credit 50 gold coins to player's character)
-                    }
-                    else {
-                        // handle error
-                    }
-                }
-            };
-
-
     // For testing
 
 //    IInAppBillingService mService;
@@ -373,6 +386,13 @@ public class MainActivity extends AppCompatActivity
 
 
     // Till here
+
+    public static boolean isSimSupport(Context context)
+    {
+        TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);  //gets the current TelephonyManager
+        return !(tm.getSimState() == TelephonyManager.SIM_STATE_ABSENT);
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -522,22 +542,7 @@ public class MainActivity extends AppCompatActivity
                             skuList.add(pixelmagsMagazinesList.get(i).android_store_sku);
 
                         }
-//                        skuList.add("pub_google_hoffman_media_llc_cooking_with_paula_deen_magazine.45687.nc");//This to confirm billing sku
-//                        skuList.add("com.pixelmags.androidbranded.test2");//This is to confirm billing sku
-//                        skuList.add("com.pixelmags.androidbranded.test3");//This is to confirm billing sku
-//                        skuList.add("pub_google_hoffman_media_llc_the_cottage_journal.40325.nc");
-//                        skuList.add("pub_google_hoffman_media_llc_the_cottage_journal.35721.nc");
-//                        skuList.add("pub_google_extreme_publishing_ltd_trailbike_enduro_magazine_tbm.32891.nc");
-//                        skuList.add("pub_google_extreme_publishing_ltd_trailbike_enduro_magazine_tbm.32889.nc");
-//                        skuList.add("pub_google_mustang_seats_mustang_seats.32879.nc");
-//                        skuList.add("pub_google_mustang_seats_mustang_seats.32919.nc");
-//                        skuList.add("pub_google_mustang_seats_mustang_seats.32879.nc");
-//                        skuList.add("pub_google_hoffman_media_llc_victoria_magazine.35725.nc");
-//                        skuList.add("pub_google_hoffman_media_llc_victoria_magazine.35727.nc");
-//                        skuList.add("pub_google_hoffman_media_llc_victoria_magazine.37055.nc");
 
-//                          skuList.add("pub_google_hoffman_media_llc_cooking_with_paula_deen_magazine.45687.nc");
-//                        skuList.add("com.pixelmags.androidbranded.testapp");//This is to confirm billing sku
                     }
                     mHelper.queryInventoryAsync(true, skuList, mQueryFinishedListener);
                 }
@@ -546,24 +551,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onBackPressed(){
+    public void onBackPressed() {
         super.onBackPressed();
     }
-
-    public static boolean isSimSupport(Context context)
-    {
-        TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);  //gets the current TelephonyManager
-        return !(tm.getSimState() == TelephonyManager.SIM_STATE_ABSENT);
-
-    }
-
 
     @Override
     public void onPause(){
         super.onPause();
 
         SaveToDB(DataTransfer.count, DataTransfer.issueId);
-        DownloadAdapter.stopTimer();
+//        DownloadAdapter.stopTimer();
     }
 
     public void SaveToDB(int count, int issue) {
@@ -956,6 +953,7 @@ public class MainActivity extends AppCompatActivity
         alertDialog.show();
 
     }
+
 
     /**
      * A placeholder fragment containing a simple view.

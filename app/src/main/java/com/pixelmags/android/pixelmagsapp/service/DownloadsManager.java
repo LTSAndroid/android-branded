@@ -406,10 +406,11 @@ public class DownloadsManager {
 
                         PageTypeImage page = (PageTypeImage) issueWithPageData.pages.get(i);
                         PageTypeImage.PageDetails pageDetails = page.getPageDetails(PageTypeImage.MediaType.LARGE);
-
                         SingleDownloadIssueTracker pageTracker = new SingleDownloadIssueTracker(pageDetails, page.getPageNo());
                         pagesForSingleDownloadTable.add(pageTracker);
                     }
+
+
 
                     SingleIssueDownloadDataSet mDbDownloadTableWriter = new SingleIssueDownloadDataSet(BaseApp.getContext());
 

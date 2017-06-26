@@ -11,10 +11,10 @@ import com.pixelmags.android.storage.IssueDataSet;
 import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.util.BaseApp;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
+import okhttp3.FormBody;
 
-import java.util.ArrayList;
+//import org.apache.http.NameValuePair;
+//import org.apache.http.message.BasicNameValuePair;
 
 /**
  * Created by austincoutinho on 04/10/15.
@@ -74,15 +74,27 @@ public class GetIssue extends WebRequest
 
     private void setApiNameValuePairs(){
 
-        baseApiNameValuePairs = new ArrayList<NameValuePair>(8);
-        baseApiNameValuePairs.add(new BasicNameValuePair("auth_email_address", UserPrefs.getUserEmail()));
-        baseApiNameValuePairs.add(new BasicNameValuePair("auth_password", UserPrefs.getUserPassword()));
-        baseApiNameValuePairs.add(new BasicNameValuePair("device_id", UserPrefs.getDeviceID()));
-        baseApiNameValuePairs.add(new BasicNameValuePair("magazine_id", Config.Magazine_Number));
-        baseApiNameValuePairs.add(new BasicNameValuePair("issue_id", mIssueID));
-        baseApiNameValuePairs.add(new BasicNameValuePair("app_bundle_id", Config.Bundle_ID));
-        baseApiNameValuePairs.add(new BasicNameValuePair("api_mode", Config.api_mode));
-        baseApiNameValuePairs.add(new BasicNameValuePair("api_version", Config.api_version));
+        requestBody = new FormBody.Builder()
+                .add("auth_email_address", UserPrefs.getUserEmail())
+                .add("auth_password", UserPrefs.getUserPassword())
+                .add("device_id", UserPrefs.getDeviceID())
+                .add("magazine_id", Config.Magazine_Number)
+                .add("issue_id", mIssueID)
+                .add("app_bundle_id", Config.Bundle_ID)
+                .add("api_mode", Config.api_mode)
+                .add("api_version", Config.api_version)
+
+                .build();
+
+//        baseApiNameValuePairs = new ArrayList<NameValuePair>(8);
+//        baseApiNameValuePairs.add(new BasicNameValuePair("auth_email_address", UserPrefs.getUserEmail()));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("auth_password", UserPrefs.getUserPassword()));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("device_id", UserPrefs.getDeviceID()));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("magazine_id", Config.Magazine_Number));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("issue_id", mIssueID));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("app_bundle_id", Config.Bundle_ID));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("api_mode", Config.api_mode));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("api_version", Config.api_version));
     }
 
     private void saveIssueToApp(){

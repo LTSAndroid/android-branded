@@ -11,10 +11,10 @@ import com.pixelmags.android.json.CreatePurchaseParser;
 import com.pixelmags.android.pixelmagsapp.MainActivity;
 import com.pixelmags.android.storage.UserPrefs;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
+import okhttp3.FormBody;
 
-import java.util.ArrayList;
+//import org.apache.http.NameValuePair;
+//import org.apache.http.message.BasicNameValuePair;
 
 /**
  * Created by Annie on 09/10/15.
@@ -23,6 +23,8 @@ public class CreatePurchase extends WebRequest
 {
     private static final String API_NAME="createPurchase";
     CreatePurchaseParser cParser;
+    GetMyIssues apiGetMyIssues;
+    GetMySubscriptions apiGetMySubscription;
     private int mIssue_id;
     private String mPurchaseReceipt;
     private String mPurchaseSignature;
@@ -30,8 +32,6 @@ public class CreatePurchase extends WebRequest
     private String mPurchaseCurrencyType;
     private String TAG = "CreatePurchase";
     private Activity activity;
-    GetMyIssues apiGetMyIssues;
-    GetMySubscriptions apiGetMySubscription;
 
     public CreatePurchase(){
         super(API_NAME);
@@ -97,20 +97,41 @@ public class CreatePurchase extends WebRequest
         Log.d(TAG,"Price when setting name value pair is : "+mPurchasePrice);
 
         String issueId = String.valueOf(mIssue_id);
-        baseApiNameValuePairs = new ArrayList<NameValuePair>(13);
-        baseApiNameValuePairs.add(new BasicNameValuePair("auth_email_address", UserPrefs.getUserEmail()));
-        baseApiNameValuePairs.add(new BasicNameValuePair("auth_password", UserPrefs.getUserPassword()));
-        baseApiNameValuePairs.add(new BasicNameValuePair("device_id", UserPrefs.getDeviceID()));
-        baseApiNameValuePairs.add(new BasicNameValuePair("magazine_id", Config.Magazine_Number));
-        baseApiNameValuePairs.add(new BasicNameValuePair("issue_id", issueId));
-        baseApiNameValuePairs.add(new BasicNameValuePair("payment_gateway", "google"));
-        baseApiNameValuePairs.add(new BasicNameValuePair("purchase_receipt", mPurchaseReceipt));
-        baseApiNameValuePairs.add(new BasicNameValuePair("purchase_signature", mPurchaseSignature));
-        baseApiNameValuePairs.add(new BasicNameValuePair("purchase_price", mPurchasePrice));
-        baseApiNameValuePairs.add(new BasicNameValuePair("purchase_locale", mPurchaseCurrencyType));
-        baseApiNameValuePairs.add(new BasicNameValuePair("app_bundle_id", Config.Bundle_ID));
-        baseApiNameValuePairs.add(new BasicNameValuePair("api_mode", Config.api_mode));
-        baseApiNameValuePairs.add(new BasicNameValuePair("api_version", Config.api_version));
+        requestBody = new FormBody.Builder()
+                .add("auth_email_address", UserPrefs.getUserEmail())
+                .add("auth_password", UserPrefs.getUserPassword())
+                .add("device_id", UserPrefs.getDeviceID())
+                .add("magazine_id", Config.Magazine_Number)
+                .add("issue_id", issueId)
+                .add("payment_gateway", "google")
+                .add("purchase_receipt", mPurchaseReceipt)
+                .add("purchase_signature", mPurchaseSignature)
+                .add("purchase_price", mPurchasePrice)
+                .add("purchase_locale", mPurchaseCurrencyType)
+                .add("app_bundle_id", Config.Bundle_ID)
+                .add("api_mode", Config.api_mode)
+                .add("api_version", Config.api_version)
+
+                .build();
+
+
+
+
+
+//        baseApiNameValuePairs = new ArrayList<NameValuePair>(13);
+//        baseApiNameValuePairs.add(new BasicNameValuePair("auth_email_address", UserPrefs.getUserEmail()));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("auth_password", UserPrefs.getUserPassword()));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("device_id", UserPrefs.getDeviceID()));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("magazine_id", Config.Magazine_Number));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("issue_id", issueId));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("payment_gateway", "google"));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("purchase_receipt", mPurchaseReceipt));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("purchase_signature", mPurchaseSignature));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("purchase_price", mPurchasePrice));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("purchase_locale", mPurchaseCurrencyType));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("app_bundle_id", Config.Bundle_ID));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("api_mode", Config.api_mode));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("api_version", Config.api_version));
 
 //        Log.d(TAG,"Base API JSON String for Create purchase is : "+baseApiNameValuePairs);
 //

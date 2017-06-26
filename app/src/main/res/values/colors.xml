@@ -19,5 +19,6 @@
     <color name="white">#FFFFFF</color>
     <color name="register_button_color">#8013456D</color>
     <color name="action_bar_color">#1B4F72</color>
+    <color name="splash_screen_color">#E91E21</color>
 </resources>
 

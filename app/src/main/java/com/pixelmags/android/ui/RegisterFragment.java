@@ -377,6 +377,10 @@ public class RegisterFragment extends Fragment {
 
         Fragment fragmentAllIsuues = new AllIssuesFragment();
 
+        Bundle bundle = new Bundle();
+        bundle.putString("Update", "Success");
+        fragmentAllIsuues.setArguments(bundle);
+
         // Insert the fragment by replacing any existing fragment
         FragmentManager allIssuesFragmentManager = getFragmentManager();
         allIssuesFragmentManager.beginTransaction()

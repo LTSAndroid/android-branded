@@ -65,8 +65,6 @@
             android:name="io.fabric.ApiKey"
             android:value="8a2434bdb03a3d12dee93648e0e0904b07e7f715" />
 
-        <activity android:name="com.pixelmags.android.ui.DownloadActivity" />
-        <activity android:name="com.pixelmags.android.comms.CreatePurchaseTestResult"></activity>
     </application>
 
 </manifest>

@@ -2,16 +2,17 @@ package com.pixelmags.android.api;
 
 import android.util.Log;
 
+import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.comms.WebRequest;
 import com.pixelmags.android.download.DownloadThumbnails;
 import com.pixelmags.android.json.GetIssuesParser;
 import com.pixelmags.android.storage.AllIssuesDataSet;
 import com.pixelmags.android.util.BaseApp;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
+import okhttp3.FormBody;
 
-import java.util.ArrayList;
+//import org.apache.http.NameValuePair;
+//import org.apache.http.message.BasicNameValuePair;
 
 /**
  * Created by Annie on 09/10/15.
@@ -55,11 +56,20 @@ public class GetIssues extends WebRequest {
 
     private void setApiNameValuePairs() {
 
-        baseApiNameValuePairs = new ArrayList<NameValuePair>(4);
-        baseApiNameValuePairs.add(new BasicNameValuePair("magazine_id", mMagazineID));
-        baseApiNameValuePairs.add(new BasicNameValuePair("app_bundle_id", mAppBundleID));
-        baseApiNameValuePairs.add(new BasicNameValuePair("api_mode", baseApiMode));
-        baseApiNameValuePairs.add(new BasicNameValuePair("api_version", baseApiVersion));
+        requestBody = new FormBody.Builder()
+                .add("magazine_id", Config.Magazine_Number)
+                .add("app_bundle_id", Config.Bundle_ID)
+                .add("api_mode", Config.api_mode)
+                .add("api_version", Config.api_version)
+
+                .build();
+
+
+//        baseApiNameValuePairs = new ArrayList<NameValuePair>(4);
+//        baseApiNameValuePairs.add(new BasicNameValuePair("magazine_id", mMagazineID));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("app_bundle_id", mAppBundleID));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("api_mode", baseApiMode));
+//        baseApiNameValuePairs.add(new BasicNameValuePair("api_version", baseApiVersion));
 
     }
 

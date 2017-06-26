@@ -14,11 +14,14 @@ import java.util.Iterator;
 public class GetPreviewImagesParser extends JSONParser {
 
     public Object mData;
+    public String issueID;
     public ArrayList<PreviewImage> previewImagesList;
+    private String TAG = "GetPreviewImagesParser";
 
-    public GetPreviewImagesParser(String Data){
+    public GetPreviewImagesParser(String Data,String issueID){
         super(Data);
         previewImagesList = new ArrayList<PreviewImage>();
+        this.issueID = issueID;
     }
 
     public boolean parse(){
@@ -50,6 +53,7 @@ public class GetPreviewImagesParser extends JSONParser {
 
                 previewImagesList.add(pm);
             }
+
 
         }catch(Exception e){
             e.printStackTrace();

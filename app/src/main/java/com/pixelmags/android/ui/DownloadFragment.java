@@ -134,6 +134,11 @@ public class DownloadFragment extends Fragment {
 
                     // handle back button
                     Fragment fragment = new AllIssuesFragment();
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString("Update", "Success");
+                    fragment.setArguments(bundle);
+
                     getActivity().getSupportFragmentManager().beginTransaction()
                             .replace(R.id.main_fragment_container, fragment, "All Issues")
                             .commit();
@@ -145,6 +150,15 @@ public class DownloadFragment extends Fragment {
                 return false;
             }
         });
+
+    }
+
+    public void SaveToDB(int count, int issue) {
+
+        AllDownloadsDataSet mDbReader_current = new AllDownloadsDataSet(BaseApp.getContext());
+        mDbReader_current.updateProgressCountOfIssue(mDbReader_current.getWritableDatabase(),
+                String.valueOf(issue), count);
+        mDbReader_current.close();
 
     }
 
@@ -172,18 +186,8 @@ public class DownloadFragment extends Fragment {
 
         @Override
         protected  void onPostExecute(String result){
-            DownloadAdapter.stopTimer();
+//            DownloadAdapter.stopTimer();
         }
-    }
-
-
-    public void SaveToDB(int count, int issue) {
-
-        AllDownloadsDataSet mDbReader_current = new AllDownloadsDataSet(BaseApp.getContext());
-        mDbReader_current.updateProgressCountOfIssue(mDbReader_current.getWritableDatabase(),
-                String.valueOf(issue), count);
-        mDbReader_current.close();
-
     }
 
     public class GetAllDownloadedIssuesTask extends AsyncTask<String, String, String> {
