@@ -36,22 +36,6 @@ public class SubscriptionAdapter extends RecyclerView.Adapter<SubscriptionAdapte
     private List<Integer> id;
     private String TAG = "SubscriptionAdapter";
 
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        // each data item is just a string in this case
-        public TextView subscriptionDescription;
-        public MultiStateButton subscriptionPrice;
-        public ViewHolder(View itemView) {
-            super(itemView);
-
-            subscriptionDescription = (TextView) itemView.findViewById(R.id.sub_desc);
-            subscriptionPrice = (MultiStateButton) itemView.findViewById(R.id.sub_price);
-
-        }
-    }
-
     // Provide a suitable constructor (depends on the kind of dataset)
     public SubscriptionAdapter(List<Integer> id, List<String> subscriptionDesc, List<String> subscriptionPrc,List<String> subscriptionPaymentProvider,
                                List<String> androidStoreSku, Activity activity) {
@@ -102,6 +86,7 @@ public class SubscriptionAdapter extends RecyclerView.Adapter<SubscriptionAdapte
                     for(int i=0; i<Config.currencyList.length; i++){
                         if(subscriptionPrc.get(position).contains(Config.currencyList[i])){
                             modifiedPrice = subscriptionPrc.get(position).replace(Config.currencyList[i],"");
+                            modifiedPrice = modifiedPrice.replaceAll(",","");
                             modifiedPrice = modifiedPrice.replaceAll("^\\s+", "").replaceAll("\\s+$", "");
                         }
                     }
@@ -145,11 +130,26 @@ public class SubscriptionAdapter extends RecyclerView.Adapter<SubscriptionAdapte
 
     }
 
-
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
         return subscriptionDesc.size();
+    }
+
+    // Provide a reference to the views for each data item
+    // Complex data items may need more than one view per item, and
+    // you provide access to all the views for a data item in a view holder
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        // each data item is just a string in this case
+        public TextView subscriptionDescription;
+        public MultiStateButton subscriptionPrice;
+        public ViewHolder(View itemView) {
+            super(itemView);
+
+            subscriptionDescription = (TextView) itemView.findViewById(R.id.sub_desc);
+            subscriptionPrice = (MultiStateButton) itemView.findViewById(R.id.sub_price);
+
+        }
     }
 }
 
