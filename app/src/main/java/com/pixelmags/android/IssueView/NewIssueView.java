@@ -26,6 +26,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -142,6 +143,10 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         setContentView(R.layout.fragment_pager);
         Fabric.with(this, new Crashlytics());
 
@@ -212,11 +217,21 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
 
         } else {
 
+            if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
                 imageFragmentPagerAdapter = new ImageFragmentPagerAdapter(getSupportFragmentManager());
                 viewPager = (ViewPager) findViewById(R.id.pager);
                 viewPager.setAdapter(imageFragmentPagerAdapter);
                 pageListener = new PageListener();
                 viewPager.setOnPageChangeListener(pageListener);
+                viewPager.setOffscreenPageLimit(6);
+            }else{
+
+                imageFragmentPagerAdapter = new ImageFragmentPagerAdapter(getSupportFragmentManager());
+                viewPager = (ViewPager) findViewById(R.id.pager);
+                viewPager.setAdapter(imageFragmentPagerAdapter);
+                pageListener = new PageListener();
+                viewPager.setOnPageChangeListener(pageListener);
+            }
 
         }
 
@@ -834,7 +849,12 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
                 }
 
             } else {
+                if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+                    return(1f/2f);
+                }else{
                     return(1f/1f);
+                }
+
             }
 
 
