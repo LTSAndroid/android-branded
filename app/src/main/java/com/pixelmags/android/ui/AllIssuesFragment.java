@@ -24,7 +24,6 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.crashlytics.android.Crashlytics;
 import com.pixelmags.android.IssueView.NewIssueView;
 import com.pixelmags.android.api.GetDocumentKey;
@@ -84,7 +83,10 @@ public class AllIssuesFragment extends Fragment {
                              Bundle savedInstanceState) {
 
 
+
         View rootView = inflater.inflate(R.layout.fragment_display_issues, container, false);
+
+
 
         try {
             progressBar = new ProgressDialog(getActivity());

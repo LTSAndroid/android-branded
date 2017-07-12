@@ -32,7 +32,6 @@
         android:layout_below="@+id/loginEmail"
         android:layout_marginBottom="6dp"
         android:background="@color/edit_text_background"
-        android:digits="0,1,2,3,4,5,6,7,8,9,*,@,qwertzuiopasdfghjklyxcvbnm"
         android:hint="@string/hint_password"
         android:inputType="textPassword"
         android:minHeight="50dp"

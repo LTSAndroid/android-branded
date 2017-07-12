@@ -72,9 +72,7 @@ import io.fabric.sdk.android.Fabric;
 /*<<<<<<< Updated upstream*/
 /*>>>>>>> Stashed changes*/
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, LoginFragment.OnFragmentInteractionListener ,
-        RegisterFragment.OnFragmentInteractionListener, SubscriptionsFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks, LoginFragment.OnFragmentInteractionListener,RegisterFragment.OnFragmentInteractionListener, SubscriptionsFragment.OnFragmentInteractionListener {
 
     public IabHelper mHelper;
     public ArrayList<Magazine> billingMagazinesList;
@@ -84,22 +82,14 @@ public class MainActivity extends AppCompatActivity
     public CanPurchaseTask mCanPurchaseTask = null;
     public CreatePurchaseTask mCreatePurchaseTask = null;
     boolean mIsBound = false;
-    IabHelper.OnConsumeFinishedListener mConsumeFinishedListener =
-            new IabHelper.OnConsumeFinishedListener() {
-                public void onConsumeFinished(Purchase purchase, IabResult result) {
-                    if (result.isSuccess()) {
-                        // provision the in-app purchase to the user
-                        // (for example, credit 50 gold coins to player's character)
-                    }
-                    else {
-                        // handle error
-                    }
-                }
-            };
     private ArrayList<Magazine> pixelmagsMagazinesList = null;
     private ArrayList<Subscription> pixelMagsSubscriptionList = null;
     private String TAG = "MainActivity";
+    private String purchaseIssuePrice;
+    private String purchaseIssueCurrencyType;
     // These listener will return only purchase made by the user
+
+
     IabHelper.QueryInventoryFinishedListener mGotInventoryListener
             = new IabHelper.QueryInventoryFinishedListener()
     {
@@ -131,14 +121,11 @@ public class MainActivity extends AppCompatActivity
 
         }
     };
-    private String purchaseIssuePrice;
-    private String purchaseIssueCurrencyType;
-    IabHelper.QueryInventoryFinishedListener mQueryFinishedListener = new IabHelper.QueryInventoryFinishedListener()
-    {
+
+    IabHelper.QueryInventoryFinishedListener mQueryFinishedListener = new IabHelper.QueryInventoryFinishedListener() {
         public void onQueryInventoryFinished(IabResult result, Inventory inventory)
         {
-            if (result.isFailure())
-            {
+            if (result.isFailure()) {
                 // handle error
                 return;
             }
@@ -146,13 +133,11 @@ public class MainActivity extends AppCompatActivity
             ArrayList<MyIssue> myIssueArray = null;
             ArrayList<MySubscription> mySubsArray = null;
 
-            if(UserPrefs.getUserLoggedIn())
-            {
+            if(UserPrefs.getUserLoggedIn()) {
                 MyIssuesDataSet mDbReader = new MyIssuesDataSet(BaseApp.getContext());
                 myIssueArray = mDbReader.getMyIssues(mDbReader.getReadableDatabase());
                 mDbReader.close();
 
-                // TODO: 10/11/2016
                 MySubscriptionsDataSet mDbSubReader = new MySubscriptionsDataSet(BaseApp.getContext());
                 mySubsArray = mDbSubReader.getMySubscriptions(mDbSubReader.getReadableDatabase());
                 mDbSubReader.close();
@@ -261,7 +246,6 @@ public class MainActivity extends AppCompatActivity
                 }
 
             }
-
             AllIssuesFragment issueFragment = (AllIssuesFragment) getSupportFragmentManager().findFragmentByTag("All Issues");
             if(issueFragment != null && issueFragment.isVisible()) {
                 issueFragment.updateIssueView();

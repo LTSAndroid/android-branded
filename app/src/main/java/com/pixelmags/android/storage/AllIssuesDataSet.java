@@ -64,6 +64,8 @@ public class AllIssuesDataSet extends BrandedSQLiteHelper{
                 Log.d(TAG,"Magazine date is : " +mag.issueDate);
 
 
+
+
                 ContentValues insertValues = new ContentValues();
                 insertValues.put(AllIssuesEntry.COLUMN_ID, mag.id);
                 insertValues.put(AllIssuesEntry.COLUMN_TITLE, mag.title);

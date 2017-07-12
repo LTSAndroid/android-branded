@@ -4,16 +4,19 @@ import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -32,6 +35,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -42,6 +46,8 @@ import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
 import com.pixelmags.android.datamodels.Bookmark;
 import com.pixelmags.android.datamodels.PreviewImage;
 import com.pixelmags.android.datamodels.SingleDownloadIssueTracker;
+import com.pixelmags.android.photoViewLibrary.PhotoView;
+import com.pixelmags.android.pixelmagsapp.MainActivity;
 import com.pixelmags.android.pixelmagsapp.R;
 import com.pixelmags.android.storage.AllDownloadsDataSet;
 import com.pixelmags.android.storage.BookmarkDataSet;
@@ -49,8 +55,12 @@ import com.pixelmags.android.storage.SingleIssueDownloadDataSet;
 import com.pixelmags.android.storage.SingleIssuePreviewDataSet;
 import com.pixelmags.android.util.BaseApp;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 
 import io.fabric.sdk.android.Fabric;
@@ -78,7 +88,7 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
     private static String TAG = "NewIssueView";
     private static String documentKey;
     private static Handler handler;
-    ImageFragmentPagerAdapter imageFragmentPagerAdapter;
+    //ImageFragmentPagerAdapter imageFragmentPagerAdapter;
     PageListener pageListener;
     AllDownloadsIssueTracker allDownloadsTracker;
     // TODO : get the decrypt key and store here
@@ -86,6 +96,14 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
     private DownloadPreviewImagesAsyncTask mPreviewImagesTask = null;
     private ImageView previewImageView;
     private ArrayList<PreviewImage> previewImageArrayList;
+    private static Context contextAdapter;
+    private static String ORIENTATIONIDENTIFICATIONFLAG = "";
+    private static String DEVICETYPE = "";
+    public static  int SELECTEDPAGESTORESESSION= 0;
+
+
+
+
 
     public static byte[] decryptFile(String path, String documentKey){
 
@@ -143,34 +161,31 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        Log.e("StaticValue",""+SELECTEDPAGESTORESESSION);
+
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.fragment_pager);
         Fabric.with(this, new Crashlytics());
+        contextAdapter = this;
 
         previewImagesLayout = (LinearLayout) findViewById(R.id.issuePagesPreviewImageLayout);
 
         share = (ImageView) findViewById(R.id.share);
         share.setOnClickListener(this);
+      //  SELECTEDPAGESTORESESSION = 0;
 
         bookmark = (ImageView) findViewById(R.id.bookmark);
         bookmark.setOnClickListener(this);
-
-//        //
-//        String issueID = String.valueOf(120974);
-//        //
-
         issueViewOpen = true;
         currentPageNumber = 0;
-
         issueID = getIntent().getExtras().getString("issueId");
         documentKey = getIntent().getExtras().getString("documentKey");
 
         // To See Preview Images
         loadPreviewImages(NewIssueView.this);
-
 
         AllDownloadsDataSet mDownloadReader = new AllDownloadsDataSet(BaseApp.getContext());
         allDownloadsTracker = mDownloadReader.getAllDownloadsTrackerForIssue(mDownloadReader.getReadableDatabase(), issueID);
@@ -201,42 +216,312 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
 
         if (tabletSize) {
             if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
-                imageFragmentPagerAdapter = new ImageFragmentPagerAdapter(getSupportFragmentManager());
+                ORIENTATIONIDENTIFICATIONFLAG = "1";
+
                 viewPager = (ViewPager) findViewById(R.id.pager);
-                viewPager.setAdapter(imageFragmentPagerAdapter);
-                pageListener = new PageListener();
-                viewPager.setOnPageChangeListener(pageListener);
-                viewPager.setOffscreenPageLimit(6);
+                //viewPager.setClipToPadding(false);
+                //viewPager.setPadding(60, 0, 60, 0);
+                //viewPager.setPageMargin(20);
+                viewPager.setAdapter(new SamplePagerAdapterLandscape());
+
+
+                if(SELECTEDPAGESTORESESSION ==0){
+                    viewPager.postDelayed(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            viewPager.setCurrentItem(0);
+                        }
+                    }, 250);
+
+                }else{
+                    if (SELECTEDPAGESTORESESSION % 2 == 0) {
+
+                        final int M = SELECTEDPAGESTORESESSION / 2;
+
+                        Log.e("SELECTED POSITION == >", M + "");
+                        viewPager.postDelayed(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                Log.e("Finally position",""+M);
+                                viewPager.setCurrentItem(M);
+                                SELECTEDPAGESTORESESSION = M;
+
+                            }
+                        }, 250);
+
+
+
+                    } else {
+                        float M = SELECTEDPAGESTORESESSION / 2;
+                        double k = M + 0.5;
+                        final int kS = (int) k;
+
+                        viewPager.postDelayed(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                viewPager.setCurrentItem(kS);
+                                SELECTEDPAGESTORESESSION = kS;
+
+
+                            }
+                        }, 250);
+
+
+                    }
+
+                }
+
+
+
+                //viewPager.setOffscreenPageLimit(6);
             }else{
-                imageFragmentPagerAdapter = new ImageFragmentPagerAdapter(getSupportFragmentManager());
+                ORIENTATIONIDENTIFICATIONFLAG = "2";
+
+
                 viewPager = (ViewPager) findViewById(R.id.pager);
-                viewPager.setAdapter(imageFragmentPagerAdapter);
-                pageListener = new PageListener();
-                viewPager.setOnPageChangeListener(pageListener);
+                //viewPager.setClipToPadding(false);
+                //viewPager.setPadding(60, 0, 60, 0);
+                //viewPager.setPageMargin(20);
+                viewPager.setAdapter(new SamplePagerAdapterPortrait());
+
+
+
+
+
+                if(SELECTEDPAGESTORESESSION ==0){
+                    viewPager.setCurrentItem(0);
+                }else {
+                    final int M = SELECTEDPAGESTORESESSION * 2;
+                    viewPager.postDelayed(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            viewPager.setCurrentItem(M);
+                            SELECTEDPAGESTORESESSION = M;
+
+
+                            // SELECTEDPAGESTORESESSION = 0;
+
+                        }
+                    }, 250);
+                }
+
+
             }
 
         } else {
 
             if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
-                imageFragmentPagerAdapter = new ImageFragmentPagerAdapter(getSupportFragmentManager());
-                viewPager = (ViewPager) findViewById(R.id.pager);
-                viewPager.setAdapter(imageFragmentPagerAdapter);
-                pageListener = new PageListener();
-                viewPager.setOnPageChangeListener(pageListener);
-                viewPager.setOffscreenPageLimit(6);
-            }else{
+                Log.e("First View Page",""+SELECTEDPAGESTORESESSION);
+                Log.e("Mobile LandScape Mode ##","Success");
+                ORIENTATIONIDENTIFICATIONFLAG = "1";
 
-                imageFragmentPagerAdapter = new ImageFragmentPagerAdapter(getSupportFragmentManager());
+                //imageFragmentPagerAdapter = new ImageFragmentPagerAdapter(getSupportFragmentManager());
                 viewPager = (ViewPager) findViewById(R.id.pager);
-                viewPager.setAdapter(imageFragmentPagerAdapter);
-                pageListener = new PageListener();
-                viewPager.setOnPageChangeListener(pageListener);
+                //viewPager.setClipToPadding(false);
+                //viewPager.setPadding(60, 0, 60, 0);
+                //viewPager.setPageMargin(20);
+                viewPager.setAdapter(new SamplePagerAdapterLandscape());
+                /**/
+
+                viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                    @Override
+                    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+                    }
+
+                    @Override
+                    public void onPageSelected(int position) {
+                        SELECTEDPAGESTORESESSION = position;
+
+
+                    }
+
+                    @Override
+                    public void onPageScrollStateChanged(int state) {
+
+                    }
+                });
+                Log.e("Page Number",""+SELECTEDPAGESTORESESSION);
+
+                 if(SELECTEDPAGESTORESESSION ==0){
+                     viewPager.postDelayed(new Runnable() {
+
+                         @Override
+                         public void run() {
+                             viewPager.setCurrentItem(0);
+                         }
+                     }, 250);
+
+                 }else{
+                     if (SELECTEDPAGESTORESESSION % 2 == 0) {
+
+                         final int M = SELECTEDPAGESTORESESSION / 2;
+
+                         Log.e("SELECTED POSITION == >", M + "");
+                         viewPager.postDelayed(new Runnable() {
+
+                             @Override
+                             public void run() {
+                                 Log.e("Finally position",""+M);
+                                 viewPager.setCurrentItem(M);
+                                 SELECTEDPAGESTORESESSION = M;
+
+                             }
+                         }, 250);
+
+
+
+                     } else {
+                         float M = SELECTEDPAGESTORESESSION / 2;
+                         double k = M + 0.5;
+                         final int kS = (int) k;
+
+                         viewPager.postDelayed(new Runnable() {
+
+                             @Override
+                             public void run() {
+                                 viewPager.setCurrentItem(kS);
+                                 SELECTEDPAGESTORESESSION = kS;
+
+
+                             }
+                         }, 250);
+
+
+                     }
+
+                 }
+
+
+
+
+
+
+
+
+
+            }else{
+                Log.e("Mobile Portrait Mode ##","Success");
+                Log.e("First View Page",""+SELECTEDPAGESTORESESSION);
+                ORIENTATIONIDENTIFICATIONFLAG = "2";
+                viewPager = (ViewPager) findViewById(R.id.pager);
+                //viewPager.setClipToPadding(false);
+                //viewPager.setPadding(60, 0, 60, 0);
+                //viewPager.setPageMargin(20);
+                viewPager.setAdapter(new SamplePagerAdapterPortrait());
+
+
+                viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                    @Override
+                    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+                    }
+
+                    @Override
+                    public void onPageSelected(int position) {
+
+                        SELECTEDPAGESTORESESSION = position;
+
+
+                    }
+
+                    @Override
+                    public void onPageScrollStateChanged(int state) {
+
+                    }
+                });
+
+
+                if(SELECTEDPAGESTORESESSION ==0){
+                    viewPager.setCurrentItem(0);
+                }else {
+                    final int M = SELECTEDPAGESTORESESSION * 2;
+                    viewPager.postDelayed(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            viewPager.setCurrentItem(M);
+                            SELECTEDPAGESTORESESSION = M;
+
+
+                           // SELECTEDPAGESTORESESSION = 0;
+
+                        }
+                    }, 250);
+                }
+
+
+
+               /* if(SELECTEDPAGESTORESESSION % 2 == 0){
+                    final int M = SELECTEDPAGESTORESESSION*2;
+                    Log.e("SELECTED POSITION == >",M+"");
+                    viewPager.postDelayed(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            viewPager.setCurrentItem(M);
+                        }
+                    }, 250);
+
+                }else {
+                    float M = SELECTEDPAGESTORESESSION / 2;
+                    double k = M - 0.5;
+                    final int kS = (int) k;
+
+                    viewPager.postDelayed(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            viewPager.setCurrentItem(kS);
+                        }
+                    }, 250);
+                }*/
+
+
+
+
+
+
+
             }
 
         }
 
 
+        //exportDB();
+
+
     }
+
+
+
+   /* private void exportDB(){
+
+
+        File sd = Environment.getExternalStorageDirectory();
+        File data = Environment.getDataDirectory();
+        FileChannel source=null;
+        FileChannel destination=null;
+        String currentDBPath = "/data/data/"+ "com.pixelmags.android.pixelmagsapp" +"/databases/"+"BrandedDatabase.db";
+        String backupDBPath = SAMPLE_DB_NAME;
+        File currentDB = new File(data, currentDBPath);
+        File backupDB = new File(sd, backupDBPath);
+        try {
+            source = new FileInputStream(currentDB).getChannel();
+            destination = new FileOutputStream(backupDB).getChannel();
+            destination.transferFrom(source, 0, source.size());
+            source.close();
+            destination.close();
+            Toast.makeText(this, "DB Exported!", Toast.LENGTH_LONG).show();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+    }*/
+
 
     public void loadPreviewImages(Activity activity){
 
@@ -297,6 +582,11 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
         }
     }
 
+
+
+   //Slider
+
+
     public static class SwipeFragment extends Fragment implements View.OnClickListener {
 
         IssueImagePinchZoom imageView;
@@ -311,6 +601,9 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
 
             View swipeView = inflater.inflate(R.layout.swipe_fragment, container, false);
             imageView = (IssueImagePinchZoom) swipeView.findViewById(R.id.imageView);
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
+            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
 
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -334,11 +627,13 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
 
             position = bundle.getInt("position");
 
-            Log.d(TAG,"Issue page locations is : " +position);
+           // Log.d(TAG,"Issue page locations is : " +position);
 
 //            Bitmap imageForView = null;
             byte[] imageForView = null;
             String imageLocation = issuePagesLocations.get(position);
+
+//            Log.e("Image Location",issuePagesLocations.get(position));
 
             if(getActivity() != null) {
                 getScreenResolution(getActivity());
@@ -353,6 +648,7 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
                 imageForView =  decryptFile(imageLocation,documentKey);
 
                 BitmapWorkerTask bitmapWorkerTask = new BitmapWorkerTask(imageView,imageForView);
+
                 bitmapWorkerTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
 
@@ -652,7 +948,6 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
                 Log.d(TAG,"Inside the onclick of list item");
 
                 bookmarkPage.dismiss();
-
                 int pos = (int) view.getTag();
                 SwipeFragment fragment = new SwipeFragment();
                 fragment.newInstance(bookmarkArrayList.get(pos).pageNumber);
@@ -708,6 +1003,9 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
         }
 
     }
+
+
+
 
     /**
      *
@@ -788,7 +1086,32 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
                                     SwipeFragment fragment = new SwipeFragment();
                                     fragment.newInstance(currentPageNumber);
 
-                                    viewPager.setCurrentItem(currentPageNumber);
+                                    int k = 0;
+                                    Log.e("CP ==>",currentPageNumber+"");
+
+                                    if(!ORIENTATIONIDENTIFICATIONFLAG.equalsIgnoreCase("")){
+                                     if(ORIENTATIONIDENTIFICATIONFLAG.equalsIgnoreCase("1")){
+                                         if(currentPageNumber % 2 == 0){
+                                             Log.e("Even","Number");
+                                             int M =  currentPageNumber/2;
+                                             viewPager.setCurrentItem(M);
+
+                                         }else{
+                                             Log.e("Odd","Number");
+                                             float Mp =  currentPageNumber/2;
+                                             double S = Mp+0.5;
+                                             int kS = (int)S;
+                                             viewPager.setCurrentItem(kS);
+                                         }
+
+                                     }else{
+                                         viewPager.setCurrentItem(currentPageNumber);
+                                     }
+
+                                    }
+
+
+
                                     previewImagesLayout.setVisibility(View.GONE);
                                     if(share.getVisibility() == View.VISIBLE && bookmark.getVisibility() == View.VISIBLE){
                                         share.setVisibility(View.GONE);
@@ -809,6 +1132,12 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
 
         }
     }
+
+
+
+
+
+
 
     public class ImageFragmentPagerAdapter extends FragmentStatePagerAdapter {
 
@@ -862,5 +1191,238 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
 
     }
 
+
+
+
+    static class SamplePagerAdapterLandscape extends PagerAdapter {
+
+		/*private static final int[] sDrawables = { R.drawable.wallpaper, R.drawable.wallpaper, R.drawable.wallpaper,
+				R.drawable.wallpaper, R.drawable.wallpaper, R.drawable.wallpaper };*/
+
+        LayoutInflater mLayoutInflater;
+
+        public SamplePagerAdapterLandscape() {
+            mLayoutInflater = (LayoutInflater) contextAdapter.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        @Override
+        public int getCount() {
+            return getItemsDivideCount();
+        }
+
+        @Override
+        public View instantiateItem(ViewGroup container, int position) {
+            ViewGroup itemView = (ViewGroup) mLayoutInflater.inflate(R.layout.pager_item_landscape, container, false);
+            Log.e("AdapterCalling",""+position);
+
+            PhotoView photoViewOne = (PhotoView)itemView.findViewById(R.id.photoView1);
+            PhotoView photoViewTwo = (PhotoView)itemView.findViewById(R.id.photoView2);
+            byte[] imageForViewOne = null;
+            byte[] imageForViewTwo = null;
+
+            String photo2Location = null;
+            String photo1Location = null;
+
+            int Mul = position*2;
+            int Nul = Mul+1;
+
+            if(Mul < issuePagesLocations.size()) {
+                photo1Location = issuePagesLocations.get(Mul);
+            }
+
+            if(Nul < issuePagesLocations.size()) {
+                photo2Location = issuePagesLocations.get(Nul);
+            }
+
+
+
+            photoViewOne.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    if(share.getVisibility() == View.VISIBLE && bookmark.getVisibility() == View.VISIBLE){
+                        share.setVisibility(View.GONE);
+                        bookmark.setVisibility(View.GONE);
+                        previewImagesLayout.setVisibility(View.GONE);
+                    }else{
+                        share.setVisibility(View.VISIBLE);
+                        bookmark.setVisibility(View.VISIBLE);
+                        previewImagesLayout.setVisibility(View.VISIBLE);
+                    }
+
+                }
+            });
+
+
+
+            photoViewTwo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    if(share.getVisibility() == View.VISIBLE && bookmark.getVisibility() == View.VISIBLE){
+                        share.setVisibility(View.GONE);
+                        bookmark.setVisibility(View.GONE);
+                        previewImagesLayout.setVisibility(View.GONE);
+                    }else{
+                        share.setVisibility(View.VISIBLE);
+                        bookmark.setVisibility(View.VISIBLE);
+                        previewImagesLayout.setVisibility(View.VISIBLE);
+                    }
+
+                }
+            });
+
+            Log.e("Document Key",documentKey+"SIZE"+issuePagesLocations.size());
+
+
+            if(photo1Location != null &&photo2Location != null){
+
+                imageForViewOne =  decryptFile(photo1Location,documentKey);
+                imageForViewTwo =  decryptFile(photo2Location,documentKey);
+
+
+
+                BitmapWorkerTask bitmapWorkerTaskOne = new BitmapWorkerTask(photoViewOne,imageForViewOne);
+                BitmapWorkerTask bitmapWorkerTaskTwo = new BitmapWorkerTask(photoViewTwo,imageForViewTwo);
+                bitmapWorkerTaskOne.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                bitmapWorkerTaskTwo.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+            }else{
+
+                photoViewOne.setBackgroundResource(R.drawable.placeholderissueview);
+                photoViewTwo.setBackgroundResource(R.drawable.placeholderissueview);
+            }
+            photoViewOne.setScaleType(ImageView.ScaleType.FIT_XY);
+            photoViewTwo.setScaleType(ImageView.ScaleType.FIT_XY);
+            container.addView(itemView,ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            return itemView;
+
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            container.removeView((View) object);
+        }
+
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            return view == object;
+        }
+
+
+        public int getItemsDivideCount(){
+
+            if(issuePagesLocations.size() % 2 == 0){
+
+                return issuePagesLocations.size()/2;
+
+            }else{
+
+                int va = issuePagesLocations.size()+1;
+
+                return va/2;
+
+            }
+
+
+
+        }
+
+    }
+
+
+    static class SamplePagerAdapterPortrait extends PagerAdapter {
+
+		/*private static final int[] sDrawables = { R.drawable.wallpaper, R.drawable.wallpaper, R.drawable.wallpaper,
+				R.drawable.wallpaper, R.drawable.wallpaper, R.drawable.wallpaper };*/
+
+        LayoutInflater mLayoutInflater;
+
+        public SamplePagerAdapterPortrait() {
+            mLayoutInflater = (LayoutInflater) contextAdapter.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        @Override
+        public int getCount() {
+            return issuePagesLocations.size();
+        }
+
+        @Override
+        public View instantiateItem(ViewGroup container, int position) {
+            ViewGroup itemView = (ViewGroup) mLayoutInflater.inflate(R.layout.pager_item_portrait, container, false);
+            Log.e("AdapterCalling","Herr");
+
+            PhotoView photoViewOne = (PhotoView)itemView.findViewById(R.id.photoView1);
+            byte[] imageForViewOne = null;
+            byte[] imageForViewTwo = null;
+            String photo1Location = null;
+
+            int Mul = position;
+           // int Nul = Mul+1;
+
+            if(Mul < issuePagesLocations.size()) {
+                photo1Location = issuePagesLocations.get(Mul);
+            }
+
+            photoViewOne.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    if(share.getVisibility() == View.VISIBLE && bookmark.getVisibility() == View.VISIBLE){
+                        share.setVisibility(View.GONE);
+                        bookmark.setVisibility(View.GONE);
+                        previewImagesLayout.setVisibility(View.GONE);
+                    }else{
+                        share.setVisibility(View.VISIBLE);
+                        bookmark.setVisibility(View.VISIBLE);
+                        previewImagesLayout.setVisibility(View.VISIBLE);
+                    }
+
+                }
+            });
+
+
+            Log.e("Document Key",documentKey+"SIZE"+issuePagesLocations.size());
+
+
+            if(photo1Location != null){
+
+                imageForViewOne =  decryptFile(photo1Location,documentKey);
+
+
+
+                BitmapWorkerTask bitmapWorkerTaskOne = new BitmapWorkerTask(photoViewOne,imageForViewOne);
+                bitmapWorkerTaskOne.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+            }else{
+
+                photoViewOne.setBackgroundResource(R.drawable.placeholderissueview);
+            }
+            photoViewOne.setScaleType(ImageView.ScaleType.FIT_XY);
+            container.addView(itemView,ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            return itemView;
+
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            container.removeView((View) object);
+        }
+
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            return view == object;
+        }
+
+
+
+    }
+    @Override
+    public void onBackPressed() {
+        // your code.
+        SELECTEDPAGESTORESESSION = 0;
+
+        super.onBackPressed();
+    }
 
 }
