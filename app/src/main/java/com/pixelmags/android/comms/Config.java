@@ -37,9 +37,17 @@ public class Config
 //    public static final String Magazine_Title = "TrailBike & Enduro Magazine (TBM)";
 //    public static final String Bundle_ID = "com.pixelmags.google.managed.extreme-trailbike-enduro-mag";
 
-    public static final String Magazine_Number = "825";
+    //public static final String Magazine_Number = "1703";
+
+    /*IRONMAN*/
+     public static final String Magazine_Number = "825";
+
     public static final String Magazine_Title = "Iron Man Magazine";
+   // public static final String Bundle_ID = "com.pixelmags.androidbranded.model-car-racing";
+
+    //IRON MAN
     public static final String Bundle_ID = "com.pixelmags.reader.managed.google.ironman-iron-man-mag";
+
 
 
 //    public static final String Bundle_ID = "com.pixelmags.reader.managed.android-amazon.sandiego-premier";

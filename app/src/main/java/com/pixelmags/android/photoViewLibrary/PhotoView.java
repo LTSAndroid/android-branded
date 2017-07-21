@@ -30,8 +30,9 @@ import android.widget.ImageView;
  * is accomplished
  */
 public class PhotoView extends ImageView {
+    int i = 0;
 
-    private PhotoViewAttacher attacher;
+    PhotoViewAttacher attacher;
     private ScaleType pendingScaleType;
 
     public PhotoView(Context context) {

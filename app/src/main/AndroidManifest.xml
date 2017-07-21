@@ -54,7 +54,11 @@
             android:name="com.pixelmags.android.ui.LoginActivity"
             android:label="@string/title_activity_login"
             android:windowSoftInputMode="adjustResize|stateVisible" />
-        <activity android:name="com.pixelmags.android.IssueView.NewIssueView" />
+        <activity android:name="com.pixelmags.android.IssueView.NewIssueView"
+            android:windowSoftInputMode="adjustPan"
+            android:configChanges="keyboard|keyboardHidden|orientation">
+
+        </activity>
 
         <service
             android:name=".service.PMService"
