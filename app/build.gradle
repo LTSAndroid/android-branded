@@ -13,7 +13,15 @@ buildscript {
 apply plugin: 'io.fabric'
 
 repositories {
-    maven { url 'https://maven.fabric.io/public' }
+    maven {
+
+        url 'https://maven.fabric.io/public'
+
+    }
+
+    maven {
+        url "https://jitpack.io"
+    }
 }
 
 
@@ -22,21 +30,19 @@ android {
     compileSdkVersion 23
     buildToolsVersion '25.0.0'
     defaultConfig {
-        applicationId 'com.pixelmags.androidbranded.ironman.ironman'
-//        applicationId 'com.pixelmags.androidbranded.pixelmagsapp.ironman.testing'
-//        applicationId 'com.pixelmags.androidbranded.pixelmagsapp.appfive'
+        applicationId 'com.pixelmags.androidbranded.phil.steele.phil.steele.college.preview'
         minSdkVersion 15
         targetSdkVersion 21
 //        versionCode 4
 //        versionName "1.3"
-        versionCode 4
-        versionName "1.2"
+        versionCode 2
+        versionName "2.0"
         multiDexEnabled  true
     }
     buildTypes {
 
         release {
-            debuggable false
+            debuggable true
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -66,5 +72,10 @@ dependencies {
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.jakewharton:butterknife:8.1.0'
     compile "com.android.support:design:23.4.0"
+    compile 'com.github.ppamorim:dragger:1.2'
+    compile 'com.jakewharton:butterknife:8.4.0'
+    compile 'org.bluecabin.textoo:textoo:1.0.1'
+
+
 
 }

@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- App Name -->
     <!--<string name="app_name">PixelMags app</string>-->
@@ -6,7 +6,7 @@
     <!--<string name="app_name">TrailBike &amp; Enduro Magazine (TBM)</string>-->
     <!--<string name="app_name">Victoria</string>-->
     <!--<string name="app_name">Cooking with Paula Deen Magazine</string>-->
-    <string name="app_name">Iron Man Magazine</string>
+    <string name="app_name" >Phil Steele\'s College Mag</string>
     <!--<string name="app_name">Magazine Test Ironman</string>-->
 
     <!-- Generic - to re-use -->
@@ -167,7 +167,7 @@
     <string name="queue_initiation_title">Issue download is in queue!</string>
     <string name="queue_initiation_message">You can view your Issue once download start.</string>
 
-    <string name="logout">Are you sure you want to exit from Iron Man Magazine?</string>
+    <string name="logout" >Are you sure you want to exit from Phil Steele\'s College Mag.?</string>
 
     <string name="termsCondition"><a href="http://www.pixelmags.com/t+c/current/">View Terms &amp; Condition</a></string>
     <string name="no_internet">Uh oh! \n\nLooks like you don\'t have an internet connection. Please connect to  network and try again.</string>

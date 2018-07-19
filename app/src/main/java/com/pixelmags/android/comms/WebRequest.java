@@ -3,7 +3,6 @@ package com.pixelmags.android.comms;
 import android.util.Log;
 
 import com.pixelmags.android.storage.UserPrefs;
-
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

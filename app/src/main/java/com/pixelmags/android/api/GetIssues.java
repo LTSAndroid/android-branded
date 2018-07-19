@@ -87,11 +87,11 @@ public class GetIssues extends WebRequest {
         }
 */
 
-        Log.d(TAG,"All Issue received from the API is : "+getIssuesParserParser.allIssuesList.toString());
+     //   Log.d(TAG,"All Issue received from the API is : "+getIssuesParserParser.allIssuesList.toString());
 
 
 
-        Log.e("ArrayListSize", getIssuesParserParser.allIssuesList.size()+"");
+        //Log.e("ArrayListSize", getIssuesParserParser.allIssuesList.size()+"");
         getIssuesParserParser.allIssuesList = DownloadThumbnails.DownloadAllThumbnailData(getIssuesParserParser.allIssuesList);
 
 

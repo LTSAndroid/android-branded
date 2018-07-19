@@ -2,22 +2,62 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <com.pixelmags.android.photoViewLibrary.PhotoView
-        android:id="@+id/photoView1"
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_weight="1"
-        android:background="@drawable/placeholderissueview"
-        android:layout_height="match_parent" />
-    <android.support.v4.widget.Space
-        android:layout_width="2dp"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:id="@+id/parent1"
+            android:layout_height="match_parent">
+            <com.pixelmags.android.photoViewLibrary.PhotoView
+                android:id="@+id/photoView1"
+                android:layout_width="match_parent"
+                android:background="@drawable/placeholderissueview"
+                android:layout_weight="2"
+                android:layout_height="match_parent" />
+
+        </RelativeLayout>
+
+
+
+
+
+    </LinearLayout>
+
+
+
+
+
+
+
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:id="@+id/parent2"
+            android:layout_height="match_parent">
+
+
 
     <com.pixelmags.android.photoViewLibrary.PhotoView
         android:id="@+id/photoView2"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:background="@drawable/placeholderissueview"
-        android:layout_weight="1"
         android:layout_height="match_parent" />
+        </RelativeLayout>
+
+
+
+
+    </LinearLayout>
+
 
 
 </LinearLayout>

@@ -8,6 +8,12 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -22,8 +28,16 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.URLSpan;
+import android.text.util.Linkify;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -31,21 +45,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.crashlytics.android.Crashlytics;
+import com.github.ppamorim.dragger.DraggerPosition;
 import com.pixelmags.android.IssueView.decode.IssueDecode;
+import com.pixelmags.android.bean.RegionBean;
 import com.pixelmags.android.comms.Config;
 import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
 import com.pixelmags.android.datamodels.Bookmark;
 import com.pixelmags.android.datamodels.PreviewImage;
 import com.pixelmags.android.datamodels.SingleDownloadIssueTracker;
+import com.pixelmags.android.dragger.ImageActivity;
 import com.pixelmags.android.photoViewLibrary.PhotoView;
 import com.pixelmags.android.pixelmagsapp.MainActivity;
 import com.pixelmags.android.pixelmagsapp.R;
@@ -54,17 +72,21 @@ import com.pixelmags.android.storage.BookmarkDataSet;
 import com.pixelmags.android.storage.SingleIssueDownloadDataSet;
 import com.pixelmags.android.storage.SingleIssuePreviewDataSet;
 import com.pixelmags.android.util.BaseApp;
-
+import org.bluecabin.textoo.LinksHandler;
+import org.bluecabin.textoo.Textoo;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
-
 import io.fabric.sdk.android.Fabric;
-
 import static java.lang.Character.digit;
 
 /**
@@ -100,9 +122,7 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
     private static String ORIENTATIONIDENTIFICATIONFLAG = "";
     private static String DEVICETYPE = "";
     public static  int SELECTEDPAGESTORESESSION= 0;
-
-
-
+    private static ArrayList<String> issueRegionLocations;
 
 
     public static byte[] decryptFile(String path, String documentKey){
@@ -170,23 +190,18 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
         setContentView(R.layout.fragment_pager);
         Fabric.with(this, new Crashlytics());
         contextAdapter = this;
-
+        issueRegionLocations = new ArrayList<>();
         previewImagesLayout = (LinearLayout) findViewById(R.id.issuePagesPreviewImageLayout);
-
         share = (ImageView) findViewById(R.id.share);
         share.setOnClickListener(this);
-      //  SELECTEDPAGESTORESESSION = 0;
-
         bookmark = (ImageView) findViewById(R.id.bookmark);
         bookmark.setOnClickListener(this);
         issueViewOpen = true;
         currentPageNumber = 0;
         issueID = getIntent().getExtras().getString("issueId");
         documentKey = getIntent().getExtras().getString("documentKey");
-
         // To See Preview Images
         loadPreviewImages(NewIssueView.this);
-
         AllDownloadsDataSet mDownloadReader = new AllDownloadsDataSet(BaseApp.getContext());
         allDownloadsTracker = mDownloadReader.getAllDownloadsTrackerForIssue(mDownloadReader.getReadableDatabase(), issueID);
         mDownloadReader.close();
@@ -195,7 +210,11 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
         issuePagesLocations = new ArrayList<String>();
         if(allDownloadsTracker != null) {
 
+
             SingleIssueDownloadDataSet mDbDownloadTableReader = new SingleIssueDownloadDataSet(BaseApp.getContext());
+
+            Log.e("TableSelected",allDownloadsTracker.uniqueIssueDownloadTable);
+
 
             ArrayList<SingleDownloadIssueTracker> allPagesOfIssue = mDbDownloadTableReader.getUniqueSingleIssueDownloadTable(mDbDownloadTableReader.getReadableDatabase(), allDownloadsTracker.uniqueIssueDownloadTable);
             mDbDownloadTableReader.close();
@@ -206,10 +225,18 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
                 {
                     String finalPath = allPagesOfIssue.get(i).downloadedLocationPdfLarge;
                     issuePagesLocations.add(finalPath);
+                    issueRegionLocations.add(String.valueOf(allPagesOfIssue.get(i).regionJSON));
+                    Log.e("Regions ======>",String.valueOf(allPagesOfIssue.get(i).regionJSON));
+
                 }
             }
 
         }
+
+
+
+
+
 
         boolean tabletSize = getResources().getBoolean(R.bool.isTablet);
 
@@ -315,6 +342,25 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
         } else {
 
             if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+
+               /* if(issuePagesLocations.size()%2 ==0){
+
+                }else{
+                    Log.e("Converted to Even ","Success");
+
+                    ArrayList<String> objLocations = new ArrayList<>();
+                    ArrayList<String> objRegions = new ArrayList<>();
+                    objLocations.add("");
+                    objRegions.add("");
+
+
+                    issuePagesLocations.addAll(objLocations);
+                    issueRegionLocations.addAll(objRegions);
+
+
+                }*/
+
+
                 Log.e("First View Page",""+SELECTEDPAGESTORESESSION);
                 Log.e("Mobile LandScape Mode ##","Success");
                 ORIENTATIONIDENTIFICATIONFLAG = "1";
@@ -347,54 +393,54 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
                 });
                 Log.e("Page Number",""+SELECTEDPAGESTORESESSION);
 
-                 if(SELECTEDPAGESTORESESSION ==0){
-                     viewPager.postDelayed(new Runnable() {
+                if(SELECTEDPAGESTORESESSION ==0){
+                    viewPager.postDelayed(new Runnable() {
 
-                         @Override
-                         public void run() {
-                             viewPager.setCurrentItem(0);
-                         }
-                     }, 250);
+                        @Override
+                        public void run() {
+                            viewPager.setCurrentItem(0);
+                        }
+                    }, 250);
 
-                 }else{
-                     if (SELECTEDPAGESTORESESSION % 2 == 0) {
+                }else{
+                    if (SELECTEDPAGESTORESESSION % 2 == 0) {
 
-                         final int M = SELECTEDPAGESTORESESSION / 2;
+                        final int M = SELECTEDPAGESTORESESSION / 2;
 
-                         Log.e("SELECTED POSITION == >", M + "");
-                         viewPager.postDelayed(new Runnable() {
+                        Log.e("SELECTED POSITION == >", M + "");
+                        viewPager.postDelayed(new Runnable() {
 
-                             @Override
-                             public void run() {
-                                 Log.e("Finally position",""+M);
-                                 viewPager.setCurrentItem(M);
-                                 SELECTEDPAGESTORESESSION = M;
+                            @Override
+                            public void run() {
+                                Log.e("Finally position",""+M);
+                                viewPager.setCurrentItem(M);
+                                SELECTEDPAGESTORESESSION = M;
 
-                             }
-                         }, 250);
-
-
-
-                     } else {
-                         float M = SELECTEDPAGESTORESESSION / 2;
-                         double k = M + 0.5;
-                         final int kS = (int) k;
-
-                         viewPager.postDelayed(new Runnable() {
-
-                             @Override
-                             public void run() {
-                                 viewPager.setCurrentItem(kS);
-                                 SELECTEDPAGESTORESESSION = kS;
+                            }
+                        }, 250);
 
 
-                             }
-                         }, 250);
+
+                    } else {
+                        float M = SELECTEDPAGESTORESESSION / 2;
+                        double k = M + 0.5;
+                        final int kS = (int) k;
+
+                        viewPager.postDelayed(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                viewPager.setCurrentItem(kS);
+                                SELECTEDPAGESTORESESSION = kS;
 
 
-                     }
+                            }
+                        }, 250);
 
-                 }
+
+                    }
+
+                }
 
 
 
@@ -448,7 +494,7 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
                             SELECTEDPAGESTORESESSION = M;
 
 
-                           // SELECTEDPAGESTORESESSION = 0;
+                            // SELECTEDPAGESTORESESSION = 0;
 
                         }
                     }, 250);
@@ -494,20 +540,22 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
 
         //exportDB();
 
+        //exportDB();
+
 
     }
 
 
 
-   /* private void exportDB(){
+  /*  private void exportDB(){
 
 
         File sd = Environment.getExternalStorageDirectory();
         File data = Environment.getDataDirectory();
         FileChannel source=null;
         FileChannel destination=null;
-        String currentDBPath = "/data/data/"+ "com.pixelmags.android.pixelmagsapp" +"/databases/"+"BrandedDatabase.db";
-        String backupDBPath = SAMPLE_DB_NAME;
+        String currentDBPath = "/data/"+ getPackageName() +"/databases/"+"BrandedDatabase.db";
+        String backupDBPath = "BackUp.db";
         File currentDB = new File(data, currentDBPath);
         File backupDB = new File(sd, backupDBPath);
         try {
@@ -517,6 +565,7 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
             source.close();
             destination.close();
             Toast.makeText(this, "DB Exported!", Toast.LENGTH_LONG).show();
+
         } catch(IOException e) {
             e.printStackTrace();
         }
@@ -584,10 +633,10 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
 
 
 
-   //Slider
+    //Slider
 
 
-    public static class SwipeFragment extends Fragment implements View.OnClickListener {
+   /* public static class SwipeFragment extends Fragment implements View.OnClickListener {
 
         IssueImagePinchZoom imageView;
         private byte[] bitmap;
@@ -627,7 +676,7 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
 
             position = bundle.getInt("position");
 
-           // Log.d(TAG,"Issue page locations is : " +position);
+            // Log.d(TAG,"Issue page locations is : " +position);
 
 //            Bitmap imageForView = null;
             byte[] imageForView = null;
@@ -674,18 +723,23 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
 
         }
 
-    }
+    }*/
 
     static class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
         private final WeakReference<ImageView> imageViewReference;
         private byte[] bitmap;
         private Bitmap bitmapImage;
+        private ArrayList<RegionBean> beanList;
 
-        public BitmapWorkerTask(ImageView imageView,byte[] bitmap) {
+
+        public BitmapWorkerTask(ImageView imageView,byte[] bitmap,ArrayList<RegionBean>allRegion) {
             // Use a WeakReference to ensure the ImageView can be garbage collected
             imageViewReference = new WeakReference<ImageView>(imageView);
             this.bitmap = bitmap;
+            this.beanList = allRegion;
+
         }
+
 
         // Decode image in background.
         @Override
@@ -709,8 +763,49 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
             if (imageViewReference != null && bitmap != null) {
                 final ImageView imageView = imageViewReference.get();
                 if (imageView != null) {
-                    imageView.setImageBitmap(bitmapImage);
+                    //Bitmap tempBitmap = null;
+
+                     /*if(beanList.size()>0) {
+                         for (int M = 0; M < beanList.size(); M++) {
+                             int X1 = (int) Double.parseDouble(beanList.get(M).getRegion().get(0)) * 100;
+                             int Y1 = (int) Double.parseDouble(beanList.get(M).getRegion().get(1)) * 100;
+                             int X2 = (int) Double.parseDouble(beanList.get(M).getRegion().get(2)) * 100;
+                             int Y2 = (int) Double.parseDouble(beanList.get(M).getRegion().get(3)) * 100;
+                             Paint paint = new Paint();
+                             paint.setStyle(Paint.Style.FILL);
+                             paint.setAntiAlias(false);
+                             paint.setColor(Color.RED);
+                             //Bitmap myBitmap = bitmap;
+                             //Log.e("Bitmap Format ==>",myBitmap.toString());
+
+                             tempBitmap = Bitmap.createBitmap(bitmapImage.getWidth(), bitmapImage.getHeight(), Bitmap.Config.RGB_565);
+                             Canvas tempCanvas = new Canvas(tempBitmap);
+
+//Draw the image bitmap into the cavas
+                             tempCanvas.drawBitmap(bitmapImage, 0, 0, null);
+
+//Draw everything else you want into the canvas, in this example a rectangle with rounded edges
+                             tempCanvas.drawRoundRect(new RectF(X1, Y1, X2, Y2), 2, 2, paint);
+
+
+                         }
+
+                        imageView.setImageBitmap(tempBitmap);
+                         //imageView.setImageDrawable(new BitmapDrawable(getResources(), tempBitmap));
+
+
+                     }else{*/
+                         imageView.setImageBitmap(bitmapImage);
+                    // }
+
+
+
+                  //  imageView.setImageBitmap(bitmapImage);
                 }
+
+
+
+
             }
         }
     }
@@ -737,7 +832,7 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
 
             issueImage = bitmap;
 
-           return null;
+            return null;
         }
 
         // Once complete, see if ImageView is still around and set bitmap.
@@ -949,8 +1044,8 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
 
                 bookmarkPage.dismiss();
                 int pos = (int) view.getTag();
-                SwipeFragment fragment = new SwipeFragment();
-                fragment.newInstance(bookmarkArrayList.get(pos).pageNumber);
+              /*  SwipeFragment fragment = new SwipeFragment();
+                fragment.newInstance(bookmarkArrayList.get(pos).pageNumber);*/
                 currentPageNumber = bookmarkArrayList.get(pos).pageNumber;
                 viewPager.setCurrentItem(bookmarkArrayList.get(pos).pageNumber);
 
@@ -1063,65 +1158,65 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
 
 //                        if(previewImage.previewImageBitmap != null) {
 
-                            previewImageView = new ImageView(activity);
-                            previewImageView.setId(i);
+                        previewImageView = new ImageView(activity);
+                        previewImageView.setId(i);
 //                            imageView.setPadding(2, 2, 5, 2);
-                            previewImageView.setPadding(10, 30, 10, 8);
-                            previewImageView.setMinimumWidth(previewImage.imageWidth);
-                            previewImageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                            Log.d(TAG,"Preview Image URL is : "+previewImage.previewImageURL);
-                            Glide.with(NewIssueView.this)
-                                    .load(previewImage.previewImageURL)
-                                    .crossFade()
-                                    .override(previewImage.imageWidth,previewImage.imageHeight)
-                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                    .into(previewImageView);
+                        previewImageView.setPadding(10, 30, 10, 8);
+                        previewImageView.setMinimumWidth(previewImage.imageWidth);
+                        previewImageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                        Log.d(TAG,"Preview Image URL is : "+previewImage.previewImageURL);
+                        Glide.with(NewIssueView.this)
+                                .load(previewImage.previewImageURL)
+                                .crossFade()
+                                .override(previewImage.imageWidth,previewImage.imageHeight)
+                                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                .into(previewImageView);
 
 //                            previewImageView.setImageBitmap(previewImage.previewImageBitmap);
-                            previewImageView.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    currentPageNumber = view.getId();
-                                    Log.d(TAG,"Current Page Number of on click image is : "+currentPageNumber);
-                                    SwipeFragment fragment = new SwipeFragment();
-                                    fragment.newInstance(currentPageNumber);
+                        previewImageView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                currentPageNumber = view.getId();
+                                Log.d(TAG,"Current Page Number of on click image is : "+currentPageNumber);
+                                /*SwipeFragment fragment = new SwipeFragment();
+                                fragment.newInstance(currentPageNumber);*/
 
-                                    int k = 0;
-                                    Log.e("CP ==>",currentPageNumber+"");
+                                int k = 0;
+                                Log.e("CP ==>",currentPageNumber+"");
 
-                                    if(!ORIENTATIONIDENTIFICATIONFLAG.equalsIgnoreCase("")){
-                                     if(ORIENTATIONIDENTIFICATIONFLAG.equalsIgnoreCase("1")){
-                                         if(currentPageNumber % 2 == 0){
-                                             Log.e("Even","Number");
-                                             int M =  currentPageNumber/2;
-                                             viewPager.setCurrentItem(M);
+                                if(!ORIENTATIONIDENTIFICATIONFLAG.equalsIgnoreCase("")){
+                                    if(ORIENTATIONIDENTIFICATIONFLAG.equalsIgnoreCase("1")){
+                                        if(currentPageNumber % 2 == 0){
+                                            Log.e("Even","Number");
+                                            int M =  currentPageNumber/2;
+                                            viewPager.setCurrentItem(M);
 
-                                         }else{
-                                             Log.e("Odd","Number");
-                                             float Mp =  currentPageNumber/2;
-                                             double S = Mp+0.5;
-                                             int kS = (int)S;
-                                             viewPager.setCurrentItem(kS);
-                                         }
+                                        }else{
+                                            Log.e("Odd","Number");
+                                            float Mp =  currentPageNumber/2;
+                                            double S = Mp+0.5;
+                                            int kS = (int)S;
+                                            viewPager.setCurrentItem(kS);
+                                        }
 
-                                     }else{
-                                         viewPager.setCurrentItem(currentPageNumber);
-                                     }
-
-                                    }
-
-
-
-                                    previewImagesLayout.setVisibility(View.GONE);
-                                    if(share.getVisibility() == View.VISIBLE && bookmark.getVisibility() == View.VISIBLE){
-                                        share.setVisibility(View.GONE);
-                                        bookmark.setVisibility(View.GONE);
+                                    }else{
+                                        viewPager.setCurrentItem(currentPageNumber);
                                     }
 
                                 }
-                            });
 
-                            previewImagesLayout.addView(previewImageView);
+
+
+                                previewImagesLayout.setVisibility(View.GONE);
+                                if(share.getVisibility() == View.VISIBLE && bookmark.getVisibility() == View.VISIBLE){
+                                    share.setVisibility(View.GONE);
+                                    bookmark.setVisibility(View.GONE);
+                                }
+
+                            }
+                        });
+
+                        previewImagesLayout.addView(previewImageView);
 
 //                        }
                     }
@@ -1139,13 +1234,13 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
 
 
 
-    public class ImageFragmentPagerAdapter extends FragmentStatePagerAdapter {
+   /* public class ImageFragmentPagerAdapter extends FragmentStatePagerAdapter {
 
-        /*
+        *//*
             FragmentStatePagerAdapter more useful when there are a large number of pages, working more like a list view. When pages are not visible to the user,
             their entire fragment may be destroyed, only keeping the saved state of that fragment. This allows the pager to hold on to much less
             memory associated with each visited page as compared to FragmentPagerAdapter at the cost of potentially more overhead when switching between pages.
-         */
+         *//*
 
         public ImageFragmentPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -1189,12 +1284,12 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
 
         }
 
-    }
+    }*/
 
 
 
 
-    static class SamplePagerAdapterLandscape extends PagerAdapter {
+    class SamplePagerAdapterLandscape extends PagerAdapter {
 
 		/*private static final int[] sDrawables = { R.drawable.wallpaper, R.drawable.wallpaper, R.drawable.wallpaper,
 				R.drawable.wallpaper, R.drawable.wallpaper, R.drawable.wallpaper };*/
@@ -1207,32 +1302,170 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
 
         @Override
         public int getCount() {
+
+
             return getItemsDivideCount();
         }
+
+       /* public void link(TextView textView,String myString ){
+            String htmlSource = "Subscribe for free <a href='http://www.google.com'>https://bitbucket.org/</a>";
+            Spanned linksLoggingText = Textoo
+                    .config(htmlSource)
+                    .parseHtml()
+                    .addLinksHandler(new LinksHandler() {
+                        @Override
+                        public boolean onClick(View view, String url) {
+                            Log.i("MyActivity", "Linking to google...");
+                            return false; // event not handled.  Continue default processing i.e. link to google
+                        }
+                    })
+                    .apply();
+            textView.setText(linksLoggingText);
+        }
+*/
+
+
+
+
+
+
+        public void addDynamicTextOne(ArrayList<RegionBean> beanList, Context c, RelativeLayout parent) {
+
+            Log.e("==> Size",beanList.size()+"");
+
+
+            for (int M = 0; M < beanList.size(); M++) {
+                final TextView links = new TextView(c);
+                links.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                        getResources().getDimension(R.dimen.result_font));
+                links.setId(M + 1);
+
+                final RelativeLayout.LayoutParams params =
+                        new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,
+                                RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+                //<a href='http://www.google.com'>https://bitbucket.org</a>
+                // links.setText("<a href="+"'"+beanList.get(M).getUrl()+"'"+">"+beanList.get(M).getUrl()+"</a>");
+
+                String htmlSource = "<a href='"+beanList.get(M).getUrl()+"'>"+beanList.get(M).getUrl()+"</a>";
+                Spanned linksLoggingText = Textoo
+                        .config(htmlSource)
+                        .parseHtml()
+                        .apply();
+                links.setText(linksLoggingText);
+
+                Double left =  Double.parseDouble(beanList.get(M).getRegion().get(0))*100;
+                Double right =  Double.parseDouble(beanList.get(M).getRegion().get(1))*100;
+                Double Top =  Double.parseDouble(beanList.get(M).getRegion().get(2))*1000;
+                Double bottom =  Double.parseDouble(beanList.get(M).getRegion().get(3))*10;
+
+                //links.setPadding((int) Math.round(left),(int)Math.round(Top),(int) Math.round(right),(int)Math.round(bottom));
+
+                Log.e("Left",""+left);
+                Log.e("Right",""+right);
+                Log.e("Top",""+Top);
+                Log.e("Bottom",""+bottom);
+
+
+
+                params.leftMargin = (int) Math.round(left);
+                params.rightMargin = (int) Math.round(right);
+                params.topMargin = (int) Math.round(Top);
+                params.bottomMargin = (int) Math.round(bottom);
+
+                 /*params.addRule(RelativeLayout.BELOW);*/
+
+                final int index = M;
+                links.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+
+                        Log.i("TAG", "The index is" + "Index ==> "+index+links.getText().toString());
+                        startDraggerActivity(DraggerPosition.TOP,links.getText().toString());
+                    }
+                });
+                //  links.setLayoutParams(params);
+
+                parent.addView(links, params);
+
+
+            }
+        }
+
+
+
+        public ArrayList<RegionBean> getRegiondatas(String Data){
+            ArrayList<RegionBean> beanList = new ArrayList<RegionBean>();
+            try {
+                JSONArray arrayRes = new JSONArray(Data);
+                for(int i=0;i<arrayRes.length();i++){
+                    JSONObject o = arrayRes.getJSONObject(i);
+                    RegionBean bean = new RegionBean();
+                    ArrayList<String> regions = new ArrayList<>();
+                    bean.setId(o.getString("id"));
+                    for(int k=0;k<o.getJSONArray("region").length();k++){
+                        regions.add(o.getJSONArray("region").get(k).toString());
+                    }
+                    bean.setRegion(regions);
+                    bean.setTitle(o.getString("title"));
+                    bean.setType(o.getString("type"));
+                    bean.setUrl(o.getString("url"));
+
+                    bean.setRegion(regions);
+                    beanList.add(bean);
+
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+            return  beanList;
+        }
+
+
+
+
+
+
+
+
+
+
 
         @Override
         public View instantiateItem(ViewGroup container, int position) {
             ViewGroup itemView = (ViewGroup) mLayoutInflater.inflate(R.layout.pager_item_landscape, container, false);
             Log.e("AdapterCalling",""+position);
-
+            RelativeLayout parent1 = (RelativeLayout)itemView.findViewById(R.id.parent1);
+            RelativeLayout parent2 = (RelativeLayout)itemView.findViewById(R.id.parent2);
             PhotoView photoViewOne = (PhotoView)itemView.findViewById(R.id.photoView1);
             PhotoView photoViewTwo = (PhotoView)itemView.findViewById(R.id.photoView2);
             byte[] imageForViewOne = null;
             byte[] imageForViewTwo = null;
-
             String photo2Location = null;
             String photo1Location = null;
 
-            int Mul = position*2;
-            int Nul = Mul+1;
+            final int Mul = position*2;
+            final int Nul = Mul+1;
 
             if(Mul < issuePagesLocations.size()) {
+
+                Log.e("Location Index MUL==>",Mul+"");
+
                 photo1Location = issuePagesLocations.get(Mul);
+                //addDynamicTextOne(getRegiondatas(issueRegionLocations.get(Mul).toString()),container.getContext(),parent1);
+
+
             }
 
             if(Nul < issuePagesLocations.size()) {
+                Log.e("Location Index NUL==>",Nul+"");
                 photo2Location = issuePagesLocations.get(Nul);
+               // addDynamicTextOne(getRegiondatas(issueRegionLocations.get(Nul).toString()),container.getContext(),parent2);
             }
+
+
+
 
 
 
@@ -1259,6 +1492,8 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
                 @Override
                 public void onClick(View view) {
 
+                   /* startDraggerActivity(DraggerPosition.TOP);*/
+
                     if(share.getVisibility() == View.VISIBLE && bookmark.getVisibility() == View.VISIBLE){
                         share.setVisibility(View.GONE);
                         bookmark.setVisibility(View.GONE);
@@ -1268,30 +1503,58 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
                         bookmark.setVisibility(View.VISIBLE);
                         previewImagesLayout.setVisibility(View.VISIBLE);
                     }
-
                 }
             });
+
+
+            photoViewOne.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                   /* startDraggerActivity(DraggerPosition.TOP);*/
+
+                    if(share.getVisibility() == View.VISIBLE && bookmark.getVisibility() == View.VISIBLE){
+                        share.setVisibility(View.GONE);
+                        bookmark.setVisibility(View.GONE);
+                        previewImagesLayout.setVisibility(View.GONE);
+                    }else{
+                        share.setVisibility(View.VISIBLE);
+                        bookmark.setVisibility(View.VISIBLE);
+                        previewImagesLayout.setVisibility(View.VISIBLE);
+                    }
+                }
+            });
+
 
             Log.e("Document Key",documentKey+"SIZE"+issuePagesLocations.size());
 
 
-            if(photo1Location != null &&photo2Location != null){
 
+
+
+
+            if(photo1Location != null){
                 imageForViewOne =  decryptFile(photo1Location,documentKey);
-                imageForViewTwo =  decryptFile(photo2Location,documentKey);
-
-
-
-                BitmapWorkerTask bitmapWorkerTaskOne = new BitmapWorkerTask(photoViewOne,imageForViewOne);
-                BitmapWorkerTask bitmapWorkerTaskTwo = new BitmapWorkerTask(photoViewTwo,imageForViewTwo);
+                BitmapWorkerTask bitmapWorkerTaskOne = new BitmapWorkerTask(photoViewOne,imageForViewOne,getRegiondatas(issueRegionLocations.get(position).toString()));
                 bitmapWorkerTaskOne.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                bitmapWorkerTaskTwo.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
+            else{
 
+                photoViewOne.setVisibility(View.GONE);
+                //photoViewOne.setBackgroundResource(R.drawable.placeholderissueview);
+
+            }
+
+            if(photo2Location != null){
+                imageForViewTwo =  decryptFile(photo2Location,documentKey);
+                BitmapWorkerTask bitmapWorkerTaskTwo = new BitmapWorkerTask(photoViewTwo,imageForViewTwo,getRegiondatas(issueRegionLocations.get(position).toString()));
+                bitmapWorkerTaskTwo.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }else{
 
-                photoViewOne.setBackgroundResource(R.drawable.placeholderissueview);
-                photoViewTwo.setBackgroundResource(R.drawable.placeholderissueview);
+                photoViewTwo.setVisibility(View.GONE);
+                //photoViewTwo.setBackgroundResource(R.drawable.placeholderissueview);
             }
+
             photoViewOne.setScaleType(ImageView.ScaleType.FIT_XY);
             photoViewTwo.setScaleType(ImageView.ScaleType.FIT_XY);
             container.addView(itemView,ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -1331,7 +1594,11 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
     }
 
 
-    static class SamplePagerAdapterPortrait extends PagerAdapter {
+
+
+
+
+    class SamplePagerAdapterPortrait extends PagerAdapter {
 
 		/*private static final int[] sDrawables = { R.drawable.wallpaper, R.drawable.wallpaper, R.drawable.wallpaper,
 				R.drawable.wallpaper, R.drawable.wallpaper, R.drawable.wallpaper };*/
@@ -1347,22 +1614,196 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
             return issuePagesLocations.size();
         }
 
-        @Override
-        public View instantiateItem(ViewGroup container, int position) {
-            ViewGroup itemView = (ViewGroup) mLayoutInflater.inflate(R.layout.pager_item_portrait, container, false);
-            Log.e("AdapterCalling","Herr");
+      /*  public void link(TextView textView,String myString ){
 
+
+            String htmlSource = " Subscribe for free <a href='http://www.google.com'>https://bitbucket.org</a>";
+            Spanned linksLoggingText = Textoo
+                    .config(htmlSource)
+                    .parseHtml()
+                    .addLinksHandler(new LinksHandler() {
+                        @Override
+                        public boolean onClick(View view, String url) {
+                            Log.i("MyActivity", "Linking to google...");
+                            return false; // event not handled.  Continue default processing i.e. link to google
+                        }
+                    })
+                    .apply();
+            textView.setText(linksLoggingText);
+        }
+*/
+      /*  public  float pxFromDp(float dp, Context mContext) {
+            return dp * mContext.getResources().getDisplayMetrics().density;
+        }*/
+
+
+        public ArrayList<RegionBean> getRegiondatas(String Data){
+            ArrayList<RegionBean> beanList = new ArrayList<RegionBean>();
+            try {
+                JSONArray arrayRes = new JSONArray(Data);
+                for(int i=0;i<arrayRes.length();i++){
+                    JSONObject o = arrayRes.getJSONObject(i);
+                    RegionBean bean = new RegionBean();
+                    ArrayList<String> regions = new ArrayList<>();
+                    bean.setId(o.getString("id"));
+                    for(int k=0;k<o.getJSONArray("region").length();k++){
+                        regions.add(o.getJSONArray("region").get(k).toString());
+                    }
+                    bean.setRegion(regions);
+                    bean.setTitle(o.getString("title"));
+                    bean.setType(o.getString("type"));
+                    bean.setUrl(o.getString("url"));
+
+                    bean.setRegion(regions);
+                    beanList.add(bean);
+
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+            return  beanList;
+        }
+
+/*
+
+        public void addDynamicText(ArrayList<RegionBean> beanList, Context c, RelativeLayout parent) {
+
+            Log.e("==> Size",beanList.size()+"");
+
+
+            for (int M = 0; M < beanList.size(); M++) {
+                final TextView links = new TextView(c);
+                links.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                        getResources().getDimension(R.dimen.result_font));
+                links.setId(M + 1);
+
+                final RelativeLayout.LayoutParams params =
+                        new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,
+                                RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+                //<a href='http://www.google.com'>https://bitbucket.org</a>
+                // links.setText("<a href="+"'"+beanList.get(M).getUrl()+"'"+">"+beanList.get(M).getUrl()+"</a>");
+
+                String htmlSource = "<a href='"+beanList.get(M).getUrl()+"'>"+beanList.get(M).getUrl()+"</a>";
+                Spanned linksLoggingText = Textoo
+                        .config(htmlSource)
+                        .parseHtml()
+                        .apply();
+                links.setText(linksLoggingText);
+
+                Double left =  Double.parseDouble(beanList.get(M).getRegion().get(0))*100;
+                Double right =  Double.parseDouble(beanList.get(M).getRegion().get(1))*100;
+                Double Top =  Double.parseDouble(beanList.get(M).getRegion().get(2))*100;
+                Double bottom =  Double.parseDouble(beanList.get(M).getRegion().get(3))*100;
+
+                //links.setPadding((int) Math.round(left),(int)Math.round(Top),(int) Math.round(right),(int)Math.round(bottom));
+
+                Log.e("Left",""+left*2);
+                Log.e("Right",""+right*2);
+                Log.e("Top",""+Top*2);
+                Log.e("Bottom",""+bottom*2);
+
+
+
+                params.leftMargin = (int) Math.round(left)*2;
+                params.rightMargin = (int) Math.round(right)*2;
+                params.topMargin = (int) Math.round(Top)*2;
+                params.bottomMargin = (int) Math.round(bottom)*2;
+
+                 */
+/*params.addRule(RelativeLayout.BELOW);*//*
+
+
+                final int index = M;
+                links.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        Log.i("TAG", "The index is" + "Index ==> "+index+links.getText().toString());
+                        startDraggerActivity(DraggerPosition.TOP,links.getText().toString());
+                    }
+                });
+                //  links.setLayoutParams(params);
+
+                parent.addView(links, params);
+
+
+            }
+        }
+*/
+
+
+        public Bitmap getBitmap(String path){
+            Log.e("File Path ==>",path);
+
+            Bitmap bmp = null;
+            File imgFile = new  File(path);
+            if(imgFile.exists()){
+                bmp = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+
+
+            }
+            return bmp;
+
+        }
+
+        public void addTriangle(Context cxt,ArrayList<RegionBean> beanList ,String fileLocation){
+
+
+
+
+        }
+
+
+        public  Bitmap decodeUriToBitmap(Context mContext, Uri sendUri) {
+            Bitmap getBitmap = null;
+            try {
+                InputStream image_stream;
+                try {
+                    image_stream = mContext.getContentResolver().openInputStream(sendUri);
+                    getBitmap = BitmapFactory.decodeStream(image_stream);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return getBitmap;
+        }
+
+
+
+
+
+
+
+        @Override
+        public View instantiateItem(ViewGroup container, final int position) {
+            ViewGroup itemView = (ViewGroup) mLayoutInflater.inflate(R.layout.pager_item_portrait, container, false);
+            RelativeLayout layout = (RelativeLayout)itemView.findViewById(R.id.frame);
             PhotoView photoViewOne = (PhotoView)itemView.findViewById(R.id.photoView1);
+
+
+
+            //   addDynamicText(getRegiondatas(issueRegionLocations.get(position).toString()),container.getContext(),layout);
+
             byte[] imageForViewOne = null;
             byte[] imageForViewTwo = null;
             String photo1Location = null;
 
             int Mul = position;
-           // int Nul = Mul+1;
+           // addTriangle(container.getContext(),getRegiondatas(issueRegionLocations.get(position).toString()),issuePagesLocations.get(Mul));
+
+            // int Nul = Mul+1;
 
             if(Mul < issuePagesLocations.size()) {
                 photo1Location = issuePagesLocations.get(Mul);
             }
+
+
+
+
+
 
             photoViewOne.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -1391,7 +1832,7 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
 
 
 
-                BitmapWorkerTask bitmapWorkerTaskOne = new BitmapWorkerTask(photoViewOne,imageForViewOne);
+                BitmapWorkerTask bitmapWorkerTaskOne = new BitmapWorkerTask(photoViewOne,imageForViewOne,getRegiondatas(issueRegionLocations.get(position).toString()));
                 bitmapWorkerTaskOne.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
             }else{
@@ -1424,5 +1865,18 @@ public class NewIssueView extends FragmentActivity implements View.OnClickListen
 
         super.onBackPressed();
     }
+
+    public  void startDraggerActivity(DraggerPosition dragPosition,String URL) {
+        Intent intent = new Intent(NewIssueView.this, ImageActivity.class);
+        intent.putExtra(ImageActivity.DRAG_POSITION, dragPosition);
+        intent.putExtra("WebPageUrl",URL);
+
+        startActivityNoAnimation(intent);
+    }
+    public  void startActivityNoAnimation(Intent intent) {
+        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        startActivity(intent);
+    }
+
 
 }

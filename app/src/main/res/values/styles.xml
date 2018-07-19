@@ -8,6 +8,21 @@
     </style>)
 
 
+    <style name="AppThemes" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/accent</item>
+        <item name="colorPrimaryDark">@color/accent_dark</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@color/white</item>
+        <item name="android:windowBackground">@color/gray</item>
+    </style>
+
+    <style name="AppThemeNoActionBar" parent="AppThemes">
+    <item name="android:windowIsTranslucent">true</item>
+    <item name="android:windowBackground">@android:color/transparent</item>
+    <item name="android:windowAnimationStyle">@null</item>
+    </style>
+
+
 
     <!-- The base state of the multi state button-->
     <style name="MultiStateButtonBase">
@@ -24,6 +39,14 @@
         <item name="android:layout_marginTop">5dp</item>
         <item name="android:layout_gravity">center_horizontal</item>
     </style>
+
+   <!-- <style name="AppThemeNoActionBar" parent="AppTheme">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="windowActionBar">false</item>
+    </style>-->
+
 
     <style name="MultiStateButtonBaseForSubscription">
         <item name="android:background">@drawable/multibuttonbaseshape</item>

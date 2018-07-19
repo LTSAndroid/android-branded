@@ -18,6 +18,6 @@ public class AllDownloadsIssueTracker
     public long priority;
     public int downloadStatus;
     public int progressCompleted;
-
+    public String regionData;
     public Bitmap thumbnailBitmap;
 }

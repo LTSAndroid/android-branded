@@ -52,7 +52,6 @@ public class DownloadPreviewImages implements Runnable {
             e.printStackTrace();
         }
 
-
         return previewImageArrayList;
     }
 

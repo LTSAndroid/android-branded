@@ -32,6 +32,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.vending.billing.IInAppBillingService;
 import com.crashlytics.android.Crashlytics;
 import com.pixelmags.android.api.CanPurchase;
 import com.pixelmags.android.bean.DataTransfer;
@@ -87,44 +88,14 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     private String TAG = "MainActivity";
     private String purchaseIssuePrice;
     private String purchaseIssueCurrencyType;
+   // private IInAppBillingService mService;
     // These listener will return only purchase made by the user
 
 
-    IabHelper.QueryInventoryFinishedListener mGotInventoryListener
-            = new IabHelper.QueryInventoryFinishedListener()
-    {
-        public void onQueryInventoryFinished(IabResult result,
-                                             Inventory inventory)
-        {
 
-            if (result.isFailure())
-            {
-                // handle error here
-            }
-            else
-            {
-                // does the user have the premium upgrade?
-                //mIsPremium = inventory.hasPurchase(SKU_PREMIUM);
-                // update UI accordingly
-                List<String> allOwnedSKUS = inventory.getAllOwnedSkus();
-                userOwnedSKUList = new ArrayList<Purchase>();
-                for ( int i = 0; i < allOwnedSKUS.size(); i++)
-                {
-                    Purchase purchaseData = inventory.getPurchase(allOwnedSKUS.get(i));
-                    Log.d(TAG,"User previous Purchase Data list is : "+purchaseData);
-
-                    //Assign button Status here and also restore purchase if the issue is not purchased
-                    userOwnedSKUList.add(purchaseData);
-                }
-
-            }
-
-        }
-    };
 
     IabHelper.QueryInventoryFinishedListener mQueryFinishedListener = new IabHelper.QueryInventoryFinishedListener() {
-        public void onQueryInventoryFinished(IabResult result, Inventory inventory)
-        {
+        public void onQueryInventoryFinished(IabResult result, final Inventory inventory) {
             if (result.isFailure()) {
                 // handle error
                 return;
@@ -142,32 +113,51 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                 mySubsArray = mDbSubReader.getMySubscriptions(mDbSubReader.getReadableDatabase());
                 mDbSubReader.close();
 
-//                for(int i=0; i< mySubsArray.size();i++)
-//                {
-//                    MySubscription sub = mySubsArray.get(i);
-//                }
-
             }
 
             billingMagazinesList = new ArrayList<Magazine>();
+            ArrayList<Magazine> freeMagazineList = new ArrayList<Magazine>();
             biilingSubscriptionList = new ArrayList<Subscription>();
 
             if(pixelmagsMagazinesList != null) {
 
                 for (int i = 0; i < pixelmagsMagazinesList.size(); i++) {
                     String SKU = pixelmagsMagazinesList.get(i).android_store_sku;
+                    String paymentProvider = pixelmagsMagazinesList.get(i).paymentProvider;
+
                     Log.d(TAG,"Type of magazine list is : "+pixelmagsMagazinesList.get(i).type);
                     Log.d(TAG,"SKU is : "+SKU);
                     Log.d(TAG,"Inventory is : "+inventory);
 
-                    if (inventory.hasDetails(SKU)) //yet to be changed,this is for billing test
-                    {
+
+                    if(paymentProvider.equalsIgnoreCase("free")){
+                        Log.e("DOne","Done");
+                        freeMagazineList.add(pixelmagsMagazinesList.get(i));
+                    }
+
+
+
+
+
+
+                 /*  // SkuDetails details = inventory.getSkuDetails(SKU);
+
+                    Log.e("SKU ",inventory.getSkuDetails(SKU).getSku().toString());*/
+
+
+
+                    if (inventory.hasDetails(SKU)) {
+
+                        Log.e("SKU Matching Here ==>",SKU);
+
 
                         SkuDetails details = inventory.getSkuDetails(SKU);
 
                         Log.d(TAG,"Details inside SKU is : "+details);
 
                         pixelmagsMagazinesList.get(i).price = details.getPrice();
+                        Log.e("Modified Price Value",details.getPrice());
+
 
                         if(isSimSupport(MainActivity.this)){
                             TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
@@ -210,6 +200,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                         finalMagazine.manifest = pixelmagsMagazinesList.get(i).manifest;
                         // magazine.lastModified = unit.getString("lastModified"); // how to get date?
                         finalMagazine.android_store_sku = pixelmagsMagazinesList.get(i).android_store_sku;
+                        Log.e("Price Details  MainActivity",pixelmagsMagazinesList.get(i).price+"");
                         finalMagazine.price = pixelmagsMagazinesList.get(i).price;
                         finalMagazine.thumbnailURL = pixelmagsMagazinesList.get(i).thumbnailURL;
                         finalMagazine.isThumbnailDownloaded = pixelmagsMagazinesList.get(i).isThumbnailDownloaded;
@@ -221,6 +212,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
                         billingMagazinesList.add(finalMagazine);
                     }else{
+                        Log.e("SKU Not Matching Here ==>",SKU);
                         if(i == pixelmagsMagazinesList.size()-1 ){
                             if(billingMagazinesList.size() == 0){
                                 AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
@@ -235,8 +227,14 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
                 // Save the Magazine Objects into the SQlite DB
 
-                if(billingMagazinesList.size() != 0) {
+                Log.e("Billing Magazine List",billingMagazinesList.size()+"");
 
+
+
+
+
+                if(billingMagazinesList.size() != 0) {
+                    billingMagazinesList.addAll(freeMagazineList);
                     billingMagazinesList = DownloadThumbnails.DownloadAllThumbnailData(billingMagazinesList);
 
                     AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
@@ -258,6 +256,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                         String SKU = pixelMagsSubscriptionList.get(i).android_store_sku;
                         Log.d(TAG,"SKU of Subscription is : "+SKU);
                         Log.d(TAG,"Inventory is : "+inventory);
+
                         if (inventory.hasDetails(SKU)) //yet to be changed,this is for billing test
                         {
                             SkuDetails details = inventory.getSkuDetails(SKU);
@@ -277,6 +276,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
                             biilingSubscriptionList.add(finalSubscription);
                         }else{
+
                             if(i == pixelMagsSubscriptionList.size()-1 ){
                                 if(biilingSubscriptionList.size() == 0){
                                     SubscriptionsDataSet mDbHelper = new SubscriptionsDataSet(BaseApp.getContext());
@@ -296,19 +296,24 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                 }
             }
 
-            // update the UI
+            mHelper.queryInventoryAsync(new IabHelper.QueryInventoryFinishedListener() {
+                @Override
+                public void onQueryInventoryFinished(IabResult result, Inventory inv) {
+                    if (!result.isFailure()) {
+                        // handle error here
+                    }
+                    else {
+                        List<String> allOwnedSKUS = inventory.getAllOwnedSkus();
+                        userOwnedSKUList = new ArrayList<Purchase>();
+                        for ( int i = 0; i < allOwnedSKUS.size(); i++) {
+                            Purchase purchaseData = inventory.getPurchase(allOwnedSKUS.get(i));
+                            Log.d(TAG,"User previous Purchase Data list is : "+purchaseData);
+                            userOwnedSKUList.add(purchaseData);
+                        }
 
-//            Fragment currentFragment = getSupportFragmentManager().findFragmentByTag("All Issues");
-//            if(currentFragment != null && currentFragment.isVisible()) {
-//                FragmentTransaction fragTransaction = getSupportFragmentManager().beginTransaction();
-//                fragTransaction.detach(currentFragment);
-//                fragTransaction.attach(currentFragment);
-//                fragTransaction.commit();
-//            }
-
-
-
-            mHelper.queryInventoryAsync(mGotInventoryListener);
+                    }
+                }
+            });
         }
 
     };
@@ -332,13 +337,9 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     private CharSequence mTitle;
     private int purchaseIssueId;
     private String purchaseSKU;
-    IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener
-            = new IabHelper.OnIabPurchaseFinishedListener()
-    {
-        public void onIabPurchaseFinished(IabResult result,Purchase purchase)
-        {
-            if (result.isFailure())
-            {
+    IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener = new IabHelper.OnIabPurchaseFinishedListener() {
+        public void onIabPurchaseFinished(IabResult result,Purchase purchase) {
+            if (result.isFailure()) {
 
                 // Handle error
                 Log.d(TAG, "Error purchasing: " + result);
@@ -346,8 +347,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
             }
 
 
-            else if (purchase.getSku().equals(purchaseSKU))
-            {
+            else if (purchase.getSku().equals(purchaseSKU)) {
 
                 Log.d(TAG,"Inside the success condition" + purchaseSKU);
 
@@ -379,13 +379,11 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics());
         // start the service
         startDownloadService();
-
         setContentView(R.layout.activity_main);
 
         // For testing
@@ -525,6 +523,8 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                         {
                             skuList.add(pixelmagsMagazinesList.get(i).android_store_sku);
 
+
+
                         }
 
                     }
@@ -642,7 +642,10 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
             mHelper.launchPurchaseFlow(this, sku, 1001,
                     mPurchaseFinishedListener,finalBase64);
         }else if(type.equalsIgnoreCase("sub")){
-            mHelper.launchPurchaseFlow(this, sku, 1002,
+           /* mHelper.launchPurchaseFlow(this, sku, 1002,
+                    mPurchaseFinishedListener,finalBase64);*/
+
+            mHelper.launchSubscriptionPurchaseFlow(this, sku, 1002,
                     mPurchaseFinishedListener,finalBase64);
         }
 
@@ -655,6 +658,10 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
             int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
             String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
             String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
+            /*ArrayList<String> responseList
+                    = data.getStringArrayListExtra("DETAILS_LIST");
+            Log.e("Size OnActivity",responseList.size()+"");*/
+
 
             if (resultCode == RESULT_OK) {
                 try {
@@ -832,6 +839,12 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                 // cast its IBinder to a concrete class and directly access it.
 
                 mPMService = ((PMService.LocalBinder)service).getService();
+
+
+
+
+
+
             }
 
             public void onServiceDisconnected(ComponentName className) {
@@ -1036,6 +1049,13 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
                 Log.d(TAG,"M Price is : "+mPrice);
                 //Launch google purchase
+                Log.e("TYPE",mType);
+                Log.e("SKU",mSKU);
+                Log.e("PRICE",String.valueOf(mPrice));
+                Log.e("CURRENCY TYPE",String.valueOf(mCurrencyType));
+                Log.e("ISSUE ID",String.valueOf(mIssue_id));
+
+
                 createPurchaseLauncher(mType, mSKU, mPrice, mCurrencyType,mIssue_id);
             }
 

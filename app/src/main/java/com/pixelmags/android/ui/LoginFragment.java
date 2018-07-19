@@ -116,6 +116,7 @@ public class  LoginFragment extends Fragment {
         // set the Log in Listener
         Button doLoginButton = (Button) rootView.findViewById(R.id.logInButton);
         doLoginButton.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
                 doLogin();

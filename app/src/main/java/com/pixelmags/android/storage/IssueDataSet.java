@@ -53,6 +53,8 @@ public class IssueDataSet extends BrandedSQLiteHelper{
 
         // Do batch inserts using Transcations. This is to vastly increase the speed of DB writes
 
+
+
         try{
             // Start the transaction
             db.beginTransaction();
@@ -109,14 +111,18 @@ public class IssueDataSet extends BrandedSQLiteHelper{
 
     }
 
+
+
+
     private void saveEveryPage(SQLiteDatabase db, Issue issue) {
 
 
         try{
-
             // run create table if exists
             dropTablePageData(db, issue.issueID);
             createTablePageData(db, issue.issueID);
+
+
 
             for(int i=0; i< issue.pages.size();i++) {
                 Page page = issue.pages.get(i);
@@ -126,6 +132,7 @@ public class IssueDataSet extends BrandedSQLiteHelper{
                 contentValues.put(PageDataEntry.COLUMN_PAGE_NO, page.getPageNo());
                 contentValues.put(PageDataEntry.COLUMN_PAGE_ID, page.getPageID());
                 contentValues.put(PageDataEntry.COLUMN_PAGE_JSON, page.getPageJSONData());
+                contentValues.put(PageDataEntry.REGION_PAGE_JSON,page.getRegions());
 
                 db.insert(PageDataEntry.getPageDataTableName(issue.issueID), null, contentValues);
 
@@ -226,6 +233,8 @@ public class IssueDataSet extends BrandedSQLiteHelper{
         return singleIssueData;
     }
 
+
+
     private ArrayList<Page> getPagesFromTable(SQLiteDatabase db, String pagesTableName){
 
         System.out.println("fetching PAGES from Table");
@@ -238,7 +247,8 @@ public class IssueDataSet extends BrandedSQLiteHelper{
             String[] projection = {
                     PageDataEntry.COLUMN_PAGE_NO,
                     PageDataEntry.COLUMN_PAGE_ID,
-                    PageDataEntry.COLUMN_PAGE_JSON
+                    PageDataEntry.COLUMN_PAGE_JSON,
+                    PageDataEntry.REGION_PAGE_JSON
             };
 
             // Specify the sort order
@@ -264,8 +274,9 @@ public class IssueDataSet extends BrandedSQLiteHelper{
                     int pageNo = queryCursor.getInt(queryCursor.getColumnIndex(PageDataEntry.COLUMN_PAGE_NO));
                     String pageId = queryCursor.getString(queryCursor.getColumnIndex(PageDataEntry.COLUMN_PAGE_ID));
                     String pageJson = queryCursor.getString(queryCursor.getColumnIndex(PageDataEntry.COLUMN_PAGE_JSON));
+                    String regionJSON = queryCursor.getString(queryCursor.getColumnIndex(PageDataEntry.REGION_PAGE_JSON));
 
-                    PageTypeImage page = new PageTypeImage(pageNo, pageId, pageJson);
+                    PageTypeImage page = new PageTypeImage(pageNo, pageId, pageJson,regionJSON);
                     pages.add(page);
 
                 }
@@ -298,6 +309,10 @@ public class IssueDataSet extends BrandedSQLiteHelper{
         public static final String COLUMN_LAST_MODIFIED = "last_modified";
         public static final String COLUMN_MEDIA_FORMAT = "media_format";
         public static final String COLUMN_PAGE_DATA_TABLE = "page_data_table";
+        public static final String COLUMN_REGION_DATA_TABLE = "region_data_table";
+
+
+
 
         public static final String CREATE_ISSUE_TABLE = "CREATE TABLE IF NOT EXISTS "
                 + ISSUE_TABLE_NAME
@@ -311,7 +326,8 @@ public class IssueDataSet extends BrandedSQLiteHelper{
                 + COLUMN_CREATED + " TEXT,"
                 + COLUMN_LAST_MODIFIED + " TEXT,"
                 + COLUMN_MEDIA_FORMAT + " TEXT,"
-                + COLUMN_PAGE_DATA_TABLE + " TEXT"
+                + COLUMN_PAGE_DATA_TABLE + " TEXT,"
+                + COLUMN_REGION_DATA_TABLE + " TEXT"
                 + ")";
 
         public static final String DROP_ISSUE_TABLE = "DROP TABLE IF EXISTS " + ISSUE_TABLE_NAME;
@@ -324,6 +340,8 @@ public class IssueDataSet extends BrandedSQLiteHelper{
         public static final String COLUMN_PAGE_NO = "page_no";
         public static final String COLUMN_PAGE_ID = "page_id";
         public static final String COLUMN_PAGE_JSON = "page_json";
+        public static final String REGION_PAGE_JSON = "region_json";
+
 
         // update page unit here
 
@@ -342,7 +360,8 @@ public class IssueDataSet extends BrandedSQLiteHelper{
                     + "("
                     + COLUMN_PAGE_NO + " INTEGER PRIMARY KEY ,"      // There should only be one record of an Issue
                     + COLUMN_PAGE_ID + " TEXT,"
-                    + COLUMN_PAGE_JSON + " TEXT"
+                    + COLUMN_PAGE_JSON + " TEXT,"
+                    + REGION_PAGE_JSON + " TEXT"
                     + ")";
 
             return createTable;

@@ -11,16 +11,21 @@ public class Page {
 
     public int pageNo;
     public String pageID;
-    public String PageJSONData; // holds the JSON data as string from the media block of page_manifest
+    public String PageJSONData;
+    public String pageRegionData;
+
+    // holds the JSON data as string from the media block of page_manifest
 
     public boolean isDownloaded;
     public String savedPath;
 
 
-    public Page(int pgNo, String pgID, String JSONData){
+    public Page(int pgNo, String pgID, String JSONData,String pageRegionDatas){
         this.pageNo = pgNo;
         this.pageID = pgID;
         this.PageJSONData = JSONData;
+        this.pageRegionData = pageRegionDatas;
+
     }
 
     public int getPageNo(){
@@ -33,6 +38,11 @@ public class Page {
 
     public String getPageJSONData(){
         return PageJSONData;
+    }
+
+    public String getRegions(){
+        return pageRegionData;
+
     }
 
 }

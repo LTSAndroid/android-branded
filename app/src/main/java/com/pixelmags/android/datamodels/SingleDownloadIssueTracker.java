@@ -18,6 +18,8 @@ public class SingleDownloadIssueTracker {
     public String md5ChecksumLarge;
     public String downloadedLocationPdfLarge;
     public int downloadStatusPdfLarge;
+    public String regionJSON;
+
 
     // for post download processing
     public String uniqueTable;
@@ -26,12 +28,14 @@ public class SingleDownloadIssueTracker {
         this.downloadStatusPdfLarge = SingleIssueDownloadDataSet.DOWNLOAD_STATUS_PENDING;
     }
 
-    public SingleDownloadIssueTracker(PageTypeImage.PageDetails page, int pageNo){
+    public SingleDownloadIssueTracker(PageTypeImage.PageDetails page, int pageNo,String JSON){
 
         this.pageNo = pageNo;
         this.urlPdfLarge = page.url;
         this.md5ChecksumLarge = page.checksum_md5;
         this.downloadStatusPdfLarge = SingleIssueDownloadDataSet.DOWNLOAD_STATUS_PENDING;
+        this.regionJSON = JSON;
+
 
     }
 

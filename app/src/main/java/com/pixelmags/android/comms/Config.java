@@ -5,7 +5,7 @@ package com.pixelmags.android.comms;
  */
 public class Config
 {
-//    public static final String API_BASE_URL = "http://api.beta.pixelmags.com";
+    //    public static final String API_BASE_URL = "http://api.beta.pixelmags.com";
     public static final String API_BASE_URL = "https://api.pixelmags.com";
     public static final String Support_EMail = "support.kindle@pixelmags.com";
     public static final String Sharing_URL = "http://share.pixelmags.com";
@@ -40,13 +40,13 @@ public class Config
     //public static final String Magazine_Number = "1703";
 
     /*IRONMAN*/
-     public static final String Magazine_Number = "825";
+    public static final String Magazine_Number = "3539";
 
-    public static final String Magazine_Title = "Iron Man Magazine";
-   // public static final String Bundle_ID = "com.pixelmags.androidbranded.model-car-racing";
+    public static final String Magazine_Title = "Phil Steele's College Mag";
+    // public static final String Bundle_ID = "com.pixelmags.androidbranded.model-car-racing";
 
     //IRON MAN
-    public static final String Bundle_ID = "com.pixelmags.reader.managed.google.ironman-iron-man-mag";
+    public static final String Bundle_ID = "com.pixelmags.reader.managed.google.phil-steele-college-preview";
 
 
 
@@ -71,8 +71,8 @@ public class Config
     // Pixel Mags Test 2 App Base64EncodedPublicKey
 //    public static final String base64EncodedPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqN/SlCzss1WRFdwftW+Ohg4CrbL1zxPbdfO4d2/yFnnsQkZCzOoH0vOFkOr5KyBqUCmV+MAb4uSA0kvLM7az3X30+bZfl2cJgpC2fU3TLoTqOYk4dUp0GzEykBVkb2LKYrfg3w5KFNu/PkAltIBlOiiMRpJ3PzqoHsdpq3+hqgs0fqU6Fjibb1sDmBxLP/sQh1WitvlVHOQBP2a8bIE/zdlbQNEsF0zc2j8rKWUi56r1YdUmK/YT05Ut0JvuJ//IpeoVadkRBhc/JUIz36MWM6lDO9cm3lgE4KMnYyvcWEHHSLP07liid5ZA4zz7erEWi63I35z+O9g2U3lJjdSbSwIDAQAB";
 
-//    // Iron Man Magazine Base64EncodedPublicKey For live
-    public static final String base64EncodedPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2kfhGhlD/SpuT1TrrlE0koKEYC5T0KNKzECp/xDEu96V0NMHCLEe3LkzUnqf8e5YWhCPy08ld3zNJzzNN/J4P/WEn8HnLkEhg5IY1GM1kyqCUclHGE4dC3JjSqaHtqil08LbjerxcOp6okzUWDoyXfktCb2f4jbw2Q0uYXrcCVdVTyECWVlJG+y+bihgGF+sEo9RhvGJ241pYOVjkz+NccbyIjBtF8PAbxPL12R5qvUctMNBc1S2HQP1Kf/HekU/87tULzIKMMLl3oaDjD0yWGJSbZTSsp/y8fK1oQNmjiyi8R+2IAvF/pPLQciNy2ddHZIoECpM9wq5tzNN3vmRewIDAQAB";
+    //    // Iron Man Magazine Base64EncodedPublicKey For live
+    public static final String base64EncodedPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAw0lVbj9wSSrSDYbjn2jWWUeMEW4uYeXdsMbQwwioxNtgsmYiDiwwA2O7+D7moawb5I648cZsNbvCd86BBqfhoni7RIvgBa5TAdXLwwEd0SAsTzcPQdfVTA2pSg3gP5RH8IMnvcWhGJt/VrV3kO78XLNZT0VgwSHE3efG6DXIVKEB5b1vd5N1eDci8OW1nAMRsG+V49qbNQ4JkM5eg0HQcubS3MpElXcjP+U4P7xG4eGBjkNK1J14A3VBUJpboTukrUT1+fFIM5KUJmoANXGQ0cQj1zmbDWOGdlDvsJO8P3RraQQY6NLd2JA16k0pNYjcc0R3kHpZOtJIPdk1h+B06wIDAQAB";
 
 
     // Iron Man Magazine Base64EncodedPublicKey For testing

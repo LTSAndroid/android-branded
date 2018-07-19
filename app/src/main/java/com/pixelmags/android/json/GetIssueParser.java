@@ -1,5 +1,7 @@
 package com.pixelmags.android.json;
 
+import android.util.Log;
+
 import com.pixelmags.android.datamodels.Issue;
 import com.pixelmags.android.datamodels.Page;
 import com.pixelmags.android.datamodels.PageTypeImage;
@@ -25,6 +27,8 @@ public class GetIssueParser extends JSONParser {
 
         try{
 
+
+
             JSONObject unit = baseJSON.getJSONObject("issue");
 
             mIssue.issueID = unit.getInt("ID");
@@ -42,6 +46,11 @@ public class GetIssueParser extends JSONParser {
             System.out.println("RETRIEVED ISSUE===" +unit.getString("title"));
 
             JSONObject pageManifestArrayData = unit.getJSONObject("page_manifest");
+
+            Log.e("Regions == >",unit.getJSONObject("page_manifest").toString());
+
+
+
             for(int pageNo=1; pageNo<=pageCount; pageNo++)
             {
                 String pg = String.valueOf(pageNo);
@@ -49,11 +58,11 @@ public class GetIssueParser extends JSONParser {
 
                 String pageId = pageUnit.getString("id");
                 String pageMedia = pageUnit.getJSONObject("media").toString();
+                String regions = pageUnit.getJSONArray("regions").toString();
 
-                    // System.out.println("PAGE ID ==== "+pageId);
-                    // System.out.println("PAGE Media ==== "+pageMedia);
 
-                Page pageImageData = new PageTypeImage(pageNo, pageId, pageMedia);
+
+                Page pageImageData = new PageTypeImage(pageNo, pageId, pageMedia,regions);
 
                 mIssue.insertPage(pageImageData);
             }

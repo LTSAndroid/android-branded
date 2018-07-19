@@ -97,6 +97,33 @@ public class CreatePurchase extends WebRequest
         Log.d(TAG,"Price when setting name value pair is : "+mPurchasePrice);
 
         String issueId = String.valueOf(mIssue_id);
+
+
+
+
+
+        Log.v("auth_email_address =  ",UserPrefs.getUserEmail());
+        Log.v("auth_password",UserPrefs.getUserPassword());
+        Log.v("device_id",UserPrefs.getDeviceID());
+        Log.v("magazine_id",String.valueOf(Config.Magazine_Number));
+        Log.v("issue_id",issueId);
+        Log.v("payment_gateway  ","google");
+        Log.v("purchase_receipt =  ",String.valueOf(mPurchaseReceipt));
+        Log.v("purchase_signature = ",String.valueOf(mPurchaseSignature));
+        Log.v("purchase_price = ",String.valueOf(mPurchasePrice));
+        Log.v("purchase_locale = ",mPurchaseCurrencyType);
+        Log.v("app_bundle_id = ",Config.Bundle_ID);
+        Log.v("api_mode = ",Config.api_mode);
+        Log.v("api_version = ",Config.api_version);
+
+
+
+
+
+
+
+
+
         requestBody = new FormBody.Builder()
                 .add("auth_email_address", UserPrefs.getUserEmail())
                 .add("auth_password", UserPrefs.getUserPassword())

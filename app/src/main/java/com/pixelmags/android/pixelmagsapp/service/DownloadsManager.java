@@ -406,7 +406,8 @@ public class DownloadsManager {
 
                         PageTypeImage page = (PageTypeImage) issueWithPageData.pages.get(i);
                         PageTypeImage.PageDetails pageDetails = page.getPageDetails(PageTypeImage.MediaType.LARGE);
-                        SingleDownloadIssueTracker pageTracker = new SingleDownloadIssueTracker(pageDetails, page.getPageNo());
+                        SingleDownloadIssueTracker pageTracker = new SingleDownloadIssueTracker(pageDetails, page.getPageNo(),page.getRegions());
+                        Log.e("Region IN==>",page.getRegions());
                         pagesForSingleDownloadTable.add(pageTracker);
                     }
 

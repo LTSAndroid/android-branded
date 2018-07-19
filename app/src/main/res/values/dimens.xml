@@ -20,4 +20,5 @@
 
     <dimen name="margin_normal">8dp</dimen>
     <dimen name="margin_small">4dp</dimen>
+    <dimen name="result_font">8dp</dimen>
 </resources>

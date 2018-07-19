@@ -20,5 +20,13 @@
     <color name="register_button_color">#8013456D</color>
     <color name="action_bar_color">#1B4F72</color>
     <color name="splash_screen_color">#E91E21</color>
+
+    <color name="transparent">#BF000000</color>
+
+    <color name="black_grey">#212121</color>
+
+
+    <color name="accent">#00B8D4</color>
+    <color name="accent_dark">#00A6BC</color>
 </resources>
 

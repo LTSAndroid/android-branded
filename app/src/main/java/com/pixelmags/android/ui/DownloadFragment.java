@@ -121,7 +121,7 @@ public class DownloadFragment extends Fragment {
 //            NewIssueView.issueViewOpen = false;
 //        }
 
-        getView().setFocusableInTouchMode(true);
+        /*getView().setFocusableInTouchMode(true);
         getView().requestFocus();
         getView().setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -149,7 +149,7 @@ public class DownloadFragment extends Fragment {
 
                 return false;
             }
-        });
+        });*/
 
     }
 
@@ -226,6 +226,7 @@ public class DownloadFragment extends Fragment {
                     for (int i = 0; i < allDownloadsIssuesListTracker.size(); i++) {
 
                         System.out.println("<< singleDownloadedIssue "+ allDownloadsIssuesListTracker.get(i).issueID+" >>");
+
                         allDownloadsIssuesListTracker.get(i).thumbnailBitmap = loadImageFromStorage(
                                 DownloadThumbnails.getIssueDownloadedThumbnailStorageDirectory(
                                         String.valueOf(allDownloadsIssuesListTracker.get(i).issueID)

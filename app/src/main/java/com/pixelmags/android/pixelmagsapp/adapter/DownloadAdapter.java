@@ -207,7 +207,7 @@ public class DownloadAdapter extends RecyclerView.Adapter<DownloadAdapter.myView
                             @Override
                             public void run() {
 
-                                Log.d(TAG,"Timer JumpTime is : "+holder.jumpTime);
+                               // Log.d(TAG,"Timer JumpTime is : "+holder.jumpTime);
 
                                 if (holder.jumpTime != 100) {
 
@@ -221,7 +221,7 @@ public class DownloadAdapter extends RecyclerView.Adapter<DownloadAdapter.myView
                                             holder.jumpTime = counts;
                                             copyOfJumpTime = holder.jumpTime;
                                             DataTransfer.count = holder.jumpTime;
-                                            Log.d("PauseState","Copy of jump time is :"+ DataTransfer.count);
+                                            Log.e("PauseState","Copy of jump time is :"+ DataTransfer.count);
                                             holder.count++;
                                         } else {
                                             isStart = false;
@@ -237,6 +237,7 @@ public class DownloadAdapter extends RecyclerView.Adapter<DownloadAdapter.myView
                                             if(holder.jumpTime < 99) {
                                                 copyOfJumpTime = holder.jumpTime;
                                                 Log.d("PauseState","Copy of jump time is 2 :"+holder.jumpTime);
+
                                                 holder.progressBar.setProgress(holder.jumpTime);
                                                 holder.progressPercentage.setText(String.valueOf(holder.jumpTime) + "%");
 

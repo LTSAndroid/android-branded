@@ -1,5 +1,7 @@
 package com.pixelmags.android.api;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.pixelmags.android.comms.Config;
@@ -12,6 +14,8 @@ import com.pixelmags.android.storage.UserPrefs;
 import com.pixelmags.android.util.BaseApp;
 
 import okhttp3.FormBody;
+
+import static android.content.Context.MODE_PRIVATE;
 
 //import org.apache.http.NameValuePair;
 //import org.apache.http.message.BasicNameValuePair;
@@ -36,6 +40,7 @@ public class GetIssue extends WebRequest
         return failure;
     }
 
+
     public void init(String issueID)
     {
 
@@ -44,7 +49,7 @@ public class GetIssue extends WebRequest
         setApiNameValuePairs();
         doPostRequest();
 
-//        System.out.println("RESPONSE CODE "+responseCode+" data::" +getAPIResultData());
+        System.out.println("RESPONSE CODE "+responseCode+" data::" +getAPIResultData());
 
         if(responseCode==200){
             getIssueParser = new GetIssueParser(getAPIResultData());
@@ -55,6 +60,8 @@ public class GetIssue extends WebRequest
                 if(getIssueParser.isSuccess()){
                     getIssueParser.parse();
                     failure = false;
+
+
                     saveIssueToApp();
 
 
@@ -85,6 +92,15 @@ public class GetIssue extends WebRequest
                 .add("api_version", Config.api_version)
 
                 .build();
+        Log.e("auth_email_address", UserPrefs.getUserEmail());
+        Log.e("auth_password", UserPrefs.getUserPassword());
+        Log.e("device_id", UserPrefs.getDeviceID());
+        Log.e("magazine_id", Config.Magazine_Number);
+        Log.e("issue_id", mIssueID);
+        Log.e("app_bundle_id", Config.Bundle_ID);
+        Log.e("api_mode", Config.api_mode);
+        Log.e("api_version", Config.api_version);
+
 
 //        baseApiNameValuePairs = new ArrayList<NameValuePair>(8);
 //        baseApiNameValuePairs.add(new BasicNameValuePair("auth_email_address", UserPrefs.getUserEmail()));
@@ -101,26 +117,20 @@ public class GetIssue extends WebRequest
 
 
         try {
-            // Save the Subscription Objects into the SQlite DB
+
+
             IssueDataSet mDbHelper = new IssueDataSet(BaseApp.getContext());
-
-            Log.d(TAG, "Get issue parser of Issue is :" + getIssueParser.mIssue.toString());
-
             mDbHelper.insertIssueData(mDbHelper.getWritableDatabase(), getIssueParser.mIssue);
             mDbHelper.close();
 
-            // Saving Object into All Download Data Set . change by Likith
-
-//        QueueDownload queueDownload = new QueueDownload();
-//        queueDownload.insertIssueInDownloadQueue(String.valueOf(getIssueParser.mIssue.issueID));
-
             boolean result = startIssueDownload(String.valueOf(getIssueParser.mIssue.issueID));
 
-            Log.d(TAG, "Result of queue download insert is : " + result);
+            Log.e(TAG, "Result of queue download insert is : " + result);
+
 
             if (result) {
 
-                Log.d(TAG, "Inside the if condition of notify service of new download");
+                Log.e(TAG, "Inside the if condition of notify service of new download");
                 PMService pmService = new PMService();
                 pmService.newDownloadRequested();
             }
@@ -137,6 +147,8 @@ public class GetIssue extends WebRequest
         return queueIssue.insertIssueInDownloadQueue(issueId);
 
     }
+
+
 
 
 }

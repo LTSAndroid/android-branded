@@ -597,15 +597,6 @@ public class RegisterFragment extends Fragment {
                 mValidateUserTask = new ValidateUserTask(mEmail, mPassword);
                 mValidateUserTask.execute((String) null);
 
-//            Fragment fragment = new AllIssuesFragment();
-//            FragmentManager fragmentManager = getFragmentManager();
-//            // FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//
-//            fragmentManager.beginTransaction()
-//                    .replace(((ViewGroup) (getView().getParent())).getId(), fragment)
-//                    .addToBackStack(null)
-//                    .commit();
-
         }
 
         @Override
@@ -636,7 +627,7 @@ public class RegisterFragment extends Fragment {
             if(apiValidateUser.isSuccess())
             {
                 //getMyIssues API
-                callGetMyIssuesAPI();
+               // callGetMyIssuesAPI();
             }
             //
             return resultToDisplay;

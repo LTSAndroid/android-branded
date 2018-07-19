@@ -9,7 +9,6 @@ import android.util.Log;
 
 import com.pixelmags.android.datamodels.AllDownloadsIssueTracker;
 import com.pixelmags.android.datamodels.SingleDownloadIssueTracker;
-
 import java.util.ArrayList;
 
 /**
@@ -42,7 +41,8 @@ public class SingleIssueDownloadDataSet extends BrandedSQLiteHelper {
                 + SingleIssueDownloadEntry.COLUMN_URL_PDF_LARGE + " TEXT,"
                 + SingleIssueDownloadEntry.COLUMN_MD5_CHECKSUM_LARGE + " TEXT,"
                 + SingleIssueDownloadEntry.COLUMN_DOWNLOADED_LOCATION_PDF_LARGE + " TEXT,"
-                + SingleIssueDownloadEntry.COLUMN_DOWNLOAD_STATUS_PDF_LARGE + " INTEGER"
+                + SingleIssueDownloadEntry.COLUMN_DOWNLOAD_STATUS_PDF_LARGE + " INTEGER,"
+                + SingleIssueDownloadEntry.COLUMN_DOWNLOAD_STATUS_REGION_LARGE + " TEXT"
                 + ")";
 
         db.execSQL(CREATE_UNIQUE_ISSUE_DOWNLOAD_TABLE);
@@ -183,7 +183,8 @@ public class SingleIssueDownloadDataSet extends BrandedSQLiteHelper {
                     SingleIssueDownloadEntry.COLUMN_URL_PDF_LARGE,
                     SingleIssueDownloadEntry.COLUMN_MD5_CHECKSUM_LARGE,
                     SingleIssueDownloadEntry.COLUMN_DOWNLOADED_LOCATION_PDF_LARGE,
-                    SingleIssueDownloadEntry.COLUMN_DOWNLOAD_STATUS_PDF_LARGE
+                    SingleIssueDownloadEntry.COLUMN_DOWNLOAD_STATUS_PDF_LARGE,
+                    SingleIssueDownloadEntry.COLUMN_DOWNLOAD_STATUS_REGION_LARGE
             };
 
 
@@ -217,7 +218,7 @@ public class SingleIssueDownloadDataSet extends BrandedSQLiteHelper {
                     issueTracker.md5ChecksumLarge = queryCursor.getString(queryCursor.getColumnIndex(SingleIssueDownloadEntry.COLUMN_MD5_CHECKSUM_LARGE));
                     issueTracker.downloadedLocationPdfLarge = queryCursor.getString(queryCursor.getColumnIndex(SingleIssueDownloadEntry.COLUMN_DOWNLOADED_LOCATION_PDF_LARGE));
                     issueTracker.downloadStatusPdfLarge = queryCursor.getInt(queryCursor.getColumnIndex(SingleIssueDownloadEntry.COLUMN_DOWNLOAD_STATUS_PDF_LARGE));
-
+                    issueTracker.regionJSON = queryCursor.getString(queryCursor.getColumnIndex(SingleIssueDownloadEntry.COLUMN_DOWNLOAD_STATUS_REGION_LARGE));
                     currentSingleIssueDownload.add(issueTracker);
 
                 }
@@ -247,7 +248,9 @@ public class SingleIssueDownloadDataSet extends BrandedSQLiteHelper {
                     SingleIssueDownloadEntry.COLUMN_URL_PDF_LARGE,
                     SingleIssueDownloadEntry.COLUMN_MD5_CHECKSUM_LARGE,
                     SingleIssueDownloadEntry.COLUMN_DOWNLOADED_LOCATION_PDF_LARGE,
-                    SingleIssueDownloadEntry.COLUMN_DOWNLOAD_STATUS_PDF_LARGE
+                    SingleIssueDownloadEntry.COLUMN_DOWNLOAD_STATUS_PDF_LARGE,
+                    SingleIssueDownloadEntry.COLUMN_DOWNLOAD_STATUS_REGION_LARGE
+
             };
 
 
@@ -281,6 +284,7 @@ public class SingleIssueDownloadDataSet extends BrandedSQLiteHelper {
                     issueTracker.md5ChecksumLarge = queryCursor.getString(queryCursor.getColumnIndex(SingleIssueDownloadEntry.COLUMN_MD5_CHECKSUM_LARGE));
                     issueTracker.downloadedLocationPdfLarge = queryCursor.getString(queryCursor.getColumnIndex(SingleIssueDownloadEntry.COLUMN_DOWNLOADED_LOCATION_PDF_LARGE));
                     issueTracker.downloadStatusPdfLarge = queryCursor.getInt(queryCursor.getColumnIndex(SingleIssueDownloadEntry.COLUMN_DOWNLOAD_STATUS_PDF_LARGE));
+                    issueTracker.regionJSON = queryCursor.getString(queryCursor.getColumnIndex(SingleIssueDownloadEntry.COLUMN_DOWNLOAD_STATUS_REGION_LARGE));
 
                     pageSingleIssueDownload.add(issueTracker);
 
@@ -361,6 +365,7 @@ public class SingleIssueDownloadDataSet extends BrandedSQLiteHelper {
             updateValues.put(SingleIssueDownloadEntry.COLUMN_MD5_CHECKSUM_LARGE, dIssue.md5ChecksumLarge);
             updateValues.put(SingleIssueDownloadEntry.COLUMN_DOWNLOADED_LOCATION_PDF_LARGE, dIssue.downloadedLocationPdfLarge);
             updateValues.put(SingleIssueDownloadEntry.COLUMN_DOWNLOAD_STATUS_PDF_LARGE, dIssue.downloadStatusPdfLarge);
+            updateValues.put(SingleIssueDownloadEntry.COLUMN_DOWNLOAD_STATUS_REGION_LARGE, dIssue.regionJSON);
 
             db.insertWithOnConflict(tableName, null, updateValues, SQLiteDatabase.CONFLICT_REPLACE);
 
@@ -381,6 +386,8 @@ public class SingleIssueDownloadDataSet extends BrandedSQLiteHelper {
         public static final String COLUMN_MD5_CHECKSUM_LARGE = "md5_checksum_large";
         public static final String COLUMN_DOWNLOADED_LOCATION_PDF_LARGE = "downloaded_location_pdf_large";
         public static final String COLUMN_DOWNLOAD_STATUS_PDF_LARGE = "download_status_pdf_large";
+        public static final String COLUMN_DOWNLOAD_STATUS_REGION_LARGE = "download_status_region_large";
+
 
     }
 

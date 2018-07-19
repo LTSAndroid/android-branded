@@ -6,12 +6,16 @@ import java.util.ArrayList;
  * Created by austincoutinho on 04/11/15.
  */
 
-/*
-    This datamodel represents an actual issue, it's contents and it's pages
+/**
+*Apply the
+*
+*
+*
+*
+*
  */
 
-public class Issue
-{
+public class Issue {
     public int issueID;
     public int magazineID;
     public String title;
@@ -21,7 +25,7 @@ public class Issue
     public String created;
     public String lastModified;
     public String media_format;
-
+    public String region;
     public ArrayList<Page> pages;
 
 //    public JSONArray pageManifest;

@@ -75,10 +75,7 @@ public class SingleIssuePreviewDataSet extends BrandedSQLiteHelper{
     }
 
 
-    public boolean initFormationOfSingleIssueDownloadTable(SQLiteDatabase db,
-                                                           String uniqueTableName,
-                                                           ArrayList<PreviewImage> previewImageArrayList)
-    {
+    public boolean initFormationOfSingleIssueDownloadTable(SQLiteDatabase db, String uniqueTableName, ArrayList<PreviewImage> previewImageArrayList) {
         try{
             // Start the transaction
             db.beginTransaction();

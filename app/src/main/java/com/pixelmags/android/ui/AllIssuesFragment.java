@@ -48,11 +48,9 @@ import com.pixelmags.android.ui.uicomponents.MultiStateButton;
 import com.pixelmags.android.util.BaseApp;
 import com.pixelmags.android.util.GetInternetStatus;
 import com.squareup.picasso.Picasso;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
-
 import io.fabric.sdk.android.Fabric;
 
 
@@ -232,33 +230,10 @@ public class AllIssuesFragment extends Fragment {
                     alertDialog.show();
 
                 }
-
-                //check for download state before launch, prefer separate class as we need to reuse
-                //if check passes then start the activity
-       /* Intent intent = new Intent(getActivity(), NewIssueView.class);
-        intent.putExtra("ISSUE_ID", 120974);
-        startActivity(intent);*/
-                // startActivity(new Intent(getActivity(), NewIssueView.class));
-       /* NewIssueView issueViewFragment = (NewIssueView) getActivity();
-        issueViewFragment.loadIssue(magazinesList.get(position).id);*/
-       /* AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-
-        builder.setTitle(getString(R.string.allIssues_purchase_title));
-        String message = getString(R.string.allIssues_purchase_message)+ " "+magazinesList.get(position).title + "?";
-        builder.setMessage(message);
-        builder.setPositiveButton("OK", null);
-        builder.setNegativeButton("Cancel", null);
-        builder.show();*/
-
             }
-
-        }
-        else
-        {
+        }else{
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
             alertDialogBuilder.setTitle(getString(R.string.purchase_initiation_fail_title));
-
-
             // set dialog message
             alertDialogBuilder
                     .setMessage(getString(R.string.purchase_initiation_fail_message))
@@ -282,52 +257,28 @@ public class AllIssuesFragment extends Fragment {
 
         }
 
-        //check for download state before launch, prefer separate class as we need to reuse
-        //if check passes then start the activity
-       /* Intent intent = new Intent(getActivity(), NewIssueView.class);
-        intent.putExtra("ISSUE_ID", 120974);
-        startActivity(intent);*/
-       // startActivity(new Intent(getActivity(), NewIssueView.class));
-       /* NewIssueView issueViewFragment = (NewIssueView) getActivity();
-        issueViewFragment.loadIssue(magazinesList.get(position).id);*/
-       /* AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-        builder.setTitle(getString(R.string.allIssues_purchase_title));
-        String message = getString(R.string.allIssues_purchase_message)+ " "+magazinesList.get(position).title + "?";
-        builder.setMessage(message);
-        builder.setPositiveButton("OK", null);
-        builder.setNegativeButton("Cancel", null);
-        builder.show();*/
 
     }
 
     public void downloadButtonClicked(int position){
+
         if(UserPrefs.getUserLoggedIn()){
 
             GetInternetStatus getInternetStatus = new GetInternetStatus(getActivity());
             if(getInternetStatus.isNetworkAvailable()){
-
                 // To See Preview Images
                 mPreviewImagesTask = new DownloadPreviewImagesAsyncTask(Config.Magazine_Number, String.valueOf(magazinesList.get(position).id),position);
                 mPreviewImagesTask.execute((String) null);
-
-//                downloadIssue = new DownloadIssue(position);
-//                downloadIssue.execute((String) null);
-
             }else{
                 getInternetStatus.showAlertDialog();
             }
-
-
-
             magazinesList.get(position).status = Magazine.STATUS_VIEW;
             gridAdapter.notifyDataSetChanged();
-
 
         }else{
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
             alertDialogBuilder.setTitle(getString(R.string.purchase_initiation_fail_title));
-
             // set dialog message
             alertDialogBuilder
                     .setMessage(getString(R.string.download_initiation_fail_message))
@@ -384,15 +335,10 @@ public class AllIssuesFragment extends Fragment {
         }catch (Exception e){
             e.printStackTrace();
         }
-
-
     }
 
-
     public String getIssueDocumentKey(int issueId){
-
         String issueKey = null;
-
         MyIssueDocumentKey mDbReader = new MyIssueDocumentKey(BaseApp.getContext());
         if(mDbReader != null) {
             issueDocumentKeys = mDbReader.getMyIssuesDocumentKey(mDbReader.getReadableDatabase());
@@ -412,18 +358,13 @@ public class AllIssuesFragment extends Fragment {
 
 
     public void gridIssueImageClicked(int position){
-
         navigateToIssueDetails(position);
-
     }
 
     private void navigateToIssueDetails(int position) {
-
         FragmentManager fragmentManager = getFragmentManager();
-
         Magazine mag = magazinesList.get(position);
         String issueID = String.valueOf(mag.id);
-
         Fragment fragment = IssueDetailsFragment.newInstance(issueID, Config.Magazine_Number);
         fragmentManager.beginTransaction()
                 .replace(((ViewGroup)(getView().getParent())).getId(), fragment)
@@ -479,14 +420,12 @@ public class AllIssuesFragment extends Fragment {
     }
 
     public void loadAllIssues(){
-
         magazinesList = null; // clear the list
 
-        AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
 
+        AllIssuesDataSet mDbHelper = new AllIssuesDataSet(BaseApp.getContext());
         magazinesList = mDbHelper.getAllIssuesOnly(mDbHelper.getReadableDatabase());
         mDbHelper.close();
-
 
         if(magazinesList != null){
             for(int i=0; i<magazinesList.size(); i++){
@@ -502,10 +441,7 @@ public class AllIssuesFragment extends Fragment {
                     magazinesList.get(i).status = Magazine.STATUS_DOWNLOAD;
                 }
 
-                if(!magazinesList.get(i).paymentProvider.equalsIgnoreCase("google") || !magazinesList.get(i).paymentProvider.trim().equalsIgnoreCase("free")
-                        && magazinesList.get(i).type.trim().equalsIgnoreCase("subscription")){
-                    magazinesList.remove(magazinesList.get(i));
-                }
+
 
             }
         }else{
@@ -544,6 +480,7 @@ public class AllIssuesFragment extends Fragment {
 
             // retrieve any user issues
             ArrayList<MyIssue> myIssueArray = null;
+
             if (UserPrefs.getUserLoggedIn()) {
                 MyIssuesDataSet myIssuesDbReader = new MyIssuesDataSet(BaseApp.getContext());
                 myIssueArray = myIssuesDbReader.getMyIssues(myIssuesDbReader.getReadableDatabase());
@@ -555,13 +492,9 @@ public class AllIssuesFragment extends Fragment {
             if (magazinesList != null) {
 
                 for (int i = 0; i < magazinesList.size(); i++) {
-                    // DownloadImageTask mDownloadTask = new DownloadImageTask(i);
-                    // mDownloadTask.execute((String) null);
-
                     Log.d(TAG,"Magazine List is : "+magazinesList.get(i));
                     if (magazinesList.get(i).isThumbnailDownloaded) {
                         magazinesList.get(i).thumbnailBitmap = loadImageFromStorage(magazinesList.get(i).thumbnailDownloadedInternalPath);
-
                     }
 
                     // update the issue owned field
@@ -594,6 +527,10 @@ public class AllIssuesFragment extends Fragment {
                             }
                         }
                     }
+
+
+
+
 
                     if (allDownloadsTracker != null) {
                         for (int downloadCount = 0; downloadCount < allDownloadsTracker.size(); downloadCount++) {
@@ -1042,20 +979,34 @@ public class AllIssuesFragment extends Fragment {
         protected String doInBackground(String... params) {
             // TODO: attempt authentication against a network service.
 
+            Log.e("Issue Coordinates ==> ","1,2,3,4");
             String resultToDisplay = "";
 
             try {
 
+
+
+
+
                 issueId = String.valueOf(magazinesList.get(position).id);
+
+
 
                 GetIssue getIssue = new GetIssue();
                 getIssue.init(issueId);
+
+
+
+
+
 
                 GetDocumentKey getDocumentKey = new GetDocumentKey();
                 documentKey = getDocumentKey.init(UserPrefs.getUserEmail(), UserPrefs.getUserPassword(), UserPrefs.getDeviceID(),
                         issueId,Config.Magazine_Number, Config.Bundle_ID);
 
                 Log.d(TAG, "Document key when download button clicked is : " + documentKey);
+
+
 
                 if(documentKey != null){
                     Log.d(TAG,"Inside the document key not null");
@@ -1065,6 +1016,7 @@ public class AllIssuesFragment extends Fragment {
 
             }catch (Exception e){
                 e.printStackTrace();
+
             }
             return resultToDisplay;
 

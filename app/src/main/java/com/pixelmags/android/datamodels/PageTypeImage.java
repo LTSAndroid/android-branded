@@ -11,8 +11,9 @@ public class PageTypeImage extends Page {
     private PageTypeImageParser pageParser;
 
 
-   public PageTypeImage(int pgNo, String pgID, String JSONData){
-        super(pgNo, pgID, JSONData);
+   public PageTypeImage(int pgNo, String pgID, String JSONData,String region){
+
+         super(pgNo, pgID, JSONData,region);
    }
 
     public PageDetails getPageDetails(MediaType pageSize){
@@ -44,6 +45,8 @@ public class PageTypeImage extends Page {
        SMALL, MEDIUM, LARGE
    }
 
+
+
     public class PageDetails{
 
         public String mime_type; 	//"image/jpeg"
@@ -55,6 +58,8 @@ public class PageTypeImage extends Page {
         public int width; 	//291
         public int height; 	//400
         public MediaType imageSize;
+        public String regionJSON;
+
 
         PageDetails(MediaType sizeOfImage){
             imageSize = sizeOfImage;
